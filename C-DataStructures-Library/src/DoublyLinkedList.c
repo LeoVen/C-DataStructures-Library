@@ -348,8 +348,8 @@ Status dll_display(DoublyLinkedList *dll)
 
     if (dll_empty(dll))
     {
-
         printf("\nDoubly Linked List\n[ empty ]\n");
+
         return DS_OK;
     }
 
@@ -360,6 +360,7 @@ Status dll_display(DoublyLinkedList *dll)
     while (scan != NULL)
     {
         printf(" %d <->", scan->data);
+
         scan = scan->next;
     }
 
@@ -411,6 +412,7 @@ Status dll_display_raw(DoublyLinkedList *dll)
     while (scan != NULL)
     {
         printf("%d ", scan->data);
+
         scan = scan->next;
     }
 

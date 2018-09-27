@@ -53,13 +53,11 @@ Status sll_insert_head(SinglyLinkedList *sll, int value)
 
     if (sll_empty(sll))
     {
-
         sll->head = node;
         sll->tail = node;
     }
     else
     {
-
         node->next = sll->head;
         sll->head = node;
     }
@@ -723,8 +721,7 @@ Status sll_get_node_at(SinglyLinkedList *sll, SinglyLinkedNode **result, size_t 
 
     (*result) = sll->head;
 
-    size_t i;
-    for (i = 0; i < position; i++)
+    for (size_t i = 0; i < position; i++)
     {
 
         if ((*result) == NULL)
