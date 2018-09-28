@@ -24,10 +24,13 @@ Status stk_push(Stack *stk, int value);
 Status stk_pop(Stack *stk, int *result);
 
 Status stk_display(Stack *stk);
+
 Status stk_display_array(Stack *stk);
+
 Status stk_display_raw(Stack *stk);
 
 Status stk_delete(Stack **stk);
+
 Status stk_erase(Stack **stk);
 
 int stk_peek(Stack *stk);
@@ -35,5 +38,7 @@ int stk_peek(Stack *stk);
 size_t stk_height(Stack *stk);
 
 bool stk_empty(Stack *stk);
+
+Status stk_copy(Stack *stk, Stack **result);
 
 #endif //C_DATASTRUCTURES_LIBRARY_STACK_H

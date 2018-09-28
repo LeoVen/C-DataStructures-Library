@@ -402,12 +402,12 @@ Status dll_display_raw(DoublyLinkedList *dll)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
+    printf("\n");
+
     if (dll_empty(dll))
-        return DS_ERR_INVALID_OPERATION;
+        return DS_OK;
 
     DoublyLinkedNode *scan = dll->head;
-
-    printf("\n");
 
     while (scan != NULL)
     {
@@ -428,10 +428,17 @@ Status dll_delete(DoublyLinkedList **dll)
 
     DoublyLinkedNode *prev = (*dll)->head;
 
+    Status st;
+
     while ((*dll)->head != NULL)
     {
         (*dll)->head = (*dll)->head->next;
-        free(prev);
+
+        st = dll_delete_node(&prev);
+
+        if (st != DS_OK)
+            return st;
+
         prev = (*dll)->head;
     }
 
@@ -509,13 +516,13 @@ Status dll_copy(DoublyLinkedList *dll, DoublyLinkedList **result)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dll_empty(dll))
-        return DS_ERR_INVALID_OPERATION;
-
     Status st = dll_init(result);
 
     if (st != DS_OK)
         return st;
+
+    if (dll_empty(dll))
+        return DS_OK;
 
     DoublyLinkedNode *scan = dll->head;
 

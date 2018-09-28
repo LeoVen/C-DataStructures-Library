@@ -400,12 +400,14 @@ Status sll_display_raw(SinglyLinkedList *sll)
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
+    printf("\n");
+
     if (sll_empty(sll))
-        return DS_ERR_INVALID_OPERATION;
+    {
+        return DS_OK;
+    }
 
     SinglyLinkedNode *scan = sll->head;
-
-    printf("\n");
 
     while (scan != NULL)
     {
@@ -628,13 +630,13 @@ Status sll_copy(SinglyLinkedList *sll, SinglyLinkedList **result)
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll_empty(sll))
-        return DS_ERR_INVALID_OPERATION;
-
     Status st = sll_init(result);
 
     if (st != DS_OK)
         return st;
+
+    if (sll_empty(sll))
+        return DS_OK;
 
     SinglyLinkedNode *scan = sll->head;
 

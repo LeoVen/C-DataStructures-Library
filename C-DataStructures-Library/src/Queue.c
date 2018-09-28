@@ -161,6 +161,7 @@ Status que_display_raw(Queue *que)
     while (scan != NULL)
     {
         printf("%d ", scan->data);
+
         scan = scan->prev;
     }
 
@@ -257,13 +258,13 @@ Status que_copy(Queue *que, Queue **result)
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (que_empty(que))
-        return DS_ERR_INVALID_OPERATION;
-
     Status st = que_init(result);
 
     if (st != DS_OK)
         return st;
+
+    if (que_empty(que))
+        return DS_OK;
 
     QueueNode *scan = que->front;
 

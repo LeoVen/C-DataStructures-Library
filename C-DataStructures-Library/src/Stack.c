@@ -139,9 +139,12 @@ Status stk_display_raw(Stack *stk)
     if (stk == NULL)
         return DS_ERR_NULL_POINTER;
 
-    StackBox *scan = stk->top;
-
     printf("\n");
+
+    if (stk_empty(stk))
+        return DS_OK;
+
+    StackBox *scan = stk->top;
 
     while (scan != NULL)
     {
@@ -158,9 +161,9 @@ Status stk_delete(Stack **stk)
     if ((*stk) == NULL)
         return DS_ERR_INVALID_OPERATION;
 
-    Status st;
-
     StackBox *prev = (*stk)->top;
+
+    Status st;
 
     while ((*stk)->top != NULL)
     {
@@ -221,6 +224,60 @@ size_t stk_height(Stack *stk)
 bool stk_empty(Stack *stk)
 {
     return (stk->top == NULL || stk->height == 0);
+}
+
+Status stk_copy(Stack *stk, Stack **result)
+{
+    *result = NULL;
+
+    if (stk == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    Status st = stk_init(result);
+
+    if (st != DS_OK)
+        return st;
+
+    if (stk_empty(stk))
+        return DS_OK;
+
+    Stack *temp;
+
+    st = stk_init(&temp);
+
+    if (st != DS_OK)
+        return st;
+
+    StackBox *scan = stk->top;
+
+    while (scan != NULL)
+    {
+        st = stk_push(temp, scan->data);
+
+        if (st != DS_OK)
+            return st;
+
+        scan = scan->below;
+    }
+
+    scan = temp->top;
+
+    while (scan != NULL)
+    {
+        st = stk_push(*result, scan->data);
+
+        if (st != DS_OK)
+            return st;
+
+        scan = scan->below;
+    }
+
+    st = stk_delete(&temp);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
 }
 
 // NOT EXPOSED API
