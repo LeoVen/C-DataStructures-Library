@@ -9,7 +9,6 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_PRIORITYQUEUE_H
 #define C_DATASTRUCTURES_LIBRARY_PRIORITYQUEUE_H
 
-
 #include "Core.h"
 
 typedef struct PriorityQueue

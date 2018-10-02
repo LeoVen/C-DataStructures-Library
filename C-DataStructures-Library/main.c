@@ -4,6 +4,7 @@
 #include "Queue.h"
 #include "Deque.h"
 #include "PriorityQueue.h"
+#include "DynamicArray.h"
 
 int main()
 {
@@ -119,7 +120,7 @@ int main()
         if (que_copy(que0, &que1) == DS_OK)
         {
             l = que1->length;
-            for (int i = 0; i < l; i++)
+            for (size_t i = 0; i < l; i++)
             {
                 que_dequeue(que0, &j);
 
@@ -157,7 +158,7 @@ int main()
         {
             l = deq0->length;
 
-            for (int i = 0; i < l; i++)
+            for (size_t i = 0; i < l; i++)
             {
                 deq_dequeue_front(deq0, &j);
 
@@ -199,6 +200,93 @@ int main()
 
     prq_delete(&prq0);
     prq_delete(&prq1);
+
+    DynamicArray *dar0, *dar1, *dar2;
+
+    int arr[4] = {5, 5, 5, 5};
+
+    if (dar_init(&dar0) == DS_OK)
+    {
+        for (int i = 0; i < 15; i++)
+        {
+            if (dar_insert_back(dar0, i) != DS_OK)
+                break;
+        }
+
+        dar_display(dar0);
+
+        if (dar_insert(dar0, arr, 4, dar0->size) == DS_OK)
+        {
+            dar_display(dar0);
+
+            printf("\nArray 0 size: %u\n", dar0->size);
+
+            if (dar_copy(dar0, &dar1) == DS_OK)
+            {
+                if (dar_remove(dar1, 11, 13) == DS_OK)
+                {
+                    dar_display(dar1);
+
+                    printf("\nArray 1 size: %u\n", dar1->size);
+                }
+            }
+        }
+    }
+
+    dar_delete(&dar0);
+    dar_delete(&dar1);
+
+    if (dar_init(&dar0) == DS_OK && dar_init(&dar1) == DS_OK && dar_init(&dar2) == DS_OK)
+    {
+        for (size_t i = 0, j = 9; i < j; i++, j--)
+        {
+            if (dar_insert_back(dar0, i) != DS_OK || dar_insert_front(dar1, j) != DS_OK || dar_insert_back(dar2, 9))
+                break;
+        }
+
+        printf("\nOriginal\n");
+        dar_display_array(dar0);
+        dar_display_array(dar1);
+        dar_display_array(dar2);
+
+        if (dar_append(dar0, dar1) == DS_OK)
+        {
+            printf("\nAppend dar1 to dar0\ndar0: ");
+            dar_display_array(dar0);
+
+            dar_remove(dar0, 5, 9);
+        }
+
+        if (dar_prepend(dar1, dar0) == DS_OK)
+        {
+            printf("\nAppend dar0 to dar1\ndar1: ");
+            dar_display_array(dar1);
+
+            dar_remove(dar1, 5, 9);
+        }
+
+        if (dar_add(dar0, dar2, 2) == DS_OK)
+        {
+            printf("\nAdd dar2 to dar0 at index 2\ndar0: ");
+            dar_display_array(dar0);
+
+            dar_remove(dar0, 2, dar2->size + 1);
+        }
+
+        printf("\nEnd: ");
+
+        dar_display_array(dar0);
+        printf("Size: %u\n", dar0->size);
+        dar_display_array(dar1);
+        printf("Size: %u\n", dar1->size);
+        dar_display_array(dar2);
+        printf("Size: %u\n", dar2->size);
+
+    }
+
+    dar_delete(&dar0);
+    dar_delete(&dar1);
+    dar_delete(&dar2);
 
     return 0;
 }
