@@ -13,7 +13,7 @@
 
 typedef struct Deque
 {
-    size_t length;			 /*!< Total @c Deque length */
+    size_t length;           /*!< Total @c Deque length */
     struct DequeNode *front; /*!< Where @c QueueNode are removed */
     struct DequeNode *rear;  /*!< Where @c QueueNode are inserted */
 } Deque;

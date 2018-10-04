@@ -13,7 +13,7 @@
 
 typedef struct PriorityQueue
 {
-    size_t length;					 /*!< Total @c Queue length */
+    size_t length;                   /*!< Total @c Queue length */
     struct PriorityQueueNode *front; /*!< Where @c PriorityQueueNode are removed */
     struct PriorityQueueNode *rear;  /*!< Where @c PriorityQueueNode are inserted */
 } PriorityQueue;

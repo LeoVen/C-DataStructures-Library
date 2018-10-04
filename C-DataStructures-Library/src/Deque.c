@@ -12,7 +12,7 @@
 
 typedef struct DequeNode
 {
-    int data;				/*!< Node's data */
+    int data;               /*!< Node's data */
     struct DequeNode *next; /*!< Pointer to the next node in the @c Deque */
     struct DequeNode *prev; /*!< Pointer to the previous node in the @c Deque */
 } DequeNode;

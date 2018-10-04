@@ -1,10 +1,12 @@
-#include "DoublyLinkedList.h"
 #include "SinglyLinkedList.h"
+#include "DoublyLinkedList.h"
 #include "Stack.h"
 #include "Queue.h"
 #include "Deque.h"
 #include "PriorityQueue.h"
 #include "DynamicArray.h"
+#include "StackArray.h"
+#include "QueueArray.h"
 
 int main()
 {
@@ -287,6 +289,85 @@ int main()
     dar_delete(&dar0);
     dar_delete(&dar1);
     dar_delete(&dar2);
+
+    StackArray *sta0, *sta1;
+
+    if (sta_init(&sta0) == DS_OK)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            if (i % 3 == 0 || i % 5 == 0)
+                sta_pop(sta0, &j);
+            else
+                sta_push(sta0, i);
+        }
+
+        sta_display_array(sta0);
+        printf("Height: %u\n\n", sta0->height);
+
+        if (sta_copy(sta0, &sta1) == DS_OK)
+        {
+            while (sta0->height > 0)
+            {
+                sta_pop(sta0, &j);
+
+                sta_push(sta1, j);
+            }
+
+            sta_display_array(sta0);
+            printf("Stack 0 Height: %u\n\n", sta0->height);
+
+            sta_display_array(sta1);
+            printf("Stack 1 Height: %u", sta1->height);
+        }
+    }
+
+    sta_delete(&sta0);
+    sta_delete(&sta1);
+
+    QueueArray *qua0, *qua1;
+
+    if (qua_init(&qua0) == DS_OK)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            if (i % 2 == 0)
+                qua_enqueue(qua0, i);
+            else if (i % 3 == 0)
+                qua_dequeue(qua0, &j);
+
+            if (i % 15 == 0)
+            {
+                printf("\n");
+                qua_display_array(qua0);
+
+                printf("Length   : %u", qua0->length);
+                printf("\nCapacity : %u", qua0->capacity);
+                printf("\nFront    : %u", qua0->front);
+                printf("\nRear     : %u", qua0->rear);
+
+            }
+        }
+
+        if (qua_copy(qua0, &qua1) == DS_OK)
+        {
+            printf("\n\n\nOriginal\n--------");
+            qua_display(qua0);
+            printf("\nLength   : %u", qua0->length);
+            printf("\nCapacity : %u", qua0->capacity);
+            printf("\nFront    : %u", qua0->front);
+            printf("\nRear     : %u", qua0->rear);
+            printf("\n\n\nCopy\n----");
+            qua_display(qua1);
+            printf("\nLength   : %u", qua1->length);
+            printf("\nCapacity : %u", qua1->capacity);
+            printf("\nFront    : %u", qua1->front);
+            printf("\nRear     : %u", qua1->rear);
+        }
+    }
+
+    qua_delete(&qua0);
+    qua_delete(&qua1);
 
     return 0;
 }

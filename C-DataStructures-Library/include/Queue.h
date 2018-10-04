@@ -13,7 +13,7 @@
 
 typedef struct Queue
 {
-    size_t length;			 /*!< Total @c Queue length */
+    size_t length;           /*!< Total @c Queue length */
     struct QueueNode *front; /*!< Where @c QueueNode are removed */
     struct QueueNode *rear;  /*!< Where @c QueueNode are inserted */
 } Queue;

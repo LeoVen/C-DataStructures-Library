@@ -18,10 +18,10 @@ typedef struct DoublyLinkedNode
 } DoublyLinkedNode;
 
 Status dll_make_node(DoublyLinkedNode **node, int value);
-
 Status dll_delete_node(DoublyLinkedNode **node);
-
 Status dll_get_node_at(DoublyLinkedList *dll, DoublyLinkedNode **result, size_t position);
+
+// END OF NOT EXPOSED API
 
 Status dll_init(DoublyLinkedList **dll)
 {
@@ -611,7 +611,6 @@ Status dll_get_node_at(DoublyLinkedList *dll, DoublyLinkedNode **result, size_t 
     size_t i;
     for (i = 0; i < position; i++)
     {
-
         if ((*result) == NULL)
             return DS_ERR_ITER;
 

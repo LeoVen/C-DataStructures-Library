@@ -12,7 +12,7 @@
 
 typedef struct SinglyLinkedNode
 {
-    int data;					   /*!< Node's data */
+    int data;                      /*!< Node's data */
     struct SinglyLinkedNode *next; /*!< Pointer to the next node on the list */
 } SinglyLinkedNode;
 

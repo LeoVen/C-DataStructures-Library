@@ -12,8 +12,8 @@
 
 typedef struct PriorityQueueNode
 {
-    int data;						/*!< Node's data */
-    int priority;					/*!< Node's priority */
+    int data;                       /*!< Node's data */
+    int priority;                   /*!< Node's priority */
     struct PriorityQueueNode *prev; /*!< Pointer to the previous node in the @c PriorityQueue */
 } PriorityQueueNode;
 

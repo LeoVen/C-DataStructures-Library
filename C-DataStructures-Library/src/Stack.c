@@ -12,7 +12,7 @@
 
 typedef struct StackBox
 {
-    int data;				/*!< Node's data */
+    int data;               /*!< Node's data */
     struct StackBox *below; /*!< Pointer to the box underneath it */
 } StackBox;
 

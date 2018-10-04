@@ -16,9 +16,9 @@
 
 typedef struct DynamicArray
 {
-    int *buffer;		/*!< @c DynamicArray data buffer */
-    size_t size;		/*!< @c DynamicArray size */
-    size_t capacity;	/*!< @c DynamicArray total capacity */
+    int *buffer;        /*!< @c DynamicArray data buffer */
+    size_t size;        /*!< @c DynamicArray size */
+    size_t capacity;    /*!< @c DynamicArray total capacity */
     size_t growth_rate; /*!< @c DynamicArray buffer growth rate */
 } DynamicArray;
 

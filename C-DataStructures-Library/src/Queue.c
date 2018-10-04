@@ -12,7 +12,7 @@
 
 typedef struct QueueNode
 {
-    int data;				/*!< Node's data */
+    int data;               /*!< Node's data */
     struct QueueNode *prev; /*!< Pointer to the previous node in the @c Queue */
 } QueueNode;
 

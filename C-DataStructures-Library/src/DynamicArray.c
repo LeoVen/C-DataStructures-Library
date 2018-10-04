@@ -326,7 +326,7 @@ Status dar_display(DynamicArray *dar)
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dar->size == 0)
+    if (dar_empty(dar))
     {
         printf("\n[ Empty ] \n");
 
@@ -352,7 +352,7 @@ Status dar_display_array(DynamicArray *dar)
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dar->size == 0)
+    if (dar_empty(dar))
     {
         printf("\n[ empty ] \n");
 
