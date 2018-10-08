@@ -7,10 +7,11 @@
 #include "DynamicArray.h"
 #include "StackArray.h"
 #include "QueueArray.h"
+#include "Array.h"
 
 int main()
 {
-    SinglyLinkedList *sll0;
+    SinglyLinkedList sll0;
 
     int j;
 
@@ -38,7 +39,7 @@ int main()
         }
     }
 
-    SinglyLinkedList *sll1;
+    SinglyLinkedList sll1;
 
     if (sll_copy(sll0, &sll1) == DS_OK)
     {
@@ -55,7 +56,7 @@ int main()
     sll_delete(&sll0);
     sll_delete(&sll1);
 
-    DoublyLinkedList *dll;
+    DoublyLinkedList dll;
 
     if (dll_init(&dll) == DS_OK)
     {
@@ -78,7 +79,7 @@ int main()
 
     dll_delete(&dll);
 
-    Stack *stk0, *stk1;
+    Stack stk0, stk1;
 
     if (stk_init(&stk0) == DS_OK)
     {
@@ -112,7 +113,7 @@ int main()
     stk_delete(&stk0);
     stk_delete(&stk1);
 
-    Queue *que0, *que1;
+    Queue que0, que1;
 
     if (que_init(&que0) == DS_OK)
     {
@@ -140,7 +141,7 @@ int main()
     que_delete(&que0);
     que_delete(&que1);
 
-    Deque *deq0, *deq1;
+    Deque deq0, deq1;
 
     if (deq_init(&deq0) == DS_OK)
     {
@@ -178,7 +179,7 @@ int main()
     deq_delete(&deq0);
     deq_delete(&deq1);
 
-    PriorityQueue *prq0, *prq1;
+    PriorityQueue prq0, prq1;
 
     if (prq_init(&prq0) == DS_OK)
     {
@@ -203,7 +204,7 @@ int main()
     prq_delete(&prq0);
     prq_delete(&prq1);
 
-    DynamicArray *dar0, *dar1, *dar2;
+    DynamicArray dar0, dar1, dar2;
 
     int arr[4] = {5, 5, 5, 5};
 
@@ -290,7 +291,7 @@ int main()
     dar_delete(&dar1);
     dar_delete(&dar2);
 
-    StackArray *sta0, *sta1;
+    StackArray sta0, sta1;
 
     if (sta_init(&sta0) == DS_OK)
     {
@@ -325,7 +326,7 @@ int main()
     sta_delete(&sta0);
     sta_delete(&sta1);
 
-    QueueArray *qua0, *qua1;
+    QueueArray qua0, qua1;
 
     if (qua_init(&qua0) == DS_OK)
     {
@@ -341,7 +342,7 @@ int main()
                 printf("\n");
                 qua_display_array(qua0);
 
-                printf("Length   : %u", qua0->length);
+                printf("Length   : %u", qua0->size);
                 printf("\nCapacity : %u", qua0->capacity);
                 printf("\nFront    : %u", qua0->front);
                 printf("\nRear     : %u", qua0->rear);
@@ -353,13 +354,13 @@ int main()
         {
             printf("\n\n\nOriginal\n--------");
             qua_display(qua0);
-            printf("\nLength   : %u", qua0->length);
+            printf("\nLength   : %u", qua0->size);
             printf("\nCapacity : %u", qua0->capacity);
             printf("\nFront    : %u", qua0->front);
             printf("\nRear     : %u", qua0->rear);
             printf("\n\n\nCopy\n----");
             qua_display(qua1);
-            printf("\nLength   : %u", qua1->length);
+            printf("\nLength   : %u", qua1->size);
             printf("\nCapacity : %u", qua1->capacity);
             printf("\nFront    : %u", qua1->front);
             printf("\nRear     : %u", qua1->rear);
@@ -368,6 +369,19 @@ int main()
 
     qua_delete(&qua0);
     qua_delete(&qua1);
+
+    Array array;
+
+    if (arr_init(&array, 20) == DS_OK)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            if (arr_insert(array, (size_t)i, i) != DS_OK)
+                break;
+        }
+
+        arr_display(array);
+    }
 
     return 0;
 }

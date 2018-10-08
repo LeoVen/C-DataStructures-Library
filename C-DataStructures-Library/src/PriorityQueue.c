@@ -10,21 +10,22 @@
 
 // NOT EXPOSED API
 
-typedef struct PriorityQueueNode
+typedef struct PriorityQueueNode_s
 {
-    int data;                       /*!< Node's data */
-    int priority;                   /*!< Node's priority */
-    struct PriorityQueueNode *prev; /*!< Pointer to the previous node in the @c PriorityQueue */
-} PriorityQueueNode;
+    int data;                         /*!< Node's data */
+    int priority;                     /*!< Node's priority */
+    struct PriorityQueueNode_s *prev; /*!< Pointer to the previous node in the @c PriorityQueue */
+} PriorityQueueNode_t, *PriorityQueueNode;
 
-Status prq_make_node(PriorityQueueNode **node, int value, int priority);
-Status prq_delete_node(PriorityQueueNode **node);
+Status prq_make_node(PriorityQueueNode *node, int value, int priority);
+
+Status prq_delete_node(PriorityQueueNode *node);
 
 // END OF NOT EXPOSED API
 
-Status prq_init(PriorityQueue **prq)
+Status prq_init(PriorityQueue *prq)
 {
-    (*prq) = malloc(sizeof(PriorityQueue));
+    (*prq) = malloc(sizeof(PriorityQueue_t));
 
     if (!(*prq))
         return DS_ERR_ALLOC;
@@ -37,12 +38,12 @@ Status prq_init(PriorityQueue **prq)
     return DS_OK;
 }
 
-Status prq_enqueue(PriorityQueue *prq, int value, int priority)
+Status prq_enqueue(PriorityQueue prq, int value, int priority)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    PriorityQueueNode *node;
+    PriorityQueueNode node;
 
     prq_make_node(&node, value, priority);
 
@@ -51,15 +52,13 @@ Status prq_enqueue(PriorityQueue *prq, int value, int priority)
 
     if (prq_empty(prq))
     {
-
         prq->rear = node;
         prq->front = node;
     }
     else
     {
-
-        PriorityQueueNode *before = NULL;
-        PriorityQueueNode *curr = prq->front;
+        PriorityQueueNode before = NULL;
+        PriorityQueueNode curr = prq->front;
 
         while (curr != NULL && curr->priority >= node->priority)
         {
@@ -70,14 +69,12 @@ Status prq_enqueue(PriorityQueue *prq, int value, int priority)
 
         if (before == NULL)
         {
-
             node->prev = prq->front;
 
             prq->front = node;
         }
         else
         {
-
             node->prev = curr;
 
             before->prev = node;
@@ -89,7 +86,7 @@ Status prq_enqueue(PriorityQueue *prq, int value, int priority)
     return DS_OK;
 }
 
-Status prq_dequeue(PriorityQueue *prq, int *result)
+Status prq_dequeue(PriorityQueue prq, int *result)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -97,7 +94,7 @@ Status prq_dequeue(PriorityQueue *prq, int *result)
     if (prq_empty(prq))
         return DS_ERR_INVALID_OPERATION;
 
-    PriorityQueueNode *node = prq->front;
+    PriorityQueueNode node = prq->front;
 
     *result = node->data;
 
@@ -116,7 +113,7 @@ Status prq_dequeue(PriorityQueue *prq, int *result)
     return DS_OK;
 }
 
-Status prq_display(PriorityQueue *prq)
+Status prq_display(PriorityQueue prq)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -128,13 +125,14 @@ Status prq_display(PriorityQueue *prq)
         return DS_OK;
     }
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     printf("\nPriority Queue\nfront <-");
 
     while (scan != NULL)
     {
         printf(" %d <-", scan->data);
+
         scan = scan->prev;
     }
 
@@ -143,7 +141,7 @@ Status prq_display(PriorityQueue *prq)
     return DS_OK;
 }
 
-Status prq_display_array(PriorityQueue *prq)
+Status prq_display_array(PriorityQueue prq)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -155,7 +153,7 @@ Status prq_display_array(PriorityQueue *prq)
         return DS_OK;
     }
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     printf("\n[ ");
 
@@ -171,7 +169,7 @@ Status prq_display_array(PriorityQueue *prq)
     return DS_OK;
 }
 
-Status prq_display_priority(PriorityQueue *prq)
+Status prq_display_priority(PriorityQueue prq)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -183,7 +181,7 @@ Status prq_display_priority(PriorityQueue *prq)
         return DS_OK;
     }
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     printf("\n[ ");
 
@@ -199,7 +197,7 @@ Status prq_display_priority(PriorityQueue *prq)
     return DS_OK;
 }
 
-Status prq_display_raw(PriorityQueue *prq)
+Status prq_display_raw(PriorityQueue prq)
 {
     if (prq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -209,7 +207,7 @@ Status prq_display_raw(PriorityQueue *prq)
     if (prq_empty(prq))
         return DS_OK;
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     while (scan != NULL)
     {
@@ -223,12 +221,12 @@ Status prq_display_raw(PriorityQueue *prq)
     return DS_OK;
 }
 
-Status prq_delete(PriorityQueue **prq)
+Status prq_delete(PriorityQueue *prq)
 {
     if ((*prq) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    PriorityQueueNode *prev = (*prq)->front;
+    PriorityQueueNode prev = (*prq)->front;
 
     Status st;
 
@@ -251,7 +249,7 @@ Status prq_delete(PriorityQueue **prq)
     return DS_OK;
 }
 
-Status prq_erase(PriorityQueue **prq)
+Status prq_erase(PriorityQueue *prq)
 {
     if ((*prq) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -269,7 +267,7 @@ Status prq_erase(PriorityQueue **prq)
     return DS_OK;
 }
 
-int prq_peek_front(PriorityQueue *prq)
+int prq_peek_front(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;
@@ -280,7 +278,7 @@ int prq_peek_front(PriorityQueue *prq)
     return prq->front->data;
 }
 
-int prq_peek_rear(PriorityQueue *prq)
+int prq_peek_rear(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;
@@ -291,7 +289,7 @@ int prq_peek_rear(PriorityQueue *prq)
     return prq->rear->data;
 }
 
-int prq_priority_highest(PriorityQueue *prq)
+int prq_priority_highest(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;
@@ -299,7 +297,7 @@ int prq_priority_highest(PriorityQueue *prq)
     if (prq_empty(prq))
         return 0;
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     int result = scan->priority;
 
@@ -314,7 +312,7 @@ int prq_priority_highest(PriorityQueue *prq)
     return result;
 }
 
-int prq_priority_lowest(PriorityQueue *prq)
+int prq_priority_lowest(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;
@@ -322,7 +320,7 @@ int prq_priority_lowest(PriorityQueue *prq)
     if (prq_empty(prq))
         return 0;
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     int result = scan->priority;
 
@@ -337,7 +335,7 @@ int prq_priority_lowest(PriorityQueue *prq)
     return result;
 }
 
-size_t prq_length(PriorityQueue *prq)
+size_t prq_length(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;
@@ -345,12 +343,12 @@ size_t prq_length(PriorityQueue *prq)
     return prq->length;
 }
 
-bool prq_empty(PriorityQueue *prq)
+bool prq_empty(PriorityQueue prq)
 {
     return (prq->length == 0 || prq->rear == NULL);
 }
 
-Status prq_copy(PriorityQueue *prq, PriorityQueue **result)
+Status prq_copy(PriorityQueue prq, PriorityQueue *result)
 {
     *result = NULL;
 
@@ -363,11 +361,9 @@ Status prq_copy(PriorityQueue *prq, PriorityQueue **result)
         return st;
 
     if (prq_empty(prq))
-    {
         return DS_OK;
-    }
 
-    PriorityQueueNode *scan = prq->front;
+    PriorityQueueNode scan = prq->front;
 
     while (scan != NULL)
     {
@@ -384,9 +380,9 @@ Status prq_copy(PriorityQueue *prq, PriorityQueue **result)
 
 // NOT EXPOSED API
 
-Status prq_make_node(PriorityQueueNode **node, int value, int priority)
+Status prq_make_node(PriorityQueueNode *node, int value, int priority)
 {
-    (*node) = malloc(sizeof(PriorityQueueNode));
+    (*node) = malloc(sizeof(PriorityQueueNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
@@ -399,7 +395,7 @@ Status prq_make_node(PriorityQueueNode **node, int value, int priority)
     return DS_OK;
 }
 
-Status prq_delete_node(PriorityQueueNode **node)
+Status prq_delete_node(PriorityQueueNode *node)
 {
     free(*node);
 

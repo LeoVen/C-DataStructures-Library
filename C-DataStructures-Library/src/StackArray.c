@@ -8,9 +8,9 @@
 
 #include "StackArray.h"
 
-Status sta_init(StackArray **sta)
+Status sta_init(StackArray *sta)
 {
-    (*sta) = malloc(sizeof(StackArray));
+    (*sta) = malloc(sizeof(StackArray_t));
 
     if (!(*sta))
         return DS_ERR_ALLOC;
@@ -28,7 +28,7 @@ Status sta_init(StackArray **sta)
     return DS_OK;
 }
 
-Status sta_push(StackArray *sta, int value)
+Status sta_push(StackArray sta, int value)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
@@ -48,7 +48,7 @@ Status sta_push(StackArray *sta, int value)
     return DS_OK;
 }
 
-Status sta_pop(StackArray *sta, int *result)
+Status sta_pop(StackArray sta, int *result)
 {
     *result = 0;
 
@@ -65,22 +65,21 @@ Status sta_pop(StackArray *sta, int *result)
     return DS_OK;
 }
 
-Status sta_display(StackArray *sta)
+Status sta_display(StackArray sta)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
 
-    printf("\nStackArray\n");
-
     if (sta_empty(sta))
     {
-        printf("[ empty ]");
+        printf("\nStack\n[ empty]\n");
 
         return DS_OK;
     }
 
-    size_t i;
-    for (i = 0; i < sta->height; i++)
+    printf("\nStack");
+
+    for (size_t i = 0; i < sta->height; i++)
     {
         printf("\n|%10d |", sta->buffer[i]);
     }
@@ -90,7 +89,7 @@ Status sta_display(StackArray *sta)
     return DS_OK;
 }
 
-Status sta_display_array(StackArray *sta)
+Status sta_display_array(StackArray sta)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
@@ -114,7 +113,7 @@ Status sta_display_array(StackArray *sta)
     return DS_OK;
 }
 
-Status sta_display_raw(StackArray *sta)
+Status sta_display_raw(StackArray sta)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
@@ -124,8 +123,7 @@ Status sta_display_raw(StackArray *sta)
     if (sta_empty(sta))
         return DS_OK;
 
-    size_t i;
-    for (i = 0; i < sta->height; i++)
+    for (size_t i = 0; i < sta->height; i++)
         printf(" %d", sta->buffer[i]);
 
     printf("\n");
@@ -133,7 +131,7 @@ Status sta_display_raw(StackArray *sta)
     return DS_OK;
 }
 
-Status sta_delete(StackArray **sta)
+Status sta_delete(StackArray *sta)
 {
     if ((*sta) == NULL)
         return DS_ERR_INVALID_OPERATION;
@@ -147,7 +145,7 @@ Status sta_delete(StackArray **sta)
     return DS_OK;
 }
 
-Status sta_erase(StackArray **sta)
+Status sta_erase(StackArray *sta)
 {
     if ((*sta) == NULL)
         return DS_ERR_INVALID_OPERATION;
@@ -165,12 +163,12 @@ Status sta_erase(StackArray **sta)
     return DS_OK;
 }
 
-int sta_peek(StackArray *sta)
+int sta_peek(StackArray sta)
 {
     return sta->buffer[sta->height - 1];
 }
 
-size_t sta_height(StackArray *sta)
+size_t sta_height(StackArray sta)
 {
     if (sta == NULL)
         return 0;
@@ -178,7 +176,7 @@ size_t sta_height(StackArray *sta)
     return sta->height;
 }
 
-size_t sta_capacity(StackArray *sta)
+size_t sta_capacity(StackArray sta)
 {
     if (sta == NULL)
         return 0;
@@ -186,22 +184,22 @@ size_t sta_capacity(StackArray *sta)
     return sta->capacity;
 }
 
-bool sta_empty(StackArray *sta)
+bool sta_empty(StackArray sta)
 {
     return (sta->height == 0);
 }
 
-bool sta_full(StackArray *sta)
+bool sta_full(StackArray sta)
 {
     return (sta->height == sta->capacity);
 }
 
-bool sta_fits(StackArray *sta, size_t size)
+bool sta_fits(StackArray sta, size_t size)
 {
     return (sta->height + size) <= sta->capacity;
 }
 
-Status sta_copy(StackArray *sta, StackArray **result)
+Status sta_copy(StackArray sta, StackArray *result)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
@@ -232,7 +230,7 @@ Status sta_copy(StackArray *sta, StackArray **result)
     return DS_OK;
 }
 
-Status sta_realloc(StackArray *sta)
+Status sta_realloc(StackArray sta)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;

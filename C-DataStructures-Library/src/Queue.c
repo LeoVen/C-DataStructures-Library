@@ -10,20 +10,21 @@
 
 // NOT EXPOSED API
 
-typedef struct QueueNode
+typedef struct QueueNode_s
 {
-    int data;               /*!< Node's data */
-    struct QueueNode *prev; /*!< Pointer to the previous node in the @c Queue */
-} QueueNode;
+    int data;                 /*!< Node's data */
+    struct QueueNode_s *prev; /*!< Pointer to the previous node in the @c Queue */
+} QueueNode_t, *QueueNode;
 
-Status que_make_node(QueueNode **node, int value);
-Status que_delete_node(QueueNode **node);
+Status que_make_node(QueueNode *node, int value);
+
+Status que_delete_node(QueueNode *node);
 
 // END OF NOT EXPOSED API
 
-Status que_init(Queue **que)
+Status que_init(Queue *que)
 {
-    (*que) = malloc(sizeof(Queue));
+    (*que) = malloc(sizeof(Queue_t));
 
     if (!(*que))
         return DS_ERR_ALLOC;
@@ -36,12 +37,12 @@ Status que_init(Queue **que)
     return DS_OK;
 }
 
-Status que_enqueue(Queue *que, int value)
+Status que_enqueue(Queue que, int value)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
-    QueueNode *node;
+    QueueNode node;
 
     Status st = que_make_node(&node, value);
 
@@ -64,7 +65,7 @@ Status que_enqueue(Queue *que, int value)
     return DS_OK;
 }
 
-Status que_dequeue(Queue *que, int *result)
+Status que_dequeue(Queue que, int *result)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
@@ -72,7 +73,7 @@ Status que_dequeue(Queue *que, int *result)
     if (que_empty(que))
         return DS_ERR_INVALID_OPERATION;
 
-    QueueNode *node = que->front;
+    QueueNode node = que->front;
 
     *result = node->data;
 
@@ -91,7 +92,7 @@ Status que_dequeue(Queue *que, int *result)
     return DS_OK;
 }
 
-Status que_display(Queue *que)
+Status que_display(Queue que)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
@@ -103,13 +104,14 @@ Status que_display(Queue *que)
         return DS_OK;
     }
 
-    QueueNode *scan = que->front;
+    QueueNode scan = que->front;
 
     printf("\nQueue\nfront <-");
 
     while (scan != NULL)
     {
         printf(" %d <-", scan->data);
+
         scan = scan->prev;
     }
 
@@ -118,7 +120,7 @@ Status que_display(Queue *que)
     return DS_OK;
 }
 
-Status que_display_array(Queue *que)
+Status que_display_array(Queue que)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
@@ -130,7 +132,7 @@ Status que_display_array(Queue *que)
         return DS_OK;
     }
 
-    QueueNode *scan = que->front;
+    QueueNode scan = que->front;
 
     printf("\n[ ");
 
@@ -146,7 +148,7 @@ Status que_display_array(Queue *que)
     return DS_OK;
 }
 
-Status que_display_raw(Queue *que)
+Status que_display_raw(Queue que)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
@@ -156,7 +158,7 @@ Status que_display_raw(Queue *que)
     if (que_empty(que))
         return DS_OK;
 
-    QueueNode *scan = que->front;
+    QueueNode scan = que->front;
 
     while (scan != NULL)
     {
@@ -170,12 +172,12 @@ Status que_display_raw(Queue *que)
     return DS_OK;
 }
 
-Status que_delete(Queue **que)
+Status que_delete(Queue *que)
 {
     if ((*que) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    QueueNode *prev = (*que)->front;
+    QueueNode prev = (*que)->front;
 
     Status st;
 
@@ -198,7 +200,7 @@ Status que_delete(Queue **que)
     return DS_OK;
 }
 
-Status que_erase(Queue **que)
+Status que_erase(Queue *que)
 {
     if ((*que) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -216,7 +218,7 @@ Status que_erase(Queue **que)
     return DS_OK;
 }
 
-int que_peek_front(Queue *que)
+int que_peek_front(Queue que)
 {
     if (que == NULL)
         return 0;
@@ -227,7 +229,7 @@ int que_peek_front(Queue *que)
     return que->front->data;
 }
 
-int que_peek_rear(Queue *que)
+int que_peek_rear(Queue que)
 {
     if (que == NULL)
         return 0;
@@ -238,7 +240,7 @@ int que_peek_rear(Queue *que)
     return que->rear->data;
 }
 
-size_t que_length(Queue *que)
+size_t que_length(Queue que)
 {
     if (que == NULL)
         return 0;
@@ -246,12 +248,12 @@ size_t que_length(Queue *que)
     return que->length;
 }
 
-bool que_empty(Queue *que)
+bool que_empty(Queue que)
 {
     return (que->length == 0 || que->rear == NULL);
 }
 
-Status que_copy(Queue *que, Queue **result)
+Status que_copy(Queue que, Queue *result)
 {
     *result = NULL;
 
@@ -266,7 +268,7 @@ Status que_copy(Queue *que, Queue **result)
     if (que_empty(que))
         return DS_OK;
 
-    QueueNode *scan = que->front;
+    QueueNode scan = que->front;
 
     while (scan != NULL)
     {
@@ -283,9 +285,9 @@ Status que_copy(Queue *que, Queue **result)
 
 // NOT EXPOSED API
 
-Status que_make_node(QueueNode **node, int value)
+Status que_make_node(QueueNode *node, int value)
 {
-    (*node) = malloc(sizeof(QueueNode));
+    (*node) = malloc(sizeof(QueueNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
@@ -297,7 +299,7 @@ Status que_make_node(QueueNode **node, int value)
     return DS_OK;
 }
 
-Status que_delete_node(QueueNode **node)
+Status que_delete_node(QueueNode *node)
 {
     free(*node);
 

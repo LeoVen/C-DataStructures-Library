@@ -8,9 +8,9 @@
 
 #include "QueueArray.h"
 
-Status qua_init(QueueArray **qua)
+Status qua_init(QueueArray *qua)
 {
-    (*qua) = malloc(sizeof(QueueArray));
+    (*qua) = malloc(sizeof(QueueArray_t));
 
     if (!(*qua))
         return DS_ERR_ALLOC;
@@ -23,7 +23,7 @@ Status qua_init(QueueArray **qua)
     (*qua)->capacity = QUEUE_ARRAY_INIT_SIZE;
     (*qua)->growth_rate = QUEUE_ARRAY_GROW_RATE;
 
-    (*qua)->length = 0;
+    (*qua)->size = 0;
 
     (*qua)->front = 0;
     (*qua)->rear = 0;
@@ -31,7 +31,7 @@ Status qua_init(QueueArray **qua)
     return DS_OK;
 }
 
-Status qua_enqueue(QueueArray *qua, int value)
+Status qua_enqueue(QueueArray qua, int value)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -53,19 +53,19 @@ Status qua_enqueue(QueueArray *qua, int value)
         }
 
         qua->front = 0;
-        qua->rear = qua->length;
+        qua->rear = qua->size;
     }
 
     qua->buffer[qua->rear] = value;
 
     (qua->rear)++;
 
-    (qua->length)++;
+    (qua->size)++;
 
     return DS_OK;
 }
 
-Status qua_dequeue(QueueArray *qua, int *value)
+Status qua_dequeue(QueueArray qua, int *value)
 {
     *value = 0;
 
@@ -79,7 +79,7 @@ Status qua_dequeue(QueueArray *qua, int *value)
 
     (qua->front)++;
 
-    (qua->length)--;
+    (qua->size)--;
 
     if (qua_empty(qua))
     {
@@ -91,14 +91,13 @@ Status qua_dequeue(QueueArray *qua, int *value)
     return DS_OK;
 }
 
-Status qua_display(QueueArray *qua)
+Status qua_display(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (qua_empty(qua))
     {
-
         printf("\nQueueArray\n[ empty ]\n");
 
         return DS_OK;
@@ -115,7 +114,7 @@ Status qua_display(QueueArray *qua)
     return DS_OK;
 }
 
-Status qua_display_array(QueueArray *qua)
+Status qua_display_array(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -129,17 +128,15 @@ Status qua_display_array(QueueArray *qua)
 
     printf("\n[ ");
 
-    for (size_t i = 0; i < qua->length - 1; i++)
-    {
+    for (size_t i = 0; i < qua->size - 1; i++)
         printf("%d, ", qua->buffer[i]);
-    }
 
-    printf("%d ]\n", qua->buffer[qua->length - 1]);
+    printf("%d ]\n", qua->buffer[qua->size - 1]);
 
     return DS_OK;
 }
 
-Status qua_display_raw(QueueArray *qua)
+Status qua_display_raw(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -149,8 +146,7 @@ Status qua_display_raw(QueueArray *qua)
     if (qua_empty(qua))
         return DS_OK;
 
-    int i;
-    for (i = qua->front; i < qua->rear; i++)
+    for (size_t i = qua->front; i < qua->rear; i++)
         printf("%d ", qua->buffer[i]);
 
     printf("\n");
@@ -158,7 +154,7 @@ Status qua_display_raw(QueueArray *qua)
     return DS_OK;
 }
 
-Status qua_delete(QueueArray **qua)
+Status qua_delete(QueueArray *qua)
 {
     if ((*qua) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -172,7 +168,7 @@ Status qua_delete(QueueArray **qua)
     return DS_OK;
 }
 
-Status qua_erase(QueueArray **qua)
+Status qua_erase(QueueArray *qua)
 {
     if ((*qua) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -190,7 +186,7 @@ Status qua_erase(QueueArray **qua)
     return DS_OK;
 }
 
-int qua_peek_front(QueueArray *qua)
+int qua_peek_front(QueueArray qua)
 {
     if (qua == NULL)
         return 0;
@@ -201,7 +197,7 @@ int qua_peek_front(QueueArray *qua)
     return qua->buffer[qua->front];
 }
 
-int qua_peek_rear(QueueArray *qua)
+int qua_peek_rear(QueueArray qua)
 {
     if (qua == NULL)
         return 0;
@@ -212,15 +208,15 @@ int qua_peek_rear(QueueArray *qua)
     return qua->buffer[qua->rear - 1];
 }
 
-size_t qua_length(QueueArray *qua)
+size_t qua_size(QueueArray qua)
 {
     if (qua == NULL)
         return 0;
 
-    return qua->length;
+    return qua->size;
 }
 
-size_t qua_capacity(QueueArray *qua)
+size_t qua_capacity(QueueArray qua)
 {
     if (qua == NULL)
         return 0;
@@ -228,32 +224,35 @@ size_t qua_capacity(QueueArray *qua)
     return qua->capacity;
 }
 
-bool qua_empty(QueueArray *qua)
+bool qua_empty(QueueArray qua)
 {
-    return qua->length == 0;
+    return qua->size == 0;
 }
 
-bool qua_full(QueueArray *qua)
+bool qua_full(QueueArray qua)
 {
-    return qua->length == qua->capacity;
+    return qua->size == qua->capacity;
 }
 
-bool qua_fits(QueueArray *qua, size_t size)
+bool qua_fits(QueueArray qua, size_t size)
 {
-    return (qua->length + size) <= qua->capacity;
+    return (qua->size + size) <= qua->capacity;
 }
 
-Status qua_copy(QueueArray *qua, QueueArray **result)
+Status qua_copy(QueueArray qua, QueueArray *result)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
 
     Status st = qua_init(result);
 
+    if (st != DS_OK)
+        return st;
+
     if (qua_empty(qua))
         return DS_OK;
 
-    while (!qua_fits(*result, qua->length))
+    while (!qua_fits(*result, qua->size))
     {
         st = qua_realloc(*result);
 
@@ -261,20 +260,19 @@ Status qua_copy(QueueArray *qua, QueueArray **result)
             return st;
     }
 
-    size_t i, j;
-    for (i = 0, j = qua->front; j < qua->rear; i++, j++)
+    for (size_t i = 0, j = qua->front; j < qua->rear; i++, j++)
     {
         (*result)->buffer[i] = qua->buffer[j];
     }
 
-    (*result)->rear = qua->length;
+    (*result)->rear = qua->size;
 
-    (*result)->length = qua->length;
+    (*result)->size = qua->size;
 
     return DS_OK;
 }
 
-Status qua_realloc(QueueArray *qua)
+Status qua_realloc(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;

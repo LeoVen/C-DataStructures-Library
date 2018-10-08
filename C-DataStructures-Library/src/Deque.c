@@ -10,11 +10,11 @@
 
 // NOT EXPOSED API
 
-typedef struct DequeNode
+typedef struct DequeNode_s
 {
-    int data;               /*!< Node's data */
-    struct DequeNode *next; /*!< Pointer to the next node in the @c Deque */
-    struct DequeNode *prev; /*!< Pointer to the previous node in the @c Deque */
+    int data;                 /*!< Node's data */
+    struct DequeNode_s *next; /*!< Pointer to the next node in the @c Deque */
+    struct DequeNode_s *prev; /*!< Pointer to the previous node in the @c Deque */
 } DequeNode;
 
 Status deq_make_node(DequeNode **node, int value);
@@ -22,9 +22,9 @@ Status deq_delete_node(DequeNode **node);
 
 // END OF NOT EXPOSED API
 
-Status deq_init(Deque **deq)
+Status deq_init(Deque *deq)
 {
-    (*deq) = malloc(sizeof(Deque));
+    (*deq) = malloc(sizeof(Deque_t));
 
     if (!(*deq))
         return DS_ERR_ALLOC;
@@ -37,7 +37,7 @@ Status deq_init(Deque **deq)
     return DS_OK;
 }
 
-Status deq_enqueue_front(Deque *deq, int value)
+Status deq_enqueue_front(Deque deq, int value)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -51,13 +51,11 @@ Status deq_enqueue_front(Deque *deq, int value)
 
     if (deq_empty(deq))
     {
-
         deq->front = node;
         deq->rear = node;
     }
     else
     {
-
         node->prev = deq->front;
 
         deq->front->next = node;
@@ -69,9 +67,8 @@ Status deq_enqueue_front(Deque *deq, int value)
     return DS_OK;
 }
 
-Status deq_enqueue_rear(Deque *deq, int value)
+Status deq_enqueue_rear(Deque deq, int value)
 {
-
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -84,13 +81,11 @@ Status deq_enqueue_rear(Deque *deq, int value)
 
     if (deq_empty(deq))
     {
-
         deq->front = node;
         deq->rear = node;
     }
     else
     {
-
         node->next = deq->rear;
 
         deq->rear->prev = node;
@@ -102,7 +97,7 @@ Status deq_enqueue_rear(Deque *deq, int value)
     return DS_OK;
 }
 
-Status deq_dequeue_front(Deque *deq, int *result)
+Status deq_dequeue_front(Deque deq, int *result)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -131,7 +126,7 @@ Status deq_dequeue_front(Deque *deq, int *result)
     return DS_OK;
 }
 
-Status deq_dequeue_rear(Deque *deq, int *result)
+Status deq_dequeue_rear(Deque deq, int *result)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -160,7 +155,7 @@ Status deq_dequeue_rear(Deque *deq, int *result)
     return DS_OK;
 }
 
-Status deq_display(Deque *deq)
+Status deq_display(Deque deq)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -187,7 +182,7 @@ Status deq_display(Deque *deq)
     return DS_OK;
 }
 
-Status deq_display_array(Deque *deq)
+Status deq_display_array(Deque deq)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -215,7 +210,7 @@ Status deq_display_array(Deque *deq)
     return DS_OK;
 }
 
-Status deq_display_raw(Deque *deq)
+Status deq_display_raw(Deque deq)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -238,7 +233,7 @@ Status deq_display_raw(Deque *deq)
     return DS_OK;
 }
 
-Status deq_delete(Deque **deq)
+Status deq_delete(Deque *deq)
 {
     if ((*deq) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -266,7 +261,7 @@ Status deq_delete(Deque **deq)
     return DS_OK;
 }
 
-Status deq_erase(Deque **deq)
+Status deq_erase(Deque *deq)
 {
     if ((*deq) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -284,7 +279,7 @@ Status deq_erase(Deque **deq)
     return DS_OK;
 }
 
-int deq_peek_front(Deque *deq)
+int deq_peek_front(Deque deq)
 {
     if (deq == NULL)
         return 0;
@@ -295,7 +290,7 @@ int deq_peek_front(Deque *deq)
     return deq->front->data;
 }
 
-int deq_peek_rear(Deque *deq)
+int deq_peek_rear(Deque deq)
 {
     if (deq == NULL)
         return 0;
@@ -306,7 +301,7 @@ int deq_peek_rear(Deque *deq)
     return deq->rear->data;
 }
 
-size_t deq_length(Deque *deq)
+size_t deq_length(Deque deq)
 {
     if (deq == NULL)
         return 0;
@@ -314,12 +309,12 @@ size_t deq_length(Deque *deq)
     return deq->length;
 }
 
-bool deq_empty(Deque *deq)
+bool deq_empty(Deque deq)
 {
     return (deq->length == 0 || deq->rear == NULL);
 }
 
-Status deq_copy(Deque *deq, Deque **result)
+Status deq_copy(Deque deq, Deque *result)
 {
     *result = NULL;
 

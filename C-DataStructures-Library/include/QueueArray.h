@@ -19,43 +19,43 @@ typedef struct QueueArray
     int *buffer;        /*!< @c QueueArray data buffer */
     size_t front;       /*!< Front of the queue where elements are removed */
     size_t rear;        /*!< Back of the queue where elements are inserted */
-    size_t length;      /*!< @c QueueArray length */
+    size_t size;        /*!< @c QueueArray buffer size */
     size_t capacity;    /*!< @c QueueArray total capacity */
     size_t growth_rate; /*!< @c QueueArray buffer growth rate */
-} QueueArray;
+} QueueArray_t, *QueueArray;
 
-Status qua_init(QueueArray **qua);
+Status qua_init(QueueArray *qua);
 
-Status qua_enqueue(QueueArray *qua, int value);
+Status qua_enqueue(QueueArray qua, int value);
 
-Status qua_dequeue(QueueArray *qua, int *value);
+Status qua_dequeue(QueueArray qua, int *value);
 
-Status qua_display(QueueArray *qua);
+Status qua_display(QueueArray qua);
 
-Status qua_display_array(QueueArray *qua);
+Status qua_display_array(QueueArray qua);
 
-Status qua_display_raw(QueueArray *qua);
+Status qua_display_raw(QueueArray qua);
 
-Status qua_delete(QueueArray **qua);
+Status qua_delete(QueueArray *qua);
 
-Status qua_erase(QueueArray **qua);
+Status qua_erase(QueueArray *qua);
 
-int qua_peek_front(QueueArray *qua);
+int qua_peek_front(QueueArray qua);
 
-int qua_peek_rear(QueueArray *qua);
+int qua_peek_rear(QueueArray qua);
 
-size_t qua_length(QueueArray *qua);
+size_t qua_size(QueueArray qua);
 
-size_t qua_capacity(QueueArray *qua);
+size_t qua_capacity(QueueArray qua);
 
-bool qua_empty(QueueArray *qua);
+bool qua_empty(QueueArray qua);
 
-bool qua_full(QueueArray *qua);
+bool qua_full(QueueArray qua);
 
-bool qua_fits(QueueArray *qua, size_t size);
+bool qua_fits(QueueArray qua, size_t size);
 
-Status qua_copy(QueueArray *qua, QueueArray **result);
+Status qua_copy(QueueArray qua, QueueArray *result);
 
-Status qua_realloc(QueueArray *qua);
+Status qua_realloc(QueueArray qua);
 
 #endif //C_DATASTRUCTURES_LIBRARY_QUEUEARRAY_H

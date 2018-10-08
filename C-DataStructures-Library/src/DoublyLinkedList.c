@@ -10,22 +10,24 @@
 
 // NOT EXPOSED API
 
-typedef struct DoublyLinkedNode
+typedef struct DoublyLinkedNode_s
 {
     int data;                       /*!< Node's data */
-    struct DoublyLinkedNode *next; /*!< Pointer to the next node on the list */
-    struct DoublyLinkedNode *prev; /*!< Pointer to the previous node on the list */
-} DoublyLinkedNode;
+    struct DoublyLinkedNode_s *next; /*!< Pointer to the next node on the list */
+    struct DoublyLinkedNode_s *prev; /*!< Pointer to the previous node on the list */
+} DoublyLinkedNode_t, *DoublyLinkedNode;
 
-Status dll_make_node(DoublyLinkedNode **node, int value);
-Status dll_delete_node(DoublyLinkedNode **node);
-Status dll_get_node_at(DoublyLinkedList *dll, DoublyLinkedNode **result, size_t position);
+Status dll_make_node(DoublyLinkedNode *node, int value);
+
+Status dll_delete_node(DoublyLinkedNode *node);
+
+Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t position);
 
 // END OF NOT EXPOSED API
 
-Status dll_init(DoublyLinkedList **dll)
+Status dll_init(DoublyLinkedList *dll)
 {
-    (*dll) = malloc(sizeof(DoublyLinkedList));
+    (*dll) = malloc(sizeof(DoublyLinkedList_t));
 
     if (!(*dll))
         return DS_ERR_ALLOC;
@@ -37,12 +39,12 @@ Status dll_init(DoublyLinkedList **dll)
     return DS_OK;
 }
 
-Status dll_insert_head(DoublyLinkedList *dll, int value)
+Status dll_insert_head(DoublyLinkedList dll, int value)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    DoublyLinkedNode *node;
+    DoublyLinkedNode node;
 
     Status st = dll_make_node(&node, value);
 
@@ -54,12 +56,11 @@ Status dll_insert_head(DoublyLinkedList *dll, int value)
 
     if (dll_empty(dll))
     {
-
         dll->head = node;
         dll->tail = node;
-    } else
+    }
+    else
     {
-
         node->next = dll->head;
 
         dll->head->prev = node;
@@ -72,7 +73,7 @@ Status dll_insert_head(DoublyLinkedList *dll, int value)
     return DS_OK;
 }
 
-Status dll_insert_at(DoublyLinkedList *dll, int value, size_t position)
+Status dll_insert_at(DoublyLinkedList dll, int value, size_t position)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -84,26 +85,25 @@ Status dll_insert_at(DoublyLinkedList *dll, int value, size_t position)
 
     if (position == 0)
     {
-
         st = dll_insert_head(dll, value);
 
         if (st != DS_OK)
             return st;
 
         return DS_OK;
-    } else if (position == dll->length)
+    }
+    else if (position == dll->length)
     {
-
         st = dll_insert_tail(dll, value);
 
         if (st != DS_OK)
             return st;
 
         return DS_OK;
-    } else
+    }
+    else
     {
-
-        DoublyLinkedNode *node = NULL;
+        DoublyLinkedNode node = NULL;
 
         st = dll_make_node(&node, value);
 
@@ -113,7 +113,7 @@ Status dll_insert_at(DoublyLinkedList *dll, int value, size_t position)
         if (!node)
             return DS_ERR_ALLOC;
 
-        DoublyLinkedNode *curr = NULL;
+        DoublyLinkedNode curr = NULL;
 
         st = dll_get_node_at(dll, &curr, position);
 
@@ -132,12 +132,12 @@ Status dll_insert_at(DoublyLinkedList *dll, int value, size_t position)
     }
 }
 
-Status dll_insert_tail(DoublyLinkedList *dll, int value)
+Status dll_insert_tail(DoublyLinkedList dll, int value)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    DoublyLinkedNode *node;
+    DoublyLinkedNode node;
 
     Status st = dll_make_node(&node, value);
 
@@ -149,12 +149,11 @@ Status dll_insert_tail(DoublyLinkedList *dll, int value)
 
     if (dll_empty(dll))
     {
-
         dll->head = node;
         dll->tail = node;
-    } else
+    }
+    else
     {
-
         dll->tail->next = node;
 
         node->prev = dll->tail;
@@ -167,7 +166,7 @@ Status dll_insert_tail(DoublyLinkedList *dll, int value)
     return DS_OK;
 }
 
-Status dll_remove_head(DoublyLinkedList *dll, int *result)
+Status dll_remove_head(DoublyLinkedList dll, int *result)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -175,7 +174,7 @@ Status dll_remove_head(DoublyLinkedList *dll, int *result)
     if (dll_empty(dll))
         return DS_ERR_INVALID_OPERATION;
 
-    DoublyLinkedNode *node = dll->head;
+    DoublyLinkedNode node = dll->head;
 
     *result = node->data;
 
@@ -192,7 +191,6 @@ Status dll_remove_head(DoublyLinkedList *dll, int *result)
 
     if (dll_empty(dll))
     {
-
         dll->head = NULL;
         dll->tail = NULL;
     }
@@ -200,7 +198,7 @@ Status dll_remove_head(DoublyLinkedList *dll, int *result)
     return DS_OK;
 }
 
-Status dll_remove_at(DoublyLinkedList *dll, int *result, size_t position)
+Status dll_remove_at(DoublyLinkedList dll, int *result, size_t position)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -215,25 +213,25 @@ Status dll_remove_at(DoublyLinkedList *dll, int *result, size_t position)
 
     if (position == 0)
     {
-
         st = dll_remove_head(dll, result);
 
         if (st != DS_OK)
             return st;
 
         return DS_OK;
-    } else if (position == dll->length - 1)
+    }
+    else if (position == dll->length - 1)
     {
-
         st = dll_remove_tail(dll, result);
 
         if (st != DS_OK)
             return st;
 
         return DS_OK;
-    } else
+    }
+    else
     {
-        DoublyLinkedNode *curr = NULL;
+        DoublyLinkedNode curr = NULL;
 
         st = dll_get_node_at(dll, &curr, position);
 
@@ -260,7 +258,7 @@ Status dll_remove_at(DoublyLinkedList *dll, int *result, size_t position)
     }
 }
 
-Status dll_remove_tail(DoublyLinkedList *dll, int *result)
+Status dll_remove_tail(DoublyLinkedList dll, int *result)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -268,7 +266,7 @@ Status dll_remove_tail(DoublyLinkedList *dll, int *result)
     if (dll_empty(dll))
         return DS_ERR_INVALID_OPERATION;
 
-    DoublyLinkedNode *node = dll->tail;
+    DoublyLinkedNode node = dll->tail;
 
     *result = node->data;
 
@@ -285,7 +283,6 @@ Status dll_remove_tail(DoublyLinkedList *dll, int *result)
 
     if (dll_empty(dll))
     {
-
         dll->head = NULL;
         dll->tail = NULL;
     }
@@ -293,7 +290,7 @@ Status dll_remove_tail(DoublyLinkedList *dll, int *result)
     return DS_OK;
 }
 
-Status dll_update(DoublyLinkedList *dll, int value, size_t position)
+Status dll_update(DoublyLinkedList dll, int value, size_t position)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -304,7 +301,7 @@ Status dll_update(DoublyLinkedList *dll, int value, size_t position)
     if (position >= dll->length)
         return DS_ERR_INVALID_POSITION;
 
-    DoublyLinkedNode *curr = NULL;
+    DoublyLinkedNode curr = NULL;
 
     Status st = dll_get_node_at(dll, &curr, position);
 
@@ -316,7 +313,7 @@ Status dll_update(DoublyLinkedList *dll, int value, size_t position)
     return DS_OK;
 }
 
-Status dll_get(DoublyLinkedList *dll, int *result, size_t position)
+Status dll_get(DoublyLinkedList dll, int *result, size_t position)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -329,7 +326,7 @@ Status dll_get(DoublyLinkedList *dll, int *result, size_t position)
 
     *result = 0;
 
-    DoublyLinkedNode *curr = NULL;
+    DoublyLinkedNode curr = NULL;
 
     Status st = dll_get_node_at(dll, &curr, position);
 
@@ -341,7 +338,7 @@ Status dll_get(DoublyLinkedList *dll, int *result, size_t position)
     return DS_OK;
 }
 
-Status dll_display(DoublyLinkedList *dll)
+Status dll_display(DoublyLinkedList dll)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -353,7 +350,7 @@ Status dll_display(DoublyLinkedList *dll)
         return DS_OK;
     }
 
-    DoublyLinkedNode *scan = dll->head;
+    DoublyLinkedNode scan = dll->head;
 
     printf("\nDoubly Linked List\nNULL <->");
 
@@ -369,7 +366,7 @@ Status dll_display(DoublyLinkedList *dll)
     return DS_OK;
 }
 
-Status dll_display_array(DoublyLinkedList *dll)
+Status dll_display_array(DoublyLinkedList dll)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -381,7 +378,7 @@ Status dll_display_array(DoublyLinkedList *dll)
         return DS_OK;
     }
 
-    DoublyLinkedNode *scan = dll->head;
+    DoublyLinkedNode scan = dll->head;
 
     printf("\n[ ");
 
@@ -397,7 +394,7 @@ Status dll_display_array(DoublyLinkedList *dll)
     return DS_OK;
 }
 
-Status dll_display_raw(DoublyLinkedList *dll)
+Status dll_display_raw(DoublyLinkedList dll)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -407,7 +404,7 @@ Status dll_display_raw(DoublyLinkedList *dll)
     if (dll_empty(dll))
         return DS_OK;
 
-    DoublyLinkedNode *scan = dll->head;
+    DoublyLinkedNode scan = dll->head;
 
     while (scan != NULL)
     {
@@ -421,12 +418,12 @@ Status dll_display_raw(DoublyLinkedList *dll)
     return DS_OK;
 }
 
-Status dll_delete(DoublyLinkedList **dll)
+Status dll_delete(DoublyLinkedList *dll)
 {
     if ((*dll) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    DoublyLinkedNode *prev = (*dll)->head;
+    DoublyLinkedNode prev = (*dll)->head;
 
     Status st;
 
@@ -449,7 +446,7 @@ Status dll_delete(DoublyLinkedList **dll)
     return DS_OK;
 }
 
-Status dll_erase(DoublyLinkedList **dll)
+Status dll_erase(DoublyLinkedList *dll)
 {
     if ((*dll) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -467,7 +464,7 @@ Status dll_erase(DoublyLinkedList **dll)
     return DS_OK;
 }
 
-bool dll_contains(DoublyLinkedList *dll, int key)
+bool dll_contains(DoublyLinkedList dll, int key)
 {
     if (dll == NULL)
         return false;
@@ -475,7 +472,7 @@ bool dll_contains(DoublyLinkedList *dll, int key)
     if (dll_empty(dll))
         return false;
 
-    DoublyLinkedNode *scan = dll->head;
+    DoublyLinkedNode scan = dll->head;
 
     while (scan != NULL)
     {
@@ -488,7 +485,7 @@ bool dll_contains(DoublyLinkedList *dll, int key)
     return false;
 }
 
-size_t dll_length(DoublyLinkedList *dll)
+size_t dll_length(DoublyLinkedList dll)
 {
     if (dll == NULL)
         return 0;
@@ -496,20 +493,20 @@ size_t dll_length(DoublyLinkedList *dll)
     return dll->length;
 }
 
-bool dll_empty(DoublyLinkedList *dll)
+bool dll_empty(DoublyLinkedList dll)
 {
     return (dll->length == 0 || dll->head == NULL);
 }
 
-//Status dll_link(DoublyLinkedList *dll1, DoublyLinkedList *dll2)
+//Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2)
 
-//Status dll_link_at(DoublyLinkedList *dll1, DoublyLinkedList *dll2, size_t position)
+//Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, size_t position)
 
-//Status dll_unlink(DoublyLinkedList *dll, DoublyLinkedList *result, size_t position)
+//Status dll_unlink(DoublyLinkedList dll, DoublyLinkedList result, size_t position)
 
-//Status dll_unlink_at(DoublyLinkedList *dll, DoublyLinkedList *result, size_t position1, size_t position2)
+//Status dll_unlink_at(DoublyLinkedList dll, DoublyLinkedList result, size_t position1, size_t position2)
 
-Status dll_copy(DoublyLinkedList *dll, DoublyLinkedList **result)
+Status dll_copy(DoublyLinkedList dll, DoublyLinkedList *result)
 {
     *result = NULL;
 
@@ -524,7 +521,7 @@ Status dll_copy(DoublyLinkedList *dll, DoublyLinkedList **result)
     if (dll_empty(dll))
         return DS_OK;
 
-    DoublyLinkedNode *scan = dll->head;
+    DoublyLinkedNode scan = dll->head;
 
     while (scan != NULL)
     {
@@ -539,7 +536,7 @@ Status dll_copy(DoublyLinkedList *dll, DoublyLinkedList **result)
     return DS_OK;
 }
 
-Status dll_reverse(DoublyLinkedList *dll)
+Status dll_reverse(DoublyLinkedList dll)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -547,9 +544,9 @@ Status dll_reverse(DoublyLinkedList *dll)
     if (dll->length < 2)
         return DS_ERR_INVALID_OPERATION;
 
-    DoublyLinkedNode *prev = NULL;
-    DoublyLinkedNode *curr = dll->head;
-    DoublyLinkedNode *next = NULL;
+    DoublyLinkedNode prev = NULL;
+    DoublyLinkedNode curr = dll->head;
+    DoublyLinkedNode next = NULL;
 
     dll->tail = dll->head;
 
@@ -572,9 +569,9 @@ Status dll_reverse(DoublyLinkedList *dll)
 
 // NOT EXPOSED API
 
-Status dll_make_node(DoublyLinkedNode **node, int value)
+Status dll_make_node(DoublyLinkedNode *node, int value)
 {
-    (*node) = malloc(sizeof(DoublyLinkedNode));
+    (*node) = malloc(sizeof(DoublyLinkedNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
@@ -586,7 +583,7 @@ Status dll_make_node(DoublyLinkedNode **node, int value)
     return DS_OK;
 }
 
-Status dll_delete_node(DoublyLinkedNode **node)
+Status dll_delete_node(DoublyLinkedNode *node)
 {
     free(*node);
 
@@ -595,7 +592,7 @@ Status dll_delete_node(DoublyLinkedNode **node)
     return DS_OK;
 }
 
-Status dll_get_node_at(DoublyLinkedList *dll, DoublyLinkedNode **result, size_t position)
+Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t position)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -608,8 +605,7 @@ Status dll_get_node_at(DoublyLinkedList *dll, DoublyLinkedNode **result, size_t 
 
     (*result) = dll->head;
 
-    size_t i;
-    for (i = 0; i < position; i++)
+    for (size_t i = 0; i < position; i++)
     {
         if ((*result) == NULL)
             return DS_ERR_ITER;
