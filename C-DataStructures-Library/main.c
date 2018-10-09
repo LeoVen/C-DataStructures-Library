@@ -8,6 +8,8 @@
 #include "StackArray.h"
 #include "QueueArray.h"
 #include "Array.h"
+#include "CircularBuffer.h"
+#include "CircularLinkedList.h"
 
 int main()
 {
@@ -363,7 +365,7 @@ int main()
             printf("\nLength   : %u", qua1->size);
             printf("\nCapacity : %u", qua1->capacity);
             printf("\nFront    : %u", qua1->front);
-            printf("\nRear     : %u", qua1->rear);
+            printf("\nRear     : %u\n\n", qua1->rear);
         }
     }
 
@@ -382,6 +384,129 @@ int main()
 
         arr_display(array);
     }
+
+    CircularBuffer cbf0, cbf1;
+
+    if (cbf_init(&cbf0, 40) == DS_OK)
+    {
+        for (int i = 1; i < 80; i++)
+        {
+            if (i % 3 == 0)
+            {
+                if (cbf_remove(cbf0, &j) != DS_OK)
+                    break;
+            }
+            else
+            {
+                if (cbf_insert(cbf0, i) != DS_OK)
+                    break;
+            }
+        }
+
+        cbf_display(cbf0);
+        cbf_display_array(cbf0);
+    }
+
+    if (cbf_init(&cbf1, 10) == DS_OK)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            cbf_insert(cbf1, 1);
+        }
+
+        cbf_remove(cbf1, &j);
+        cbf_remove(cbf1, &j);
+
+        while (cbf1->end != 0)
+        {
+            cbf_insert(cbf1, 1);
+        }
+
+        cbf_display(cbf1);
+        cbf_display_array(cbf1);
+
+        printf("\nCapacity : %u", cbf1->capacity);
+        printf("\nSize     : %u", cbf1->size);
+        printf("\nStart    : %u", cbf1->start);
+        printf("\nEnd      : %u\n\n", cbf1->end);
+
+        if (cbf_erase(&cbf1) == DS_OK)
+        {
+            cbf_insert(cbf1, 10);
+
+            cbf_display(cbf1);
+            cbf_display_array(cbf1);
+
+            printf("\nCapacity : %u", cbf1->capacity);
+            printf("\nSize     : %u", cbf1->size);
+            printf("\nStart    : %u", cbf1->start);
+            printf("\nEnd      : %u\n", cbf1->end);
+        }
+
+        if (cbf_delete(&cbf1) == DS_OK)
+        {
+            if (cbf_copy(cbf0, &cbf1) == DS_OK)
+            {
+                printf("\nOriginal");
+                cbf_display(cbf0);
+                printf("\nCapacity : %u", cbf0->capacity);
+                printf("\nSize     : %u", cbf0->size);
+                printf("\nStart    : %u", cbf0->start);
+                printf("\nEnd      : %u\n", cbf0->end);
+
+                printf("\nCopy");
+                cbf_display(cbf1);
+                printf("\nCapacity : %u", cbf1->capacity);
+                printf("\nSize     : %u", cbf1->size);
+                printf("\nStart    : %u", cbf1->start);
+                printf("\nEnd      : %u\n\n", cbf1->end);
+            }
+        }
+    }
+
+    cbf_delete(&cbf0);
+    cbf_delete(&cbf1);
+
+    CircularLinkedList cll0, cll1;
+
+    if (cll_init(&cll0) == DS_OK)
+    {
+        for (int i = 0; i < 10; i++)
+            cll_insert_before(cll0, i);
+
+        cll_display(cll0);
+
+        for (int i = 0; i < 10; i++)
+        {
+            cll_iter_next(cll0);
+
+            cll_display_array(cll0);
+        }
+
+        if (cll_copy(cll0, &cll1) == DS_OK)
+        {
+            printf("\nOriginal: ");
+            cll_display(cll0);
+            printf("\nCurrent data: %d", cll_current(cll0));
+            printf("\nLength: %u\n", cll0->length);
+
+            printf("\nCopy: ");
+            cll_display(cll1);
+            printf("\nCurrent data: %d", cll_current(cll1));
+            printf("\nLength: %u\n", cll1->length);
+        }
+
+        printf("\n");
+
+        while (cll0->length > 0)
+        {
+            cll_remove_before(cll0, &j);
+
+            printf("%d ", j);
+        }
+    }
+
+    cll_delete(&cll0);
 
     return 0;
 }
