@@ -8,6 +8,12 @@
 
 #include "QueueArray.h"
 
+// NOT EXPOSED API
+
+Status qua_grow(QueueArray qua);
+
+// END OF NOT EXPOSED API
+
 Status qua_init(QueueArray *qua)
 {
     (*qua) = malloc(sizeof(QueueArray_t));
@@ -15,13 +21,39 @@ Status qua_init(QueueArray *qua)
     if (!(*qua))
         return DS_ERR_ALLOC;
 
-    (*qua)->buffer = malloc(sizeof(int) * QUEUE_ARRAY_INIT_SIZE);
+    (*qua)->buffer = malloc(sizeof(int) * 32);
 
     if (!((*qua)->buffer))
         return DS_ERR_ALLOC;
 
-    (*qua)->capacity = QUEUE_ARRAY_INIT_SIZE;
-    (*qua)->growth_rate = QUEUE_ARRAY_GROW_RATE;
+    (*qua)->capacity = 32;
+    (*qua)->growth_rate = 200;
+
+    (*qua)->size = 0;
+
+    (*qua)->front = 0;
+    (*qua)->rear = 0;
+
+    return DS_OK;
+}
+
+Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate)
+{
+    if (initial_capacity <= 8 || growth_rate <= 100)
+        return DS_ERR_INVALID_ARGUMENT;
+
+    (*qua) = malloc(sizeof(QueueArray_t));
+
+    if (!(*qua))
+        return DS_ERR_ALLOC;
+
+    (*qua)->buffer = malloc(sizeof(int) * initial_capacity);
+
+    if (!((*qua)->buffer))
+        return DS_ERR_ALLOC;
+
+    (*qua)->capacity = initial_capacity;
+    (*qua)->growth_rate = growth_rate;
 
     (*qua)->size = 0;
 
@@ -38,27 +70,15 @@ Status qua_enqueue(QueueArray qua, int value)
 
     if (qua_full(qua))
     {
-        Status st = qua_realloc(qua);
+        Status st = qua_grow(qua);
 
         if (st != DS_OK)
             return st;
     }
-    else if (qua->rear == qua->capacity)
-    {
-        // Shift
-        size_t i, j;
-        for (i = 0, j = qua->front; j < qua->rear; i++, j++)
-        {
-            qua->buffer[i] = qua->buffer[j];
-        }
-
-        qua->front = 0;
-        qua->rear = qua->size;
-    }
 
     qua->buffer[qua->rear] = value;
 
-    (qua->rear)++;
+    qua->rear = (qua->rear == qua->capacity - 1) ? 0 : qua->rear + 1;
 
     (qua->size)++;
 
@@ -77,16 +97,9 @@ Status qua_dequeue(QueueArray qua, int *value)
 
     *value = qua->buffer[qua->front];
 
-    (qua->front)++;
+    qua->front = (qua->front == qua->capacity - 1) ? 0 : qua->front + 1;
 
     (qua->size)--;
-
-    if (qua_empty(qua))
-    {
-        qua->front = 0;
-
-        qua->rear = 0;
-    }
 
     return DS_OK;
 }
@@ -128,10 +141,15 @@ Status qua_display_array(QueueArray qua)
 
     printf("\n[ ");
 
-    for (size_t i = 0; i < qua->size - 1; i++)
+    size_t i, j;
+    for (i = qua->front, j = 0; j < qua->size - 1; i = (i + 1) % qua->capacity, j++)
+    {
         printf("%d, ", qua->buffer[i]);
+    }
 
-    printf("%d ]\n", qua->buffer[qua->size - 1]);
+    size_t real_rear = (qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1;
+
+    printf("%d ]\n", qua->buffer[real_rear]);
 
     return DS_OK;
 }
@@ -205,7 +223,7 @@ int qua_peek_rear(QueueArray qua)
     if (qua_empty(qua))
         return 0;
 
-    return qua->buffer[qua->rear - 1];
+    return qua->buffer[(qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1];
 }
 
 size_t qua_size(QueueArray qua)
@@ -244,7 +262,7 @@ Status qua_copy(QueueArray qua, QueueArray *result)
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
 
-    Status st = qua_init(result);
+    Status st = qua_create(result, qua->capacity, qua->growth_rate);
 
     if (st != DS_OK)
         return st;
@@ -252,43 +270,91 @@ Status qua_copy(QueueArray qua, QueueArray *result)
     if (qua_empty(qua))
         return DS_OK;
 
-    while (!qua_fits(*result, qua->size))
+    for (size_t i = 0; i < qua->capacity; i++)
     {
-        st = qua_realloc(*result);
-
-        if (st != DS_OK)
-            return st;
+        (*result)->buffer[i] = qua->buffer[i];
     }
 
-    for (size_t i = 0, j = qua->front; j < qua->rear; i++, j++)
-    {
-        (*result)->buffer[i] = qua->buffer[j];
-    }
-
-    (*result)->rear = qua->size;
+    (*result)->front = qua->front;
+    (*result)->rear = qua->rear;
 
     (*result)->size = qua->size;
 
     return DS_OK;
 }
 
-Status qua_realloc(QueueArray qua)
+// This function reallocates the data buffer effectively increasing its capacity
+Status qua_grow(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
 
-    qua->capacity *= qua->growth_rate;
+    size_t old_capacity = qua->capacity;
+
+    qua->capacity = (size_t)((double)(qua->capacity) * ((double)(qua->growth_rate) / 100.0));
+
+    // 4 is the minimum growth
+    if (qua->capacity - old_capacity < 4)
+        qua->capacity = old_capacity + 4;
 
     int *new_buffer = realloc(qua->buffer, sizeof(int) * qua->capacity);
 
     if (!new_buffer)
     {
-        qua->capacity /= qua->growth_rate;
+        qua->capacity = old_capacity;
 
         return DS_ERR_ALLOC;
     }
 
     qua->buffer = new_buffer;
+
+    size_t real_rear = (qua->rear == 0) ? old_capacity - 1 : qua->rear - 1;
+
+    // Shift elements if the rear index wrapped around the buffer
+    if (real_rear < qua->front)
+    {
+        // When the buffer is full the rear index equals the front index. In
+        // order to shift elements effectively this calculates which portion of
+        // the buffer has the least amount of elements.
+        // Shift the right portion to the end of the buffer if the total
+        // elements are less than the left portion; otherwise append the left
+        // portion to the right portion.
+        if (old_capacity - qua->front < qua->rear)
+        {
+            size_t distance = old_capacity - qua->front;
+
+            for (size_t i = old_capacity - 1, j = qua->capacity - 1; i >= qua->front; i--, j--)
+            {
+                qua->buffer[j] = qua->buffer[i];
+            }
+
+            qua->front = qua->capacity - distance;
+        }
+        // If the growth rate is less than 150 the rear index might wrap around the buffer again
+        else
+        {
+            for (size_t i = 0, j = old_capacity; i < qua->rear; i++, j = (j + 1) % qua->capacity)
+            {
+                qua->buffer[j] = qua->buffer[i];
+            }
+
+            qua->rear = (old_capacity + qua->rear) % qua->capacity;
+
+            printf("\n\n\n");
+            for (size_t k = 0; k < qua->capacity; k++)
+                printf("%d ", qua->buffer[k]);
+            printf("\n\n\n");
+
+            qua_display_array(qua);
+        }
+    }
+    // This case only happens when qua->front == 0 and qua->rear == 0
+    // The rear index has wrapped around but the buffer increased in size
+    // allowing the rear index to keep increasing instead of wrapping around
+    else if (qua->rear == 0)
+    {
+        qua->rear = old_capacity;
+    }
 
     return DS_OK;
 }

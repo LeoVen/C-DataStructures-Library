@@ -1,3 +1,4 @@
+#include "Tests.h"
 #include "SinglyLinkedList.h"
 #include "DoublyLinkedList.h"
 #include "Stack.h"
@@ -338,31 +339,35 @@ int main()
                 qua_enqueue(qua0, i);
             else if (i % 3 == 0)
                 qua_dequeue(qua0, &j);
+            else
+                qua_enqueue(qua0, i);
 
-            if (i % 15 == 0)
+            printf("\n");
+
+            for (size_t k = 0; k < qua0->capacity; k++)
             {
-                printf("\n");
-                qua_display_array(qua0);
-
-                printf("Length   : %u", qua0->size);
-                printf("\nCapacity : %u", qua0->capacity);
-                printf("\nFront    : %u", qua0->front);
-                printf("\nRear     : %u", qua0->rear);
-
+                printf("%d ", qua0->buffer[k]);
             }
+
+            printf("\nFront     : %u", qua0->front);
+            printf("\nRear      : %u", qua0->rear);
+            printf("\nSize      : %u", qua0->size);
+            printf("\nCapacity  : %u", qua0->capacity);
+            printf("\nFront V   : %d", qua_peek_front(qua0));
+            printf("\nRear V    : %d", qua_peek_rear(qua0));
         }
 
         if (qua_copy(qua0, &qua1) == DS_OK)
         {
-            printf("\n\n\nOriginal\n--------");
+            printf("\n\n\nOriginal\n--------\n");
             qua_display(qua0);
-            printf("\nLength   : %u", qua0->size);
+            printf("\nSize     : %u", qua0->size);
             printf("\nCapacity : %u", qua0->capacity);
             printf("\nFront    : %u", qua0->front);
             printf("\nRear     : %u", qua0->rear);
-            printf("\n\n\nCopy\n----");
+            printf("\n\n\nCopy\n----\n");
             qua_display(qua1);
-            printf("\nLength   : %u", qua1->size);
+            printf("\nSize     : %u", qua1->size);
             printf("\nCapacity : %u", qua1->capacity);
             printf("\nFront    : %u", qua1->front);
             printf("\nRear     : %u\n\n", qua1->rear);
@@ -507,6 +512,8 @@ int main()
     }
 
     cll_delete(&cll0);
+
+    QueueArrayTests();
 
     return 0;
 }

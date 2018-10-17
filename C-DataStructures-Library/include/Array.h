@@ -13,8 +13,8 @@
 
 typedef struct Array_s
 {
-    int *buffer;
-    size_t size;
+    int *buffer;    /*!< Buffer */
+    size_t size;    /*!< Buffer size */
 } Array_t, *Array;
 
 Status arr_init(Array *arr, size_t size);
