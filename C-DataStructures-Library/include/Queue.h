@@ -11,17 +11,86 @@
 
 #include "Core.h"
 
-typedef struct Queue_s
+/// This is a linked list implementation of a \c Queue with FIFO operations
+/// (First-in First-out), so the first item added is the first one to be
+/// removed. It is implemented as a SinglyLinkedList but with restricted
+/// operations to preserve the FIFO order of elements. The function
+/// \c que_enqueue() is equivalent to \c sll_insert_tail() and the function
+/// \c que_dequeue() is equivalent to \c sll_remove_head(). This is done in
+/// such a way that removal and insertions are O(1) without the need of a
+/// second pointer to the previous element (like a Deque implemented with a
+/// DoublyLinkedList).
+///
+/// \b Advantages over \c QueueArray
+/// - Indefinitely grows
+/// - No need to reallocate buffers or shift elements
+///
+/// \b Drawbacks
+/// - No random access
+/// - More memory usage as in every node there is a pointer to the next node
+///
+/// \b Functions
+/// Located in file Queue.c
+struct Queue_s
 {
-    size_t length;           /*!< Total @c Queue length */
-    struct QueueNode_s *front; /*!< Where @c QueueNode are removed */
-    struct QueueNode_s *rear;  /*!< Where @c QueueNode are inserted */
-} Queue_t, *Queue;
+    /// \brief Current amount of elements in the \c Queue.
+    ///
+    /// Queue current amount of nodes linked between the \c front and \c rear
+    /// pointers.
+    size_t length;
 
+    /// \brief The front of the queue.
+    ///
+    /// Where elements are removed from. The function \c que_dequeue() operates
+    /// relative to this pointer.
+    struct QueueNode_s *front;
+
+    /// \brief The rear of the queue.
+    ///
+    /// Where elements are added. The function \c que_enqueue() operates
+    /// relative to this pointer.
+    struct QueueNode_s *rear;
+};
+
+/// Defines a type for <code> struct Queue_s </code>.
+///
+/// Every queue is initialized by \c malloc with \c sizeof(Queue_t)
+typedef struct Queue_s Queue_t;
+
+/// Defines a type of pointer to <code> struct Queue_s </code>.
+///
+/// This typedef is used to avoid having to declare every queue as a pointer
+/// type since they all must be dynamically allocated.
+typedef struct Queue_s *Queue;
+
+/// Initializes a new \c Queue with initial length 0 and its pointer members
+/// pointing to \c NULL.
+///
+/// \param[in,out] sll The queue to be initialized.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_OK if all operations were successful.
 Status que_init(Queue *que);
 
+/// Inserts an element into the specified queue. The element is added relative
+/// to the \c rear pointer.
+///
+/// \param[in] qua The queue where the element is to be inserted.
+/// \param[in] element The element to be inserted in the queue.
+///
+/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_enqueue(Queue que, int value);
 
+/// Removes an element from the specified queue. The element is removed
+/// relative to the \c front pointer.
+///
+/// \param[in] qua The queue where the element is to be removed from.
+/// \param[out] element The element to be removed from the queue.
+///
+/// \return DS_ERR_INVALID_OPERATION if the queue is empty.
+/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_dequeue(Queue que, int *result);
 
 Status que_display(Queue que);

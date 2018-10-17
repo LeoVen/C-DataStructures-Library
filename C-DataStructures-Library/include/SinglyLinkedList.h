@@ -11,29 +11,174 @@
 
 #include "Core.h"
 
-typedef struct SinglyLinkedList_s
+/// A Singly Linked List is a linear structure where its elements are not
+/// stored in contiguous memory allowing constant insertion and removal at both
+/// ends of the list. Insertion an removal at the middle of the list are at
+/// most O(n - 1). There are no buffer reallocation nor shifting of elements
+/// since the data is 'linked' by nodes and at any time these links can be
+/// removed; this makes it trivial to remove elements at the middle.
+///
+/// In this implementation, the structure is composed of two pointers, one to
+/// the first @c SinglyLinkedNode and another to the last one. This way
+/// insertions at both ends are simplified. Also this structure holds a length
+/// variable that keeps track of the structure's length, allowing for checking
+/// empty lists or position parameters that are higher than the total structure
+/// length.
+///
+/// \b Advantages over @c Array
+/// - Dynamic size
+/// - Easy insertion/removal
+///
+/// \b Drawbacks
+/// - No random access
+/// - Extra memory for a pointer on each element
+///
+/// \b Functions
+/// 
+/// Located in file SinglyLinkedList.c
+struct SinglyLinkedList_s
 {
-    size_t length;                   /*!< List length */
-    struct SinglyLinkedNode_s *head; /*!< Pointer to the first Node on the list */
-    struct SinglyLinkedNode_s *tail; /*!< Pointer to the last Node on the list */
-} SinglyLinkedList_t, *SinglyLinkedList;
+    /// \brief List length.
+    ///
+    /// List current amount of nodes linked between the \c head and \c tail
+    /// pointers.
+    size_t length;
 
+    /// \brief Points to the first Node on the list.
+    ///
+    /// Points to the first Node on the list or \c NULL if the list is empty.
+    struct SinglyLinkedNode_s *head;
+
+    /// \brief Points to the last Node on the list.
+    ///
+    /// Points to the first Node on the list or \c NULL if the list is empty.
+    struct SinglyLinkedNode_s *tail;
+};
+
+/// Defines a type for <code> struct SinglyLinkedList_s </code>.
+///
+/// Every list is initialized by \c malloc with \c sizeof(SinglyLinkedList_t)
+typedef struct SinglyLinkedList_s SinglyLinkedList_t;
+
+/// Defines a type of pointer to <code> struct SinglyLinkedList_s </code>.
+///
+/// This typedef is used to avoid having to declare every list as a pointer
+/// type since they all must be dynamically allocated.
+typedef struct SinglyLinkedList_s *SinglyLinkedList;
+
+/// Initializes a new \c SinglyLinkedList with initial length 0 and its pointer
+/// members pointing to \c NULL.
+///
+/// \param[in,out] sll The list to be initialized.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_OK if all operations were successful.
 Status sll_init(SinglyLinkedList *sll);
 
-Status sll_insert_head(SinglyLinkedList sll, int value);
+/// Inserts a new element at the beginning of the list. If the list is empty
+/// and this is the first element being added, c\ tail will also be pointing
+/// to it; in any case the \c head pointer will be pointing to this newly
+/// inserted element.
+///
+/// \param[in] sll The list where the element is to be inserted.
+/// \param[in] element The element to be inserted in the list.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+Status sll_insert_head(SinglyLinkedList sll, int element);
 
-Status sll_insert_at(SinglyLinkedList sll, int value, size_t position);
+/// Inserts a new element at the middle of the list. If the chosen position
+/// equals 0 \c sll_insert_head() is called; if the position equals the list
+/// length \c sll_insert_tail() is called.
+///
+/// \param[in] sll The list where the element is to be inserted.
+/// \param[in] element The element to be inserted in the list.
+/// \param[in] position Where the new element is to be inserted.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater than
+/// the list \c length.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+Status sll_insert_at(SinglyLinkedList sll, int element, size_t position);
 
-Status sll_insert_tail(SinglyLinkedList sll, int value);
+/// Inserts a new element at the end of the list. If the list is empty and this
+/// is the first element being added, c\ head will also be pointing to it; in
+/// in any case the \c tail pointer will be pointing to this newly inserted
+/// element.
+///
+/// \param[in] sll The list where the element is to be inserted.
+/// \param[in] element The element to be inserted in the list.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+Status sll_insert_tail(SinglyLinkedList sll, int element);
 
+/// Removes and retrieves the first element in the list located at the \c head
+/// pointer.
+///
+/// \param[in] sll The list where the element is to be removed from.
+/// \param[out] result The resulting element.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_remove_head(SinglyLinkedList sll, int *result);
 
+/// Removes an element at the middle of the list. If the chosen position equals
+/// 0 \c sll_remove_head() is called; if the position equals the list length
+/// minus 1 \c sll_remove_tail() is called.
+///
+/// \param[in] sll The list where the element is to be removed from.
+/// \param[out] result The resulting element.
+/// \param[in] position Where the element is to be removed from.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// equal to the list \c length.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_remove_at(SinglyLinkedList sll, int *result, size_t position);
 
+/// Removes and retrieves the last element in the list located at the \c tail
+/// pointer.
+///
+/// \param[in] sll The list where the element is to be removed from.
+/// \param[out] result The resulting element.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_remove_tail(SinglyLinkedList sll, int *result);
 
-Status sll_update(SinglyLinkedList sll, int value, size_t position);
+/// Updates an element at a given position. This function is 0 based, that is,
+/// the element 0 is the first element.
+///
+/// \param[in] sll The list where the element is to be update.
+/// \param[in] element The new element value.
+/// \param[in] position The position of the element to be updated.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// equal to the list \c length.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+Status sll_update(SinglyLinkedList sll, int element, size_t position);
 
+/// Retrieves an element at a given position without removing it. This function
+/// simulates an index access like \c array[i].
+///
+/// \param[in] sll The list to retrieve the element from.
+/// \param[out] result The resulting element.
+/// \param[in] position The position of the element to be retrieved.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// equal to the list \c length.
+/// \return DS_ERR_NULL_POINTER if \c list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_get(SinglyLinkedList sll, int *result, size_t position);
 
 Status sll_display(SinglyLinkedList sll);

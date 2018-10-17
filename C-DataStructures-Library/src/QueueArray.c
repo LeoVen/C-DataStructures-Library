@@ -34,12 +34,14 @@ Status qua_init(QueueArray *qua)
     (*qua)->front = 0;
     (*qua)->rear = 0;
 
+    (*qua)->locked = false;
+
     return DS_OK;
 }
 
 Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate)
 {
-    if (initial_capacity <= 8 || growth_rate <= 100)
+    if (initial_capacity < 8 || growth_rate <= 100)
         return DS_ERR_INVALID_ARGUMENT;
 
     (*qua) = malloc(sizeof(QueueArray_t));
@@ -60,10 +62,12 @@ Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate)
     (*qua)->front = 0;
     (*qua)->rear = 0;
 
+    (*qua)->locked = false;
+
     return DS_OK;
 }
 
-Status qua_enqueue(QueueArray qua, int value)
+Status qua_enqueue(QueueArray qua, int element)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -76,7 +80,7 @@ Status qua_enqueue(QueueArray qua, int value)
             return st;
     }
 
-    qua->buffer[qua->rear] = value;
+    qua->buffer[qua->rear] = element;
 
     qua->rear = (qua->rear == qua->capacity - 1) ? 0 : qua->rear + 1;
 
@@ -85,9 +89,9 @@ Status qua_enqueue(QueueArray qua, int value)
     return DS_OK;
 }
 
-Status qua_dequeue(QueueArray qua, int *value)
+Status qua_dequeue(QueueArray qua, int *element)
 {
-    *value = 0;
+    *element = 0;
 
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -95,7 +99,7 @@ Status qua_dequeue(QueueArray qua, int *value)
     if (qua_empty(qua))
         return DS_ERR_INVALID_OPERATION;
 
-    *value = qua->buffer[qua->front];
+    *element = qua->buffer[qua->front];
 
     qua->front = (qua->front == qua->capacity - 1) ? 0 : qua->front + 1;
 
@@ -283,11 +287,34 @@ Status qua_copy(QueueArray qua, QueueArray *result)
     return DS_OK;
 }
 
+Status qua_cap_lock(QueueArray qua)
+{
+    if (qua == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    qua->locked = true;
+
+    return DS_OK;
+}
+
+Status qua_cap_unlock(QueueArray qua)
+{
+    if (qua == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    qua->locked = false;
+
+    return DS_OK;
+}
+
 // This function reallocates the data buffer effectively increasing its capacity
 Status qua_grow(QueueArray qua)
 {
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (qua->locked)
+        return DS_ERR_FULL;
 
     size_t old_capacity = qua->capacity;
 
@@ -339,13 +366,6 @@ Status qua_grow(QueueArray qua)
             }
 
             qua->rear = (old_capacity + qua->rear) % qua->capacity;
-
-            printf("\n\n\n");
-            for (size_t k = 0; k < qua->capacity; k++)
-                printf("%d ", qua->buffer[k]);
-            printf("\n\n\n");
-
-            qua_display_array(qua);
         }
     }
     // This case only happens when qua->front == 0 and qua->rear == 0
@@ -355,6 +375,10 @@ Status qua_grow(QueueArray qua)
     {
         qua->rear = old_capacity;
     }
+    // This should never happen. This function should never be called when the
+    // buffer is not full (front == rear and size == capacity).
+    else
+        return DS_ERR_UNEXPECTED_RESULT;
 
     return DS_OK;
 }

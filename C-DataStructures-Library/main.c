@@ -14,6 +14,8 @@
 
 int main()
 {
+    srand(time(NULL));
+
     SinglyLinkedList sll0;
 
     int j;
@@ -514,6 +516,7 @@ int main()
     cll_delete(&cll0);
 
     QueueArrayTests();
+    SinglyLinkedListTests();
 
     return 0;
 }

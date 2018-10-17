@@ -16,7 +16,7 @@ typedef struct SinglyLinkedNode_s
     struct SinglyLinkedNode_s *next; /*!< Pointer to the next node on the list */
 } SinglyLinkedNode_t, *SinglyLinkedNode;
 
-Status sll_make_node(SinglyLinkedNode *node, int value);
+Status sll_make_node(SinglyLinkedNode *node, int element);
 
 Status sll_delete_node(SinglyLinkedNode *node);
 
@@ -38,14 +38,14 @@ Status sll_init(SinglyLinkedList *sll)
     return DS_OK;
 }
 
-Status sll_insert_head(SinglyLinkedList sll, int value)
+Status sll_insert_head(SinglyLinkedList sll, int element)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
     SinglyLinkedNode node;
 
-    Status st = sll_make_node(&node, value);
+    Status st = sll_make_node(&node, element);
 
     if (st != DS_OK)
         return st;
@@ -69,7 +69,7 @@ Status sll_insert_head(SinglyLinkedList sll, int value)
     return DS_OK;
 }
 
-Status sll_insert_at(SinglyLinkedList sll, int value, size_t position)
+Status sll_insert_at(SinglyLinkedList sll, int element, size_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -81,7 +81,7 @@ Status sll_insert_at(SinglyLinkedList sll, int value, size_t position)
 
     if (position == 0)
     {
-        st = sll_insert_head(sll, value);
+        st = sll_insert_head(sll, element);
 
         if (st != DS_OK)
             return st;
@@ -90,7 +90,7 @@ Status sll_insert_at(SinglyLinkedList sll, int value, size_t position)
     }
     else if (position == sll->length)
     {
-        st = sll_insert_tail(sll, value);
+        st = sll_insert_tail(sll, element);
 
         if (st != DS_OK)
             return st;
@@ -101,7 +101,7 @@ Status sll_insert_at(SinglyLinkedList sll, int value, size_t position)
     {
         SinglyLinkedNode node = NULL;
 
-        st = sll_make_node(&node, value);
+        st = sll_make_node(&node, element);
 
         if (st != DS_OK)
             return st;
@@ -125,14 +125,14 @@ Status sll_insert_at(SinglyLinkedList sll, int value, size_t position)
     }
 }
 
-Status sll_insert_tail(SinglyLinkedList sll, int value)
+Status sll_insert_tail(SinglyLinkedList sll, int element)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
     SinglyLinkedNode node;
 
-    Status st = sll_make_node(&node, value);
+    Status st = sll_make_node(&node, element);
 
     if (st != DS_OK)
         return st;
@@ -293,7 +293,7 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result)
 }
 
 // Only for primitive types
-Status sll_update(SinglyLinkedList sll, int value, size_t position)
+Status sll_update(SinglyLinkedList sll, int element, size_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -311,7 +311,7 @@ Status sll_update(SinglyLinkedList sll, int value, size_t position)
     if (st != DS_OK)
         return st;
 
-    curr->data = value;
+    curr->data = element;
 
     return DS_OK;
 }
@@ -687,7 +687,7 @@ Status sll_reverse(SinglyLinkedList sll)
 
 // NOT EXPOSED API
 
-Status sll_make_node(SinglyLinkedNode *node, int value)
+Status sll_make_node(SinglyLinkedNode *node, int element)
 {
     (*node) = malloc(sizeof(SinglyLinkedNode_t));
 
@@ -695,7 +695,7 @@ Status sll_make_node(SinglyLinkedNode *node, int value)
         return DS_ERR_ALLOC;
 
     (*node)->next = NULL;
-    (*node)->data = value;
+    (*node)->data = element;
 
     return DS_OK;
 }

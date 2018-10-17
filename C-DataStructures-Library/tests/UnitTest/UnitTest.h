@@ -20,7 +20,11 @@ Status ut_init(UnitTest *ut);
 
 Status ut_delete(UnitTest *ut);
 
+void ut_report(UnitTest ut, const char *struct_name);
+
 void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name);
+
+void ut_equals_long_long(UnitTest ut, long long param1, long long param2, const char *test_name);
 
 void ut_equals_size_t(UnitTest ut, size_t param1, size_t param2, const char *test_name);
 
