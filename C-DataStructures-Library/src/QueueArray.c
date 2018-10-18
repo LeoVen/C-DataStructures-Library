@@ -89,9 +89,9 @@ Status qua_enqueue(QueueArray qua, int element)
     return DS_OK;
 }
 
-Status qua_dequeue(QueueArray qua, int *element)
+Status qua_dequeue(QueueArray qua, int *result)
 {
-    *element = 0;
+    *result = 0;
 
     if (qua == NULL)
         return DS_ERR_NULL_POINTER;
@@ -99,7 +99,7 @@ Status qua_dequeue(QueueArray qua, int *element)
     if (qua_empty(qua))
         return DS_ERR_INVALID_OPERATION;
 
-    *element = qua->buffer[qua->front];
+    *result = qua->buffer[qua->front];
 
     qua->front = (qua->front == qua->capacity - 1) ? 0 : qua->front + 1;
 

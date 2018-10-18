@@ -11,14 +11,14 @@
 
 #include "Core.h"
 
-/// This is a linked list implementation of a \c Queue with FIFO operations
-/// (First-in First-out), so the first item added is the first one to be
-/// removed. It is implemented as a SinglyLinkedList but with restricted
-/// operations to preserve the FIFO order of elements. The function
-/// \c que_enqueue() is equivalent to \c sll_insert_tail() and the function
-/// \c que_dequeue() is equivalent to \c sll_remove_head(). This is done in
-/// such a way that removal and insertions are O(1) without the need of a
-/// second pointer to the previous element (like a Deque implemented with a
+/// This is a linked list implementation of a \c Queue with FIFO (First-in
+/// First-out) or LILO (Last-in Last-out) operations, so the first item added
+/// is the first one to be removed. It is implemented as a SinglyLinkedList but
+///  with restricted operations to preserve the FIFO (LILO) order of elements.
+/// The function \c que_enqueue() is equivalent to \c sll_insert_tail() and the
+/// function \c que_dequeue() is equivalent to \c sll_remove_head(). This is
+/// done in such a way that removal and insertions are O(1) without the need of
+/// a second pointer to the previous element (like a Deque implemented with a
 /// DoublyLinkedList).
 ///
 /// \b Advantages over \c QueueArray
@@ -54,7 +54,7 @@ struct Queue_s
 
 /// Defines a type for <code> struct Queue_s </code>.
 ///
-/// Every queue is initialized by \c malloc with \c sizeof(Queue_t)
+/// Every queue is initialized by \c malloc with \c sizeof(Queue_t).
 typedef struct Queue_s Queue_t;
 
 /// Defines a type of pointer to <code> struct Queue_s </code>.
@@ -68,7 +68,7 @@ typedef struct Queue_s *Queue;
 ///
 /// \param[in,out] sll The queue to be initialized.
 ///
-/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_ALLOC if queue allocation failed.
 /// \return DS_OK if all operations were successful.
 Status que_init(Queue *que);
 
@@ -78,6 +78,7 @@ Status que_init(Queue *que);
 /// \param[in] qua The queue where the element is to be inserted.
 /// \param[in] element The element to be inserted in the queue.
 ///
+/// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_enqueue(Queue que, int value);
@@ -86,7 +87,7 @@ Status que_enqueue(Queue que, int value);
 /// relative to the \c front pointer.
 ///
 /// \param[in] qua The queue where the element is to be removed from.
-/// \param[out] element The element to be removed from the queue.
+/// \param[out] element he resulting element removed from the queue.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the queue is empty.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.

@@ -517,6 +517,8 @@ int main()
 
     QueueArrayTests();
     SinglyLinkedListTests();
+    DoublyLinkedListTests();
+
 
     return 0;
 }

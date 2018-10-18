@@ -33,6 +33,8 @@ Status dll_init(DoublyLinkedList *dll)
         return DS_ERR_ALLOC;
 
     (*dll)->length = 0;
+    (*dll)->limit = 0;
+
     (*dll)->head = NULL;
     (*dll)->tail = NULL;
 
@@ -44,15 +46,15 @@ Status dll_insert_head(DoublyLinkedList dll, int value)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
+    if (dll->limit != 0 && dll->length >= dll->limit)
+        return DS_ERR_FULL;
+
     DoublyLinkedNode node;
 
     Status st = dll_make_node(&node, value);
 
     if (st != DS_OK)
         return st;
-
-    if (!node)
-        return DS_ERR_ALLOC;
 
     if (dll_empty(dll))
     {
@@ -81,6 +83,9 @@ Status dll_insert_at(DoublyLinkedList dll, int value, size_t position)
     if (position > dll->length)
         return DS_ERR_INVALID_POSITION;
 
+    if (dll->limit != 0 && dll->length >= dll->limit)
+        return DS_ERR_FULL;
+
     Status st;
 
     if (position == 0)
@@ -103,19 +108,16 @@ Status dll_insert_at(DoublyLinkedList dll, int value, size_t position)
     }
     else
     {
-        DoublyLinkedNode node = NULL;
+        DoublyLinkedNode curr = NULL;
 
-        st = dll_make_node(&node, value);
+        st = dll_get_node_at(dll, &curr, position);
 
         if (st != DS_OK)
             return st;
 
-        if (!node)
-            return DS_ERR_ALLOC;
+        DoublyLinkedNode node = NULL;
 
-        DoublyLinkedNode curr = NULL;
-
-        st = dll_get_node_at(dll, &curr, position);
+        st = dll_make_node(&node, value);
 
         if (st != DS_OK)
             return st;
@@ -137,15 +139,15 @@ Status dll_insert_tail(DoublyLinkedList dll, int value)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
+    if (dll->limit != 0 && dll->length >= dll->limit)
+        return DS_ERR_FULL;
+
     DoublyLinkedNode node;
 
     Status st = dll_make_node(&node, value);
 
     if (st != DS_OK)
         return st;
-
-    if (!node)
-        return DS_ERR_ALLOC;
 
     if (dll_empty(dll))
     {
@@ -249,7 +251,6 @@ Status dll_remove_at(DoublyLinkedList dll, int *result, size_t position)
 
         if (dll_empty(dll))
         {
-
             dll->head = NULL;
             dll->tail = NULL;
         }
@@ -315,6 +316,8 @@ Status dll_update(DoublyLinkedList dll, int value, size_t position)
 
 Status dll_get(DoublyLinkedList dll, int *result, size_t position)
 {
+    *result = 0;
+
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -323,8 +326,6 @@ Status dll_get(DoublyLinkedList dll, int *result, size_t position)
 
     if (position >= dll->length)
         return DS_ERR_INVALID_POSITION;
-
-    *result = 0;
 
     DoublyLinkedNode curr = NULL;
 
@@ -485,6 +486,11 @@ bool dll_contains(DoublyLinkedList dll, int key)
     return false;
 }
 
+bool dll_empty(DoublyLinkedList dll)
+{
+    return dll->length == 0;
+}
+
 size_t dll_length(DoublyLinkedList dll)
 {
     if (dll == NULL)
@@ -493,9 +499,27 @@ size_t dll_length(DoublyLinkedList dll)
     return dll->length;
 }
 
-bool dll_empty(DoublyLinkedList dll)
+Status dll_limit_add(DoublyLinkedList dll, size_t limit)
 {
-    return (dll->length == 0 || dll->head == NULL);
+    if (dll == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dll->length > limit)
+        return DS_ERR_INVALID_OPERATION;
+
+    dll->limit = limit;
+
+    return DS_OK;
+}
+
+Status dll_limit_remove(DoublyLinkedList dll)
+{
+    if (dll == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    dll->limit = 0;
+
+    return DS_OK;
 }
 
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2)
@@ -594,6 +618,8 @@ Status dll_delete_node(DoublyLinkedNode *node)
 
 Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t position)
 {
+    *result = NULL;
+
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -603,14 +629,29 @@ Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t po
     if (position >= dll->length)
         return DS_ERR_INVALID_POSITION;
 
-    (*result) = dll->head;
-
-    for (size_t i = 0; i < position; i++)
+    if (position <= dll->length / 2)
     {
-        if ((*result) == NULL)
-            return DS_ERR_ITER;
+        (*result) = dll->head;
 
-        (*result) = (*result)->next;
+        for (size_t i = 0; i < position; i++)
+        {
+            if ((*result) == NULL)
+                return DS_ERR_ITER;
+
+            (*result) = (*result)->next;
+        }
+    }
+    else
+    {
+        (*result) = dll->tail;
+
+        for (size_t i = dll->length - 1; i > position; i--)
+        {
+            if ((*result) == NULL)
+                return DS_ERR_ITER;
+
+            (*result) = (*result)->prev;
+        }
     }
 
     return DS_OK;

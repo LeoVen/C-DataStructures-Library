@@ -15,5 +15,6 @@
 
 Status QueueArrayTests(void);
 Status SinglyLinkedListTests(void);
+Status DoublyLinkedListTests(void);
 
 #endif //C_DATASTRUCTURES_LIBRARY_TESTS_H

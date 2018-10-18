@@ -45,6 +45,48 @@ Status sll_test_middle(UnitTest ut)
     return st;
 }
 
+// Tests limit functionality
+Status sll_test_limit(UnitTest ut)
+{
+    SinglyLinkedList list;
+
+    Status st = sll_init(&list);
+
+    if (st != DS_OK)
+        return st;
+
+    st = sll_limit_add(list, 10);
+
+    if (st != DS_OK)
+        goto error;
+
+    for (int i = 0; i < 20; i++)
+    {
+        st = sll_insert_tail(list, i);
+    }
+
+    ut_equals_int(ut, st, DS_ERR_FULL, "sll_test_limit");
+    ut_equals_size_t(ut, list->length, list->limit, "sll_test_limit");
+    ut_equals_int(ut, sll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, "sll_test_limit");
+
+    ut_equals_int(ut, sll_insert_head(list, 1), DS_ERR_FULL, "dll_test_limit");
+    ut_equals_int(ut, sll_insert_at(list, 1, 1), DS_ERR_FULL, "dll_test_limit");
+    ut_equals_int(ut, sll_insert_tail(list, 1), DS_ERR_FULL, "dll_test_limit");
+
+    sll_limit_remove(list);
+
+    ut_equals_size_t(ut, list->limit, 0, "sll_test_limit");
+    ut_equals_int(ut, sll_insert_tail(list, 10), DS_OK, "sll_test_limit");
+
+    sll_delete(&list);
+
+    return DS_OK;
+
+    error:
+    sll_delete(&list);
+    return st;
+}
+
 // Runs all SinglyLinkedList tests
 Status SinglyLinkedListTests(void)
 {
@@ -55,7 +97,8 @@ Status SinglyLinkedListTests(void)
     if (st != DS_OK)
         goto error;
 
-    st = sll_test_middle(ut);
+    st += sll_test_middle(ut);
+    st += sll_test_limit(ut);
 
     if (st != DS_OK)
         goto error;

@@ -32,6 +32,8 @@ Status sll_init(SinglyLinkedList *sll)
         return DS_ERR_ALLOC;
 
     (*sll)->length = 0;
+    (*sll)->limit = 0;
+
     (*sll)->head = NULL;
     (*sll)->tail = NULL;
 
@@ -42,6 +44,9 @@ Status sll_insert_head(SinglyLinkedList sll, int element)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (sll->limit != 0 && sll->length >= sll->limit)
+        return DS_ERR_FULL;
 
     SinglyLinkedNode node;
 
@@ -77,6 +82,9 @@ Status sll_insert_at(SinglyLinkedList sll, int element, size_t position)
     if (position > sll->length)
         return DS_ERR_INVALID_POSITION;
 
+    if (sll->limit != 0 && sll->length >= sll->limit)
+        return DS_ERR_FULL;
+
     Status st;
 
     if (position == 0)
@@ -99,6 +107,13 @@ Status sll_insert_at(SinglyLinkedList sll, int element, size_t position)
     }
     else
     {
+        SinglyLinkedNode prev = NULL;
+
+        st = sll_get_node_at(sll, &prev, position - 1);
+
+        if (st != DS_OK)
+            return st;
+
         SinglyLinkedNode node = NULL;
 
         st = sll_make_node(&node, element);
@@ -109,15 +124,8 @@ Status sll_insert_at(SinglyLinkedList sll, int element, size_t position)
         if (!node)
             return DS_ERR_ALLOC;
 
-        SinglyLinkedNode curr = NULL;
-
-        st = sll_get_node_at(sll, &curr, position - 1);
-
-        if (st != DS_OK)
-            return st;
-
-        node->next = curr->next;
-        curr->next = node;
+        node->next = prev->next;
+        prev->next = node;
 
         (sll->length)++;
 
@@ -129,6 +137,9 @@ Status sll_insert_tail(SinglyLinkedList sll, int element)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (sll->limit != 0 && sll->length >= sll->limit)
+        return DS_ERR_FULL;
 
     SinglyLinkedNode node;
 
@@ -217,23 +228,20 @@ Status sll_remove_at(SinglyLinkedList sll, int *result, size_t position)
     else
     {
         SinglyLinkedNode prev = NULL;
-        SinglyLinkedNode curr = NULL;
+        SinglyLinkedNode node = NULL;
 
         st = sll_get_node_at(sll, &prev, position - 1);
 
         if (st != DS_OK)
             return st;
 
-        st = sll_get_node_at(sll, &curr, position);
+        node = prev->next;
 
-        if (st != DS_OK)
-            return st;
+        prev->next = node->next;
 
-        prev->next = curr->next;
+        *result = node->data;
 
-        *result = curr->data;
-
-        sll_delete_node(&curr);
+        sll_delete_node(&node);
 
         (sll->length)--;
 
@@ -292,7 +300,6 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result)
     return DS_OK;
 }
 
-// Only for primitive types
 Status sll_update(SinglyLinkedList sll, int element, size_t position)
 {
     if (sll == NULL)
@@ -318,6 +325,8 @@ Status sll_update(SinglyLinkedList sll, int element, size_t position)
 
 Status sll_get(SinglyLinkedList sll, int *result, size_t position)
 {
+    *result = 0;
+
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -326,8 +335,6 @@ Status sll_get(SinglyLinkedList sll, int *result, size_t position)
 
     if (position >= sll->length)
         return DS_ERR_INVALID_POSITION;
-
-    *result = 0;
 
     SinglyLinkedNode curr = NULL;
 
@@ -492,7 +499,7 @@ bool sll_contains(SinglyLinkedList sll, int key)
 
 bool sll_empty(SinglyLinkedList sll)
 {
-    return (sll->length == 0 || sll->head == NULL);
+    return sll->length == 0;
 }
 
 size_t sll_length(SinglyLinkedList sll)
@@ -501,6 +508,29 @@ size_t sll_length(SinglyLinkedList sll)
         return 0;
 
     return sll->length;
+}
+
+Status sll_limit_add(SinglyLinkedList sll, size_t limit)
+{
+    if (sll == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sll->length > limit)
+        return DS_ERR_INVALID_OPERATION;
+
+    sll->limit = limit;
+
+    return DS_OK;
+}
+
+Status sll_limit_remove(SinglyLinkedList sll)
+{
+    if (sll == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    sll->limit = 0;
+
+    return DS_OK;
 }
 
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
@@ -652,6 +682,8 @@ Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result)
         scan = scan->next;
     }
 
+    (*result)->limit = sll->limit;
+
     return DS_OK;
 }
 
@@ -714,6 +746,8 @@ Status sll_delete_node(SinglyLinkedNode *node)
 
 Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, size_t position)
 {
+    *result = NULL;
+
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -727,7 +761,6 @@ Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, size_t po
 
     for (size_t i = 0; i < position; i++)
     {
-
         if ((*result) == NULL)
             return DS_ERR_ITER;
 

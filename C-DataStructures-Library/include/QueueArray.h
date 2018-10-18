@@ -11,15 +11,16 @@
 
 #include "Core.h"
 
-/// A \c QueueArray is a buffered \c Queue with FIFO operations, (First-in
-/// First-out), so the first item added is the first one to be removed. The
-/// queue is implemented as a circular buffer. Its indexes can wrap around the
-/// buffer if they reach the end. The buffer can also expand. The grow function
-/// will first check if there are any items that wrapped around the buffer. If
-/// so, it will calculate which portion (left or right) has the least amount of
-/// elements. If left is chosen, it will append its contents to the right of
-/// the right portion; otherwise it will shift the right portion to the end of
-/// the buffer. This effectively decreases the amount of shifts needed.
+/// A \c QueueArray is a buffered \c Queue with FIFO (First-in First-out) or
+/// LILO (Last-in Last-out) operations, so the first item added is the first
+/// one to be removed. The queue is implemented as a circular buffer. Its
+/// indexes can wrap around the buffer if they reach the end. The buffer can
+/// also expand. The grow function will first check if there are any items that
+/// wrapped around the buffer. If so, it will calculate which portion (left or
+/// right) has the least amount of elements. If left is chosen, it will append
+/// its contents to the right of the right portion; otherwise it will shift the
+/// right portion to the end of the buffer. This effectively decreases the
+/// amount of shifts needed.
 ///
 /// \b Advantages over \c Queue
 /// - No need of pointers, only the data is allocated in memory
@@ -96,9 +97,9 @@ typedef struct QueueArray_s *QueueArray;
 /// Initializes a \c QueueArray with an initial capacity of 32 and a growth
 /// rate of 200, that is, twice the size after each growth.
 ///
-/// \param[in,out] qua \c QueueArray to be initialized.
+/// \param[in,out] qua The queue to be initialized.
 ///
-/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_ALLOC if queue allocation failed.
 /// \return DS_OK if all operations were successful.
 ///
 /// \see qua_create
@@ -111,13 +112,15 @@ Status qua_init(QueueArray *qua);
 /// close to 100 there won't be an increase in capacity and the minimum growth
 /// will be triggered.
 ///
-/// \param[in,out] qua \c QueueArray to be initialized
+/// \param[in,out] qua The queue to be initialized.
 /// \param[in] initial_capacity Buffer initial capacity
 /// \param[in] growth_rate Buffer growth rate
 ///
 /// \return DS_ERR_ALLOC if allocation failed
 /// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is 0 or growth_rate is
 /// less than or equal to 100.
+///
+/// \see qua_init
 Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate);
 
 /// Inserts an element into the specified queue. The element is added at the
@@ -136,12 +139,12 @@ Status qua_enqueue(QueueArray qua, int element);
 /// the \c front index.
 ///
 /// \param[in] qua The queue where the element is to be removed from.
-/// \param[out] element The element to be removed from the queue.
+/// \param[out] result The resulting element removed from the queue.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the queue is empty.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status qua_dequeue(QueueArray qua, int *element);
+Status qua_dequeue(QueueArray qua, int *result);
 
 Status qua_display(QueueArray qua);
 

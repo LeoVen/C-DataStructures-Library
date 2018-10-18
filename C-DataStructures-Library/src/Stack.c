@@ -16,7 +16,7 @@ typedef struct StackBox_s
     struct StackBox_s *below; /*!< Pointer to the box underneath it */
 } StackBox_t, *StackBox;
 
-Status stk_make_box(StackBox *box, int value);
+Status stk_make_box(StackBox *box, int element);
 
 Status stk_delete_box(StackBox *box);
 
@@ -35,14 +35,14 @@ Status stk_init(Stack *stk)
     return DS_OK;
 }
 
-Status stk_push(Stack stk, int value)
+Status stk_push(Stack stk, int element)
 {
     if (stk == NULL)
         return DS_ERR_NULL_POINTER;
 
     StackBox box;
 
-    Status st = stk_make_box(&box, value);
+    Status st = stk_make_box(&box, element);
 
     if (st != DS_OK)
         return st;
@@ -283,7 +283,7 @@ Status stk_copy(Stack stk, Stack *result)
 
 // NOT EXPOSED API
 
-Status stk_make_box(StackBox *box, int value)
+Status stk_make_box(StackBox *box, int element)
 {
     (*box) = malloc(sizeof(StackBox_t));
 
@@ -291,7 +291,7 @@ Status stk_make_box(StackBox *box, int value)
         return DS_ERR_ALLOC;
 
     (*box)->below = NULL;
-    (*box)->data = value;
+    (*box)->data = element;
 
     return DS_OK;
 }

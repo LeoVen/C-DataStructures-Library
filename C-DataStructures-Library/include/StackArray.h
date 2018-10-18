@@ -14,7 +14,7 @@
 #define STACK_ARRAY_INIT_SIZE 8
 #define STACK_ARRAY_GROW_RATE 2
 
-typedef struct StackArray
+typedef struct StackArray_s
 {
     int *buffer;        /*!< @c StackArray data buffer */
     size_t height;      /*!< @c StackArray buffer size */
