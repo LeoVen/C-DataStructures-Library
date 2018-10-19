@@ -34,7 +34,7 @@ Status sll_test_middle(UnitTest ut)
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 99, "sll_test_middle");
+    ut_equals_int(ut, j, 99, __func__);
 
     sll_delete(&list);
 
@@ -65,18 +65,18 @@ Status sll_test_limit(UnitTest ut)
         st = sll_insert_tail(list, i);
     }
 
-    ut_equals_int(ut, st, DS_ERR_FULL, "sll_test_limit");
-    ut_equals_size_t(ut, list->length, list->limit, "sll_test_limit");
-    ut_equals_int(ut, sll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, "sll_test_limit");
+    ut_equals_int(ut, st, DS_ERR_FULL, __func__);
+    ut_equals_size_t(ut, list->length, list->limit, __func__);
+    ut_equals_int(ut, sll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    ut_equals_int(ut, sll_insert_head(list, 1), DS_ERR_FULL, "dll_test_limit");
-    ut_equals_int(ut, sll_insert_at(list, 1, 1), DS_ERR_FULL, "dll_test_limit");
-    ut_equals_int(ut, sll_insert_tail(list, 1), DS_ERR_FULL, "dll_test_limit");
+    ut_equals_int(ut, sll_insert_head(list, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, sll_insert_at(list, 1, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, sll_insert_tail(list, 1), DS_ERR_FULL, __func__);
 
     sll_limit_remove(list);
 
-    ut_equals_size_t(ut, list->limit, 0, "sll_test_limit");
-    ut_equals_int(ut, sll_insert_tail(list, 10), DS_OK, "sll_test_limit");
+    ut_equals_size_t(ut, list->limit, 0, __func__);
+    ut_equals_int(ut, sll_insert_tail(list, 10), DS_OK, __func__);
 
     sll_delete(&list);
 

@@ -197,10 +197,30 @@ Status sll_update(SinglyLinkedList sll, int element, size_t position);
 /// \return DS_OK if all operations were successful.
 Status sll_get(SinglyLinkedList sll, int *result, size_t position);
 
+/// Displays a \c SinglyLinkedList in the console.
+///
+/// \param sll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_display(SinglyLinkedList sll);
 
+/// Displays a \c SinglyLinkedList in the console like an array with its values
+/// separated by commas, delimited with brackets.
+///
+/// \param sll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_display_array(SinglyLinkedList sll);
 
+/// Displays a \c SinglyLinkedList in the console with its values separated by
+/// spaces.
+///
+/// \param sll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_display_raw(SinglyLinkedList sll);
 
 Status sll_delete(SinglyLinkedList *sll);

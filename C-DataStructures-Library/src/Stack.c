@@ -79,6 +79,16 @@ Status stk_pop(Stack stk, int *result)
     return DS_OK;
 }
 
+Status stk_insert(Stack stk, int element)
+{
+    return stk_push(stk, element);
+}
+
+Status stk_remove(Stack stk, int *result)
+{
+    return stk_pop(stk, result);
+}
+
 Status stk_display(Stack stk)
 {
     if (stk == NULL)
@@ -148,7 +158,7 @@ Status stk_display_raw(Stack stk)
 
     while (scan != NULL)
     {
-        printf(" %d", scan->data);
+        printf("%d ", scan->data);
 
         scan = scan->below;
     }

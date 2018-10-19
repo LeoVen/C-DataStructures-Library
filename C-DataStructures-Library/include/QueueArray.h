@@ -146,10 +146,30 @@ Status qua_enqueue(QueueArray qua, int element);
 /// \return DS_OK if all operations were successful.
 Status qua_dequeue(QueueArray qua, int *result);
 
+/// Displays a \c QueueArray in the console.
+///
+/// \param qua The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status qua_display(QueueArray qua);
 
+/// Displays a \c QueueArray in the console like an array with its values
+/// separated by commas, delimited with brackets.
+///
+/// \param qua The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status qua_display_array(QueueArray qua);
 
+/// Displays a \c QueueArray in the console with its values separated by
+/// spaces.
+///
+/// \param qua The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status qua_display_raw(QueueArray qua);
 
 Status qua_delete(QueueArray *qua);

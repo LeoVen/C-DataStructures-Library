@@ -284,6 +284,8 @@ Status qua_copy(QueueArray qua, QueueArray *result)
 
     (*result)->size = qua->size;
 
+    (*result)->locked = qua->locked;
+
     return DS_OK;
 }
 
@@ -307,6 +309,8 @@ Status qua_cap_unlock(QueueArray qua)
     return DS_OK;
 }
 
+// NOT EXPOSED API
+
 // This function reallocates the data buffer effectively increasing its capacity
 Status qua_grow(QueueArray qua)
 {
@@ -326,6 +330,7 @@ Status qua_grow(QueueArray qua)
 
     int *new_buffer = realloc(qua->buffer, sizeof(int) * qua->capacity);
 
+    // Reallocation failed
     if (!new_buffer)
     {
         qua->capacity = old_capacity;
@@ -382,3 +387,5 @@ Status qua_grow(QueueArray qua)
 
     return DS_OK;
 }
+
+// END OF NOT EXPOSED API

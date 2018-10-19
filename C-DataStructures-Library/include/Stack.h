@@ -85,10 +85,53 @@ Status stk_push(Stack stk, int element);
 /// \return DS_OK if all operations were successful.
 Status stk_pop(Stack stk, int *result);
 
+/// Alias to stk_push().
+///
+/// \param[in] stk The stack where the element is to be inserted.
+/// \param[in] element The element to be inserted on the stack.
+///
+/// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+///
+/// \see stk_push()
+Status stk_insert(Stack stk, int element);
+
+/// Alias to stk_pop().
+///
+/// \param[in] stk The stack where the element is to be removed from.
+/// \param[out] result The resulting element removed from the stack.
+///
+/// \return DS_ERR_INVALID_OPERATION if the stack is empty.
+/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+///
+/// \see stk_pop()
+Status stk_remove(Stack stk, int *result);
+
+/// Displays a \c Stack in the console.
+///
+/// \param stk The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_display(Stack stk);
 
+/// Displays a \c Stack in the console like an array with its values separated
+/// by commas, delimited with brackets.
+///
+/// \param stk The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_display_array(Stack stk);
 
+/// Displays a \c Stack in the console with its values separated by spaces.
+///
+/// \param stk The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_display_raw(Stack stk);
 
 Status stk_delete(Stack *stk);

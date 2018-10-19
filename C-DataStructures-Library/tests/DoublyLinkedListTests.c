@@ -38,10 +38,10 @@ Status dll_test_get(UnitTest ut)
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 9, "dll_test_get");
-    ut_equals_int(ut, k, 5, "dll_test_get");
-    ut_equals_int(ut, l, 4, "dll_test_get");
-    ut_equals_int(ut, m, 0, "dll_test_get");
+    ut_equals_int(ut, j, 9, __func__);
+    ut_equals_int(ut, k, 5, __func__);
+    ut_equals_int(ut, l, 4, __func__);
+    ut_equals_int(ut, m, 0, __func__);
 
     // Tests on odd list size
     st += dll_insert_tail(list, 11);
@@ -50,7 +50,7 @@ Status dll_test_get(UnitTest ut)
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 5, "dll_test_get");
+    ut_equals_int(ut, j, 5, __func__);
 
     dll_delete(&list);
 
@@ -81,18 +81,18 @@ Status dll_test_limit(UnitTest ut)
         st = dll_insert_tail(list, i);
     }
 
-    ut_equals_int(ut, st, DS_ERR_FULL, "dll_test_limit");
-    ut_equals_size_t(ut, list->length, list->limit, "dll_test_limit");
-    ut_equals_int(ut, dll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, "dll_test_limit");
+    ut_equals_int(ut, st, DS_ERR_FULL, __func__);
+    ut_equals_size_t(ut, list->length, list->limit, __func__);
+    ut_equals_int(ut, dll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    ut_equals_int(ut, dll_insert_head(list, 1), DS_ERR_FULL, "dll_test_limit");
-    ut_equals_int(ut, dll_insert_at(list, 1, 1), DS_ERR_FULL, "dll_test_limit");
-    ut_equals_int(ut, dll_insert_tail(list, 1), DS_ERR_FULL, "dll_test_limit");
+    ut_equals_int(ut, dll_insert_head(list, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, dll_insert_at(list, 1, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, dll_insert_tail(list, 1), DS_ERR_FULL, __func__);
 
     dll_limit_remove(list);
 
-    ut_equals_size_t(ut, list->limit, 0, "dll_test_limit");
-    ut_equals_int(ut, dll_insert_tail(list, 10), DS_OK, "dll_test_limit");
+    ut_equals_size_t(ut, list->limit, 0, __func__);
+    ut_equals_int(ut, dll_insert_tail(list, 10), DS_OK, __func__);
 
     dll_delete(&list);
 

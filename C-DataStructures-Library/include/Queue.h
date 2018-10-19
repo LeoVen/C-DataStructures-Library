@@ -66,7 +66,7 @@ typedef struct Queue_s *Queue;
 /// Initializes a new \c Queue with initial length 0 and its pointer members
 /// pointing to \c NULL.
 ///
-/// \param[in,out] sll The queue to be initialized.
+/// \param[in,out] que The queue to be initialized.
 ///
 /// \return DS_ERR_ALLOC if queue allocation failed.
 /// \return DS_OK if all operations were successful.
@@ -75,29 +75,48 @@ Status que_init(Queue *que);
 /// Inserts an element into the specified queue. The element is added relative
 /// to the \c rear pointer.
 ///
-/// \param[in] qua The queue where the element is to be inserted.
+/// \param[in] que The queue where the element is to be inserted.
 /// \param[in] element The element to be inserted in the queue.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status que_enqueue(Queue que, int value);
+Status que_enqueue(Queue que, int element);
 
 /// Removes an element from the specified queue. The element is removed
 /// relative to the \c front pointer.
 ///
-/// \param[in] qua The queue where the element is to be removed from.
-/// \param[out] element he resulting element removed from the queue.
+/// \param[in] que The queue where the element is to be removed from.
+/// \param[out] result The resulting element removed from the queue.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the queue is empty.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_dequeue(Queue que, int *result);
 
+/// Displays a \c Queue in the console.
+///
+/// \param que The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_display(Queue que);
 
+/// Displays a \c Queue in the console like an array with its values separated
+/// by commas, delimited with brackets.
+///
+/// \param que The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_display_array(Queue que);
 
+/// Displays a \c Queue in the console with its values separated by spaces.
+///
+/// \param que The queue to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_display_raw(Queue que);
 
 Status que_delete(Queue *que);

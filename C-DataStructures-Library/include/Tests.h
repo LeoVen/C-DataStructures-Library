@@ -13,8 +13,9 @@
 
 // Includes all test functions
 
+Status DoublyLinkedListTests(void);
 Status QueueArrayTests(void);
 Status SinglyLinkedListTests(void);
-Status DoublyLinkedListTests(void);
+Status StackArrayTests(void);
 
 #endif //C_DATASTRUCTURES_LIBRARY_TESTS_H

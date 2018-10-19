@@ -515,9 +515,10 @@ int main()
 
     cll_delete(&cll0);
 
+    DoublyLinkedListTests();
     QueueArrayTests();
     SinglyLinkedListTests();
-    DoublyLinkedListTests();
+    StackArrayTests();
 
 
     return 0;

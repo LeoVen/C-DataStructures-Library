@@ -196,10 +196,30 @@ Status dll_update(DoublyLinkedList dll, int element, size_t position);
 /// \return DS_OK if all operations were successful.
 Status dll_get(DoublyLinkedList dll, int *result, size_t position);
 
+/// Displays a \c DoublyLinkedList in the console.
+///
+/// \param dll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status dll_display(DoublyLinkedList dll);
 
+/// Displays a \c DoublyLinkedList in the console like an array with its values
+/// separated by commas, delimited with brackets.
+///
+/// \param dll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status dll_display_array(DoublyLinkedList dll);
 
+/// Displays a \c DoublyLinkedList in the console with its values separated by
+/// spaces.
+///
+/// \param dll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status dll_display_raw(DoublyLinkedList dll);
 
 Status dll_delete(DoublyLinkedList *dll);

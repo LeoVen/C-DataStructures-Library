@@ -16,7 +16,7 @@ typedef struct QueueNode_s
     struct QueueNode_s *prev; /*!< Pointer to the previous node in the @c Queue */
 } QueueNode_t, *QueueNode;
 
-Status que_make_node(QueueNode *node, int value);
+Status que_make_node(QueueNode *node, int element);
 
 Status que_delete_node(QueueNode *node);
 
@@ -37,14 +37,14 @@ Status que_init(Queue *que)
     return DS_OK;
 }
 
-Status que_enqueue(Queue que, int value)
+Status que_enqueue(Queue que, int element)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
     QueueNode node;
 
-    Status st = que_make_node(&node, value);
+    Status st = que_make_node(&node, element);
 
     if (st != DS_OK)
         return st;
@@ -285,14 +285,14 @@ Status que_copy(Queue que, Queue *result)
 
 // NOT EXPOSED API
 
-Status que_make_node(QueueNode *node, int value)
+Status que_make_node(QueueNode *node, int element)
 {
     (*node) = malloc(sizeof(QueueNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
 
-    (*node)->data = value;
+    (*node)->data = element;
 
     (*node)->prev = NULL;
 

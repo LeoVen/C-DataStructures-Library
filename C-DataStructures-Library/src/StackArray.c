@@ -8,6 +8,12 @@
 
 #include "StackArray.h"
 
+// NOT EXPOSED API
+
+Status sta_grow(StackArray sta);
+
+// END OF NOT EXPOSED API
+
 Status sta_init(StackArray *sta)
 {
     (*sta) = malloc(sizeof(StackArray_t));
@@ -15,33 +21,60 @@ Status sta_init(StackArray *sta)
     if (!(*sta))
         return DS_ERR_ALLOC;
 
-    (*sta)->buffer = malloc(sizeof(int) * STACK_ARRAY_INIT_SIZE);
+    (*sta)->buffer = malloc(sizeof(int) * 32);
 
     if (!((*sta)->buffer))
         return DS_ERR_ALLOC;
 
-    (*sta)->capacity = STACK_ARRAY_INIT_SIZE;
-    (*sta)->growth_rate = STACK_ARRAY_GROW_RATE;
+    (*sta)->capacity = 32;
+    (*sta)->growth_rate = 200;
 
     (*sta)->height = 0;
+
+    (*sta)->locked = false;
 
     return DS_OK;
 }
 
-Status sta_push(StackArray sta, int value)
+Status sta_create(StackArray *sta, size_t initial_capacity, size_t growth_rate)
+{
+    if (initial_capacity < 8 || growth_rate <= 100)
+        return DS_ERR_INVALID_ARGUMENT;
+
+    (*sta) = malloc(sizeof(StackArray_t));
+
+    if (!(*sta))
+        return DS_ERR_ALLOC;
+
+    (*sta)->buffer = malloc(sizeof(int) * initial_capacity);
+
+    if (!((*sta)->buffer))
+        return DS_ERR_ALLOC;
+
+    (*sta)->capacity = initial_capacity;
+    (*sta)->growth_rate = growth_rate;
+
+    (*sta)->height = 0;
+
+    (*sta)->locked = false;
+
+    return DS_OK;
+}
+
+Status sta_push(StackArray sta, int element)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (sta_full(sta))
     {
-        Status st = sta_realloc(sta);
+        Status st = sta_grow(sta);
 
         if (st != DS_OK)
             return st;
     }
 
-    sta->buffer[sta->height] = value;
+    sta->buffer[sta->height] = element;
 
     (sta->height)++;
 
@@ -63,6 +96,16 @@ Status sta_pop(StackArray sta, int *result)
     (sta->height)--;
 
     return DS_OK;
+}
+
+Status sta_insert(StackArray sta, int element)
+{
+    return sta_push(sta, element);
+}
+
+Status sta_remove(StackArray sta, int *result)
+{
+    return sta_pop(sta, element);
 }
 
 Status sta_display(StackArray sta)
@@ -124,7 +167,7 @@ Status sta_display_raw(StackArray sta)
         return DS_OK;
 
     for (size_t i = 0; i < sta->height; i++)
-        printf(" %d", sta->buffer[i]);
+        printf("%d ", sta->buffer[i]);
 
     printf("\n");
 
@@ -204,21 +247,13 @@ Status sta_copy(StackArray sta, StackArray *result)
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
 
-    Status st = sta_init(result);
+    Status st = sta_create(result, sta->capacity, sta->growth_rate);
 
     if (st != DS_OK)
         return st;
 
     if (sta_empty(sta))
         return DS_OK;
-
-    while (!sta_fits(*result, sta->height))
-    {
-        st = sta_realloc(*result);
-
-        if (st != DS_OK)
-            return st;
-    }
 
     for (size_t i = 0; i < sta->height; i++)
     {
@@ -227,21 +262,56 @@ Status sta_copy(StackArray sta, StackArray *result)
 
     (*result)->height = sta->height;
 
+    (*result)->locked = sta->locked;
+
     return DS_OK;
 }
 
-Status sta_realloc(StackArray sta)
+Status sta_cap_lock(StackArray sta)
 {
     if (sta == NULL)
         return DS_ERR_NULL_POINTER;
 
-    sta->capacity *= sta->growth_rate;
+    sta->locked = true;
+
+    return DS_OK;
+}
+
+Status sta_cap_unlock(StackArray sta)
+{
+    if (sta == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    sta->locked = false;
+
+    return DS_OK;
+}
+
+// NOT EXPOSED API
+
+// This function reallocates the data buffer increasing its capacity
+Status sta_grow(StackArray sta)
+{
+    if (sta == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sta->locked)
+        return DS_ERR_FULL;
+
+    size_t old_capacity = sta->capacity;
+
+    sta->capacity = (size_t)((double)(sta->capacity) * ((double)(sta->growth_rate) / 100.0));
+
+    // 4 is the minimum growth
+    if (sta->capacity - old_capacity < 4)
+        sta->capacity = old_capacity + 4;
 
     int *new_buffer = realloc(sta->buffer, sizeof(int) * sta->capacity);
 
+    // Reallocation failed
     if (!new_buffer)
     {
-        sta->capacity /= sta->growth_rate;
+        sta->capacity = old_capacity;
 
         return DS_ERR_ALLOC;
     }
@@ -250,3 +320,5 @@ Status sta_realloc(StackArray sta)
 
     return DS_OK;
 }
+
+// END OF NOT EXPOSED API

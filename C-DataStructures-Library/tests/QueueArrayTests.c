@@ -44,9 +44,9 @@ Status qua_test_linear_insertion(UnitTest ut)
         sum += j;
     }
 
-    ut_equals_int(ut, sum, 500500, "qua_tests_linear_insertion");
-    ut_equals_size_t(ut, queue->front, queue->rear, "qua_tests_linear_insertion");
-    ut_equals_size_t(ut, size, queue->rear, "qua_tests_linear_insertion");
+    ut_equals_int(ut, sum, 500500, __func__);
+    ut_equals_size_t(ut, queue->front, queue->rear, __func__);
+    ut_equals_size_t(ut, size, queue->rear, __func__);
 
     qua_delete(&queue);
 
@@ -89,9 +89,9 @@ Status qua_test_locked(UnitTest ut)
         sum += j; // sum from 0 to 15
     }
 
-    ut_equals_int(ut, sum, 120, "qua_test_locked");
-    ut_equals_int(ut, saved_st, DS_ERR_FULL, "qua_test_locked");
-    ut_equals_size_t(ut, size, 16, "qua_test_locked");
+    ut_equals_int(ut, sum, 120, __func__);
+    ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
+    ut_equals_size_t(ut, size, 16, __func__);
 
     qua_delete(&queue);
 
@@ -141,8 +141,38 @@ Status qua_test_intensive(UnitTest ut)
         sum += j; // sum from 0 to 15
     }
 
-    ut_equals_int(ut, sum, 50005000, "qua_test_intensive");
-    ut_equals_size_t(ut, queue->front, queue->rear, "qua_test_intensive");
+    ut_equals_int(ut, sum, 50005000, __func__);
+    ut_equals_size_t(ut, queue->front, queue->rear, __func__);
+
+    qua_delete(&queue);
+
+    return DS_OK;
+
+    error:
+    qua_delete(&queue);
+    return st;
+}
+
+// Tests capacity multiplication
+Status qua_test_growth(UnitTest ut)
+{
+    QueueArray queue;
+
+    Status st = qua_create(&queue, 60, 250);
+
+    if (st != DS_OK)
+        return st;;
+
+    for (int i = 0; i < 100; i++)
+    {
+        st = qua_enqueue(queue, i);
+
+        if (st != DS_OK)
+            goto error;
+    }
+
+    // 60 * (250 / 100)
+    ut_equals_size_t(ut, queue->capacity, 150, __func__);
 
     qua_delete(&queue);
 
@@ -166,6 +196,7 @@ Status QueueArrayTests(void)
     st += qua_test_linear_insertion(ut);
     st += qua_test_locked(ut);
     st += qua_test_intensive(ut);
+    st += qua_test_growth(ut);
 
     if (st != DS_OK)
         goto error;
