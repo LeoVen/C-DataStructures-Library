@@ -48,10 +48,10 @@ struct SinglyLinkedList_s
     /// \brief List length limit.
     ///
     /// If it is set to 0 then the list has no limit to its length. Otherwise
-    /// the list won't be able to have more elements than the specified value.
-    /// The list is always initialized with no restrictions to its length, that
-    /// is, \c limit equals 0. The user won't be able to limit the list length
-    /// if the list already has more elements than the specified limit.
+    /// it won't be able to have more elements than the specified value. The
+    /// list is always initialized with no restrictions to its length, that is,
+    /// \c limit equals 0. The user won't be able to limit the list length if
+    /// it already has more elements than the specified limit.
     size_t limit;
 
     /// \brief Points to the first Node on the list.
@@ -76,8 +76,8 @@ typedef struct SinglyLinkedList_s SinglyLinkedList_t;
 /// type since they all must be dynamically allocated.
 typedef struct SinglyLinkedList_s *SinglyLinkedList;
 
-/// Initializes a new \c SinglyLinkedList with initial length 0 and its pointer
-/// members pointing to \c NULL.
+/// Initializes a new \c SinglyLinkedList with initial length and limit as 0
+/// and its pointer members pointing to \c NULL.
 ///
 /// \param[in,out] sll The list to be initialized.
 ///
@@ -233,9 +233,7 @@ bool sll_empty(SinglyLinkedList sll);
 
 size_t sll_length(SinglyLinkedList sll);
 
-Status sll_limit_add(SinglyLinkedList sll, size_t limit);
-
-Status sll_limit_remove(SinglyLinkedList sll);
+Status sll_limit(SinglyLinkedList sll, size_t limit);
 
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 

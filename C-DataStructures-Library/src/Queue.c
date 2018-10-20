@@ -42,6 +42,9 @@ Status que_enqueue(Queue que, int element)
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
+    if (que->limit != 0 && que->length >= que->limit)
+        return DS_ERR_FULL;
+
     QueueNode node;
 
     Status st = que_make_node(&node, element);
@@ -240,6 +243,11 @@ int que_peek_rear(Queue que)
     return que->rear->data;
 }
 
+bool que_empty(Queue que)
+{
+    return (que->length == 0 || que->rear == NULL);
+}
+
 size_t que_length(Queue que)
 {
     if (que == NULL)
@@ -248,9 +256,17 @@ size_t que_length(Queue que)
     return que->length;
 }
 
-bool que_empty(Queue que)
+Status que_limit(Queue que, size_t limit)
 {
-    return (que->length == 0 || que->rear == NULL);
+    if (que == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que->length > limit && limit != 0)
+        return DS_ERR_INVALID_OPERATION;
+
+    que->limit = limit;
+
+    return DS_OK;
 }
 
 Status que_copy(Queue que, Queue *result)

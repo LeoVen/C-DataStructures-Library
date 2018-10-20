@@ -13,8 +13,10 @@
 
 // Includes all test functions
 
+Status DequeTests(void);
 Status DoublyLinkedListTests(void);
 Status QueueArrayTests(void);
+Status QueueTests(void);
 Status SinglyLinkedListTests(void);
 Status StackArrayTests(void);
 

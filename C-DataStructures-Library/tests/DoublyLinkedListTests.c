@@ -6,7 +6,6 @@
  * @date 18/10/2018
  */
 
-
 #include "DoublyLinkedList.h"
 #include "UnitTest.h"
 
@@ -71,7 +70,7 @@ Status dll_test_limit(UnitTest ut)
     if (st != DS_OK)
         return st;
 
-    st = dll_limit_add(list, 10);
+    st = dll_limit(list, 10);
 
     if (st != DS_OK)
         goto error;
@@ -83,14 +82,14 @@ Status dll_test_limit(UnitTest ut)
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
     ut_equals_size_t(ut, list->length, list->limit, __func__);
-    ut_equals_int(ut, dll_limit_add(list, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_int(ut, dll_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     ut_equals_int(ut, dll_insert_head(list, 1), DS_ERR_FULL, __func__);
     ut_equals_int(ut, dll_insert_at(list, 1, 1), DS_ERR_FULL, __func__);
     ut_equals_int(ut, dll_insert_tail(list, 1), DS_ERR_FULL, __func__);
 
-    dll_limit_remove(list);
-
+    // Removes the limit
+    ut_equals_int(ut, dll_limit(list, 0), DS_OK, __func__);
     ut_equals_size_t(ut, list->limit, 0, __func__);
     ut_equals_int(ut, dll_insert_tail(list, 10), DS_OK, __func__);
 

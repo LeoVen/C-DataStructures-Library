@@ -11,27 +11,141 @@
 
 #include "Core.h"
 
-typedef struct Deque_s
+/// This is a linked list implementation of a \c Deque. A Deque is a
+/// double-ended queue, so you can insert and remove elements from both ends of
+/// the queue. It is implemented as a \c DoublyLinkedList but with restricted
+/// operations which can only insert or remove elements at the edges of the
+/// linked list. With this implementation every insertion and removal
+/// operations take constant time O(1). This simplifies things a lot but every
+/// node needs to maintain two pointers, one to its left and another to its
+/// right.
+///
+/// \b Advantages over \c DequeArray
+/// - Indefinitely grows
+/// - No need to reallocate buffers or shift elements
+///
+/// \b Drawbacks
+/// - No random access
+/// - More memory usage as in every node there are two pointers to the
+/// neighbouring nodes.
+///
+/// \b Functions
+/// Located in file Deque.c
+struct Deque_s
 {
-    size_t length;             /*!< Total @c Deque length */
-    struct DequeNode_s *front; /*!< Where @c QueueNode are removed */
-    struct DequeNode_s *rear;  /*!< Where @c QueueNode are inserted */
-} Deque_t, *Deque;
+    /// \brief Current amount of elements in the \c Deque.
+    ///
+    /// Current amount of nodes linked between the \c front and \c rear
+    /// pointers.
+    size_t length;
 
+    /// \brief Queue length limit.
+    ///
+    /// If it is set to 0 then the deque has no limit to its length. Otherwise
+    /// it won't be able to have more elements than the specified value. The
+    /// deque is always initialized with no restrictions to its length, that
+    /// is, \c limit equals 0. The user won't be able to limit the deque length
+    /// if it already has more elements than the specified limit.
+    size_t limit;
+
+    /// \brief Points to the first Node on the deque.
+    ///
+    /// Points to the first Node on the deque or \c NULL if the deque is empty.
+    struct DequeNode_s *front;
+
+    /// \brief Points to the last Node on the deque.
+    ///
+    /// Points to the first Node on the deque or \c NULL if the deque is empty.
+    struct DequeNode_s *rear;
+};
+
+/// Defines a type for <code> struct Deque_s </code>.
+///
+/// Every deque is initialized by \c malloc with \c sizeof(Deque_t).
+typedef struct Deque_s Deque_t;
+
+/// Defines a type of pointer to <code> struct Deque_s </code>.
+///
+/// This typedef is used to avoid having to declare every deque as a pointer
+/// type since they all must be dynamically allocated.
+typedef struct Deque_s *Deque;
+
+/// Initializes a new \c Deque with initial length and limit as 0 and its
+/// pointer members pointing to \c NULL.
+///
+/// \param[in,out] deq The deque to be initialized.
+///
+/// \return DS_ERR_ALLOC if deque allocation failed.
+/// \return DS_OK if all operations were successful.
 Status deq_init(Deque *deq);
 
+/// Inserts an element at the front of the specified deque.
+///
+/// \param[in] deq The deque where the element is to be inserted.
+/// \param[in] element The element to be inserted in the deque.
+///
+/// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (different than 0) and the deque
+/// length reached the specified limit.
+/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_enqueue_front(Deque deq, int value);
 
+/// Inserts an element at the rear of the specified deque.
+///
+/// \param[in] deq The deque where the element is to be inserted.
+/// \param[in] element The element to be inserted in the deque.
+///
+/// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (different than 0) and the deque
+/// length reached the specified limit.
+/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_enqueue_rear(Deque deq, int value);
 
+/// Removes an element from the front of the specified deque.
+///
+/// \param[in] deq The deque where the element is to be removed from.
+/// \param[out] result The resulting element removed from the deque.
+///
+/// \return DS_ERR_INVALID_OPERATION if the deque is empty.
+/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_dequeue_front(Deque deq, int *result);
 
+/// Removes an element from the rear of the specified deque.
+///
+/// \param[in] deq The deque where the element is to be removed from.
+/// \param[out] result The resulting element removed from the deque.
+///
+/// \return DS_ERR_INVALID_OPERATION if the deque is empty.
+/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_dequeue_rear(Deque deq, int *result);
 
+/// Displays a \c Deque in the console.
+///
+/// \param deq The deque to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_display(Deque deq);
 
+/// Displays a \c Deque in the console like an array with its values separated
+/// by commas, delimited with brackets.
+///
+/// \param que The deque to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_display_array(Deque deq);
 
+/// Displays a \c Deque in the console with its values separated by spaces.
+///
+/// \param que The deque to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_display_raw(Deque deq);
 
 Status deq_delete(Deque *deq);
@@ -42,9 +156,11 @@ int deq_peek_front(Deque deq);
 
 int deq_peek_rear(Deque deq);
 
+bool deq_empty(Deque deq);
+
 size_t deq_length(Deque deq);
 
-bool deq_empty(Deque deq);
+Status deq_limit(Deque deq, size_t limit);
 
 Status deq_copy(Deque deq, Deque *result);
 

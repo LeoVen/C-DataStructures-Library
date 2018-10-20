@@ -234,7 +234,7 @@ size_t stk_height(Stack stk)
 
 bool stk_empty(Stack stk)
 {
-    return (stk->top == NULL || stk->height == 0);
+    return stk->height == 0;
 }
 
 Status stk_copy(Stack stk, Stack *result)

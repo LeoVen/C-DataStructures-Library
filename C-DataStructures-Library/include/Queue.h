@@ -39,6 +39,15 @@ struct Queue_s
     /// pointers.
     size_t length;
 
+    /// \brief Queue length limit.
+    ///
+    /// If it is set to 0 then the queue has no limit to its length. Otherwise
+    /// it won't be able to have more elements than the specified value. The
+    /// queue is always initialized with no restrictions to its length, that
+    /// is, \c limit equals 0. The user won't be able to limit the queue length
+    /// if it already has more elements than the specified limit.
+    size_t limit;
+
     /// \brief The front of the queue.
     ///
     /// Where elements are removed from. The function \c que_dequeue() operates
@@ -63,8 +72,8 @@ typedef struct Queue_s Queue_t;
 /// type since they all must be dynamically allocated.
 typedef struct Queue_s *Queue;
 
-/// Initializes a new \c Queue with initial length 0 and its pointer members
-/// pointing to \c NULL.
+/// Initializes a new \c Queue with initial length and limit as 0 and its
+/// pointer members pointing to \c NULL.
 ///
 /// \param[in,out] que The queue to be initialized.
 ///
@@ -79,6 +88,8 @@ Status que_init(Queue *que);
 /// \param[in] element The element to be inserted in the queue.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (different than 0) and the queue
+/// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_enqueue(Queue que, int element);
@@ -127,9 +138,11 @@ int que_peek_front(Queue que);
 
 int que_peek_rear(Queue que);
 
+bool que_empty(Queue que);
+
 size_t que_length(Queue que);
 
-bool que_empty(Queue que);
+Status que_limit(Queue que, size_t limit);
 
 Status que_copy(Queue que, Queue *result);
 

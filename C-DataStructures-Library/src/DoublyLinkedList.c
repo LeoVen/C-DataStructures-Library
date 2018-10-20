@@ -12,7 +12,7 @@
 
 typedef struct DoublyLinkedNode_s
 {
-    int data;                       /*!< Node's data */
+    int data;                        /*!< Node's data */
     struct DoublyLinkedNode_s *next; /*!< Pointer to the next node on the list */
     struct DoublyLinkedNode_s *prev; /*!< Pointer to the previous node on the list */
 } DoublyLinkedNode_t, *DoublyLinkedNode;
@@ -499,25 +499,15 @@ size_t dll_length(DoublyLinkedList dll)
     return dll->length;
 }
 
-Status dll_limit_add(DoublyLinkedList dll, size_t limit)
+Status dll_limit(DoublyLinkedList dll, size_t limit)
 {
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dll->length > limit)
+    if (dll->length > limit && limit != 0)
         return DS_ERR_INVALID_OPERATION;
 
     dll->limit = limit;
-
-    return DS_OK;
-}
-
-Status dll_limit_remove(DoublyLinkedList dll)
-{
-    if (dll == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    dll->limit = 0;
 
     return DS_OK;
 }

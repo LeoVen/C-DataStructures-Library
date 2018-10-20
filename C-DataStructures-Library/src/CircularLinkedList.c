@@ -14,6 +14,7 @@ typedef struct CircularLinkedNode_s
 {
     int data;                          /*!< Pointer to node's content */
     struct CircularLinkedNode_s *next; /*!< Pointer to the next node on the list */
+    struct CircularLinkedNode_s *prev; /*!< Pointer to the previous node on the list */
 } CircularLinkedNode_t, *CircularLinkedNode;
 
 Status cll_make_node(CircularLinkedNode *cln, int value);
@@ -34,6 +35,7 @@ Status cll_init(CircularLinkedList *cll)
         return DS_ERR_ALLOC;
 
     (*cll)->curr = NULL;
+
     (*cll)->length = 0;
 
     return DS_OK;
@@ -433,7 +435,7 @@ bool cll_contains(CircularLinkedList cll, int key)
 
 bool cll_empty(CircularLinkedList cll)
 {
-    return (cll->length == 0);
+    return cll->length == 0;
 }
 
 int cll_max(CircularLinkedList cll)
@@ -535,6 +537,8 @@ Status cll_make_node(CircularLinkedNode *cln, int value)
         return DS_ERR_ALLOC;
 
     (*cln)->next = NULL;
+    (*cln)->prev = NULL;
+
     (*cln)->data = value;
 
     return DS_OK;

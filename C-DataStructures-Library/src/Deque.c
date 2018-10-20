@@ -30,6 +30,7 @@ Status deq_init(Deque *deq)
         return DS_ERR_ALLOC;
 
     (*deq)->length = 0;
+    (*deq)->limit = 0;
 
     (*deq)->front = NULL;
     (*deq)->rear = NULL;
@@ -41,6 +42,9 @@ Status deq_enqueue_front(Deque deq, int value)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (deq->limit != 0 && deq->length >= deq->limit)
+        return DS_ERR_FULL;
 
     DequeNode *node;
 
@@ -71,6 +75,9 @@ Status deq_enqueue_rear(Deque deq, int value)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (deq->limit != 0 && deq->length >= deq->limit)
+        return DS_ERR_FULL;
 
     DequeNode *node;
 
@@ -301,6 +308,11 @@ int deq_peek_rear(Deque deq)
     return deq->rear->data;
 }
 
+bool deq_empty(Deque deq)
+{
+    return deq->length == 0;
+}
+
 size_t deq_length(Deque deq)
 {
     if (deq == NULL)
@@ -309,9 +321,17 @@ size_t deq_length(Deque deq)
     return deq->length;
 }
 
-bool deq_empty(Deque deq)
+Status deq_limit(Deque deq, size_t limit)
 {
-    return (deq->length == 0 || deq->rear == NULL);
+    if (deq == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (deq->length > limit && limit != 0)
+        return DS_ERR_INVALID_OPERATION;
+
+    deq->limit = limit;
+
+    return DS_OK;
 }
 
 Status deq_copy(Deque deq, Deque *result)

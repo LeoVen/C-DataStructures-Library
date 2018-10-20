@@ -11,11 +11,37 @@
 
 #include "Core.h"
 
-typedef struct CircularLinkedList_s
+/// A CircularLinkedList is a linked list where all nodes are connected to form
+/// a circular structure. There are no \c head or \c tail pointers; the only
+/// reference is the current node where all operations work relatively to this
+/// pointer. This implementation allows insertions before or after the current
+/// node. Elements can be removed from before or after the current node or the
+/// current node itself.
+///
+/// TODO Implement as a DoublyLinkedList
+struct CircularLinkedList_s
 {
-    size_t length;                     /*!< List length */
-    struct CircularLinkedNode_s *curr; /*!< Pointer to current node. Functions operate relative to this node */
-} CircularLinkedList_t, *CircularLinkedList;
+    /// \brief List length.
+    ///
+    /// List current amount of nodes.
+    size_t length;
+
+    /// Pointer to current node.
+    ///
+    /// Pointer to current node. Functions operate relative to this node.
+    struct CircularLinkedNode_s *curr;
+};
+
+/// Defines a type for <code> struct CircularLinkedList_s </code>.
+///
+/// Every list is initialized by \c malloc with \c sizeof(CircularLinkedList_t).
+typedef struct CircularLinkedList_s CircularLinkedList_t;
+
+/// Defines a type of pointer to <code> struct CircularLinkedList_s </code>.
+///
+/// This typedef is used to avoid having to declare every list as a pointer
+/// type since they all must be dynamically allocated.
+typedef struct CircularLinkedList_s *CircularLinkedList;
 
 Status cll_init(CircularLinkedList *cli);
 

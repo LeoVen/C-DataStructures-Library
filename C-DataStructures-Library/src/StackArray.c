@@ -105,7 +105,7 @@ Status sta_insert(StackArray sta, int element)
 
 Status sta_remove(StackArray sta, int *result)
 {
-    return sta_pop(sta, element);
+    return sta_pop(sta, result);
 }
 
 Status sta_display(StackArray sta)

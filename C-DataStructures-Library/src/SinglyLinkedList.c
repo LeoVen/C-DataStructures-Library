@@ -12,7 +12,7 @@
 
 typedef struct SinglyLinkedNode_s
 {
-    int data;                      /*!< Node's data */
+    int data;                        /*!< Node's data */
     struct SinglyLinkedNode_s *next; /*!< Pointer to the next node on the list */
 } SinglyLinkedNode_t, *SinglyLinkedNode;
 
@@ -510,25 +510,15 @@ size_t sll_length(SinglyLinkedList sll)
     return sll->length;
 }
 
-Status sll_limit_add(SinglyLinkedList sll, size_t limit)
+Status sll_limit(SinglyLinkedList sll, size_t limit)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll->length > limit)
+    if (sll->length > limit && limit != 0)
         return DS_ERR_INVALID_OPERATION;
 
     sll->limit = limit;
-
-    return DS_OK;
-}
-
-Status sll_limit_remove(SinglyLinkedList sll)
-{
-    if (sll == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    sll->limit = 0;
 
     return DS_OK;
 }
