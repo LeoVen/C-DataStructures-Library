@@ -35,7 +35,7 @@
 /// - Extra memory for a pointer on each element
 ///
 /// \b Functions
-/// 
+///
 /// Located in file SinglyLinkedList.c
 struct SinglyLinkedList_s
 {
@@ -43,7 +43,7 @@ struct SinglyLinkedList_s
     ///
     /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
-    size_t length;
+    index_t length;
 
     /// \brief List length limit.
     ///
@@ -52,7 +52,7 @@ struct SinglyLinkedList_s
     /// list is always initialized with no restrictions to its length, that is,
     /// \c limit equals 0. The user won't be able to limit the list length if
     /// it already has more elements than the specified limit.
-    size_t limit;
+    index_t limit;
 
     /// \brief Points to the first Node on the list.
     ///
@@ -109,13 +109,14 @@ Status sll_insert_head(SinglyLinkedList sll, int element);
 /// \param[in] position Where the new element is to be inserted.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
 /// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
 /// length reached the specified limit.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater than
-/// the list \c length.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than the
+/// list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_insert_at(SinglyLinkedList sll, int element, size_t position);
+Status sll_insert_at(SinglyLinkedList sll, int element, index_t position);
 
 /// Inserts a new element at the end of the list. If the list is empty and this
 /// is the first element being added, c\ head will also be pointing to it; in
@@ -152,11 +153,12 @@ Status sll_remove_head(SinglyLinkedList sll, int *result);
 /// \param[in] position Where the element is to be removed from.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_remove_at(SinglyLinkedList sll, int *result, size_t position);
+Status sll_remove_at(SinglyLinkedList sll, int *result, index_t position);
 
 /// Removes and retrieves the last element in the list located at the \c tail
 /// pointer.
@@ -177,11 +179,12 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result);
 /// \param[in] position The position of the element to be updated.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_update(SinglyLinkedList sll, int element, size_t position);
+Status sll_update(SinglyLinkedList sll, int element, index_t position);
 
 /// Retrieves an element at a given position without removing it. This function
 /// simulates an index access like in arrays.
@@ -191,11 +194,12 @@ Status sll_update(SinglyLinkedList sll, int element, size_t position);
 /// \param[in] position The position of the element to be retrieved.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_get(SinglyLinkedList sll, int *result, size_t position);
+Status sll_get(SinglyLinkedList sll, int *result, index_t position);
 
 /// Displays a \c SinglyLinkedList in the console.
 ///
@@ -248,9 +252,9 @@ bool sll_contains(SinglyLinkedList sll, int key);
 
 bool sll_empty(SinglyLinkedList sll);
 
-size_t sll_length(SinglyLinkedList sll);
+index_t sll_length(SinglyLinkedList sll);
 
-Status sll_limit(SinglyLinkedList sll, size_t limit);
+Status sll_limit(SinglyLinkedList sll, index_t limit);
 
 int sll_max(SinglyLinkedList sll);
 
@@ -258,11 +262,11 @@ int sll_min(SinglyLinkedList sll);
 
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, size_t position);
+Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t position);
 
-Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, size_t position);
+Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t position);
 
-//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, size_t position1, size_t position2);
+//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, index_t position1, index_t position2);
 
 Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result);
 

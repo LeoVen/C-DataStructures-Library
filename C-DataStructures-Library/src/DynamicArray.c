@@ -36,7 +36,7 @@ Status dar_init(DynamicArray *dar)
     return DS_OK;
 }
 
-Status dar_create(DynamicArray *dar, size_t initial_capacity, size_t growth_rate)
+Status dar_create(DynamicArray *dar, index_t initial_capacity, index_t growth_rate)
 {
     if (initial_capacity < 8 || growth_rate <= 100)
         return DS_ERR_INVALID_ARGUMENT;
@@ -61,14 +61,14 @@ Status dar_create(DynamicArray *dar, size_t initial_capacity, size_t growth_rate
     return DS_OK;
 }
 
-Status dar_make(DynamicArray *dar, int *array, size_t arr_size)
+Status dar_make(DynamicArray *dar, int *array, index_t arr_size)
 {
     Status st = dar_init(dar);
 
     if (st != DS_OK)
         return st;
 
-    for (size_t i = 0; i < arr_size; i++)
+    for (index_t i = 0; i < arr_size; i++)
     {
         st = dar_insert_back((*dar), array[i]);
 
@@ -79,13 +79,16 @@ Status dar_make(DynamicArray *dar, int *array, size_t arr_size)
     return DS_OK;
 }
 
-Status dar_insert(DynamicArray dar, int *array, size_t arr_size, size_t index)
+Status dar_insert(DynamicArray dar, int *array, index_t arr_size, index_t index)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (index > dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     Status st;
 
@@ -97,12 +100,12 @@ Status dar_insert(DynamicArray dar, int *array, size_t arr_size, size_t index)
             return st;
     }
 
-    for (size_t i = dar->size; i > index; i--)
+    for (index_t i = dar->size; i > index; i--)
     {
         dar->buffer[i + arr_size - 1] = dar->buffer[i - 1];
     }
 
-    for (size_t i = index, j = 0; j < arr_size; i++, j++)
+    for (index_t i = index, j = 0; j < arr_size; i++, j++)
     {
         dar->buffer[i] = array[j];
     }
@@ -117,8 +120,6 @@ Status dar_insert_front(DynamicArray dar, int value)
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
-
-
     if (dar_full(dar))
     {
         Status st = dar_grow(dar);
@@ -127,7 +128,7 @@ Status dar_insert_front(DynamicArray dar, int value)
             return st;
     }
 
-    for (size_t i = dar->size; i > 0; i--)
+    for (index_t i = dar->size; i > 0; i--)
     {
         dar->buffer[i] = dar->buffer[i - 1];
     }
@@ -139,13 +140,16 @@ Status dar_insert_front(DynamicArray dar, int value)
     return DS_OK;
 }
 
-Status dar_insert_at(DynamicArray dar, int value, size_t index)
+Status dar_insert_at(DynamicArray dar, int value, index_t index)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (index > dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     Status st;
 
@@ -173,7 +177,7 @@ Status dar_insert_at(DynamicArray dar, int value, size_t index)
                 return st;
         }
 
-        for (size_t i = dar->size; i > index; i--)
+        for (index_t i = dar->size; i > index; i--)
         {
             dar->buffer[i] = dar->buffer[i - 1];
         }
@@ -206,7 +210,7 @@ Status dar_insert_back(DynamicArray dar, int value)
     return DS_OK;
 }
 
-Status dar_remove(DynamicArray dar, size_t from, size_t to)
+Status dar_remove(DynamicArray dar, index_t from, index_t to)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
@@ -215,15 +219,18 @@ Status dar_remove(DynamicArray dar, size_t from, size_t to)
         return DS_ERR_INVALID_ARGUMENT;
 
     if (to >= dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
 
     if (dar_empty(dar))
         return DS_ERR_INVALID_OPERATION;
 
+    if (from < 0 || to < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
     Status st;
 
     // 'from' and 'to' are inclusive
-    size_t distance = to - from + 1;
+    index_t distance = to - from + 1;
 
     if (from == to)
     {
@@ -243,7 +250,7 @@ Status dar_remove(DynamicArray dar, size_t from, size_t to)
         return DS_OK;
     }
 
-    for (size_t i = from, j = to + 1; j <= dar->size - 1; i++, j++)
+    for (index_t i = from, j = to + 1; j <= dar->size - 1; i++, j++)
     {
         dar->buffer[i] = dar->buffer[j];
     }
@@ -263,7 +270,7 @@ Status dar_remove_front(DynamicArray dar, int *result)
 
     *result = dar->buffer[0];
 
-    for (size_t i = 0; i < dar->size; i++)
+    for (index_t i = 0; i < dar->size; i++)
     {
         dar->buffer[i] = dar->buffer[i + 1];
     }
@@ -273,7 +280,7 @@ Status dar_remove_front(DynamicArray dar, int *result)
     return DS_OK;
 }
 
-Status dar_remove_at(DynamicArray dar, int *result, size_t index)
+Status dar_remove_at(DynamicArray dar, int *result, index_t index)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
@@ -282,7 +289,10 @@ Status dar_remove_at(DynamicArray dar, int *result, size_t index)
         return DS_ERR_INVALID_OPERATION;
 
     if (index >= dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     Status st;
 
@@ -304,7 +314,7 @@ Status dar_remove_at(DynamicArray dar, int *result, size_t index)
     {
         *result = dar->buffer[index];
 
-        for (size_t i = index; i < dar->size; i++)
+        for (index_t i = index; i < dar->size; i++)
         {
             dar->buffer[i] = dar->buffer[i + 1];
         }
@@ -330,7 +340,7 @@ Status dar_remove_back(DynamicArray dar, int *result)
     return DS_OK;
 }
 
-Status dar_update(DynamicArray dar, int value, size_t index)
+Status dar_update(DynamicArray dar, int value, index_t index)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
@@ -339,14 +349,17 @@ Status dar_update(DynamicArray dar, int value, size_t index)
         return DS_ERR_INVALID_OPERATION;
 
     if (index >= dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     dar->buffer[index] = value;
 
     return DS_OK;
 }
 
-Status dar_get(DynamicArray dar, int *result, size_t index)
+Status dar_get(DynamicArray dar, int *result, index_t index)
 {
     *result = 0;
 
@@ -357,7 +370,10 @@ Status dar_get(DynamicArray dar, int *result, size_t index)
         return DS_ERR_INVALID_OPERATION;
 
     if (index >= dar->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     *result = dar->buffer[index];
 
@@ -378,7 +394,7 @@ Status dar_display(DynamicArray dar)
 
     printf("\nDynamicArray\n[ ");
 
-    for (size_t i = 0; i < dar->size - 1; i++)
+    for (index_t i = 0; i < dar->size - 1; i++)
     {
         printf("%d, ", dar->buffer[i]);
     }
@@ -404,7 +420,7 @@ Status dar_display_array(DynamicArray dar)
 
     printf("\n[ ");
 
-    for (size_t i = 0; i < dar->size - 1; i++)
+    for (index_t i = 0; i < dar->size - 1; i++)
     {
         printf("%d, ", dar->buffer[i]);
     }
@@ -424,7 +440,7 @@ Status dar_display_raw(DynamicArray dar)
     if (dar_empty(dar))
         return DS_OK;
 
-    for (size_t i = 0; i < dar->size; i++)
+    for (index_t i = 0; i < dar->size; i++)
     {
         printf("%d ", dar->buffer[i]);
     }
@@ -465,13 +481,19 @@ Status dar_erase(DynamicArray *dar)
     return DS_OK;
 }
 
-size_t dar_cap(DynamicArray dar)
+index_t dar_cap(DynamicArray dar)
 {
+    if (dar == NULL)
+        return -1;
+
     return dar->capacity;
 }
 
-size_t dar_size(DynamicArray dar)
+index_t dar_size(DynamicArray dar)
 {
+    if (dar == NULL)
+        return -1;
+
     return dar->size;
 }
 
@@ -485,7 +507,7 @@ bool dar_full(DynamicArray dar)
     return dar->size == dar->capacity;
 }
 
-bool dar_fits(DynamicArray dar, size_t size)
+bool dar_fits(DynamicArray dar, index_t size)
 {
     return (dar->size + size) <= dar->capacity;
 }
@@ -498,7 +520,7 @@ bool dar_contains(DynamicArray dar, int value)
     if (dar_empty(dar))
         return false;
 
-    for (size_t i = 0; i < dar->size; i++)
+    for (index_t i = 0; i < dar->size; i++)
     {
         if (dar->buffer[i] == value)
             return true;
@@ -520,12 +542,13 @@ Status dar_copy(DynamicArray dar, DynamicArray *result)
     if (dar_empty(dar))
         return DS_OK;
 
-    for (size_t i = 0; i < dar->size; i++)
+    for (index_t i = 0; i < dar->size; i++)
     {
         (*result)->buffer[i] = dar->buffer[i];
     }
 
     (*result)->size = dar->size;
+    (*result)->locked = dar->locked;
 
     return DS_OK;
 }
@@ -548,12 +571,12 @@ Status dar_prepend(DynamicArray dar1, DynamicArray dar2)
             return st;
     }
 
-    for (size_t i = dar1->size; i > 0; i--)
+    for (index_t i = dar1->size; i > 0; i--)
     {
         dar1->buffer[i + dar2->size - 1] = dar1->buffer[i - 1];
     }
 
-    for (size_t i = 0; i < dar2->size; i++)
+    for (index_t i = 0; i < dar2->size; i++)
     {
         dar1->buffer[i] = dar2->buffer[i];
     }
@@ -563,10 +586,13 @@ Status dar_prepend(DynamicArray dar1, DynamicArray dar2)
     return DS_OK;
 }
 
-Status dar_add(DynamicArray dar1, DynamicArray dar2, size_t index)
+Status dar_add(DynamicArray dar1, DynamicArray dar2, index_t index)
 {
     if (dar1 == NULL || dar2 == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     if (dar_empty(dar2))
         return DS_OK;
@@ -597,12 +623,12 @@ Status dar_add(DynamicArray dar1, DynamicArray dar2, size_t index)
                 return st;
         }
 
-        for (size_t i = dar1->size; i >= index; i--)
+        for (index_t i = dar1->size; i >= index; i--)
         {
             dar1->buffer[i + dar2->size] = dar1->buffer[i];
         }
 
-        for (size_t i = index, j = 0; i < index + dar2->size; i++, j++)
+        for (index_t i = index, j = 0; i < index + dar2->size; i++, j++)
         {
             dar1->buffer[i] = dar2->buffer[j];
         }
@@ -631,7 +657,7 @@ Status dar_append(DynamicArray dar1, DynamicArray dar2)
             return st;
     }
 
-    for (size_t i = dar1->size, j = 0; i < dar1->size + dar2->size - 1; i++, j++)
+    for (index_t i = dar1->size, j = 0; i < dar1->size + dar2->size - 1; i++, j++)
     {
         dar1->buffer[i] = dar2->buffer[j];
     }
@@ -671,9 +697,9 @@ Status dar_grow(DynamicArray dar)
     if (dar->locked)
         return DS_ERR_FULL;
 
-    size_t old_capacity = dar->capacity;
+    index_t old_capacity = dar->capacity;
 
-    dar->capacity = (size_t)((double)(dar->capacity) * ((double)(dar->growth_rate) / 100.0));
+    dar->capacity = (index_t)((double)(dar->capacity) * ((double)(dar->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (dar->capacity - old_capacity < 4)

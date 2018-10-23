@@ -20,7 +20,7 @@ Status sll_make_node(SinglyLinkedNode *node, int element);
 
 Status sll_delete_node(SinglyLinkedNode *node);
 
-Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, size_t position);
+Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, index_t position);
 
 // END OF NOT EXPOSED API
 
@@ -74,16 +74,19 @@ Status sll_insert_head(SinglyLinkedList sll, int element)
     return DS_OK;
 }
 
-Status sll_insert_at(SinglyLinkedList sll, int element, size_t position)
+Status sll_insert_at(SinglyLinkedList sll, int element, index_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (position > sll->length)
-        return DS_ERR_INVALID_POSITION;
-
     if (sll->limit != 0 && sll->length >= sll->limit)
         return DS_ERR_FULL;
+
+    if (position > sll->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     Status st;
 
@@ -194,7 +197,7 @@ Status sll_remove_head(SinglyLinkedList sll, int *result)
     return DS_OK;
 }
 
-Status sll_remove_at(SinglyLinkedList sll, int *result, size_t position)
+Status sll_remove_at(SinglyLinkedList sll, int *result, index_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -203,7 +206,10 @@ Status sll_remove_at(SinglyLinkedList sll, int *result, size_t position)
         return DS_ERR_INVALID_OPERATION;
 
     if (position >= sll->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     Status st;
 
@@ -300,7 +306,7 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result)
     return DS_OK;
 }
 
-Status sll_update(SinglyLinkedList sll, int element, size_t position)
+Status sll_update(SinglyLinkedList sll, int element, index_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -309,7 +315,10 @@ Status sll_update(SinglyLinkedList sll, int element, size_t position)
         return DS_ERR_INVALID_OPERATION;
 
     if (position >= sll->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     SinglyLinkedNode curr = NULL;
 
@@ -323,7 +332,7 @@ Status sll_update(SinglyLinkedList sll, int element, size_t position)
     return DS_OK;
 }
 
-Status sll_get(SinglyLinkedList sll, int *result, size_t position)
+Status sll_get(SinglyLinkedList sll, int *result, index_t position)
 {
     *result = 0;
 
@@ -334,7 +343,10 @@ Status sll_get(SinglyLinkedList sll, int *result, size_t position)
         return DS_ERR_INVALID_OPERATION;
 
     if (position >= sll->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     SinglyLinkedNode curr = NULL;
 
@@ -502,20 +514,20 @@ bool sll_empty(SinglyLinkedList sll)
     return sll->length == 0;
 }
 
-size_t sll_length(SinglyLinkedList sll)
+index_t sll_length(SinglyLinkedList sll)
 {
     if (sll == NULL)
-        return 0;
+        return -1;
 
     return sll->length;
 }
 
-Status sll_limit(SinglyLinkedList sll, size_t limit)
+Status sll_limit(SinglyLinkedList sll, index_t limit)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll->length > limit && limit != 0)
+    if (sll->length > limit && limit > 0)
         return DS_ERR_INVALID_OPERATION;
 
     sll->limit = limit;
@@ -600,13 +612,13 @@ Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
     return DS_OK;
 }
 
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, size_t position)
+Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t position)
 {
     if (sll1 == NULL || sll2 == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (position > sll1->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
 
     if (sll_empty(sll1) || sll_empty(sll2))
         return DS_ERR_INVALID_OPERATION;
@@ -642,7 +654,7 @@ Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, size_t position
     return DS_OK;
 }
 
-Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, size_t position)
+Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -651,9 +663,9 @@ Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, size_t position
         return DS_ERR_INVALID_OPERATION;
 
     if (position >= sll->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
 
-    size_t len = sll_length(sll);
+    index_t len = sll_length(sll);
 
     if (position == 0)
     {
@@ -689,7 +701,7 @@ Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, size_t position
     return DS_OK;
 }
 
-//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, size_t position1, size_t position2);
+//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, index_t position1, index_t position2);
 
 Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result)
 {
@@ -780,7 +792,7 @@ Status sll_delete_node(SinglyLinkedNode *node)
     return DS_OK;
 }
 
-Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, size_t position)
+Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, index_t position)
 {
     *result = NULL;
 
@@ -791,11 +803,14 @@ Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, size_t po
         return DS_ERR_INVALID_OPERATION;
 
     if (position >= sll->length)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     (*result) = sll->head;
 
-    for (size_t i = 0; i < position; i++)
+    for (index_t i = 0; i < position; i++)
     {
         if ((*result) == NULL)
             return DS_ERR_ITER;

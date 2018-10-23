@@ -36,16 +36,17 @@ struct CircularLinkedList_s
     /// \brief List length.
     ///
     /// List current amount of nodes.
-    size_t length;
+    index_t length;
 
     /// \brief List length limit.
     ///
-    /// If it is set to 0 then the list has no limit to its length. Otherwise
-    /// it won't be able to have more elements than the specified value. The
-    /// list is always initialized with no restrictions to its length, that is,
-    /// \c limit equals 0. The user won't be able to limit the list length if
-    /// it already has more elements than the specified limit.
-    size_t limit;
+    /// If it is set to 0 or a negative value then the list has no limit to its
+    /// length. Otherwise it won't be able to have more elements than the
+    /// specified value. The list is always initialized with no restrictions to
+    /// its length, that is, \c limit equals 0. The user won't be able to limit
+    /// the list length if it already has more elements than the specified
+    /// limit.
+    index_t limit;
 
     /// Pointer to current node.
     ///
@@ -81,7 +82,7 @@ Status cll_init(CircularLinkedList *cll);
 /// \param element The element to be inserted in the list.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -95,7 +96,7 @@ Status cll_insert_after(CircularLinkedList cll, int element);
 /// \param element The element to be inserted in the list.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -143,11 +144,14 @@ Status cll_remove_before(CircularLinkedList cll, int *result);
 /// \param positions The number of nodes to iterate.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NEGATIVE_VALUE if \c positions is a negative value.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status cll_iter_next(CircularLinkedList cll, size_t positions);
+Status cll_iter_next(CircularLinkedList cll, index_t positions);
 
-/// Iterates the list cursor backwards the specified number of positions.
+/// This function encapsulates cll_iter_next() and cll_iter_prev(). If a
+/// negative value for \c positions is given then it will iterate backwards
+/// with cll_iter_prev(), otherwise it will iterate with cll_iter_next().
 ///
 /// \param cll The list to iterate the cursor.
 /// \param positions The number of nodes to iterate.
@@ -155,7 +159,18 @@ Status cll_iter_next(CircularLinkedList cll, size_t positions);
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status cll_iter_prev(CircularLinkedList cll, size_t positions);
+Status cll_iter(CircularLinkedList cll, index_t positions);
+
+/// Iterates the list cursor backwards the specified number of positions.
+///
+/// \param cll The list to iterate the cursor.
+/// \param positions The number of nodes to iterate.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NEGATIVE_VALUE if \c positions is a negative value.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+Status cll_iter_prev(CircularLinkedList cll, index_t positions);
 
 /// Displays a \c CircularLinkedList in the console.
 ///
@@ -208,9 +223,9 @@ bool cll_contains(CircularLinkedList cll, int key);
 
 bool cll_empty(CircularLinkedList cll);
 
-size_t cll_length(CircularLinkedList cll);
+index_t cll_length(CircularLinkedList cll);
 
-Status cll_limit(CircularLinkedList cll, size_t limit);
+Status cll_limit(CircularLinkedList cll, index_t limit);
 
 int cll_max(CircularLinkedList cll);
 

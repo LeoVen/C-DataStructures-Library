@@ -335,7 +335,7 @@ int prq_priority_lowest(PriorityQueue prq)
     return result;
 }
 
-size_t prq_length(PriorityQueue prq)
+index_t prq_length(PriorityQueue prq)
 {
     if (prq == NULL)
         return 0;

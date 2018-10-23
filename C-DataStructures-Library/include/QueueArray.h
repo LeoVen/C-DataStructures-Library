@@ -45,7 +45,7 @@ struct QueueArray_s
     /// operates relative to this index. This is where the next element to be
     /// removed is located. This index represents the exact position of an the
     /// front element (unlike the \c rear index).
-    size_t front;
+    index_t front;
 
     /// \brief Back of the queue.
     ///
@@ -55,25 +55,25 @@ struct QueueArray_s
     /// always one position ahead (circularly) of the last inserted element.
     /// This might cause confusion; when this index is 0 the real rear element
     /// is at <code> capacity - 1 </code>.
-    size_t rear;
+    index_t rear;
 
     /// \brief Current amount of elements in the \c QueueArray.
     ///
     /// Current amount of elements in the \c QueueArray.
-    size_t size;
+    index_t size;
 
     /// \brief \c QueueArray buffer maximum capacity.
     ///
     /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
     /// reallocated and increases according to \c growth_rate.
-    size_t capacity;
+    index_t capacity;
 
     /// \brief Buffer growth rate.
     ///
     /// Buffer growth rate. The new buffer capacity is calculated as:
     ///
     /// <code> capacity *= (growth_rate / 100.0) </code>
-    size_t growth_rate;
+    index_t growth_rate;
 
     /// \brief Flag for locked capacity.
     ///
@@ -121,7 +121,7 @@ Status qua_init(QueueArray *qua);
 /// growth_rate is less than or equal to 100.
 ///
 /// \see qua_init
-Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate);
+Status qua_create(QueueArray *qua, index_t initial_capacity, index_t growth_rate);
 
 /// Inserts an element into the specified queue. The element is added at the
 /// \c rear index.
@@ -187,15 +187,15 @@ int qua_peek_front(QueueArray qua);
 
 int qua_peek_rear(QueueArray qua);
 
-size_t qua_size(QueueArray qua);
+index_t qua_size(QueueArray qua);
 
-size_t qua_capacity(QueueArray qua);
+index_t qua_capacity(QueueArray qua);
 
 bool qua_empty(QueueArray qua);
 
 bool qua_full(QueueArray qua);
 
-bool qua_fits(QueueArray qua, size_t size);
+bool qua_fits(QueueArray qua, index_t size);
 
 Status qua_copy(QueueArray qua, QueueArray *result);
 

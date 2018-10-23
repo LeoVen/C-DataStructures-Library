@@ -37,16 +37,17 @@ struct Deque_s
     ///
     /// Current amount of nodes linked between the \c front and \c rear
     /// pointers.
-    size_t length;
+    index_t length;
 
     /// \brief Queue length limit.
     ///
-    /// If it is set to 0 then the deque has no limit to its length. Otherwise
-    /// it won't be able to have more elements than the specified value. The
-    /// deque is always initialized with no restrictions to its length, that
-    /// is, \c limit equals 0. The user won't be able to limit the deque length
-    /// if it already has more elements than the specified limit.
-    size_t limit;
+    /// If it is set to 0 or a negative value then the deque has no limit to
+    /// its length. Otherwise it won't be able to have more elements than the
+    /// specified value. The deque is always initialized with no restrictions
+    /// to its length, that is, \c limit equals 0. The user won't be able to
+    /// limit the list length if it already has more elements than the
+    /// specified limit.
+    index_t limit;
 
     /// \brief Points to the first Node on the deque.
     ///
@@ -85,7 +86,7 @@ Status deq_init(Deque *deq);
 /// \param[in] element The element to be inserted in the deque.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the deque
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the deque
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -97,7 +98,7 @@ Status deq_enqueue_front(Deque deq, int element);
 /// \param[in] element The element to be inserted in the deque.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the deque
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the deque
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -174,9 +175,9 @@ int deq_peek_rear(Deque deq);
 
 bool deq_empty(Deque deq);
 
-size_t deq_length(Deque deq);
+index_t deq_length(Deque deq);
 
-Status deq_limit(Deque deq, size_t limit);
+Status deq_limit(Deque deq, index_t limit);
 
 Status deq_copy(Deque deq, Deque *result);
 

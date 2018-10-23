@@ -33,22 +33,25 @@
 /// \b Functions
 ///
 /// Located in file DoublyLinkedList.c
+///
+/// TODO Add support to negative index searches
 struct DoublyLinkedList_s
 {
     /// \brief List length.
     ///
     /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
-    size_t length;
+    index_t length;
 
     /// \brief List length limit.
     ///
-    /// If it is set to 0 then the list has no limit to its length. Otherwise
-    /// it won't be able to have more elements than the specified value. The
-    /// list is always initialized with no restrictions to its length, that is,
-    /// \c limit equals 0. The user won't be able to limit the list length if
-    /// it already has more elements than the specified limit.
-    size_t limit;
+    /// If it is set to 0 or a negative value then the list has no limit to its
+    /// length. Otherwise it won't be able to have more elements than the
+    /// specified value. The list is always initialized with no restrictions to
+    /// its length, that is, \c limit equals 0. The user won't be able to limit
+    /// the list length if it already has more elements than the specified
+    /// limit.
+    index_t limit;
 
     /// \brief Points to the first Node on the list.
     ///
@@ -90,7 +93,7 @@ Status dll_init(DoublyLinkedList *dll);
 /// \param[in] element The element to be inserted in the list.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -105,13 +108,14 @@ Status dll_insert_head(DoublyLinkedList dll, int element);
 /// \param[in] position Where the new element is to be inserted.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
 /// length reached the specified limit.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater than
-/// the list \c length.
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than the
+/// list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status dll_insert_at(DoublyLinkedList dll, int element, size_t position);
+Status dll_insert_at(DoublyLinkedList dll, int element, index_t position);
 
 /// Inserts a new element at the end of the list. If the list is empty and this
 /// is the first element being added, c\ head will also be pointing to it; in
@@ -122,7 +126,7 @@ Status dll_insert_at(DoublyLinkedList dll, int element, size_t position);
 /// \param[in] element The element to be inserted in the list.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -148,11 +152,12 @@ Status dll_remove_head(DoublyLinkedList dll, int *result);
 /// \param[in] position Where the element is to be removed from.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status dll_remove_at(DoublyLinkedList dll, int *result, size_t position);
+Status dll_remove_at(DoublyLinkedList dll, int *result, index_t position);
 
 /// Removes and retrieves the last element in the list located at the \c tail
 /// pointer.
@@ -173,11 +178,12 @@ Status dll_remove_tail(DoublyLinkedList dll, int *result);
 /// \param[in] position The position of the element to be updated.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status dll_update(DoublyLinkedList dll, int element, size_t position);
+Status dll_update(DoublyLinkedList dll, int element, index_t position);
 
 /// Retrieves an element at a given position without removing it. This function
 /// simulates an index access like in arrays. If the position parameter is
@@ -190,11 +196,12 @@ Status dll_update(DoublyLinkedList dll, int element, size_t position);
 /// \param[in] position The position of the element to be retrieved.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_INVALID_POSITION if \c position parameter is greater or
+/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
+/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status dll_get(DoublyLinkedList dll, int *result, size_t position);
+Status dll_get(DoublyLinkedList dll, int *result, index_t position);
 
 /// Displays a \c DoublyLinkedList in the console.
 ///
@@ -247,9 +254,9 @@ bool dll_contains(DoublyLinkedList dll, int key);
 
 bool dll_empty(DoublyLinkedList dll);
 
-size_t dll_length(DoublyLinkedList dll);
+index_t dll_length(DoublyLinkedList dll);
 
-Status dll_limit(DoublyLinkedList dll, size_t limit);
+Status dll_limit(DoublyLinkedList dll, index_t limit);
 
 int dll_max(DoublyLinkedList dll);
 
@@ -257,11 +264,11 @@ int dll_min(DoublyLinkedList dll);
 
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2);
 
-//Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, size_t position);
+//Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, index_t position);
 
-//Status dll_unlink(DoublyLinkedList dll, DoublyLinkedList result, size_t position);
+//Status dll_unlink(DoublyLinkedList dll, DoublyLinkedList result, index_t position);
 
-//Status dll_unlink_at(DoublyLinkedList dll, DoublyLinkedList result, size_t position1, size_t position2);
+//Status dll_unlink_at(DoublyLinkedList dll, DoublyLinkedList result, index_t position1, index_t position2);
 
 Status dll_copy(DoublyLinkedList dll, DoublyLinkedList *result);
 

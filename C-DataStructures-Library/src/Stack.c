@@ -29,8 +29,11 @@ Status stk_init(Stack *stk)
     if (!(*stk))
         return DS_ERR_ALLOC;
 
-    (*stk)->height = 0;
     (*stk)->top = NULL;
+
+    (*stk)->height = 0;
+
+    (*stk)->limit = 0;
 
     return DS_OK;
 }
@@ -39,6 +42,9 @@ Status stk_push(Stack stk, int element)
 {
     if (stk == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (stk->limit > 0 && stk->height >= stk->limit)
+        return DS_ERR_FULL;
 
     StackNode box;
 
@@ -224,17 +230,30 @@ int stk_peek(Stack stk)
     return stk->top->data;
 }
 
-size_t stk_height(Stack stk)
+bool stk_empty(Stack stk)
+{
+    return stk->height == 0;
+}
+
+index_t stk_height(Stack stk)
 {
     if (stk == NULL)
-        return 0;
+        return -1;
 
     return stk->height;
 }
 
-bool stk_empty(Stack stk)
+Status stk_limit(Stack stk, index_t limit)
 {
-    return stk->height == 0;
+    if (stk == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk->height > limit && limit > 0)
+        return DS_ERR_INVALID_OPERATION;
+
+    stk->limit = limit;
+
+    return DS_OK;
 }
 
 Status stk_copy(Stack stk, Stack *result)

@@ -20,7 +20,7 @@ int main()
 
     int j;
 
-    size_t l;
+    index_t l;
 
     if (sll_init(&sll0) == DS_OK)
     {
@@ -40,7 +40,7 @@ int main()
         {
             sll_display_array(sll0);
 
-            printf("\nLength: %u\n", sll_length(sll0));
+            printf("\nLength: %lld\n", sll_length(sll0));
         }
     }
 
@@ -79,7 +79,7 @@ int main()
 
         dll_display_array(dll);
 
-        printf("\nLength: %u\n", dll_length(dll));
+        printf("\nLength: %lld\n", dll_length(dll));
     }
 
     dll_delete(&dll);
@@ -106,10 +106,10 @@ int main()
             }
 
             stk_display_array(stk0);
-            printf("\nHeight stk0: %u\n", stk0->height);
+            printf("\nHeight stk0: %lld\n", stk0->height);
 
             stk_display_array(stk1);
-            printf("\nHeight stk1: %u\n", stk1->height);
+            printf("\nHeight stk1: %lld\n", stk1->height);
 
         }
 
@@ -128,7 +128,7 @@ int main()
         if (que_copy(que0, &que1) == DS_OK)
         {
             l = que1->length;
-            for (size_t i = 0; i < l; i++)
+            for (index_t i = 0; i < l; i++)
             {
                 que_dequeue(que0, &j);
 
@@ -136,10 +136,10 @@ int main()
             }
 
             que_display_array(que0);
-            printf("\nLength que0: %u\n", que0->length);
+            printf("\nLength que0: %lld\n", que0->length);
 
             que_display_array(que1);
-            printf("\nLength que1: %u\n", que1->length);
+            printf("\nLength que1: %lld\n", que1->length);
         }
     }
 
@@ -166,7 +166,7 @@ int main()
         {
             l = deq0->length;
 
-            for (size_t i = 0; i < l; i++)
+            for (index_t i = 0; i < l; i++)
             {
                 deq_dequeue_front(deq0, &j);
 
@@ -174,10 +174,10 @@ int main()
             }
 
             deq_display_array(deq0);
-            printf("\nLength deq0: %u\n", deq0->length);
+            printf("\nLength deq0: %lld\n", deq0->length);
 
             deq_display_array(deq1);
-            printf("\nLength deq0: %u\n", deq1->length);
+            printf("\nLength deq0: %lld\n", deq1->length);
         }
     }
 
@@ -197,10 +197,10 @@ int main()
         if (prq_copy(prq0, &prq1) == DS_OK)
         {
             prq_display_array(prq0);
-            printf("\nLength prq0: %u\n", prq0->length);
+            printf("\nLength prq0: %lld\n", prq0->length);
 
             prq_display_array(prq1);
-            printf("\nLength prq1: %u\n", prq1->length);
+            printf("\nLength prq1: %lld\n", prq1->length);
 
             prq_display_priority(prq1);
         }
@@ -227,7 +227,7 @@ int main()
         {
             dar_display(dar0);
 
-            printf("\nArray 0 size: %u\n", dar0->size);
+            printf("\nArray 0 size: %lld\n", dar0->size);
 
             if (dar_copy(dar0, &dar1) == DS_OK)
             {
@@ -235,7 +235,7 @@ int main()
                 {
                     dar_display(dar1);
 
-                    printf("\nArray 1 size: %u\n", dar1->size);
+                    printf("\nArray 1 size: %lld\n", dar1->size);
                 }
             }
         }
@@ -246,7 +246,7 @@ int main()
 
     if (dar_init(&dar0) == DS_OK && dar_init(&dar1) == DS_OK && dar_init(&dar2) == DS_OK)
     {
-        for (size_t i = 0, j = 9; i < j; i++, j--)
+        for (index_t i = 0, j = 9; i < j; i++, j--)
         {
             if (dar_insert_back(dar0, i) != DS_OK || dar_insert_front(dar1, j) != DS_OK || dar_insert_back(dar2, 9))
                 break;
@@ -284,11 +284,11 @@ int main()
         printf("\nEnd: ");
 
         dar_display_array(dar0);
-        printf("Size: %u\n", dar0->size);
+        printf("Size: %lld\n", dar0->size);
         dar_display_array(dar1);
-        printf("Size: %u\n", dar1->size);
+        printf("Size: %lld\n", dar1->size);
         dar_display_array(dar2);
-        printf("Size: %u\n", dar2->size);
+        printf("Size: %lld\n", dar2->size);
 
     }
 
@@ -309,7 +309,7 @@ int main()
         }
 
         sta_display_array(sta0);
-        printf("Height: %u\n\n", sta0->height);
+        printf("Height: %lld\n\n", sta0->height);
 
         if (sta_copy(sta0, &sta1) == DS_OK)
         {
@@ -321,10 +321,10 @@ int main()
             }
 
             sta_display_array(sta0);
-            printf("Stack 0 Height: %u\n\n", sta0->height);
+            printf("Stack 0 Height: %lld\n\n", sta0->height);
 
             sta_display_array(sta1);
-            printf("Stack 1 Height: %u", sta1->height);
+            printf("Stack 1 Height: %lld", sta1->height);
         }
     }
 
@@ -346,15 +346,15 @@ int main()
 
             printf("\n");
 
-            for (size_t k = 0; k < qua0->capacity; k++)
+            for (index_t k = 0; k < qua0->capacity; k++)
             {
                 printf("%d ", qua0->buffer[k]);
             }
 
-            printf("\nFront     : %u", qua0->front);
-            printf("\nRear      : %u", qua0->rear);
-            printf("\nSize      : %u", qua0->size);
-            printf("\nCapacity  : %u", qua0->capacity);
+            printf("\nFront     : %lld", qua0->front);
+            printf("\nRear      : %lld", qua0->rear);
+            printf("\nSize      : %lld", qua0->size);
+            printf("\nCapacity  : %lld", qua0->capacity);
             printf("\nFront V   : %d", qua_peek_front(qua0));
             printf("\nRear V    : %d", qua_peek_rear(qua0));
         }
@@ -363,16 +363,16 @@ int main()
         {
             printf("\n\n\nOriginal\n--------\n");
             qua_display(qua0);
-            printf("\nSize     : %u", qua0->size);
-            printf("\nCapacity : %u", qua0->capacity);
-            printf("\nFront    : %u", qua0->front);
-            printf("\nRear     : %u", qua0->rear);
+            printf("\nSize     : %lld", qua0->size);
+            printf("\nCapacity : %lld", qua0->capacity);
+            printf("\nFront    : %lld", qua0->front);
+            printf("\nRear     : %lld", qua0->rear);
             printf("\n\n\nCopy\n----\n");
             qua_display(qua1);
-            printf("\nSize     : %u", qua1->size);
-            printf("\nCapacity : %u", qua1->capacity);
-            printf("\nFront    : %u", qua1->front);
-            printf("\nRear     : %u\n\n", qua1->rear);
+            printf("\nSize     : %lld", qua1->size);
+            printf("\nCapacity : %lld", qua1->capacity);
+            printf("\nFront    : %lld", qua1->front);
+            printf("\nRear     : %lld\n\n", qua1->rear);
         }
     }
 
@@ -385,7 +385,7 @@ int main()
     {
         for (int i = 0; i < 20; i++)
         {
-            if (arr_insert(array, (size_t)i, i) != DS_OK)
+            if (arr_insert(array, (index_t)i, i) != DS_OK)
                 break;
         }
 
@@ -432,10 +432,10 @@ int main()
         cbf_display(cbf1);
         cbf_display_array(cbf1);
 
-        printf("\nCapacity : %u", cbf1->capacity);
-        printf("\nSize     : %u", cbf1->size);
-        printf("\nStart    : %u", cbf1->start);
-        printf("\nEnd      : %u\n\n", cbf1->end);
+        printf("\nCapacity : %lld", cbf1->capacity);
+        printf("\nSize     : %lld", cbf1->size);
+        printf("\nStart    : %lld", cbf1->start);
+        printf("\nEnd      : %lld\n\n", cbf1->end);
 
         if (cbf_erase(&cbf1) == DS_OK)
         {
@@ -444,10 +444,10 @@ int main()
             cbf_display(cbf1);
             cbf_display_array(cbf1);
 
-            printf("\nCapacity : %u", cbf1->capacity);
-            printf("\nSize     : %u", cbf1->size);
-            printf("\nStart    : %u", cbf1->start);
-            printf("\nEnd      : %u\n", cbf1->end);
+            printf("\nCapacity : %lld", cbf1->capacity);
+            printf("\nSize     : %lld", cbf1->size);
+            printf("\nStart    : %lld", cbf1->start);
+            printf("\nEnd      : %lld\n", cbf1->end);
         }
 
         if (cbf_delete(&cbf1) == DS_OK)
@@ -456,17 +456,17 @@ int main()
             {
                 printf("\nOriginal");
                 cbf_display(cbf0);
-                printf("\nCapacity : %u", cbf0->capacity);
-                printf("\nSize     : %u", cbf0->size);
-                printf("\nStart    : %u", cbf0->start);
-                printf("\nEnd      : %u\n", cbf0->end);
+                printf("\nCapacity : %lld", cbf0->capacity);
+                printf("\nSize     : %lld", cbf0->size);
+                printf("\nStart    : %lld", cbf0->start);
+                printf("\nEnd      : %lld\n", cbf0->end);
 
                 printf("\nCopy");
                 cbf_display(cbf1);
-                printf("\nCapacity : %u", cbf1->capacity);
-                printf("\nSize     : %u", cbf1->size);
-                printf("\nStart    : %u", cbf1->start);
-                printf("\nEnd      : %u\n\n", cbf1->end);
+                printf("\nCapacity : %lld", cbf1->capacity);
+                printf("\nSize     : %lld", cbf1->size);
+                printf("\nStart    : %lld", cbf1->start);
+                printf("\nEnd      : %lld\n\n", cbf1->end);
             }
         }
     }
@@ -495,12 +495,12 @@ int main()
             printf("\nOriginal: ");
             cll_display(cll0);
             printf("\nCurrent data: %d", cll_peek(cll0));
-            printf("\nLength: %u\n", cll0->length);
+            printf("\nLength: %lld\n", cll0->length);
 
             printf("\nCopy: ");
             cll_display(cll1);
             printf("\nCurrent data: %d", cll_peek(cll1));
-            printf("\nLength: %u\n", cll1->length);
+            printf("\nLength: %lld\n", cll1->length);
         }
 
         printf("\n");
@@ -523,7 +523,7 @@ int main()
     QueueTests();
     SinglyLinkedListTests();
     StackArrayTests();
-
+    StackTests();
 
     return 0;
 }

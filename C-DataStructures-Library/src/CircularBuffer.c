@@ -14,8 +14,11 @@ Status cbf_wrap(CircularBuffer cbf);
 
 // END OF NOT EXPOSED API
 
-Status cbf_init(CircularBuffer *cbf, size_t size)
+Status cbf_init(CircularBuffer *cbf, index_t size)
 {
+    if (size < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
     (*cbf) = malloc(sizeof(CircularBuffer_t));
 
     if (!(*cbf))
@@ -95,7 +98,7 @@ Status cbf_display(CircularBuffer cbf)
 
     printf("\nCircular Buffer\n[ ");
 
-    for (size_t i = 0; i < cbf->capacity - 1; i++)
+    for (index_t i = 0; i < cbf->capacity - 1; i++)
         printf("%d, ", cbf->buffer[i]);
 
     printf("%d ]\n", cbf->buffer[cbf->capacity - 1]);
@@ -117,7 +120,7 @@ Status cbf_display_array(CircularBuffer cbf)
 
     printf("\n[ ");
 
-    for (size_t i = cbf->start, j = 0; j < cbf->size - 1; i++, j++)
+    for (index_t i = cbf->start, j = 0; j < cbf->size - 1; i++, j++)
     {
         if (i >= cbf->capacity)
             i = 0;
@@ -137,7 +140,7 @@ Status cbf_display_raw(CircularBuffer cbf)
 
     printf("\n");
 
-    for (size_t i = 0; i < cbf->capacity; i++)
+    for (index_t i = 0; i < cbf->capacity; i++)
         printf(" %d", cbf->buffer[i]);
 
     printf("\n");
@@ -163,7 +166,7 @@ Status cbf_erase(CircularBuffer *cbf)
     if (cbf == NULL)
         return DS_ERR_NULL_POINTER;
 
-    size_t size = (*cbf)->capacity;
+    index_t size = (*cbf)->capacity;
 
     Status st = cbf_delete(cbf);
 
@@ -178,12 +181,20 @@ Status cbf_erase(CircularBuffer *cbf)
     return DS_OK;
 }
 
-size_t cbf_size(CircularBuffer cbf)
+index_t cbf_size(CircularBuffer cbf)
 {
     if (cbf == NULL)
-        return 0;
+        return -1;
 
     return cbf->size;
+}
+
+index_t cbf_capacity(CircularBuffer cbf)
+{
+    if (cbf == NULL)
+        return -1;
+
+    return cbf->capacity;
 }
 
 bool cbf_empty(CircularBuffer cbf)
@@ -206,7 +217,7 @@ Status cbf_copy(CircularBuffer cbf, CircularBuffer *result)
     if (st != DS_OK)
         return st;
 
-    for (size_t i = 0; i < cbf->capacity; i++)
+    for (index_t i = 0; i < cbf->capacity; i++)
         (*result)->buffer[i] = cbf->buffer[i];
 
     (*result)->size = cbf->size;
@@ -221,6 +232,9 @@ Status cbf_copy(CircularBuffer cbf, CircularBuffer *result)
 
 Status cbf_wrap(CircularBuffer cbf)
 {
+    if (cbf == NULL)
+        return DS_ERR_NULL_POINTER;
+
     if (cbf->start >= cbf->capacity)
         cbf->start = 0;
 

@@ -43,7 +43,7 @@ Status deq_enqueue_front(Deque deq, int element)
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq->limit != 0 && deq->length >= deq->limit)
+    if (deq->limit > 0 && deq->length >= deq->limit)
         return DS_ERR_FULL;
 
     DequeNode *node;
@@ -76,7 +76,7 @@ Status deq_enqueue_rear(Deque deq, int value)
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq->limit != 0 && deq->length >= deq->limit)
+    if (deq->limit > 0 && deq->length >= deq->limit)
         return DS_ERR_FULL;
 
     DequeNode *node;
@@ -313,20 +313,20 @@ bool deq_empty(Deque deq)
     return deq->length == 0;
 }
 
-size_t deq_length(Deque deq)
+index_t deq_length(Deque deq)
 {
     if (deq == NULL)
-        return 0;
+        return -1;
 
     return deq->length;
 }
 
-Status deq_limit(Deque deq, size_t limit)
+Status deq_limit(Deque deq, index_t limit)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq->length > limit && limit != 0)
+    if (deq->length > limit && limit > 0)
         return DS_ERR_INVALID_OPERATION;
 
     deq->limit = limit;
@@ -383,6 +383,9 @@ Status deq_make_node(DequeNode **node, int value)
 
 Status deq_delete_node(DequeNode **node)
 {
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
+
     free(*node);
 
     (*node) = NULL;

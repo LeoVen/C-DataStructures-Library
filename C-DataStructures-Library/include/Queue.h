@@ -37,16 +37,17 @@ struct Queue_s
     ///
     /// Queue current amount of elements linked between the \c front and
     /// \c rear pointers.
-    size_t length;
+    index_t length;
 
     /// \brief Queue length limit.
     ///
-    /// If it is set to 0 then the queue has no limit to its length. Otherwise
-    /// it won't be able to have more elements than the specified value. The
-    /// queue is always initialized with no restrictions to its length, that
-    /// is, \c limit equals 0. The user won't be able to limit the queue length
-    /// if it already has more elements than the specified limit.
-    size_t limit;
+    /// If it is set to 0 or a negative value then the queue has no limit to
+    /// its length. Otherwise it won't be able to have more elements than the
+    /// specified value. The queue is always initialized with no restrictions
+    /// to its length, that is, \c limit equals 0. The user won't be able to
+    /// limit the list length if it already has more elements than the
+    /// specified limit.
+    index_t limit;
 
     /// \brief The front of the queue.
     ///
@@ -156,9 +157,9 @@ int que_peek_rear(Queue que);
 
 bool que_empty(Queue que);
 
-size_t que_length(Queue que);
+index_t que_length(Queue que);
 
-Status que_limit(Queue que, size_t limit);
+Status que_limit(Queue que, index_t limit);
 
 Status que_copy(Queue que, Queue *result);
 

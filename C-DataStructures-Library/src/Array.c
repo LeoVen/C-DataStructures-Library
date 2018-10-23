@@ -8,9 +8,9 @@
 
 #include "Array.h"
 
-Status arr_init(Array *arr, size_t size)
+Status arr_init(Array *arr, index_t size)
 {
-    if (size == 0)
+    if (size <= 0)
         return DS_ERR_INVALID_ARGUMENT;
 
     (*arr) = malloc(sizeof(Array_t));
@@ -28,13 +28,16 @@ Status arr_init(Array *arr, size_t size)
     return DS_OK;
 }
 
-Status arr_insert(Array arr, size_t index, int value)
+Status arr_insert(Array arr, index_t index, int value)
 {
     if (arr == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (index >= arr->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     if (arr->buffer[index] == 0)
     {
@@ -43,7 +46,7 @@ Status arr_insert(Array arr, size_t index, int value)
         return DS_OK;
     }
 
-    return DS_ERR_INVALID_POSITION;
+    return DS_ERR_OUT_OF_RANGE;
 }
 
 Status arr_display(Array arr)
@@ -53,7 +56,7 @@ Status arr_display(Array arr)
 
     printf("\nArray\n[ ");
 
-    for (size_t i = 0; i < arr->size - 1; i++)
+    for (index_t i = 0; i < arr->size - 1; i++)
         printf("%d, ", arr->buffer[i]);
 
     printf("%d ]\n", arr->buffer[arr->size - 1]);
@@ -68,7 +71,7 @@ Status arr_display_raw(Array arr)
 
     printf("\n");
 
-    for (size_t i = 0; i < arr->size; i++)
+    for (index_t i = 0; i < arr->size; i++)
         printf("%d ", arr->buffer[i]);
 
     printf("\n");
@@ -94,7 +97,7 @@ Status arr_erase(Array arr)
     if (arr == NULL)
         return DS_ERR_NULL_POINTER;
 
-    for (size_t i = 0; i < arr->size; i++)
+    for (index_t i = 0; i < arr->size; i++)
         arr->buffer[i] = 0;
 
     return DS_OK;
@@ -110,19 +113,22 @@ Status arr_copy(Array arr, Array *result)
     if (st != DS_OK)
         return st;
 
-    for (size_t i = 0; i < arr->size; i++)
+    for (index_t i = 0; i < arr->size; i++)
         (*result)->buffer[i] = arr->buffer[i];
 
     return DS_OK;
 }
 
-Status arr_switch(Array arr, size_t pos1, size_t pos2)
+Status arr_switch(Array arr, index_t pos1, index_t pos2)
 {
     if (arr == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (pos1 >= arr->size || pos2 >= arr->size)
-        return DS_ERR_INVALID_POSITION;
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (pos1 < 0 || pos2 < 0)
+        return DS_ERR_NEGATIVE_VALUE;
 
     int temp = arr->buffer[pos1];
     arr->buffer[pos1] = arr->buffer[pos2];
@@ -138,7 +144,7 @@ Status arr_reverse(Array arr)
 
     Status st;
 
-    for (size_t i = 0; i < arr->size / 2; i++)
+    for (index_t i = 0; i < arr->size / 2; i++)
     {
         st = arr_switch(arr, i, arr->size - i - 1);
 

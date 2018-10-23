@@ -13,7 +13,7 @@
 
 typedef struct UnitTest_s
 {
-    size_t passed, total;
+    index_t passed, total;
 } UnitTest_t, *UnitTest;
 
 Status ut_init(UnitTest *ut);
@@ -24,8 +24,6 @@ void ut_report(UnitTest ut, const char *struct_name);
 
 void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name);
 
-void ut_equals_long_long(UnitTest ut, long long param1, long long param2, const char *test_name);
-
-void ut_equals_size_t(UnitTest ut, size_t param1, size_t param2, const char *test_name);
+void ut_equals_index_t(UnitTest ut, index_t param1, index_t param2, const char *test_name);
 
 #endif //C_DATASTRUCTURES_LIBRARY_UNITTEST_H

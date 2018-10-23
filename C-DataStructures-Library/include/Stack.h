@@ -35,7 +35,17 @@ struct Stack_s
     /// \brief Current amount of elements in the \c Stack.
     ///
     /// Current amount of elements in the \c Stack.
-    size_t height;
+    index_t height;
+
+    /// \brief Stack height limit.
+    ///
+    /// If it is set to 0 or a negative value then the stack has no limit to
+    /// its height. Otherwise it won't be able to have more elements than the
+    /// specified value. The stack is always initialized with no restrictions
+    /// to its length, that is, \c limit equals 0. The user won't be able to
+    /// limit the stack height if it already has more elements than the
+    /// specified limit.
+    index_t limit;
 
     /// \brief The element at the top of the \c Stack.
     ///
@@ -71,6 +81,8 @@ Status stk_init(Stack *stk);
 /// \param[in] element The element to be inserted on the stack.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (more than 0) and the list height
+/// reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 Status stk_push(Stack stk, int element);
@@ -91,6 +103,8 @@ Status stk_pop(Stack stk, int *result);
 /// \param[in] element The element to be inserted on the stack.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (more than 0) and the list height
+/// reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 ///
@@ -156,9 +170,11 @@ Status stk_erase(Stack *stk);
 
 int stk_peek(Stack stk);
 
-size_t stk_height(Stack stk);
-
 bool stk_empty(Stack stk);
+
+index_t stk_height(Stack stk);
+
+Status stk_limit(Stack stk, index_t limit);
 
 Status stk_copy(Stack stk, Stack *result);
 

@@ -14,13 +14,13 @@
 typedef struct CircularBuffer_s
 {
     int *buffer;        /*!< Buffer */
-    size_t size;        /*!< Current Buffer size */
-    size_t capacity;    /*!< Maximum Buffer size */
-    size_t start;       /*!< Where elements are removed */
-    size_t end;         /*!< Where elements are added */
+    index_t size;        /*!< Current Buffer size */
+    index_t capacity;    /*!< Maximum Buffer size */
+    index_t start;       /*!< Where elements are removed */
+    index_t end;         /*!< Where elements are added */
 } CircularBuffer_t, *CircularBuffer;
 
-Status cbf_init(CircularBuffer *cbf, size_t length);
+Status cbf_init(CircularBuffer *cbf, index_t length);
 
 Status cbf_insert(CircularBuffer cbf, int value);
 
@@ -36,7 +36,9 @@ Status cbf_delete(CircularBuffer *cbf);
 
 Status cbf_erase(CircularBuffer *cbf);
 
-size_t cbf_size(CircularBuffer cbf);
+index_t cbf_size(CircularBuffer cbf);
+
+index_t cbf_capacity(CircularBuffer cbf);
 
 bool cbf_empty(CircularBuffer cbf);
 

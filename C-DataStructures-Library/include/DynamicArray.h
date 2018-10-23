@@ -17,6 +17,8 @@
 /// It can also be locked, disabling the growth functionality, or unlocked,
 /// enabling it back.
 ///
+///
+/// TODO Add support to negative index searches
 struct DynamicArray_s
 {
     /// \brief Data buffer.
@@ -27,20 +29,20 @@ struct DynamicArray_s
     /// \brief Current amount of elements in the \c DynamicArray.
     ///
     /// Current amount of elements in the \c DynamicArray.
-    size_t size;
+    index_t size;
 
     /// \brief \c DynamicArray buffer maximum capacity.
     ///
     /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
     /// reallocated and increases according to \c growth_rate.
-    size_t capacity;
+    index_t capacity;
 
     /// \brief Buffer growth rate.
     ///
     /// Buffer growth rate. The new buffer capacity is calculated as:
     ///
     /// <code> capacity *= (growth_rate / 100.0) </code>
-    size_t growth_rate;
+    index_t growth_rate;
 
     /// \brief Flag for locked capacity.
     ///
@@ -89,29 +91,29 @@ Status dar_init(DynamicArray *dar);
 /// growth_rate is less than or equal to 100.
 ///
 /// \see qua_init
-Status dar_create(DynamicArray *dar, size_t initial_capacity, size_t growth_rate);
+Status dar_create(DynamicArray *dar, index_t initial_capacity, index_t growth_rate);
 
-Status dar_make(DynamicArray *dar, int *array, size_t arr_size);
+Status dar_make(DynamicArray *dar, int *array, index_t arr_size);
 
-Status dar_insert(DynamicArray dar, int *array, size_t arr_size, size_t index);
+Status dar_insert(DynamicArray dar, int *array, index_t arr_size, index_t index);
 
 Status dar_insert_front(DynamicArray dar, int value);
 
-Status dar_insert_at(DynamicArray dar, int value, size_t index);
+Status dar_insert_at(DynamicArray dar, int value, index_t index);
 
 Status dar_insert_back(DynamicArray dar, int value);
 
-Status dar_remove(DynamicArray dar, size_t from, size_t to);
+Status dar_remove(DynamicArray dar, index_t from, index_t to);
 
 Status dar_remove_front(DynamicArray dar, int *result);
 
-Status dar_remove_at(DynamicArray dar, int *result, size_t index);
+Status dar_remove_at(DynamicArray dar, int *result, index_t index);
 
 Status dar_remove_back(DynamicArray dar, int *result);
 
-Status dar_update(DynamicArray dar, int value, size_t index);
+Status dar_update(DynamicArray dar, int value, index_t index);
 
-Status dar_get(DynamicArray dar, int *result, size_t index);
+Status dar_get(DynamicArray dar, int *result, index_t index);
 
 Status dar_display(DynamicArray dar);
 
@@ -123,15 +125,15 @@ Status dar_delete(DynamicArray *dar);
 
 Status dar_erase(DynamicArray *dar);
 
-size_t dar_cap(DynamicArray dar);
+index_t dar_cap(DynamicArray dar);
 
-size_t dar_size(DynamicArray dar);
+index_t dar_size(DynamicArray dar);
 
 bool dar_empty(DynamicArray dar);
 
 bool dar_full(DynamicArray dar);
 
-bool dar_fits(DynamicArray dar, size_t size);
+bool dar_fits(DynamicArray dar, index_t size);
 
 bool dar_contains(DynamicArray dar, int value);
 
@@ -139,7 +141,7 @@ Status dar_copy(DynamicArray dar, DynamicArray *result);
 
 Status dar_prepend(DynamicArray dar1, DynamicArray dar2);
 
-Status dar_add(DynamicArray dar1, DynamicArray dar2, size_t index);
+Status dar_add(DynamicArray dar1, DynamicArray dar2, index_t index);
 
 Status dar_append(DynamicArray dar1, DynamicArray dar2);
 

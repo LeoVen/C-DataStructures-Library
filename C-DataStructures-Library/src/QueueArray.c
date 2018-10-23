@@ -39,7 +39,7 @@ Status qua_init(QueueArray *qua)
     return DS_OK;
 }
 
-Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate)
+Status qua_create(QueueArray *qua, index_t initial_capacity, index_t growth_rate)
 {
     if (initial_capacity < 8 || growth_rate <= 100)
         return DS_ERR_INVALID_ARGUMENT;
@@ -122,7 +122,7 @@ Status qua_display(QueueArray qua)
 
     printf("\nQueueArray\nfront <-");
 
-    size_t i;
+    index_t i;
     for (i = qua->front; i < qua->rear; i++)
         printf(" %d <-", qua->buffer[i]);
 
@@ -145,13 +145,13 @@ Status qua_display_array(QueueArray qua)
 
     printf("\n[ ");
 
-    size_t i, j;
+    index_t i, j;
     for (i = qua->front, j = 0; j < qua->size - 1; i = (i + 1) % qua->capacity, j++)
     {
         printf("%d, ", qua->buffer[i]);
     }
 
-    size_t real_rear = (qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1;
+    index_t real_rear = (qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1;
 
     printf("%d ]\n", qua->buffer[real_rear]);
 
@@ -168,7 +168,7 @@ Status qua_display_raw(QueueArray qua)
     if (qua_empty(qua))
         return DS_OK;
 
-    for (size_t i = qua->front; i < qua->rear; i++)
+    for (index_t i = qua->front; i < qua->rear; i++)
         printf("%d ", qua->buffer[i]);
 
     printf("\n");
@@ -230,18 +230,18 @@ int qua_peek_rear(QueueArray qua)
     return qua->buffer[(qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1];
 }
 
-size_t qua_size(QueueArray qua)
+index_t qua_size(QueueArray qua)
 {
     if (qua == NULL)
-        return 0;
+        return -1;
 
     return qua->size;
 }
 
-size_t qua_capacity(QueueArray qua)
+index_t qua_capacity(QueueArray qua)
 {
     if (qua == NULL)
-        return 0;
+        return -1;
 
     return qua->capacity;
 }
@@ -256,7 +256,7 @@ bool qua_full(QueueArray qua)
     return qua->size == qua->capacity;
 }
 
-bool qua_fits(QueueArray qua, size_t size)
+bool qua_fits(QueueArray qua, index_t size)
 {
     return (qua->size + size) <= qua->capacity;
 }
@@ -274,7 +274,7 @@ Status qua_copy(QueueArray qua, QueueArray *result)
     if (qua_empty(qua))
         return DS_OK;
 
-    for (size_t i = 0; i < qua->capacity; i++)
+    for (index_t i = 0; i < qua->capacity; i++)
     {
         (*result)->buffer[i] = qua->buffer[i];
     }
@@ -320,9 +320,9 @@ Status qua_grow(QueueArray qua)
     if (qua->locked)
         return DS_ERR_FULL;
 
-    size_t old_capacity = qua->capacity;
+    index_t old_capacity = qua->capacity;
 
-    qua->capacity = (size_t)((double)(qua->capacity) * ((double)(qua->growth_rate) / 100.0));
+    qua->capacity = (index_t)((double)(qua->capacity) * ((double)(qua->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (qua->capacity - old_capacity < 4)
@@ -340,7 +340,7 @@ Status qua_grow(QueueArray qua)
 
     qua->buffer = new_buffer;
 
-    size_t real_rear = (qua->rear == 0) ? old_capacity - 1 : qua->rear - 1;
+    index_t real_rear = (qua->rear == 0) ? old_capacity - 1 : qua->rear - 1;
 
     // Shift elements if the rear index wrapped around the buffer
     if (real_rear < qua->front)
@@ -353,9 +353,9 @@ Status qua_grow(QueueArray qua)
         // portion to the right portion.
         if (old_capacity - qua->front < qua->rear)
         {
-            size_t distance = old_capacity - qua->front;
+            index_t distance = old_capacity - qua->front;
 
-            for (size_t i = old_capacity - 1, j = qua->capacity - 1; i >= qua->front; i--, j--)
+            for (index_t i = old_capacity - 1, j = qua->capacity - 1; i >= qua->front; i--, j--)
             {
                 qua->buffer[j] = qua->buffer[i];
             }
@@ -365,7 +365,7 @@ Status qua_grow(QueueArray qua)
         // If the growth rate is less than 150 the rear index might wrap around the buffer again
         else
         {
-            for (size_t i = 0, j = old_capacity; i < qua->rear; i++, j = (j + 1) % qua->capacity)
+            for (index_t i = 0, j = old_capacity; i < qua->rear; i++, j = (j + 1) % qua->capacity)
             {
                 qua->buffer[j] = qua->buffer[i];
             }

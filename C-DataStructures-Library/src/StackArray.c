@@ -36,7 +36,7 @@ Status sta_init(StackArray *sta)
     return DS_OK;
 }
 
-Status sta_create(StackArray *sta, size_t initial_capacity, size_t growth_rate)
+Status sta_create(StackArray *sta, index_t initial_capacity, index_t growth_rate)
 {
     if (initial_capacity < 8 || growth_rate <= 100)
         return DS_ERR_INVALID_ARGUMENT;
@@ -122,7 +122,7 @@ Status sta_display(StackArray sta)
 
     printf("\nStack");
 
-    for (size_t i = 0; i < sta->height; i++)
+    for (index_t i = 0; i < sta->height; i++)
     {
         printf("\n|%10d |", sta->buffer[i]);
     }
@@ -146,7 +146,7 @@ Status sta_display_array(StackArray sta)
 
     printf("\n[ ");
 
-    for (size_t i = 0; i < sta->height - 1; i++)
+    for (index_t i = 0; i < sta->height - 1; i++)
     {
         printf("%d, ", sta->buffer[i]);
     }
@@ -166,7 +166,7 @@ Status sta_display_raw(StackArray sta)
     if (sta_empty(sta))
         return DS_OK;
 
-    for (size_t i = 0; i < sta->height; i++)
+    for (index_t i = 0; i < sta->height; i++)
         printf("%d ", sta->buffer[i]);
 
     printf("\n");
@@ -211,18 +211,18 @@ int sta_peek(StackArray sta)
     return sta->buffer[sta->height - 1];
 }
 
-size_t sta_height(StackArray sta)
+index_t sta_height(StackArray sta)
 {
     if (sta == NULL)
-        return 0;
+        return -1;
 
     return sta->height;
 }
 
-size_t sta_capacity(StackArray sta)
+index_t sta_capacity(StackArray sta)
 {
     if (sta == NULL)
-        return 0;
+        return -1;
 
     return sta->capacity;
 }
@@ -237,7 +237,7 @@ bool sta_full(StackArray sta)
     return (sta->height == sta->capacity);
 }
 
-bool sta_fits(StackArray sta, size_t size)
+bool sta_fits(StackArray sta, index_t size)
 {
     return (sta->height + size) <= sta->capacity;
 }
@@ -255,7 +255,7 @@ Status sta_copy(StackArray sta, StackArray *result)
     if (sta_empty(sta))
         return DS_OK;
 
-    for (size_t i = 0; i < sta->height; i++)
+    for (index_t i = 0; i < sta->height; i++)
     {
         (*result)->buffer[i] = sta->buffer[i];
     }
@@ -298,9 +298,9 @@ Status sta_grow(StackArray sta)
     if (sta->locked)
         return DS_ERR_FULL;
 
-    size_t old_capacity = sta->capacity;
+    index_t old_capacity = sta->capacity;
 
-    sta->capacity = (size_t)((double)(sta->capacity) * ((double)(sta->growth_rate) / 100.0));
+    sta->capacity = (index_t)((double)(sta->capacity) * ((double)(sta->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (sta->capacity - old_capacity < 4)

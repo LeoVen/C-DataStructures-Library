@@ -31,14 +31,14 @@ Status que_test_limit(UnitTest ut)
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_size_t(ut, queue->length, queue->limit, __func__);
+    ut_equals_index_t(ut, queue->length, queue->limit, __func__);
     ut_equals_int(ut, que_limit(queue, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     ut_equals_int(ut, que_enqueue(queue, 1), DS_ERR_FULL, __func__);
 
     // Removes the limit
     ut_equals_int(ut, que_limit(queue, 0), DS_OK, __func__);
-    ut_equals_size_t(ut, queue->limit, 0, __func__);
+    ut_equals_index_t(ut, queue->limit, 0, __func__);
     ut_equals_int(ut, que_enqueue(queue, 10), DS_OK, __func__);
 
     que_delete(&queue);

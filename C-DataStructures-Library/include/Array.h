@@ -14,12 +14,12 @@
 typedef struct Array_s
 {
     int *buffer;    /*!< Buffer */
-    size_t size;    /*!< Buffer size */
+    index_t size;    /*!< Buffer size */
 } Array_t, *Array;
 
-Status arr_init(Array *arr, size_t size);
+Status arr_init(Array *arr, index_t size);
 
-Status arr_insert(Array arr, size_t index, int value);
+Status arr_insert(Array arr, index_t index, int value);
 
 Status arr_display(Array arr);
 
@@ -31,7 +31,7 @@ Status arr_erase(Array arr);
 
 Status arr_copy(Array arr, Array *result);
 
-Status arr_switch(Array arr, size_t pos1, size_t pos2);
+Status arr_switch(Array arr, index_t pos1, index_t pos2);
 
 Status arr_reverse(Array arr);
 

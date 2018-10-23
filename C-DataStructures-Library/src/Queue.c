@@ -245,23 +245,23 @@ int que_peek_rear(Queue que)
 
 bool que_empty(Queue que)
 {
-    return (que->length == 0 || que->rear == NULL);
+    return que->length == 0;
 }
 
-size_t que_length(Queue que)
+index_t que_length(Queue que)
 {
     if (que == NULL)
-        return 0;
+        return -1;
 
     return que->length;
 }
 
-Status que_limit(Queue que, size_t limit)
+Status que_limit(Queue que, index_t limit)
 {
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (que->length > limit && limit != 0)
+    if (que->length > limit && limit > 0)
         return DS_ERR_INVALID_OPERATION;
 
     que->limit = limit;

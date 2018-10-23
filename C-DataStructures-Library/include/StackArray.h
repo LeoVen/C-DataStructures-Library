@@ -38,20 +38,20 @@ struct StackArray_s
     /// \brief Current amount of elements in the \c StackArray.
     ///
     /// Current amount of elements in the \c StackArray.
-    size_t height;
+    index_t height;
 
     /// \brief \c StackArray buffer maximum capacity.
     ///
     /// Buffer maximum capacity. When \c height reaches \c capacity the buffer
     /// is reallocated and increases according to \c growth_rate.
-    size_t capacity;
+    index_t capacity;
 
     /// \brief Buffer growth rate.
     ///
     /// Buffer growth rate. The new buffer capacity is calculated as:
     ///
     /// <code> capacity *= (growth_rate / 100.0) </code>
-    size_t growth_rate;
+    index_t growth_rate;
 
     /// \brief Flag for locked capacity.
     ///
@@ -99,7 +99,7 @@ Status sta_init(StackArray *sta);
 /// growth_rate is less than or equal to 100.
 ///
 /// \see sta_init
-Status sta_create(StackArray *sta, size_t initial_capacity, size_t growth_rate);
+Status sta_create(StackArray *sta, index_t initial_capacity, index_t growth_rate);
 
 /// Inserts an element at the top of the specified stack.
 ///
@@ -179,15 +179,15 @@ Status sta_erase(StackArray *sta);
 
 int sta_peek(StackArray sta);
 
-size_t sta_height(StackArray sta);
+index_t sta_height(StackArray sta);
 
-size_t sta_capacity(StackArray sta);
+index_t sta_capacity(StackArray sta);
 
 bool sta_empty(StackArray sta);
 
 bool sta_full(StackArray sta);
 
-bool sta_fits(StackArray sta, size_t size);
+bool sta_fits(StackArray sta, index_t size);
 
 Status sta_copy(StackArray sta, StackArray *result);
 

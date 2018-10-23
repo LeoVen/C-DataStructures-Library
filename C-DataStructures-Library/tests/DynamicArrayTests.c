@@ -31,7 +31,7 @@ Status dar_test_locked(UnitTest ut)
     ut_equals_int(ut, dar_insert_at(array, 1, 0), DS_ERR_FULL, __func__);
     ut_equals_int(ut, dar_insert_back(array, 1), DS_ERR_FULL, __func__);
 
-    size_t size = array->size;
+    index_t size = array->size;
 
     int j, sum = 0;
     while (!dar_empty(array))
@@ -45,7 +45,7 @@ Status dar_test_locked(UnitTest ut)
     }
 
     ut_equals_int(ut, sum, 120, __func__);
-    ut_equals_size_t(ut, size, 16, __func__);
+    ut_equals_index_t(ut, size, 16, __func__);
 
     dar_delete(&array);
 
@@ -76,7 +76,7 @@ Status dar_test_growth(UnitTest ut)
     }
 
     // 60 * (250 / 100)
-    ut_equals_size_t(ut, array->capacity, 150, __func__);
+    ut_equals_index_t(ut, array->capacity, 150, __func__);
 
     dar_delete(&array);
 

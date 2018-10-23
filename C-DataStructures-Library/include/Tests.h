@@ -21,5 +21,6 @@ Status QueueArrayTests(void);
 Status QueueTests(void);
 Status SinglyLinkedListTests(void);
 Status StackArrayTests(void);
+Status StackTests(void);
 
 #endif //C_DATASTRUCTURES_LIBRARY_TESTS_H
