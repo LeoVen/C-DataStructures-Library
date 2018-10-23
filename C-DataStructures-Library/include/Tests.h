@@ -15,6 +15,7 @@
 
 Status DequeTests(void);
 Status DoublyLinkedListTests(void);
+Status DynamicArrayTests(void);
 Status CircularLinkedListTests(void);
 Status QueueArrayTests(void);
 Status QueueTests(void);

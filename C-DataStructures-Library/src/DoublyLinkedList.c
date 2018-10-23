@@ -512,6 +512,52 @@ Status dll_limit(DoublyLinkedList dll, size_t limit)
     return DS_OK;
 }
 
+int dll_max(DoublyLinkedList dll)
+{
+    if (dll == NULL)
+        return 0;
+
+    if (dll_empty(dll))
+        return 0;
+
+    DoublyLinkedNode scan = dll->head;
+
+    int result = scan->data;
+
+    while (scan != NULL)
+    {
+        if (scan->data > result)
+            result = scan->data;
+
+        scan = scan->next;
+    }
+
+    return result;
+}
+
+int dll_min(DoublyLinkedList dll)
+{
+    if (dll == NULL)
+        return 0;
+
+    if (dll_empty(dll))
+        return 0;
+
+    DoublyLinkedNode scan = dll->head;
+
+    int result = scan->data;
+
+    while (scan != NULL)
+    {
+        if (scan->data < result)
+            result = scan->data;
+
+        scan = scan->next;
+    }
+
+    return result;
+}
+
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2)
 
 //Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, size_t position)
@@ -597,18 +643,10 @@ Status dll_make_node(DoublyLinkedNode *node, int value)
     return DS_OK;
 }
 
-Status dll_delete_node(DoublyLinkedNode *node)
-{
-    if ((*node) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free(*node);
-
-    (*node) = NULL;
-
-    return DS_OK;
-}
-
+// This function effectively searches for a given node. If the position is
+// greater than the list length the search will begin at the end of the list,
+// reducing the amount of iterations needed. This effectively reduces searches
+// to O(n / 2) iterations.
 Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t position)
 {
     *result = NULL;
@@ -646,6 +684,18 @@ Status dll_get_node_at(DoublyLinkedList dll, DoublyLinkedNode *result, size_t po
             (*result) = (*result)->prev;
         }
     }
+
+    return DS_OK;
+}
+
+Status dll_delete_node(DoublyLinkedNode *node)
+{
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*node);
+
+    (*node) = NULL;
 
     return DS_OK;
 }

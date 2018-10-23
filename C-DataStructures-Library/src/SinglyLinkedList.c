@@ -523,6 +523,52 @@ Status sll_limit(SinglyLinkedList sll, size_t limit)
     return DS_OK;
 }
 
+int sll_max(SinglyLinkedList sll)
+{
+    if (sll == NULL)
+        return 0;
+
+    if (sll_empty(sll))
+        return 0;
+
+    SinglyLinkedNode scan = sll->head;
+
+    int result = scan->data;
+
+    while (scan != NULL)
+    {
+        if (scan->data > result)
+            result = scan->data;
+
+        scan = scan->next;
+    }
+
+    return result;
+}
+
+int sll_min(SinglyLinkedList sll)
+{
+    if (sll == NULL)
+        return 0;
+
+    if (sll_empty(sll))
+        return 0;
+
+    SinglyLinkedNode scan = sll->head;
+
+    int result = scan->data;
+
+    while (scan != NULL)
+    {
+        if (scan->data < result)
+            result = scan->data;
+
+        scan = scan->next;
+    }
+
+    return result;
+}
+
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
 {
     if (sll1 == NULL || sll2 == NULL)

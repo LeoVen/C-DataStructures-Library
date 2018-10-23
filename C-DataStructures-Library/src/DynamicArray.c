@@ -8,6 +8,12 @@
 
 #include "DynamicArray.h"
 
+// NOT EXPOSED API
+
+Status dar_grow(DynamicArray dar);
+
+// END OF NOT EXPOSED API
+
 Status dar_init(DynamicArray *dar)
 {
     (*dar) = malloc(sizeof(DynamicArray_t));
@@ -15,15 +21,42 @@ Status dar_init(DynamicArray *dar)
     if (!(*dar))
         return DS_ERR_ALLOC;
 
-    (*dar)->buffer = calloc(DYNAMIC_ARRAY_INIT_SIZE, sizeof(int));
+    (*dar)->buffer = calloc(32, sizeof(int));
 
     if (!((*dar)->buffer))
         return DS_ERR_ALLOC;
 
-    (*dar)->capacity = DYNAMIC_ARRAY_INIT_SIZE;
-    (*dar)->growth_rate = DYNAMIC_ARRAY_GROW_RATE;
+    (*dar)->capacity = 32;
+    (*dar)->growth_rate = 200;
 
     (*dar)->size = 0;
+
+    (*dar)->locked = false;
+
+    return DS_OK;
+}
+
+Status dar_create(DynamicArray *dar, size_t initial_capacity, size_t growth_rate)
+{
+    if (initial_capacity < 8 || growth_rate <= 100)
+        return DS_ERR_INVALID_ARGUMENT;
+
+    (*dar) = malloc(sizeof(DynamicArray_t));
+
+    if (!(*dar))
+        return DS_ERR_ALLOC;
+
+    (*dar)->buffer = calloc(initial_capacity, sizeof(int));
+
+    if (!((*dar)->buffer))
+        return DS_ERR_ALLOC;
+
+    (*dar)->capacity = initial_capacity;
+    (*dar)->growth_rate = growth_rate;
+
+    (*dar)->size = 0;
+
+    (*dar)->locked = false;
 
     return DS_OK;
 }
@@ -58,7 +91,7 @@ Status dar_insert(DynamicArray dar, int *array, size_t arr_size, size_t index)
 
     while (!dar_fits(dar, arr_size))
     {
-        st = dar_realloc(dar);
+        st = dar_grow(dar);
 
         if (st != DS_OK)
             return st;
@@ -84,9 +117,11 @@ Status dar_insert_front(DynamicArray dar, int value)
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
+
+
     if (dar_full(dar))
     {
-        Status st = dar_realloc(dar);
+        Status st = dar_grow(dar);
 
         if (st != DS_OK)
             return st;
@@ -132,7 +167,7 @@ Status dar_insert_at(DynamicArray dar, int value, size_t index)
     {
         if (dar_full(dar))
         {
-            st = dar_realloc(dar);
+            st = dar_grow(dar);
 
             if (st != DS_OK)
                 return st;
@@ -158,7 +193,7 @@ Status dar_insert_back(DynamicArray dar, int value)
 
     if (dar_full(dar))
     {
-        Status st = dar_realloc(dar);
+        Status st = dar_grow(dar);
 
         if (st != DS_OK)
             return st;
@@ -192,7 +227,9 @@ Status dar_remove(DynamicArray dar, size_t from, size_t to)
 
     if (from == to)
     {
-        st = dar_remove_at(dar, from);
+        int result;
+
+        st = dar_remove_at(dar, &result, from);
 
         if (st != DS_OK)
             return st;
@@ -216,13 +253,15 @@ Status dar_remove(DynamicArray dar, size_t from, size_t to)
     return DS_OK;
 }
 
-Status dar_remove_front(DynamicArray dar)
+Status dar_remove_front(DynamicArray dar, int *result)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (dar_empty(dar))
         return DS_ERR_INVALID_OPERATION;
+
+    *result = dar->buffer[0];
 
     for (size_t i = 0; i < dar->size; i++)
     {
@@ -234,7 +273,7 @@ Status dar_remove_front(DynamicArray dar)
     return DS_OK;
 }
 
-Status dar_remove_at(DynamicArray dar, size_t index)
+Status dar_remove_at(DynamicArray dar, int *result, size_t index)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
@@ -249,20 +288,22 @@ Status dar_remove_at(DynamicArray dar, size_t index)
 
     if (index == 0)
     {
-        st = dar_remove_front(dar);
+        st = dar_remove_front(dar, result);
 
         if (st != DS_OK)
             return st;
     }
     else if (index == dar->size - 1)
     {
-        st = dar_remove_back(dar);
+        st = dar_remove_back(dar, result);
 
         if (st != DS_OK)
             return st;
     }
     else
     {
+        *result = dar->buffer[index];
+
         for (size_t i = index; i < dar->size; i++)
         {
             dar->buffer[i] = dar->buffer[i + 1];
@@ -274,13 +315,15 @@ Status dar_remove_at(DynamicArray dar, size_t index)
     return DS_OK;
 }
 
-Status dar_remove_back(DynamicArray dar)
+Status dar_remove_back(DynamicArray dar, int *result)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
     if (dar_empty(dar))
         return DS_ERR_INVALID_OPERATION;
+
+    *result = dar->buffer[dar->size - 1];
 
     (dar->size)--;
 
@@ -303,7 +346,7 @@ Status dar_update(DynamicArray dar, int value, size_t index)
     return DS_OK;
 }
 
-Status dar_get(DynamicArray dar, size_t index, int *result)
+Status dar_get(DynamicArray dar, int *result, size_t index)
 {
     *result = 0;
 
@@ -469,21 +512,13 @@ Status dar_copy(DynamicArray dar, DynamicArray *result)
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
-    Status st = dar_init(result);
+    Status st = dar_create(result, dar->capacity, dar->growth_rate);
 
     if (st != DS_OK)
         return st;
 
     if (dar_empty(dar))
         return DS_OK;
-
-    while (!dar_fits(*result, dar->size))
-    {
-        st = dar_realloc(*result);
-
-        if (st != DS_OK)
-            return st;
-    }
 
     for (size_t i = 0; i < dar->size; i++)
     {
@@ -507,7 +542,7 @@ Status dar_prepend(DynamicArray dar1, DynamicArray dar2)
 
     while (!dar_fits(dar1, dar2->size))
     {
-        st = dar_realloc(dar1);
+        st = dar_grow(dar1);
 
         if (st != DS_OK)
             return st;
@@ -556,7 +591,7 @@ Status dar_add(DynamicArray dar1, DynamicArray dar2, size_t index)
     {
         while (!dar_fits(dar1, dar2->size))
         {
-            st = dar_realloc(dar1);
+            st = dar_grow(dar1);
 
             if (st != DS_OK)
                 return st;
@@ -590,7 +625,7 @@ Status dar_append(DynamicArray dar1, DynamicArray dar2)
 
     while (!dar_fits(dar1, dar2->size))
     {
-        st = dar_realloc(dar1);
+        st = dar_grow(dar1);
 
         if (st != DS_OK)
             return st;
@@ -606,18 +641,49 @@ Status dar_append(DynamicArray dar1, DynamicArray dar2)
     return DS_OK;
 }
 
-Status dar_realloc(DynamicArray dar)
+Status dar_cap_lock(DynamicArray dar)
 {
     if (dar == NULL)
         return DS_ERR_NULL_POINTER;
 
-    dar->capacity *= dar->growth_rate;
+    dar->locked = true;
+
+    return DS_OK;
+}
+
+Status dar_cap_unlock(DynamicArray dar)
+{
+    if (dar == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    dar->locked = false;
+
+    return DS_OK;
+}
+
+// NOT EXPOSED API
+
+Status dar_grow(DynamicArray dar)
+{
+    if (dar == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar->locked)
+        return DS_ERR_FULL;
+
+    size_t old_capacity = dar->capacity;
+
+    dar->capacity = (size_t)((double)(dar->capacity) * ((double)(dar->growth_rate) / 100.0));
+
+    // 4 is the minimum growth
+    if (dar->capacity - old_capacity < 4)
+        dar->capacity = old_capacity + 4;
 
     int *new_buffer = realloc(dar->buffer, sizeof(int) * dar->capacity);
 
     if (!new_buffer)
     {
-        dar->capacity /= dar->growth_rate;
+        dar->capacity = old_capacity;
 
         return DS_ERR_ALLOC;
     }
@@ -626,3 +692,5 @@ Status dar_realloc(DynamicArray dar)
 
     return DS_OK;
 }
+
+// END OF NOT EXPOSED API

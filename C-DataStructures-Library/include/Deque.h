@@ -27,7 +27,7 @@
 /// \b Drawbacks
 /// - No random access
 /// - More memory usage as in every node there are two pointers to the
-/// neighbouring nodes.
+/// neighbouring nodes
 ///
 /// \b Functions
 /// Located in file Deque.c

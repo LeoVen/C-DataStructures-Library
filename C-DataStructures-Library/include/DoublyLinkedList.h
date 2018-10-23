@@ -251,6 +251,10 @@ size_t dll_length(DoublyLinkedList dll);
 
 Status dll_limit(DoublyLinkedList dll, size_t limit);
 
+int dll_max(DoublyLinkedList dll);
+
+int dll_min(DoublyLinkedList dll);
+
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2);
 
 //Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, size_t position);

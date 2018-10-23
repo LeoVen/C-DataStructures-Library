@@ -11,14 +11,14 @@
 
 #include "Core.h"
 
-/// A \c QueueArray is a buffered \c Queue with FIFO (First-in First-out) or
-/// LILO (Last-in Last-out) operations, so the first item added is the first
-/// one to be removed. The queue is implemented as a circular buffer. Its
-/// indexes can wrap around the buffer if they reach the end. The buffer can
-/// also expand. The grow function will first check if there are any items that
-/// wrapped around the buffer. If so, it will calculate which portion (left or
-/// right) has the least amount of elements. If left is chosen, it will append
-/// its contents to the right of the right portion; otherwise it will shift the
+/// A QueueArray is a buffered Queue with FIFO (First-in First-out) or LILO
+/// (Last-in Last-out) operations, so the first item added is the first one to
+/// be removed. The queue is implemented as a circular buffer. Its indexes can
+/// wrap around the buffer if they reach the end. The buffer can also expand.
+/// The grow function will first check if there are any items that wrapped
+/// around the buffer. If so, it will calculate which portion (left or right)
+/// has the least amount of elements. If left is chosen, it will append its
+/// contents to the right of the right portion; otherwise it will shift the
 /// right portion to the end of the buffer. This effectively decreases the
 /// amount of shifts needed.
 ///
@@ -85,7 +85,7 @@ struct QueueArray_s
 
 /// Defines a type for <code> struct QueueArray_s </code>.
 ///
-/// Every queue is initialized by \c malloc with \c sizeof(QueueArray_t)
+/// Every queue is initialized by \c malloc with \c sizeof(QueueArray_t).
 typedef struct QueueArray_s QueueArray_t;
 
 /// Defines a type of pointer to <code> struct QueueArray_s </code>.
@@ -113,12 +113,12 @@ Status qua_init(QueueArray *qua);
 /// will be triggered.
 ///
 /// \param[in,out] qua The queue to be initialized.
-/// \param[in] initial_capacity Buffer initial capacity
-/// \param[in] growth_rate Buffer growth rate
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
 ///
-/// \return DS_ERR_ALLOC if allocation failed
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is 0 or growth_rate is
-/// less than or equal to 100.
+/// \return DS_ERR_ALLOC if queue allocation failed.
+/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
+/// growth_rate is less than or equal to 100.
 ///
 /// \see qua_init
 Status qua_create(QueueArray *qua, size_t initial_capacity, size_t growth_rate);

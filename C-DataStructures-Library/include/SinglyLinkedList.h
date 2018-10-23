@@ -252,6 +252,10 @@ size_t sll_length(SinglyLinkedList sll);
 
 Status sll_limit(SinglyLinkedList sll, size_t limit);
 
+int sll_max(SinglyLinkedList sll);
+
+int sll_min(SinglyLinkedList sll);
+
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 
 Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, size_t position);

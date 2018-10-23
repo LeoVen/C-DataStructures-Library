@@ -11,13 +11,13 @@
 
 #include "Core.h"
 
-/// A \c StackArray is a buffered \c Stack with FILO (First-in Last-out) or
-/// LIFO (Last-in First-out) operations, so the first item added is the last
-/// one to be removed. The stack is implemented as a normal buffer that only
-/// grows on one side. This simplifies the structure as no indexes will ever
-/// need to wrap around the buffer. The height of the stack, or the amount of
-/// elements in the stack can be used as an index for push and pop operations.
-/// The buffer can also expand according to the \c growth_rate.
+/// A StackArray is a buffered Stack with FILO (First-in Last-out) or LIFO
+/// (Last-in First-out) operations, so the first item added is the last one to
+/// be removed. The stack is implemented as a normal buffer that only grows on
+/// one side. This simplifies the structure as no indexes will ever need to
+/// wrap around the buffer. The height of the stack, or the amount of elements
+/// in the stack can be used as an index for push and pop operations. The
+/// buffer can also expand according to the \c growth_rate.
 ///
 /// \b Advantages over \c Stack
 /// - No need of pointers, only the data is allocated in memory
@@ -63,7 +63,7 @@ struct StackArray_s
 
 /// Defines a type for <code> struct StackArray_s </code>.
 ///
-/// Every stack is initialized by \c malloc with \c sizeof(StackArray_t)
+/// Every stack is initialized by \c malloc with \c sizeof(StackArray_t).
 typedef struct StackArray_s StackArray_t;
 
 /// Defines a type of pointer to <code> struct StackArray_s </code>.
@@ -91,12 +91,12 @@ Status sta_init(StackArray *sta);
 /// will be triggered.
 ///
 /// \param[in,out] sta The stack to be initialized.
-/// \param[in] initial_capacity Buffer initial capacity
-/// \param[in] growth_rate Buffer growth rate
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
 ///
-/// \return DS_ERR_ALLOC if allocation failed
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is 0 or growth_rate is
-/// less than or equal to 100.
+/// \return DS_ERR_ALLOC if stack allocation failed.
+/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
+/// growth_rate is less than or equal to 100.
 ///
 /// \see sta_init
 Status sta_create(StackArray *sta, size_t initial_capacity, size_t growth_rate);

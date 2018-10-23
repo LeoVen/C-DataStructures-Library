@@ -137,18 +137,71 @@ Status cll_remove_current(CircularLinkedList cll, int *result);
 /// \return DS_OK if all operations were successful.
 Status cll_remove_before(CircularLinkedList cll, int *result);
 
+/// Iterates the list cursor forward the specified number of positions.
+///
+/// \param cll The list to iterate the cursor.
+/// \param positions The number of nodes to iterate.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_iter_next(CircularLinkedList cll, size_t positions);
 
+/// Iterates the list cursor backwards the specified number of positions.
+///
+/// \param cll The list to iterate the cursor.
+/// \param positions The number of nodes to iterate.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_iter_prev(CircularLinkedList cll, size_t positions);
 
+/// Displays a \c CircularLinkedList in the console.
+///
+/// \param cll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_display(CircularLinkedList cll);
 
+/// Displays a \c CircularLinkedList in the console like an array with its
+/// elements separated by commas, delimited with brackets.
+///
+/// \param cll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_display_array(CircularLinkedList cll);
 
+/// Displays a \c CircularLinkedList in the console with its values separated
+/// by spaces.
+///
+/// \param cll The list to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_display_raw(CircularLinkedList cll);
 
+/// Iterates through every node of the list and frees them from memory along
+/// with its data. Then the CircularLinkedList structure is deallocated and set
+/// to \c NULL.
+///
+/// \param cll The list to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_delete(CircularLinkedList *cll);
 
+/// This function sets the list to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling cll_delete()
+/// and then cll_init().
+///
+/// \param cll The list to be erased.
+///
+/// \return DS_ERR_ALLOC if list allocation failed.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status cll_erase(CircularLinkedList *cll);
 
 bool cll_contains(CircularLinkedList cll, int key);

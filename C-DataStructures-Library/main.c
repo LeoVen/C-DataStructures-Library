@@ -517,6 +517,7 @@ int main()
 
     DequeTests();
     DoublyLinkedListTests();
+    DynamicArrayTests();
     CircularLinkedListTests();
     QueueArrayTests();
     QueueTests();
