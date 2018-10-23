@@ -10,15 +10,15 @@
 
 // NOT EXPOSED API
 
-typedef struct StackBox_s
+typedef struct StackNode_s
 {
-    int data;                 /*!< Node's data */
-    struct StackBox_s *below; /*!< Pointer to the box underneath it */
-} StackBox_t, *StackBox;
+    int data;                  /*!< Node's data */
+    struct StackNode_s *below; /*!< Pointer to the node underneath it */
+} StackNode_t, *StackNode;
 
-Status stk_make_box(StackBox *box, int element);
+Status stk_make_node(StackNode *node, int element);
 
-Status stk_delete_box(StackBox *box);
+Status stk_delete_node(StackNode *node);
 
 // END OF NOT EXPOSED API
 
@@ -40,9 +40,9 @@ Status stk_push(Stack stk, int element)
     if (stk == NULL)
         return DS_ERR_NULL_POINTER;
 
-    StackBox box;
+    StackNode box;
 
-    Status st = stk_make_box(&box, element);
+    Status st = stk_make_node(&box, element);
 
     if (st != DS_OK)
         return st;
@@ -63,13 +63,13 @@ Status stk_pop(Stack stk, int *result)
     if (stk_empty(stk))
         return DS_ERR_INVALID_OPERATION;
 
-    StackBox box = stk->top;
+    StackNode box = stk->top;
 
     stk->top = stk->top->below;
 
     *result = box->data;
 
-    Status st = stk_delete_box(&box);
+    Status st = stk_delete_node(&box);
 
     if (st != DS_OK)
         return st;
@@ -101,7 +101,7 @@ Status stk_display(Stack stk)
         return DS_OK;
     }
 
-    StackBox scan = stk->top;
+    StackNode scan = stk->top;
 
     printf("\nStack");
 
@@ -128,7 +128,7 @@ Status stk_display_array(Stack stk)
         return DS_OK;
     }
 
-    StackBox scan = stk->top;
+    StackNode scan = stk->top;
 
     printf("\n[ ");
 
@@ -154,7 +154,7 @@ Status stk_display_raw(Stack stk)
     if (stk_empty(stk))
         return DS_OK;
 
-    StackBox scan = stk->top;
+    StackNode scan = stk->top;
 
     while (scan != NULL)
     {
@@ -172,7 +172,7 @@ Status stk_delete(Stack *stk)
     if ((*stk) == NULL)
         return DS_ERR_INVALID_OPERATION;
 
-    StackBox prev = (*stk)->top;
+    StackNode prev = (*stk)->top;
 
     Status st;
 
@@ -180,7 +180,7 @@ Status stk_delete(Stack *stk)
     {
         (*stk)->top = (*stk)->top->below;
 
-        st = stk_delete_box(&prev);
+        st = stk_delete_node(&prev);
 
         if (st != DS_OK)
             return st;
@@ -259,7 +259,7 @@ Status stk_copy(Stack stk, Stack *result)
     if (st != DS_OK)
         return st;
 
-    StackBox scan = stk->top;
+    StackNode scan = stk->top;
 
     while (scan != NULL)
     {
@@ -293,24 +293,27 @@ Status stk_copy(Stack stk, Stack *result)
 
 // NOT EXPOSED API
 
-Status stk_make_box(StackBox *box, int element)
+Status stk_make_node(StackNode *node, int element)
 {
-    (*box) = malloc(sizeof(StackBox_t));
+    (*node) = malloc(sizeof(StackNode_t));
 
-    if (!(*box))
+    if (!(*node))
         return DS_ERR_ALLOC;
 
-    (*box)->below = NULL;
-    (*box)->data = element;
+    (*node)->below = NULL;
+    (*node)->data = element;
 
     return DS_OK;
 }
 
-Status stk_delete_box(StackBox *box)
+Status stk_delete_node(StackNode *node)
 {
-    free(*box);
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
 
-    *box = NULL;
+    free(*node);
+
+    *node = NULL;
 
     return DS_OK;
 }

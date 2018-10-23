@@ -26,7 +26,7 @@
 /// - No need of pointers, only the data is allocated in memory
 ///
 /// \b Drawbacks
-/// - When the @c QueueArray is full the buffer needs to be reallocated
+/// - When the \c QueueArray is full the buffer needs to be reallocated
 /// - When the buffer is reallocated some items might need to be shifted
 ///
 /// \b Functions
@@ -172,6 +172,13 @@ Status qua_display_array(QueueArray qua);
 /// \return DS_OK if all operations were successful.
 Status qua_display_raw(QueueArray qua);
 
+/// Frees the queue buffer and the QueueArray structure; the variable then is
+/// set no \c NULL;
+///
+/// \param qua The queue to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status qua_delete(QueueArray *qua);
 
 Status qua_erase(QueueArray *qua);

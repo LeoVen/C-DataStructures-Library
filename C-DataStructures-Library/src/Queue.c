@@ -317,6 +317,9 @@ Status que_make_node(QueueNode *node, int element)
 
 Status que_delete_node(QueueNode *node)
 {
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
+
     free(*node);
 
     (*node) = NULL;

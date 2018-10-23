@@ -18,13 +18,13 @@
 /// either at the start or the end of the list.
 ///
 /// In this implementation, the structure is composed of two pointers, one to
-/// the first @c DoublyLinkedNode and another to the last one. This way
+/// the first \c DoublyLinkedNode and another to the last one. This way
 /// insertions at both ends are simplified. Also this structure holds a length
 /// variable that keeps track of the structure's length, allowing for checking
 /// empty lists or position parameters that are higher than the total structure
 /// length.
 ///
-/// \b Advantages over @c SinglyLinkedList
+/// \b Advantages over \c SinglyLinkedList
 /// - Inserting, removing and accessing nodes takes half the time on average
 ///
 /// \b Drawbacks
@@ -37,7 +37,7 @@ struct DoublyLinkedList_s
 {
     /// \brief List length.
     ///
-    /// List current amount of nodes linked between the \c head and \c tail
+    /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
     size_t length;
 
@@ -204,8 +204,8 @@ Status dll_get(DoublyLinkedList dll, int *result, size_t position);
 /// \return DS_OK if all operations were successful.
 Status dll_display(DoublyLinkedList dll);
 
-/// Displays a \c DoublyLinkedList in the console like an array with its values
-/// separated by commas, delimited with brackets.
+/// Displays a \c DoublyLinkedList in the console like an array with its
+/// elements separated by commas, delimited with brackets.
 ///
 /// \param dll The list to be displayed in the console.
 ///
@@ -213,8 +213,8 @@ Status dll_display(DoublyLinkedList dll);
 /// \return DS_OK if all operations were successful.
 Status dll_display_array(DoublyLinkedList dll);
 
-/// Displays a \c DoublyLinkedList in the console with its values separated by
-/// spaces.
+/// Displays a \c DoublyLinkedList in the console with its elements separated
+/// by spaces.
 ///
 /// \param dll The list to be displayed in the console.
 ///
@@ -222,8 +222,25 @@ Status dll_display_array(DoublyLinkedList dll);
 /// \return DS_OK if all operations were successful.
 Status dll_display_raw(DoublyLinkedList dll);
 
+/// Iterates through every node of the list and frees them from memory along
+/// with its data. Then the DoublyLinkedList structure is deallocated and set
+/// to \c NULL.
+///
+/// \param dll The list to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status dll_delete(DoublyLinkedList *dll);
 
+/// This function sets the list to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling dll_delete()
+/// and then dll_init().
+///
+/// \param dll The list to be erased.
+///
+/// \return DS_ERR_ALLOC if list allocation failed.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status dll_erase(DoublyLinkedList *dll);
 
 bool dll_contains(DoublyLinkedList dll, int key);

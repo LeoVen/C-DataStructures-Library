@@ -397,6 +397,9 @@ Status prq_make_node(PriorityQueueNode *node, int value, int priority)
 
 Status prq_delete_node(PriorityQueueNode *node)
 {
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
+
     free(*node);
 
     (*node) = NULL;

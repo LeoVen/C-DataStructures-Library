@@ -23,7 +23,7 @@
 /// - No need of pointers, only the data is allocated in memory
 ///
 /// \b Drawbacks
-/// - When the @c StackArray is full the buffer needs to be reallocated
+/// - When the \c StackArray is full the buffer needs to be reallocated
 ///
 /// \b Functions
 ///

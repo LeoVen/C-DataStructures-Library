@@ -38,7 +38,7 @@ Status deq_init(Deque *deq)
     return DS_OK;
 }
 
-Status deq_enqueue_front(Deque deq, int value)
+Status deq_enqueue_front(Deque deq, int element)
 {
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
@@ -48,10 +48,10 @@ Status deq_enqueue_front(Deque deq, int value)
 
     DequeNode *node;
 
-    deq_make_node(&node, value);
+    Status st = deq_make_node(&node, element);
 
-    if (!node)
-        return DS_ERR_ALLOC;
+    if (st != DS_OK)
+        return st;
 
     if (deq_empty(deq))
     {
@@ -81,10 +81,10 @@ Status deq_enqueue_rear(Deque deq, int value)
 
     DequeNode *node;
 
-    deq_make_node(&node, value);
+    Status st = deq_make_node(&node, value);
 
-    if (!node)
-        return DS_ERR_ALLOC;
+    if (st != DS_OK)
+        return st;
 
     if (deq_empty(deq))
     {

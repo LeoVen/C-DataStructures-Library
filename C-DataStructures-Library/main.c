@@ -485,7 +485,7 @@ int main()
 
         for (int i = 0; i < 10; i++)
         {
-            cll_iter_next(cll0);
+            cll_iter_next(cll0, 1);
 
             cll_display_array(cll0);
         }
@@ -494,12 +494,12 @@ int main()
         {
             printf("\nOriginal: ");
             cll_display(cll0);
-            printf("\nCurrent data: %d", cll_current(cll0));
+            printf("\nCurrent data: %d", cll_peek(cll0));
             printf("\nLength: %u\n", cll0->length);
 
             printf("\nCopy: ");
             cll_display(cll1);
-            printf("\nCurrent data: %d", cll_current(cll1));
+            printf("\nCurrent data: %d", cll_peek(cll1));
             printf("\nLength: %u\n", cll1->length);
         }
 
@@ -517,6 +517,7 @@ int main()
 
     DequeTests();
     DoublyLinkedListTests();
+    CircularLinkedListTests();
     QueueArrayTests();
     QueueTests();
     SinglyLinkedListTests();

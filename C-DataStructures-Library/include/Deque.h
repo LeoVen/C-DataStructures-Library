@@ -89,7 +89,7 @@ Status deq_init(Deque *deq);
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_enqueue_front(Deque deq, int value);
+Status deq_enqueue_front(Deque deq, int element);
 
 /// Inserts an element at the rear of the specified deque.
 ///
@@ -101,7 +101,7 @@ Status deq_enqueue_front(Deque deq, int value);
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_enqueue_rear(Deque deq, int value);
+Status deq_enqueue_rear(Deque deq, int element);
 
 /// Removes an element from the front of the specified deque.
 ///
@@ -134,7 +134,7 @@ Status deq_display(Deque deq);
 /// Displays a \c Deque in the console like an array with its values separated
 /// by commas, delimited with brackets.
 ///
-/// \param que The deque to be displayed in the console.
+/// \param deq The deque to be displayed in the console.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
@@ -142,14 +142,30 @@ Status deq_display_array(Deque deq);
 
 /// Displays a \c Deque in the console with its values separated by spaces.
 ///
-/// \param que The deque to be displayed in the console.
+/// \param deq The deque to be displayed in the console.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
 Status deq_display_raw(Deque deq);
 
+/// Iterates through every node of the deque and frees them from memory along
+/// with its data. Then the Deque structure is deallocated and set to \c NULL.
+///
+/// \param deq The deque to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_delete(Deque *deq);
 
+/// This function sets the deque to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling deq_delete()
+/// and then deq_init().
+///
+/// \param deq The deque to be erased.
+///
+/// \return DS_ERR_ALLOC if deque allocation failed.
+/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status deq_erase(Deque *deq);
 
 int deq_peek_front(Deque deq);

@@ -20,13 +20,13 @@
 /// shift elements.
 ///
 /// In this implementation, the structure is composed of two pointers, one to
-/// the first @c SinglyLinkedNode and another to the last one. This way
+/// the first \c SinglyLinkedNode and another to the last one. This way
 /// insertions at both ends are simplified. Also this structure holds a length
 /// variable that keeps track of the structure's length, allowing for checking
 /// empty lists or position parameters that are higher than the total structure
 /// length.
 ///
-/// \b Advantages over @c Array
+/// \b Advantages over \c Array
 /// - Dynamic size
 /// - Easy insertion/removal
 ///
@@ -41,7 +41,7 @@ struct SinglyLinkedList_s
 {
     /// \brief List length.
     ///
-    /// List current amount of nodes linked between the \c head and \c tail
+    /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
     size_t length;
 
@@ -205,8 +205,8 @@ Status sll_get(SinglyLinkedList sll, int *result, size_t position);
 /// \return DS_OK if all operations were successful.
 Status sll_display(SinglyLinkedList sll);
 
-/// Displays a \c SinglyLinkedList in the console like an array with its values
-/// separated by commas, delimited with brackets.
+/// Displays a \c SinglyLinkedList in the console like an array with its
+/// elements separated by commas, delimited with brackets.
 ///
 /// \param sll The list to be displayed in the console.
 ///
@@ -223,8 +223,25 @@ Status sll_display_array(SinglyLinkedList sll);
 /// \return DS_OK if all operations were successful.
 Status sll_display_raw(SinglyLinkedList sll);
 
+/// Iterates through every node of the list and frees them from memory along
+/// with its data. Then the SinglyLinkedList structure is deallocated and set
+/// to \c NULL.
+///
+/// \param sll The list to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_delete(SinglyLinkedList *sll);
 
+/// This function sets the list to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling sll_delete()
+/// and then sll_init().
+///
+/// \param sll The list to be erased.
+///
+/// \return DS_ERR_ALLOC if list allocation failed.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sll_erase(SinglyLinkedList *sll);
 
 bool sll_contains(SinglyLinkedList sll, int key);

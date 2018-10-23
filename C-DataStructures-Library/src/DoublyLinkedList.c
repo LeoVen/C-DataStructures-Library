@@ -599,6 +599,9 @@ Status dll_make_node(DoublyLinkedNode *node, int value)
 
 Status dll_delete_node(DoublyLinkedNode *node)
 {
+    if ((*node) == NULL)
+        return DS_ERR_NULL_POINTER;
+
     free(*node);
 
     (*node) = NULL;

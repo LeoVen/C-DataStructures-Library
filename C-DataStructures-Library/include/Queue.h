@@ -35,8 +35,8 @@ struct Queue_s
 {
     /// \brief Current amount of elements in the \c Queue.
     ///
-    /// Queue current amount of nodes linked between the \c front and \c rear
-    /// pointers.
+    /// Queue current amount of elements linked between the \c front and
+    /// \c rear pointers.
     size_t length;
 
     /// \brief Queue length limit.
@@ -113,8 +113,8 @@ Status que_dequeue(Queue que, int *result);
 /// \return DS_OK if all operations were successful.
 Status que_display(Queue que);
 
-/// Displays a \c Queue in the console like an array with its values separated
-/// by commas, delimited with brackets.
+/// Displays a \c Queue in the console like an array with its elements
+/// separated by commas, delimited with brackets.
 ///
 /// \param que The queue to be displayed in the console.
 ///
@@ -130,8 +130,24 @@ Status que_display_array(Queue que);
 /// \return DS_OK if all operations were successful.
 Status que_display_raw(Queue que);
 
+/// Iterates through every node of the queue and frees them from memory along
+/// with its data. Then the Queue structure is deallocated and set to \c NULL.
+///
+/// \param que The queue to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_delete(Queue *que);
 
+/// This function sets the queue to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling que_delete()
+/// and then que_init().
+///
+/// \param que The queue to be erased.
+///
+/// \return DS_ERR_ALLOC if queue allocation failed.
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status que_erase(Queue *que);
 
 int que_peek_front(Queue que);

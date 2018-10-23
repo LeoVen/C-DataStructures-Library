@@ -41,7 +41,7 @@ struct Stack_s
     ///
     /// The element at the top of \c Stack. Push and Pop operate relative to
     /// this pointer. It points to \c NULL if the \c Stack is empty.
-    struct StackBox_s *top;
+    struct StackNode_s *top;
 };
 
 /// Defines a type for <code> struct Stack_s </code>.
@@ -134,8 +134,24 @@ Status stk_display_array(Stack stk);
 /// \return DS_OK if all operations were successful.
 Status stk_display_raw(Stack stk);
 
+/// Iterates through every node of the stack and frees them from memory along
+/// with its data. Then the Stack structure is deallocated and set to \c NULL.
+///
+/// \param stk The stack to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_delete(Stack *stk);
 
+/// This function sets the stack to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling stk_delete()
+/// and then stk_init().
+///
+/// \param stk The stack to be erased.
+///
+/// \return DS_ERR_ALLOC if stack allocation failed.
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_erase(Stack *stk);
 
 int stk_peek(Stack stk);
