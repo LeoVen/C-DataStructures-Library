@@ -581,6 +581,56 @@ int sll_min(SinglyLinkedList sll)
     return result;
 }
 
+index_t sll_index_first(SinglyLinkedList sll, int key)
+{
+    if (sll == NULL)
+        return -1;
+
+    if (sll_empty(sll))
+        return -1;
+
+    SinglyLinkedNode scan = sll->head;
+
+    index_t index = 0;
+
+    while (scan != NULL)
+    {
+        if (scan->data == key)
+            return index;
+
+        index++;
+
+        scan = scan->next;
+    }
+
+    return -1;
+}
+
+index_t sll_index_last(SinglyLinkedList sll, int key)
+{
+    if (sll == NULL)
+        return -1;
+
+    if (sll_empty(sll))
+        return -1;
+
+    SinglyLinkedNode scan = sll->head;
+
+    index_t result = -1, index = 0;
+
+    while (scan != NULL)
+    {
+        if (scan->data == key)
+            result = index;
+
+        index++;
+
+        scan = scan->next;
+    }
+
+    return result;
+}
+
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
 {
     if (sll1 == NULL || sll2 == NULL)

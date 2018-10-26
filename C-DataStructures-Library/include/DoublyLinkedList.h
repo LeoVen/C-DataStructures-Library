@@ -262,6 +262,10 @@ int dll_max(DoublyLinkedList dll);
 
 int dll_min(DoublyLinkedList dll);
 
+index_t dll_index_first(DoublyLinkedList dll, int key);
+
+index_t dll_index_last(DoublyLinkedList dll, int key);
+
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2);
 
 //Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, index_t position);

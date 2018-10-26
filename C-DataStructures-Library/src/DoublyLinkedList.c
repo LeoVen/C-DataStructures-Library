@@ -570,6 +570,56 @@ int dll_min(DoublyLinkedList dll)
     return result;
 }
 
+index_t dll_index_first(DoublyLinkedList dll, int key)
+{
+    if (dll == NULL)
+        return -1;
+
+    if (dll_empty(dll))
+        return -1;
+
+    DoublyLinkedNode scan = dll->head;
+
+    index_t index = 0;
+
+    while (scan != NULL)
+    {
+        if (scan->data == key)
+            return index;
+
+        index++;
+
+        scan = scan->next;
+    }
+
+    return -1;
+}
+
+index_t dll_index_last(DoublyLinkedList dll, int key)
+{
+    if (dll == NULL)
+        return -1;
+
+    if (dll_empty(dll))
+        return -1;
+
+    DoublyLinkedNode scan = dll->tail;
+
+    index_t index = 0;
+
+    while (scan != NULL)
+    {
+        if (scan->data == key)
+            return dll->length - 1 - index;
+
+        index++;
+
+        scan = scan->prev;
+    }
+
+    return -1;
+}
+
 //Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2)
 
 //Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, index_t position)

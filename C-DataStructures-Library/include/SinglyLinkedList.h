@@ -260,6 +260,10 @@ int sll_max(SinglyLinkedList sll);
 
 int sll_min(SinglyLinkedList sll);
 
+index_t sll_index_first(SinglyLinkedList sll, int key);
+
+index_t sll_index_last(SinglyLinkedList sll, int key);
+
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 
 Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t position);

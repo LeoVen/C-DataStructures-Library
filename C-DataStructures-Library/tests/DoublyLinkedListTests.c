@@ -102,6 +102,70 @@ Status dll_test_limit(UnitTest ut)
     return st;
 }
 
+// Tests indexof functions
+Status dll_test_indexof(UnitTest ut)
+{
+    DoublyLinkedList list;
+
+    Status st = dll_init(&list);
+
+    if (st != DS_OK)
+        return st;
+
+    // 0, 1, 2, 0, 1, 2, 0, 1, 2
+    for (int i = 0; i < 9; i++)
+    {
+        st = dll_insert_tail(list, i % 3);
+
+        if (st != DS_OK)
+            goto error;
+    }
+
+    int r0, r1, r2;
+    int d0, d1, d2;
+    index_t f1, f2;
+
+    st += dll_get(list, &r0, 0);
+    st += dll_get(list, &d0, dll_index_first(list, 0));
+    st += dll_get(list, &r1, 1);
+    st += dll_get(list, &d1, dll_index_first(list, 1));
+    st += dll_get(list, &r2, 2);
+    st += dll_get(list, &d2, dll_index_first(list, 2));
+
+    if (st != DS_OK)
+        goto error;
+
+    ut_equals_int(ut, r0, d0, __func__);
+    ut_equals_int(ut, r1, d1, __func__);
+    ut_equals_int(ut, r2, d2, __func__);
+
+    st += dll_get(list, &r0, list->length - 3);
+    st += dll_get(list, &d0, dll_index_last(list, 0));
+    st += dll_get(list, &r1, list->length - 2);
+    st += dll_get(list, &d1, dll_index_last(list, 1));
+    st += dll_get(list, &r2, list->length - 1);
+    st += dll_get(list, &d2, dll_index_last(list, 2));
+
+    if (st != DS_OK)
+        goto error;
+
+    ut_equals_int(ut, r0, d0, __func__);
+    ut_equals_int(ut, r1, d1, __func__);
+    ut_equals_int(ut, r2, d2, __func__);
+
+    f1 = dll_index_first(list, 3);
+    f2 = dll_index_last(list, 3);
+
+    ut_equals_index_t(ut, f1, -1, __func__);
+    ut_equals_index_t(ut, f2, -1, __func__);
+
+    dll_delete(&list);
+
+    error:
+    dll_delete(&list);
+    return st;
+}
+
 // Runs all DoublyLinkedList tests
 Status DoublyLinkedListTests(void)
 {
@@ -114,6 +178,7 @@ Status DoublyLinkedListTests(void)
 
     st += dll_test_get(ut);
     st += dll_test_limit(ut);
+    st += dll_test_indexof(ut);
 
     if (st != DS_OK)
         goto error;
