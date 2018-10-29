@@ -138,7 +138,7 @@ Status qua_test_intensive(UnitTest ut)
         if (st != DS_OK)
             goto error;
 
-        sum += j; // sum from 0 to 15
+        sum += j;
     }
 
     ut_equals_int(ut, sum, 50005000, __func__);

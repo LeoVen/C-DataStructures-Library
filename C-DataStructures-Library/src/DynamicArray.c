@@ -699,7 +699,7 @@ Status dar_grow(DynamicArray dar)
 
     index_t old_capacity = dar->capacity;
 
-    dar->capacity = (index_t)((double)(dar->capacity) * ((double)(dar->growth_rate) / 100.0));
+    dar->capacity = (index_t) ((double) (dar->capacity) * ((double) (dar->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (dar->capacity - old_capacity < 4)

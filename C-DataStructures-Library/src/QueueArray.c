@@ -122,8 +122,7 @@ Status qua_display(QueueArray qua)
 
     printf("\nQueueArray\nfront <-");
 
-    index_t i;
-    for (i = qua->front; i < qua->rear; i++)
+    for (index_t i = qua->front; i < qua->rear; i++)
         printf(" %d <-", qua->buffer[i]);
 
     printf(" rear\n");
@@ -145,8 +144,7 @@ Status qua_display_array(QueueArray qua)
 
     printf("\n[ ");
 
-    index_t i, j;
-    for (i = qua->front, j = 0; j < qua->size - 1; i = (i + 1) % qua->capacity, j++)
+    for (index_t i = qua->front, j = 0; j < qua->size - 1; i = (i + 1) % qua->capacity, j++)
     {
         printf("%d, ", qua->buffer[i]);
     }
@@ -322,7 +320,8 @@ Status qua_grow(QueueArray qua)
 
     index_t old_capacity = qua->capacity;
 
-    qua->capacity = (index_t)((double)(qua->capacity) * ((double)(qua->growth_rate) / 100.0));
+    // capacity = capacity * (growth_rate / 100)
+    qua->capacity = (index_t) ((double) (qua->capacity) * ((double) (qua->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (qua->capacity - old_capacity < 4)
@@ -375,7 +374,8 @@ Status qua_grow(QueueArray qua)
     }
     // This case only happens when qua->front == 0 and qua->rear == 0
     // The rear index has wrapped around but the buffer increased in size
-    // allowing the rear index to keep increasing instead of wrapping around
+    // allowing the rear index to keep increasing instead of wrapping around.
+    // This can be achieved by enqueueing elements without ever dequeueing any.
     else if (qua->rear == 0)
     {
         qua->rear = old_capacity;

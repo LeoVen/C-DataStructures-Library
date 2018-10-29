@@ -18,6 +18,7 @@ typedef struct DequeNode_s
 } DequeNode;
 
 Status deq_make_node(DequeNode **node, int value);
+
 Status deq_delete_node(DequeNode **node);
 
 // END OF NOT EXPOSED API

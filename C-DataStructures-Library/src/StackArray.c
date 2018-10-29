@@ -300,7 +300,8 @@ Status sta_grow(StackArray sta)
 
     index_t old_capacity = sta->capacity;
 
-    sta->capacity = (index_t)((double)(sta->capacity) * ((double)(sta->growth_rate) / 100.0));
+    // capacity = capacity * (growth_rate / 100)
+    sta->capacity = (index_t) ((double) (sta->capacity) * ((double) (sta->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (sta->capacity - old_capacity < 4)

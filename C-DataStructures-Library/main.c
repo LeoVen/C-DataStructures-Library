@@ -11,6 +11,7 @@
 #include "Array.h"
 #include "CircularBuffer.h"
 #include "CircularLinkedList.h"
+#include "DequeArray.h"
 
 int main()
 {
@@ -19,7 +20,6 @@ int main()
     SinglyLinkedList sll0;
 
     int j;
-
     index_t l;
 
     if (sll_init(&sll0) == DS_OK)
@@ -515,6 +515,26 @@ int main()
 
     cll_delete(&cll0);
 
+    DequeArray deque;
+
+    if (dqa_create(&deque, 16, 200) == DS_OK)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            if (i % 2 == 0)
+                dqa_enqueue_front(deque, i);
+            else
+                dqa_enqueue_rear(deque, i);
+        }
+
+        dqa_display_array(deque);
+        printf("Front element: %d\n", dqa_peek_front(deque));
+        printf("Rear element: %d\n\n", dqa_peek_rear(deque));
+    }
+
+    dqa_delete(&deque);
+
+    DequeArrayTests();
     DequeTests();
     DoublyLinkedListTests();
     DynamicArrayTests();

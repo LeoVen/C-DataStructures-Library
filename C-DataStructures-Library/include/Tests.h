@@ -13,6 +13,7 @@
 
 // Includes all test functions
 
+Status DequeArrayTests(void);
 Status DequeTests(void);
 Status DoublyLinkedListTests(void);
 Status DynamicArrayTests(void);
