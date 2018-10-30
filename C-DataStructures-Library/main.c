@@ -392,6 +392,8 @@ int main()
         arr_display(array);
     }
 
+    arr_delete(&array);
+
     CircularBuffer cbf0, cbf1;
 
     if (cbf_init(&cbf0, 40) == DS_OK)
@@ -514,6 +516,7 @@ int main()
     }
 
     cll_delete(&cll0);
+    cll_delete(&cll1);
 
     DequeArray deque;
 
