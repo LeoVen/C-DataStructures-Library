@@ -11,14 +11,13 @@
 
 #include "Core.h"
 
-/// This is a linked list implementation of a \c Deque. A Deque is a
-/// double-ended queue, so you can insert and remove elements from both ends of
-/// the queue. It is implemented as a \c DoublyLinkedList but with restricted
-/// operations which can only insert or remove elements at the edges of the
-/// linked list. With this implementation every insertion and removal
-/// operations take constant time O(1). This simplifies things a lot but every
-/// node needs to maintain two pointers, one to its left and another to its
-/// right.
+/// This is a linked list implementation of a Deque. A Deque is a double-ended
+/// queue, so you can insert and remove elements from both ends of the queue.
+/// It is implemented as a \c DoublyLinkedList but with restricted operations
+/// which can only insert or remove elements at the edges of the linked list.
+/// With this implementation every insertion and removal operations take
+/// constant time O(1). This simplifies things a lot but every node needs to
+/// maintain two pointers, one to its left and another to its right.
 ///
 /// \b Advantages over \c DequeArray
 /// - Indefinitely grows

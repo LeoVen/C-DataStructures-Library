@@ -67,7 +67,7 @@ Status dqa_create(DequeArray *dqa, index_t initial_capacity, index_t growth_rate
     return DS_OK;
 }
 
-Status dqa_enqueue_front(DequeArray dqa, int value)
+Status dqa_enqueue_front(DequeArray dqa, int element)
 {
     if (dqa == NULL)
         return DS_ERR_NULL_POINTER;
@@ -82,14 +82,14 @@ Status dqa_enqueue_front(DequeArray dqa, int value)
 
     dqa->front = (dqa->front == 0) ? dqa->capacity - 1 : dqa->front - 1;
 
-    dqa->buffer[dqa->front] = value;
+    dqa->buffer[dqa->front] = element;
 
     (dqa->size)++;
 
     return DS_OK;
 }
 
-Status dqa_enqueue_rear(DequeArray dqa, int value)
+Status dqa_enqueue_rear(DequeArray dqa, int element)
 {
     if (dqa == NULL)
         return DS_ERR_NULL_POINTER;
@@ -102,7 +102,7 @@ Status dqa_enqueue_rear(DequeArray dqa, int value)
             return st;
     }
 
-    dqa->buffer[dqa->rear] = value;
+    dqa->buffer[dqa->rear] = element;
 
     dqa->rear = (dqa->rear == dqa->capacity - 1) ? 0 : dqa->rear + 1;
 
@@ -111,9 +111,9 @@ Status dqa_enqueue_rear(DequeArray dqa, int value)
     return DS_OK;
 }
 
-Status dqa_dequeue_front(DequeArray dqa, int *value)
+Status dqa_dequeue_front(DequeArray dqa, int *result)
 {
-    *value = 0;
+    *result = 0;
 
     if (dqa == NULL)
         return DS_ERR_NULL_POINTER;
@@ -121,7 +121,7 @@ Status dqa_dequeue_front(DequeArray dqa, int *value)
     if (dqa_empty(dqa))
         return DS_ERR_INVALID_OPERATION;
 
-    *value = dqa->buffer[dqa->front];
+    *result = dqa->buffer[dqa->front];
 
     dqa->front = (dqa->front == dqa->capacity - 1) ? 0 : dqa->front + 1;
 
@@ -130,9 +130,9 @@ Status dqa_dequeue_front(DequeArray dqa, int *value)
     return DS_OK;
 }
 
-Status dqa_dequeue_rear(DequeArray dqa, int *value)
+Status dqa_dequeue_rear(DequeArray dqa, int *result)
 {
-    *value = 0;
+    *result = 0;
 
     if (dqa == NULL)
         return DS_ERR_NULL_POINTER;
@@ -142,7 +142,7 @@ Status dqa_dequeue_rear(DequeArray dqa, int *value)
 
     dqa->rear = (dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1;
 
-    *value = dqa->buffer[dqa->rear];
+    *result = dqa->buffer[dqa->rear];
 
     (dqa->size)--;
 

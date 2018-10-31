@@ -63,6 +63,9 @@ Status dar_create(DynamicArray *dar, index_t initial_capacity, index_t growth_ra
 
 Status dar_make(DynamicArray *dar, int *array, index_t arr_size)
 {
+    if (arr_size < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
     Status st = dar_init(dar);
 
     if (st != DS_OK)
@@ -87,7 +90,7 @@ Status dar_insert(DynamicArray dar, int *array, index_t arr_size, index_t index)
     if (index > dar->size)
         return DS_ERR_OUT_OF_RANGE;
 
-    if (index < 0)
+    if (index < 0 || arr_size < 0)
         return DS_ERR_NEGATIVE_VALUE;
 
     Status st;

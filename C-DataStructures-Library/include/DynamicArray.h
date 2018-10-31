@@ -89,10 +89,20 @@ Status dar_init(DynamicArray *dar);
 /// \return DS_ERR_ALLOC if dynamic array allocation failed.
 /// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
 /// growth_rate is less than or equal to 100.
+/// \return DS_OK if all operations were successful.
 ///
 /// \see qua_init
 Status dar_create(DynamicArray *dar, index_t initial_capacity, index_t growth_rate);
 
+/// Initializes a new DynamicArray from an already existing data array.
+///
+/// \param dar The dynamic array to be initialized.
+/// \param array The source array.
+/// \param arr_size The size of the source array.
+///
+/// \return DS_ERR_ALLOC if dynamic array allocation or reallocation failed.
+/// \return DS_ERR_NEGATIVE_VALUE if \c arr_size parameter is a negative value.
+/// \return DS_OK if all operations were successful.
 Status dar_make(DynamicArray *dar, int *array, index_t arr_size);
 
 Status dar_insert(DynamicArray dar, int *array, index_t arr_size, index_t index);

@@ -173,8 +173,24 @@ Status sta_display_array(StackArray sta);
 /// \return DS_OK if all operations were successful.
 Status sta_display_raw(StackArray sta);
 
+/// Frees the stack buffer and the StackArray structure; the variable then is
+/// set no \c NULL;
+///
+/// \param sta The stack to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sta_delete(StackArray *sta);
 
+/// This function sets the stack to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling sta_delete()
+/// and then sta_init().
+///
+/// \param sta The stack to be erased.
+///
+/// \return DS_ERR_ALLOC if stack allocation failed.
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sta_erase(StackArray *sta);
 
 int sta_peek(StackArray sta);

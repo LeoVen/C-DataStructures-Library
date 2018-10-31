@@ -181,6 +181,15 @@ Status qua_display_raw(QueueArray qua);
 /// \return DS_OK if all operations were successful.
 Status qua_delete(QueueArray *qua);
 
+/// This function sets the queue to its initial state, erasing all of its data
+/// and re-initializing the structure. It is equivalent to calling qua_delete()
+/// and then qua_init().
+///
+/// \param qua The queue to be erased.
+///
+/// \return DS_ERR_ALLOC if queue allocation failed.
+/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status qua_erase(QueueArray *qua);
 
 int qua_peek_front(QueueArray qua);
