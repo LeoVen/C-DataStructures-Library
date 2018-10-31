@@ -13,13 +13,7 @@
   <component name="ChangeListManager">
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Deque.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Deque.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/DequeArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DequeArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/DynamicArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DynamicArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/QueueArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/QueueArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/StackArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/StackArray.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DequeArray.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/DequeArray.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DynamicArray.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/DynamicArray.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -47,7 +41,7 @@
     <session id="166045188">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="38" />
+          <entry key="project.closed" value="39" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
@@ -60,7 +54,7 @@
           <entry key="project.open.time.34" value="2" />
           <entry key="project.open.time.35" value="2" />
           <entry key="project.open.time.36" value="3" />
-          <entry key="project.open.time.38" value="2" />
+          <entry key="project.open.time.38" value="3" />
           <entry key="project.open.time.40" value="2" />
           <entry key="project.open.time.41" value="2" />
           <entry key="project.open.time.42" value="3" />
@@ -73,14 +67,15 @@
           <entry key="project.open.time.87" value="1" />
           <entry key="project.open.time.88" value="1" />
           <entry key="project.open.time.9" value="1" />
-          <entry key="project.opened" value="40" />
+          <entry key="project.opened" value="41" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="C_DataStructures_Library (disassembly)" value="2" />
-          <entry key="c" value="319" />
-          <entry key="h" value="302" />
+          <entry key="c" value="323" />
+          <entry key="h" value="314" />
+          <entry key="md" value="1" />
           <entry key="txt" value="11" />
         </counts>
       </usages-collector>
@@ -88,7 +83,8 @@
         <counts>
           <entry key="CMakeLists.txt" value="11" />
           <entry key="Disassembly" value="2" />
-          <entry key="ObjectiveC" value="621" />
+          <entry key="Markdown" value="1" />
+          <entry key="ObjectiveC" value="637" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -96,6 +92,7 @@
           <entry key="GDB" value="31" />
           <entry key="c" value="32255" />
           <entry key="h" value="25623" />
+          <entry key="md" value="1090" />
           <entry key="txt" value="295" />
         </counts>
       </usages-collector>
@@ -104,6 +101,7 @@
           <entry key="CMakeLists.txt" value="295" />
           <entry key="Doxygen file" value="362" />
           <entry key="GDBCommands" value="31" />
+          <entry key="Markdown" value="1090" />
           <entry key="ObjectiveC" value="57516" />
         </counts>
       </usages-collector>
@@ -114,20 +112,14 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/CircularLinkedList.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="713">
-              <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="248">
-              <caret line="251" lean-forward="true" selection-start-line="251" selection-end-line="251" />
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/../README.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="430">
+                <caret line="34" column="56" lean-forward="true" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="56" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -135,35 +127,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/DynamicArray.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
-              <caret line="100" column="49" lean-forward="true" selection-start-line="100" selection-start-column="49" selection-end-line="100" selection-end-column="49" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="271">
-              <caret line="111" selection-start-line="111" selection-end-line="111" selection-end-column="79" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DynamicArray.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1642">
-              <caret line="724" column="25" selection-start-line="724" selection-start-column="25" selection-end-line="724" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$USER_HOME$/Desktop/avl.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="221">
-              <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
+            <state relative-caret-position="1541">
+              <caret line="81" column="78" lean-forward="true" selection-start-line="81" selection-start-column="78" selection-end-line="81" selection-end-column="78" />
             </state>
           </provider>
         </entry>
@@ -172,7 +137,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>dar_realloc</find>
       <find>///.+\.\n</find>
       <find>%u</find>
       <find>%lld</find>
@@ -202,6 +166,7 @@
       <find>queue</find>
       <find>qua</find>
       <find>deq</find>
+      <find>(\[.+?\])</find>
     </findStrings>
     <replaceStrings>
       <replace>cll_empty</replace>
@@ -233,6 +198,7 @@
       <replace>dqa_</replace>
       <replace>dqa_full</replace>
       <replace>dqa_grow</replace>
+      <replace>`$1`</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -288,6 +254,7 @@
         <option value="$PROJECT_DIR$/include/DynamicArray.h" />
         <option value="$PROJECT_DIR$/src/DynamicArray.c" />
         <option value="$USER_HOME$/Desktop/avl.c" />
+        <option value="$PROJECT_DIR$/../README.md" />
       </list>
     </option>
   </component>
@@ -342,6 +309,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -359,16 +327,10 @@
               <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
-              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -466,12 +428,13 @@
       <workItem from="1540779128212" duration="17810000" />
       <workItem from="1540858907417" duration="44000" />
       <workItem from="1540875582984" duration="701000" />
-      <workItem from="1540928051229" duration="8141000" />
+      <workItem from="1540928051229" duration="10982000" />
+      <workItem from="1540994470334" duration="4935000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="287817000" />
+    <option name="totallyTimeSpent" value="295593000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -486,7 +449,7 @@
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.2677761" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.1633888" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -617,13 +580,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="455">
-          <caret line="236" selection-start-line="236" selection-end-line="236" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/Tests.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="225">
@@ -673,13 +629,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Stack.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="245" column="7" selection-start-line="245" selection-start-column="7" selection-end-line="245" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/StackTests.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="121">
@@ -701,9 +650,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="524">
           <caret line="125" selection-start-line="125" selection-end-line="125" />
-          <folding>
-            <element signature="e#121#144#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -721,45 +667,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/StackArray.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="176" column="7" selection-start-line="176" selection-start-column="7" selection-end-line="176" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/StackArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="397">
-          <caret line="194" lean-forward="true" selection-start-line="194" selection-end-line="194" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Stack.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="455">
-          <caret line="173" selection-start-line="173" selection-end-line="173" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Queue.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2213">
-          <caret line="48" column="24" lean-forward="true" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/Core.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="271">
           <caret line="27" column="100" selection-start-line="27" selection-start-column="100" selection-end-line="27" selection-end-column="100" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="897">
-          <caret line="39" lean-forward="true" selection-start-line="39" selection-end-line="39" />
         </state>
       </provider>
     </entry>
@@ -777,13 +688,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/DequeArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="211" lean-forward="true" selection-start-line="211" selection-end-line="211" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/PriorityQueue.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="253">
@@ -798,52 +702,118 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/CircularLinkedList.h">
+    <entry file="file://$USER_HOME$/Desktop/avl.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="713">
-          <caret line="236" lean-forward="true" selection-start-line="236" selection-end-line="236" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="251" lean-forward="true" selection-start-line="251" selection-end-line="251" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/QueueArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-580">
-          <caret line="120" column="45" lean-forward="true" selection-start-line="120" selection-start-column="45" selection-end-line="120" selection-end-column="45" />
+        <state relative-caret-position="474">
+          <caret line="159" lean-forward="true" selection-start-line="159" selection-end-line="159" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="111" selection-start-line="111" selection-end-line="111" selection-end-column="79" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DynamicArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="100" column="49" lean-forward="true" selection-start-line="100" selection-start-column="49" selection-end-line="100" selection-end-column="49" />
+        <state relative-caret-position="-1224">
+          <caret line="109" column="3" lean-forward="true" selection-start-line="109" selection-start-column="3" selection-end-line="109" selection-end-column="3" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/DynamicArray.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1642">
-          <caret line="724" column="25" selection-start-line="724" selection-start-column="25" selection-end-line="724" selection-end-column="25" />
+        <state relative-caret-position="1098">
+          <caret line="671" selection-start-line="671" selection-end-line="671" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Desktop/avl.c">
+    <entry file="file://$PROJECT_DIR$/include/DequeArray.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="157" lean-forward="true" selection-start-line="157" selection-end-line="157" />
+        <state relative-caret-position="340">
+          <caret line="211" lean-forward="true" selection-start-line="211" selection-end-line="211" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Queue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2075">
+          <caret line="48" column="24" lean-forward="true" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CircularLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="524">
+          <caret line="236" selection-start-line="236" selection-end-line="236" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/QueueArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2024">
+          <caret line="120" column="45" lean-forward="true" selection-start-line="120" selection-start-column="45" selection-end-line="120" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Stack.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="245" column="7" selection-start-line="245" selection-start-column="7" selection-end-line="245" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/StackArray.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="190">
+          <caret line="176" column="7" selection-start-line="176" selection-start-column="7" selection-end-line="176" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-281">
+          <caret line="251" lean-forward="true" selection-start-line="251" selection-end-line="251" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="598">
+          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/StackArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2663">
+          <caret line="194" lean-forward="true" selection-start-line="194" selection-end-line="194" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Stack.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2663">
+          <caret line="173" selection-start-line="173" selection-end-line="173" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DynamicArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1541">
+          <caret line="81" column="78" lean-forward="true" selection-start-line="81" selection-start-column="78" selection-end-line="81" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="430">
+            <caret line="34" column="56" lean-forward="true" selection-start-line="34" selection-start-column="56" selection-end-line="34" selection-end-column="56" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
