@@ -12,6 +12,10 @@
 #include "Core.h"
 #include "string.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void display_char(void *element);
 void display_string(void *element);
 
@@ -23,5 +27,9 @@ char *copy_string(void *element);
 
 char *new_char(char element);
 char *new_string(const char *element);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_CHAR_H

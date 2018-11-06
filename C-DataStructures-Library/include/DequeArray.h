@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A DequeArray is a buffered Deque with enqueue and dequeue operations on
 /// both ends that are represented by indexes. It also has the ability to
 /// increase in size when needed. This implementation also uses the QueueArray
@@ -217,5 +221,9 @@ Status dqa_copy(DequeArray dqa, DequeArray *result);
 Status dqa_cap_lock(DequeArray dqa);
 
 Status dqa_cap_unlock(DequeArray dqa);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_DEQUEARRAY_H

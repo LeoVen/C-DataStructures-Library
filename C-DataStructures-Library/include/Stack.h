@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// This is a linked list implementation of a \c Stack with FILO (First-in
 /// Last-out) or LIFO (Last-in First-out) operations, so the first item added
 /// is the last one to be removed. It is implemented as a SinglyLinkedList but
@@ -179,5 +183,9 @@ index_t stk_height(Stack stk);
 Status stk_limit(Stack stk, index_t limit);
 
 Status stk_copy(Stack stk, Stack *result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_STACK_H

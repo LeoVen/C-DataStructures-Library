@@ -11,17 +11,34 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Includes all test functions
 
 Status DequeArrayTests(void);
+
 Status DequeTests(void);
+
 Status DoublyLinkedListTests(void);
+
 Status DynamicArrayTests(void);
+
 Status CircularLinkedListTests(void);
+
 Status QueueArrayTests(void);
+
 Status QueueTests(void);
+
 Status SinglyLinkedListTests(void);
+
 Status StackArrayTests(void);
+
 Status StackTests(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_TESTS_H

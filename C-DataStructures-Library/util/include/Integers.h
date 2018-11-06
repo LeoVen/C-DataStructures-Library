@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void display_int(void *element);
 void display_long(void *element);
 void display_long_long(void *element);
@@ -38,5 +42,9 @@ long long *new_long_long(long long element);
 unsigned *new_unsigned(unsigned element);
 unsigned long *new_unsigned_long(unsigned long element);
 unsigned long long *new_unsigned_long_long(unsigned long long element);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_INTEGERS_H

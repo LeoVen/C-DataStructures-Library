@@ -11,9 +11,13 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct Array_s
 {
-    int *buffer;    /*!< Buffer */
+    int *buffer;     /*!< Buffer */
     index_t size;    /*!< Buffer size */
 } Array_t, *Array;
 
@@ -34,5 +38,9 @@ Status arr_copy(Array arr, Array *result);
 Status arr_switch(Array arr, index_t pos1, index_t pos2);
 
 Status arr_reverse(Array arr);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_ARRAY_H

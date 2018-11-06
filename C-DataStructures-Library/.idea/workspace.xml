@@ -11,7 +11,31 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="" />
+    <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generic/include/GCore.h" beforeDir="false" afterPath="$PROJECT_DIR$/generic/include/GCore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generic/include/GQueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/generic/include/GQueue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Array.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/BinarySearchTree.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/BinarySearchTree.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/CircularBuffer.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/CircularBuffer.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/CircularLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/CircularLinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Core.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Core.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Deque.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Deque.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/DequeArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DequeArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/DoublyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DoublyLinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/DynamicArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DynamicArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/PriorityQueue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/PriorityQueue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Queue.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Queue.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/QueueArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/QueueArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/SinglyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SinglyLinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Stack.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Stack.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/StackArray.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/StackArray.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/Tests.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Tests.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/UnitTest/UnitTest.h" beforeDir="false" afterPath="$PROJECT_DIR$/tests/UnitTest/UnitTest.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/include/Chars.h" beforeDir="false" afterPath="$PROJECT_DIR$/util/include/Chars.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/include/Floats.h" beforeDir="false" afterPath="$PROJECT_DIR$/util/include/Floats.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/include/Integers.h" beforeDir="false" afterPath="$PROJECT_DIR$/util/include/Integers.h" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -39,21 +63,22 @@
     <session id="166045188">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="51" />
+          <entry key="project.closed" value="53" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
           <entry key="project.open.time.11" value="1" />
-          <entry key="project.open.time.12" value="2" />
+          <entry key="project.open.time.12" value="3" />
           <entry key="project.open.time.130" value="1" />
           <entry key="project.open.time.14" value="1" />
+          <entry key="project.open.time.25" value="1" />
           <entry key="project.open.time.28" value="3" />
           <entry key="project.open.time.29" value="1" />
           <entry key="project.open.time.30" value="2" />
           <entry key="project.open.time.31" value="2" />
           <entry key="project.open.time.33" value="1" />
           <entry key="project.open.time.34" value="3" />
-          <entry key="project.open.time.35" value="2" />
+          <entry key="project.open.time.35" value="3" />
           <entry key="project.open.time.36" value="3" />
           <entry key="project.open.time.38" value="3" />
           <entry key="project.open.time.40" value="2" />
@@ -71,14 +96,14 @@
           <entry key="project.open.time.88" value="1" />
           <entry key="project.open.time.9" value="2" />
           <entry key="project.open.time.91" value="1" />
-          <entry key="project.opened" value="52" />
+          <entry key="project.opened" value="55" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="C_DataStructures_Library (disassembly)" value="2" />
-          <entry key="c" value="374" />
-          <entry key="h" value="374" />
+          <entry key="c" value="376" />
+          <entry key="h" value="403" />
           <entry key="md" value="1" />
           <entry key="txt" value="17" />
         </counts>
@@ -88,14 +113,14 @@
           <entry key="CMakeLists.txt" value="17" />
           <entry key="Disassembly" value="2" />
           <entry key="Markdown" value="1" />
-          <entry key="ObjectiveC" value="748" />
+          <entry key="ObjectiveC" value="779" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="GDB" value="31" />
-          <entry key="c" value="42054" />
-          <entry key="h" value="32271" />
+          <entry key="c" value="42059" />
+          <entry key="h" value="32465" />
           <entry key="md" value="1090" />
           <entry key="txt" value="457" />
         </counts>
@@ -106,7 +131,7 @@
           <entry key="Doxygen file" value="447" />
           <entry key="GDBCommands" value="31" />
           <entry key="Markdown" value="1090" />
-          <entry key="ObjectiveC" value="73878" />
+          <entry key="ObjectiveC" value="74077" />
         </counts>
       </usages-collector>
     </session>
@@ -117,19 +142,105 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/BinarySearchTree.c">
+        <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="644" selection-start-line="644" selection-end-line="644" />
+            <state relative-caret-position="276">
+              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="15" selection-end-column="6" />
+              <folding>
+                <element signature="e#259#271#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/generic/include/GCore.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="363">
+              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+              <folding>
+                <element signature="e#225#237#0" expanded="true" />
+                <element signature="e#866#867#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Floats.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="432">
+              <caret line="34" column="1" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
+              <folding>
+                <element signature="e#235#247#0" expanded="true" />
+                <element signature="e#787#788#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Integers.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="294">
+              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+              <folding>
+                <element signature="e#241#253#0" expanded="true" />
+                <element signature="e#1378#1379#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Util.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="230">
+              <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+              <folding>
+                <element signature="e#191#212#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/include/BinarySearchTree.h">
+        <entry file="file://$PROJECT_DIR$/tests/UnitTest/UnitTest.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="23">
-              <caret line="64" lean-forward="true" selection-start-line="64" selection-end-line="64" />
+            <state relative-caret-position="432">
+              <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
+              <folding>
+                <element signature="e#241#253#0" expanded="true" />
+                <element signature="e#659#660#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Chars.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="386">
+              <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+              <folding>
+                <element signature="e#192#209#0" expanded="true" />
+                <element signature="e#250#262#0" expanded="true" />
+                <element signature="e#605#606#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/generic/include/GQueue.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="3238">
+              <caret line="200" selection-start-line="200" selection-end-line="200" />
+              <folding>
+                <element signature="e#197#214#0" expanded="true" />
+                <element signature="e#254#266#0" expanded="true" />
+                <element signature="e#6932#6944#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -208,18 +319,7 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/tests/SinglyLinkedListTests.c" />
-        <option value="$PROJECT_DIR$/tests/DoublyLinkedListTests.c" />
-        <option value="$PROJECT_DIR$/tests/QueueArrayTests.c" />
-        <option value="$PROJECT_DIR$/include/Tests.h" />
-        <option value="$PROJECT_DIR$/tests/DequeArrayTests.c" />
-        <option value="$PROJECT_DIR$/src/StackArray.c" />
-        <option value="$PROJECT_DIR$/src/QueueArray.c" />
-        <option value="$PROJECT_DIR$/include/QueueArray.h" />
-        <option value="$PROJECT_DIR$/include/DequeArray.h" />
         <option value="$PROJECT_DIR$/src/DequeArray.c" />
-        <option value="$PROJECT_DIR$/include/StackArray.h" />
-        <option value="$PROJECT_DIR$/include/DynamicArray.h" />
         <option value="$PROJECT_DIR$/src/DynamicArray.c" />
         <option value="$USER_HOME$/Desktop/avl.c" />
         <option value="$PROJECT_DIR$/../README.md" />
@@ -234,31 +334,42 @@
         <option value="$PROJECT_DIR$/generic/util/Floats.c" />
         <option value="$PROJECT_DIR$/generic/util/Char.c" />
         <option value="$PROJECT_DIR$/generic/include/Char.h" />
-        <option value="$PROJECT_DIR$/include/Core.h" />
         <option value="$PROJECT_DIR$/util/src/Integers.c" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/util/src/Floats.c" />
-        <option value="$PROJECT_DIR$/src/BinarySearchTree.c" />
         <option value="$PROJECT_DIR$/main.c" />
-        <option value="$PROJECT_DIR$/generic/include/GCore.h" />
-        <option value="$PROJECT_DIR$/util/include/Chars.h" />
         <option value="$PROJECT_DIR$/util/src/Chars.c" />
-        <option value="$PROJECT_DIR$/include/BinarySearchTree.h" />
-        <option value="$PROJECT_DIR$/include/CircularLinkedList.h" />
         <option value="$PROJECT_DIR$/src/CircularLinkedList.c" />
-        <option value="$PROJECT_DIR$/include/Deque.h" />
         <option value="$PROJECT_DIR$/src/Deque.c" />
-        <option value="$PROJECT_DIR$/include/DoublyLinkedList.h" />
         <option value="$PROJECT_DIR$/src/DoublyLinkedList.c" />
-        <option value="$PROJECT_DIR$/include/Queue.h" />
         <option value="$PROJECT_DIR$/src/Queue.c" />
-        <option value="$PROJECT_DIR$/include/SinglyLinkedList.h" />
         <option value="$PROJECT_DIR$/src/SinglyLinkedList.c" />
-        <option value="$PROJECT_DIR$/include/Stack.h" />
         <option value="$PROJECT_DIR$/src/Stack.c" />
         <option value="$PROJECT_DIR$/include/Util.h" />
-        <option value="$PROJECT_DIR$/generic/include/GQueue.h" />
         <option value="$PROJECT_DIR$/generic/src/GQueue.c" />
+        <option value="$PROJECT_DIR$/include/PriorityQueue.h" />
+        <option value="$PROJECT_DIR$/include/DynamicArray.h" />
+        <option value="$PROJECT_DIR$/include/Queue.h" />
+        <option value="$PROJECT_DIR$/include/DoublyLinkedList.h" />
+        <option value="$PROJECT_DIR$/include/DequeArray.h" />
+        <option value="$PROJECT_DIR$/include/Deque.h" />
+        <option value="$PROJECT_DIR$/include/CircularLinkedList.h" />
+        <option value="$PROJECT_DIR$/include/CircularBuffer.h" />
+        <option value="$PROJECT_DIR$/include/Array.h" />
+        <option value="$PROJECT_DIR$/include/Core.h" />
+        <option value="$PROJECT_DIR$/include/QueueArray.h" />
+        <option value="$PROJECT_DIR$/include/SinglyLinkedList.h" />
+        <option value="$PROJECT_DIR$/include/Stack.h" />
+        <option value="$PROJECT_DIR$/include/StackArray.h" />
+        <option value="$PROJECT_DIR$/include/Tests.h" />
+        <option value="$PROJECT_DIR$/src/BinarySearchTree.c" />
+        <option value="$PROJECT_DIR$/include/BinarySearchTree.h" />
+        <option value="$PROJECT_DIR$/generic/include/GCore.h" />
+        <option value="$PROJECT_DIR$/generic/include/GQueue.h" />
+        <option value="$PROJECT_DIR$/util/include/Chars.h" />
+        <option value="$PROJECT_DIR$/util/include/Floats.h" />
+        <option value="$PROJECT_DIR$/util/include/Integers.h" />
+        <option value="$PROJECT_DIR$/tests/UnitTest/UnitTest.h" />
       </list>
     </option>
   </component>
@@ -320,6 +431,44 @@
               <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
               <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="generic" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="generic" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="generic" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="UnitTest" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -357,7 +506,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.Build All">
+  <component name="RunManager" selected="Application.C_DataStructures_Library">
     <configuration default="true" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" PROJECT_NAME="C_DataStructures_Library" TARGET_NAME="C_DataStructures_Library" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="C_DataStructures_Library" RUN_TARGET_NAME="C_DataStructures_Library" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -440,11 +589,14 @@
       <workItem from="1541380356804" duration="425000" />
       <workItem from="1541424147887" duration="14264000" />
       <workItem from="1541453762157" duration="7734000" />
+      <workItem from="1541475112135" duration="70000" />
+      <workItem from="1541511708228" duration="4780000" />
+      <workItem from="1541527293946" duration="2229000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="345281000" />
+    <option name="totallyTimeSpent" value="352360000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -457,19 +609,20 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.20196672" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.21104388" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.7169811" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.6116352" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.5204403" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.5974843" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.6116352" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32861635" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32861635" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32861635" />
@@ -481,18 +634,18 @@
       <window_info anchor="right" id="Database" order="3" weight="0.32980332" />
     </layout>
     <layout-to-restore>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.20196672" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.21104388" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.7169811" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.6116352" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.5204403" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.5974843" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.40880504" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32861635" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32861635" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32861635" />
@@ -518,27 +671,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/include/Tests.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" column="22" selection-start-line="15" selection-start-column="7" selection-end-line="15" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/QueueArrayTests.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="750">
-          <caret line="90" lean-forward="true" selection-start-line="90" selection-end-line="90" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/StackTests.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="15" column="10" selection-start-line="15" selection-start-column="10" selection-end-line="15" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/DequeArrayTests.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="524">
@@ -575,20 +707,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/StackArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2663">
-          <caret line="194" lean-forward="true" selection-start-line="194" selection-end-line="194" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -607,13 +725,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="197">
           <caret line="135" column="39" selection-start-line="135" selection-start-column="39" selection-end-line="135" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Core.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="248">
-          <caret line="29" column="91" lean-forward="true" selection-start-line="29" selection-start-column="91" selection-end-line="29" selection-end-column="91" />
         </state>
       </provider>
     </entry>
@@ -638,87 +749,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/QueueArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="32" column="3" lean-forward="true" selection-start-line="32" selection-start-column="3" selection-end-line="32" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="874">
-          <caret line="47" lean-forward="true" selection-start-line="47" selection-end-line="47" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Array.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="26" selection-start-line="26" selection-end-line="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DynamicArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="271">
-          <caret line="19" column="3" lean-forward="true" selection-start-line="19" selection-start-column="3" selection-end-line="19" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/QueueArray.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
           <caret line="199" selection-start-line="199" selection-end-line="199" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/CircularLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2985">
-          <caret line="223" selection-start-line="223" selection-end-line="223" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DequeArray.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="524">
-          <caret line="199" selection-start-line="199" selection-end-line="199" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Deque.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="175" lean-forward="true" selection-start-line="175" selection-end-line="175" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3422">
-          <caret line="256" column="36" selection-start-line="256" selection-start-column="36" selection-end-line="256" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/PriorityQueue.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="11" column="17" lean-forward="true" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/Queue.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="160" column="5" selection-start-line="160" selection-start-column="5" selection-end-line="160" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3399">
-          <caret line="255" column="36" selection-start-line="255" selection-start-column="36" selection-end-line="255" selection-end-column="36" />
         </state>
       </provider>
     </entry>
@@ -750,13 +784,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Stack.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2134">
-          <caret line="172" column="25" selection-start-line="172" selection-start-column="25" selection-end-line="172" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Stack.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="236">
@@ -771,48 +798,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/generic/include/GCore.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="1" column="16" lean-forward="true" selection-start-line="1" selection-start-column="16" selection-end-line="1" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/util/src/Floats.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-920">
           <caret line="8" column="10" selection-start-line="8" selection-start-column="10" selection-end-line="8" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Chars.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-74">
-          <caret line="1" column="14" selection-start-line="1" selection-start-column="14" selection-end-line="1" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Floats.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="16" selection-start-line="16" selection-end-line="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Integers.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="25" column="3" selection-start-line="25" selection-start-column="3" selection-end-line="25" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Util.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="299">
-          <caret line="13" column="18" lean-forward="true" selection-start-line="13" selection-start-column="18" selection-end-line="13" selection-end-column="18" />
-          <folding>
-            <element signature="e#191#212#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -823,34 +812,286 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/PriorityQueue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#256#268#0" expanded="true" />
+            <element signature="e#1327#1328#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DynamicArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#253#265#0" expanded="true" />
+            <element signature="e#5280#5281#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Queue.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#232#244#0" expanded="true" />
+            <element signature="e#5963#5964#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#264#276#0" expanded="true" />
+            <element signature="e#11777#11778#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DequeArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#247#259#0" expanded="true" />
+            <element signature="e#7638#7639#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Deque.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#231#243#0" expanded="true" />
+            <element signature="e#6693#6694#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CircularLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#271#283#0" expanded="true" />
+            <element signature="e#9598#9599#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Array.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="317">
+          <caret line="41" column="7" selection-start-line="41" selection-start-column="7" selection-end-line="41" selection-end-column="7" />
+          <folding>
+            <element signature="e#232#244#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Core.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="55" selection-start-line="55" selection-end-line="55" />
+          <folding>
+            <element signature="e#190#208#0" expanded="true" />
+            <element signature="e#329#341#0" expanded="true" />
+            <element signature="e#2053#2054#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#264#276#0" expanded="true" />
+            <element signature="e#11542#11543#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Stack.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="187" column="1" selection-start-line="187" selection-start-column="1" selection-end-line="187" selection-end-column="1" />
+          <folding>
+            <element signature="e#232#244#0" expanded="true" />
+            <element signature="e#6513#6514#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/Tests.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+          <folding>
+            <element signature="e#232#244#0" expanded="true" />
+            <element signature="e#621#622#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/StackArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="501">
+          <caret line="218" column="1" selection-start-line="218" selection-start-column="1" selection-end-line="218" selection-end-column="1" />
+          <folding>
+            <element signature="e#247#259#0" expanded="true" />
+            <element signature="e#7516#7517#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/QueueArray.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-483">
+          <folding>
+            <element signature="e#247#259#0" expanded="true" />
+            <element signature="e#7834#7835#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/MinGW/include/assert.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="207">
+          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
+          <folding>
+            <element signature="e#565#577#0" expanded="true" />
+            <element signature="e#600#676#0" expanded="true" />
+            <element signature="e#1064#1065#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/BinarySearchTree.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="271">
+          <caret line="49" column="2" selection-start-line="49" selection-start-column="2" selection-end-line="49" selection-end-column="2" />
+          <folding>
+            <element signature="e#265#277#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/BinarySearchTree.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="161">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="15" selection-end-column="6" />
+          <folding>
+            <element signature="e#259#271#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/generic/include/GQueue.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="156">
-          <caret line="182" lean-forward="true" selection-start-line="182" selection-end-line="182" />
+        <state relative-caret-position="3238">
+          <caret line="200" selection-start-line="200" selection-end-line="200" />
           <folding>
             <element signature="e#197#214#0" expanded="true" />
+            <element signature="e#254#266#0" expanded="true" />
+            <element signature="e#6932#6944#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/generic/src/GQueue.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="926">
-          <caret line="389" lean-forward="true" selection-start-line="389" selection-end-line="389" />
+        <state relative-caret-position="87">
+          <caret line="357" lean-forward="true" selection-start-line="357" selection-end-line="357" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/BinarySearchTree.c">
+    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="644" selection-start-line="644" selection-end-line="644" />
+        <state relative-caret-position="294">
+          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/BinarySearchTree.h">
+    <entry file="file://$PROJECT_DIR$/util/include/Chars.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="23">
-          <caret line="64" lean-forward="true" selection-start-line="64" selection-end-line="64" />
+        <state relative-caret-position="386">
+          <caret line="29" lean-forward="true" selection-start-line="29" selection-end-line="29" />
+          <folding>
+            <element signature="e#192#209#0" expanded="true" />
+            <element signature="e#250#262#0" expanded="true" />
+            <element signature="e#605#606#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/generic/include/GCore.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <folding>
+            <element signature="e#225#237#0" expanded="true" />
+            <element signature="e#866#867#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Floats.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="34" column="1" selection-start-line="34" selection-start-column="1" selection-end-line="34" selection-end-column="1" />
+          <folding>
+            <element signature="e#235#247#0" expanded="true" />
+            <element signature="e#787#788#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Integers.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="294">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#241#253#0" expanded="true" />
+            <element signature="e#1378#1379#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Util.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
+          <folding>
+            <element signature="e#191#212#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/UnitTest/UnitTest.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="432">
+          <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
+          <folding>
+            <element signature="e#241#253#0" expanded="true" />
+            <element signature="e#659#660#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

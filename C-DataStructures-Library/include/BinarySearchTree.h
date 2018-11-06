@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A BinarySearchTree is a node-based binary tree with the following
 /// properties:
 /// - The left subtree of a node contains only nodes with keys lesser than the
@@ -115,5 +119,9 @@ int bst_peek(BinarySearchTree bst);
 index_t bst_height(BinarySearchTree bst);
 
 Status bst_traversal(BinarySearchTree bst, int traversal);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_BINARYSEARCHTREE_H

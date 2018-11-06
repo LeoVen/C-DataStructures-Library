@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct CircularBuffer_s
 {
     int *buffer;        /*!< Buffer */
@@ -45,5 +49,9 @@ bool cbf_empty(CircularBuffer cbf);
 bool cbf_full(CircularBuffer cbf);
 
 Status cbf_copy(CircularBuffer cbf, CircularBuffer *result);
+
+#ifdef	__cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_CIRCULARBUFFER_H

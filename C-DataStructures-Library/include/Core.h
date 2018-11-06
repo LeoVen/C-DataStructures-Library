@@ -13,6 +13,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
+#include <assert.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef enum Status
 {
@@ -41,5 +47,9 @@ static const unsigned int __primes[] = {
     12582917, 25165843, 50331653, 100663319, 201326611,
     402653189, 805306457, 1610612741,
 };
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_CORE_H

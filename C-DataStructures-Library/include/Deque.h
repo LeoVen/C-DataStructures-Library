@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// This is a linked list implementation of a Deque. A Deque is a double-ended
 /// queue, so you can insert and remove elements from both ends of the queue.
 /// It is implemented as a \c DoublyLinkedList but with restricted operations
@@ -181,5 +185,9 @@ index_t deq_length(Deque deq);
 Status deq_limit(Deque deq, index_t limit);
 
 Status deq_copy(Deque deq, Deque *result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_DEQUE_H

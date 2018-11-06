@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A CircularLinkedList is a linked list where all nodes are connected to form
 /// a circular structure. There are no \c head or \c tail pointers; the only
 /// reference is the current node where all operations work relatively to this
@@ -240,5 +244,9 @@ int cll_peek(CircularLinkedList cll);
 int cll_peek_prev(CircularLinkedList cll);
 
 Status cll_copy(CircularLinkedList cll, CircularLinkedList *result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_CIRCULARLINKEDLIST_H

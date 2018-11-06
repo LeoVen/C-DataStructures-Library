@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// This is a linked list implementation of a \c Queue with FIFO (First-in
 /// First-out) or LILO (Last-in Last-out) operations, so the first item added
 /// is the first one to be removed. It is implemented as a SinglyLinkedList but
@@ -165,5 +169,9 @@ index_t que_length(Queue que);
 Status que_limit(Queue que, index_t limit);
 
 Status que_copy(Queue que, Queue *result);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_QUEUE_H

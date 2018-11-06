@@ -12,6 +12,10 @@
 #include "Core.h"
 #include "GCore.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct GQueue_s
 {
     /// \brief Current amount of elements in the \c GQueue.
@@ -190,5 +194,9 @@ Status gque_limit(GQueue que, index_t limit);
 Status gque_copy(GQueue que, GQueue *result);
 
 Status gque_copy_shallow(GQueue que, GQueue *result);
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_GQUEUE_H

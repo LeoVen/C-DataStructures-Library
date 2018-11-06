@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A SinglyLinkedList is a linear structure where its elements are not stored
 /// in contiguous memory allowing constant insertion and removal at both ends
 /// of the list. Insertion and removal at the middle of the list are at most
@@ -280,5 +284,9 @@ Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t positio
 Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result);
 
 Status sll_reverse(SinglyLinkedList sll);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_SINGLYLINKEDLIST_H

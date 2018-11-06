@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A QueueArray is a buffered Queue with FIFO (First-in First-out) or LILO
 /// (Last-in Last-out) operations, so the first item added is the first one to
 /// be removed. The queue is implemented as a circular buffer. Its indexes can
@@ -211,5 +215,9 @@ Status qua_copy(QueueArray qua, QueueArray *result);
 Status qua_cap_lock(QueueArray qua);
 
 Status qua_cap_unlock(QueueArray qua);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_QUEUEARRAY_H

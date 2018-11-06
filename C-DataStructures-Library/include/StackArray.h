@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A StackArray is a buffered Stack with FILO (First-in Last-out) or LIFO
 /// (Last-in First-out) operations, so the first item added is the last one to
 /// be removed. The stack is implemented as a normal buffer that only grows on
@@ -210,5 +214,9 @@ Status sta_copy(StackArray sta, StackArray *result);
 Status sta_cap_lock(StackArray sta);
 
 Status sta_cap_unlock(StackArray sta);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_STACKARRAY_H

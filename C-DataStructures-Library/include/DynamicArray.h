@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A DynamicArray is an Array that grows in size when needed. It has a
 /// \c capacity that grows according to \c growth_rate. Both parameters can be
 /// set by the user using the function dar_create() when creating a new array.
@@ -158,5 +162,9 @@ Status dar_append(DynamicArray dar1, DynamicArray dar2);
 Status dar_cap_lock(DynamicArray dar);
 
 Status dar_cap_unlock(DynamicArray dar);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_DYNAMICARRAY_H

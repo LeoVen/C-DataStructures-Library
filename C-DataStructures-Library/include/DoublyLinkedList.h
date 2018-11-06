@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// A DoublyLinkedList is a linear structure like a SinglyLinkedList where each
 /// node have two pointers. One to the previous node and another to the next
 /// node. This allows a quicker access to elements; insertion and removal are
@@ -282,5 +286,8 @@ Status dll_copy(DoublyLinkedList dll, DoublyLinkedList *result);
 
 Status dll_reverse(DoublyLinkedList dll);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_DOUBLYLINKEDLIST_H
