@@ -11,36 +11,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/generic/include/GCore.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/generic/include/GQueue.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/generic/src/GQueue.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/include/BinarySearchTree.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/BinarySearchTree.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/include/Chars.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/include/Floats.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/include/Integers.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/include/Util.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/src/Floats.c" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/util/src/Integers.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Queue/include/Queue.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Queue/src/Queue.c" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/CircularLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/CircularLinkedList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Core.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Core.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Deque.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Deque.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/DoublyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DoublyLinkedList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SinglyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SinglyLinkedList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Stack.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Stack.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CircularLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/CircularLinkedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Deque.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Deque.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/DoublyLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/DoublyLinkedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SinglyLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SinglyLinkedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Stack.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Stack.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
-    </list>
+    <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -68,7 +39,7 @@
     <session id="166045188">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="50" />
+          <entry key="project.closed" value="51" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
@@ -349,26 +320,6 @@
               <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
               <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
-              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
-              <item name="generic" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
-              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
-              <item name="include" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
-              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
-              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
-              <item name="util" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -488,12 +439,12 @@
       <workItem from="1541121594610" duration="191000" />
       <workItem from="1541380356804" duration="425000" />
       <workItem from="1541424147887" duration="14264000" />
-      <workItem from="1541453762157" duration="7587000" />
+      <workItem from="1541453762157" duration="7734000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="345134000" />
+    <option name="totallyTimeSpent" value="345281000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -506,7 +457,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.20196672" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
