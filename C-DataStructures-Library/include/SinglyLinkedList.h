@@ -37,6 +37,9 @@
 /// \b Functions
 ///
 /// Located in file SinglyLinkedList.c
+///
+/// \b TODO
+/// - Add Link and Unlink functions
 struct SinglyLinkedList_s
 {
     /// \brief List length.
@@ -249,6 +252,8 @@ Status sll_delete(SinglyLinkedList *sll);
 Status sll_erase(SinglyLinkedList *sll);
 
 bool sll_contains(SinglyLinkedList sll, int key);
+
+bool sll_full(SinglyLinkedList sll);
 
 bool sll_empty(SinglyLinkedList sll);
 

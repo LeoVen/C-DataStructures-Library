@@ -30,6 +30,7 @@
 /// - More memory usage as in every node there is a pointer to the next node
 ///
 /// \b Functions
+///
 /// Located in file Queue.c
 struct Queue_s
 {
@@ -154,6 +155,8 @@ Status que_erase(Queue *que);
 int que_peek_front(Queue que);
 
 int que_peek_rear(Queue que);
+
+bool que_full(Queue que);
 
 bool que_empty(Queue que);
 

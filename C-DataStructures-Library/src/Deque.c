@@ -44,7 +44,7 @@ Status deq_enqueue_front(Deque deq, int element)
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq->limit > 0 && deq->length >= deq->limit)
+    if (deq_full(deq))
         return DS_ERR_FULL;
 
     DequeNode *node;
@@ -77,7 +77,7 @@ Status deq_enqueue_rear(Deque deq, int value)
     if (deq == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq->limit > 0 && deq->length >= deq->limit)
+    if (deq_full(deq))
         return DS_ERR_FULL;
 
     DequeNode *node;
@@ -307,6 +307,11 @@ int deq_peek_rear(Deque deq)
         return 0;
 
     return deq->rear->data;
+}
+
+bool deq_full(Deque deq)
+{
+    return deq->limit > 0 && deq->length >= deq->limit;
 }
 
 bool deq_empty(Deque deq)

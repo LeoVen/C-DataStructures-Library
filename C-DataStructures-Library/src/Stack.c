@@ -43,7 +43,7 @@ Status stk_push(Stack stk, int element)
     if (stk == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stk->limit > 0 && stk->height >= stk->limit)
+    if (stk_full(stk))
         return DS_ERR_FULL;
 
     StackNode box;
@@ -228,6 +228,11 @@ int stk_peek(Stack stk)
         return 0;
 
     return stk->top->data;
+}
+
+bool stk_full(Stack stk)
+{
+    return stk->limit > 0 && stk->height >= stk->limit;
 }
 
 bool stk_empty(Stack stk)

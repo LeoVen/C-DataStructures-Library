@@ -172,6 +172,8 @@ int deq_peek_front(Deque deq);
 
 int deq_peek_rear(Deque deq);
 
+bool deq_full(Deque deq);
+
 bool deq_empty(Deque deq);
 
 index_t deq_length(Deque deq);

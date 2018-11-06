@@ -45,7 +45,7 @@ Status sll_insert_head(SinglyLinkedList sll, int element)
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll->limit != 0 && sll->length >= sll->limit)
+    if (sll_full(sll))
         return DS_ERR_FULL;
 
     SinglyLinkedNode node;
@@ -79,7 +79,7 @@ Status sll_insert_at(SinglyLinkedList sll, int element, index_t position)
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll->limit != 0 && sll->length >= sll->limit)
+    if (sll_full(sll))
         return DS_ERR_FULL;
 
     if (position > sll->length)
@@ -141,7 +141,7 @@ Status sll_insert_tail(SinglyLinkedList sll, int element)
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll->limit != 0 && sll->length >= sll->limit)
+    if (sll_full(sll))
         return DS_ERR_FULL;
 
     SinglyLinkedNode node;
@@ -507,6 +507,11 @@ bool sll_contains(SinglyLinkedList sll, int key)
     }
 
     return false;
+}
+
+bool sll_full(SinglyLinkedList sll)
+{
+    return sll->limit > 0 && sll->length >= sll->limit;
 }
 
 bool sll_empty(SinglyLinkedList sll)

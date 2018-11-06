@@ -45,7 +45,7 @@ Status cll_insert_after(CircularLinkedList cll, int element)
 
     CircularLinkedNode node;
 
-    if (cll->limit > 0 && cll->length >= cll->limit)
+    if (cll_full(cll))
         return DS_ERR_FULL;
 
     Status st = cll_make_node(&node, element);
@@ -80,7 +80,7 @@ Status cll_insert_before(CircularLinkedList cll, int element)
     if (cll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (cll->limit > 0 && cll->length >= cll->limit)
+    if (cll_full(cll))
         return DS_ERR_FULL;
 
     CircularLinkedNode node;
@@ -432,6 +432,11 @@ bool cll_contains(CircularLinkedList cll, int key)
     }
 
     return false;
+}
+
+bool cll_full(CircularLinkedList cll)
+{
+    return cll->limit > 0 && cll->length >= cll->limit;
 }
 
 bool cll_empty(CircularLinkedList cll)

@@ -42,7 +42,7 @@ Status que_enqueue(Queue que, int element)
     if (que == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (que->limit != 0 && que->length >= que->limit)
+    if (que_full(que))
         return DS_ERR_FULL;
 
     QueueNode node;
@@ -241,6 +241,11 @@ int que_peek_rear(Queue que)
         return 0;
 
     return que->rear->data;
+}
+
+bool que_full(Queue que)
+{
+    return que->limit > 0 && que->length >= que->limit;
 }
 
 bool que_empty(Queue que)

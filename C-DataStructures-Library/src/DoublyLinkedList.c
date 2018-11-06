@@ -46,7 +46,7 @@ Status dll_insert_head(DoublyLinkedList dll, int value)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dll->limit > 0 && dll->length >= dll->limit)
+    if (dll_full(dll))
         return DS_ERR_FULL;
 
     DoublyLinkedNode node;
@@ -80,7 +80,7 @@ Status dll_insert_at(DoublyLinkedList dll, int value, index_t position)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dll->limit > 0 && dll->length >= dll->limit)
+    if (dll_full(dll))
         return DS_ERR_FULL;
 
     if (position > dll->length)
@@ -142,7 +142,7 @@ Status dll_insert_tail(DoublyLinkedList dll, int value)
     if (dll == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (dll->limit > 0 && dll->length >= dll->limit)
+    if (dll_full(dll))
         return DS_ERR_FULL;
 
     DoublyLinkedNode node;
@@ -496,6 +496,11 @@ bool dll_contains(DoublyLinkedList dll, int key)
     }
 
     return false;
+}
+
+bool dll_full(DoublyLinkedList dll)
+{
+    return dll->limit > 0 && dll->length >= dll->limit;
 }
 
 bool dll_empty(DoublyLinkedList dll)

@@ -1,3 +1,4 @@
+#include "Util.h"
 #include "Tests.h"
 #include "SinglyLinkedList.h"
 #include "DoublyLinkedList.h"
@@ -12,6 +13,8 @@
 #include "CircularBuffer.h"
 #include "CircularLinkedList.h"
 #include "DequeArray.h"
+#include "BinarySearchTree.h"
+#include "GQueue.h"
 
 int main()
 {
@@ -537,6 +540,67 @@ int main()
 
     dqa_delete(&deque);
 
+    BinarySearchTree tree;
+
+    int max1 = 0, max2 = 0, temp;
+
+    if (bst_init(&tree) == DS_OK)
+    {
+        for (int i = 0; i < 200; i++)
+        {
+            temp = rand() % 193;
+
+            max1 += temp;
+
+            if (bst_insert(tree, temp) != DS_OK)
+                break;
+        }
+
+        while (!bst_empty(tree))
+        {
+            if (bst_pop(tree, &j) != DS_OK)
+                break;
+
+            max2 += j;
+        }
+
+        printf("\nTotal inserted values : %d", max1);
+        printf("\nTotal removed values  : %d", max2);
+    }
+
+    bst_delete(&tree);
+
+    if (bst_init(&tree) == DS_OK)
+    {
+        int total_in = 0, total_out = 0;
+        unsigned count;
+
+        for (int i = 0; i <= 10; i++)
+        {
+            for (int k = 0; k <= 10; k++)
+            {
+                if (bst_insert(tree, k) != DS_OK)
+                    break;
+
+                total_in += k;
+            }
+        }
+
+        for (int i = 0; i <= 10; i++)
+        {
+            bst_remove_all(tree, i, &count);
+
+            total_out += i * count;
+        }
+
+        printf("\nTotal In  : %d", total_in);
+        printf("\nTotal Out : %d", total_out);
+    }
+
+    bst_delete(&tree);
+
+    printf("\n\n\n");
+
     DequeArrayTests();
     DequeTests();
     DoublyLinkedListTests();
@@ -547,6 +611,72 @@ int main()
     SinglyLinkedListTests();
     StackArrayTests();
     StackTests();
+
+    GQueue gqueue;
+
+    void *result;
+
+    const char *strings[10] = {"Hello World", "Lorem Ipsum", "Fire and Blood",
+                               "May the force be with you", "Winter is Coming",
+                               "Hear me Roar", "Ours is the fury", "Mooncake",
+                               "Far over the misty mountains cold", "Gandalf"};
+
+    /* 0 - int
+     * 1 - float
+     * 2 - unsigned
+     */
+    signed char flag;
+
+    if (gque_init(&gqueue) == DS_OK)
+    {
+        gqueue->d_free = free;
+
+        for (int i = 0, num = 0; i < 100; i++)
+        {
+            if (i % 3 == 0)
+            {
+                gque_enqueue(gqueue, new_float((float)i + (float)i * 20.0f / 193.0f), 1);
+            }
+            else if (i % 4 == 0)
+            {
+                gque_enqueue(gqueue, new_string(strings[rand() % 10]), 2);
+            }
+            else
+            {
+                gque_enqueue(gqueue, new_int(num++), 0);
+            }
+        }
+
+        printf("\nGenericQueue\n[ ");
+        while (!gque_empty(gqueue))
+        {
+            gque_dequeue(gqueue, &result, &flag);
+
+            switch (flag)
+            {
+                case 0:
+                    display_int(result);
+                    break;
+                case 1:
+                    display_float(result);
+                    break;
+                case 2:
+                    display_string(result);
+                    break;
+                default:
+                    printf("ERROR");
+            }
+
+            free(result);
+
+            if (!gque_empty(gqueue))
+                printf(", ");
+        }
+
+        printf(" ]\n");
+    }
+
+    gque_delete(&gqueue);
 
     return 0;
 }

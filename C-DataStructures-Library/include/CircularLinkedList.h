@@ -221,6 +221,8 @@ Status cll_erase(CircularLinkedList *cll);
 
 bool cll_contains(CircularLinkedList cll, int key);
 
+bool cll_full(CircularLinkedList cll);
+
 bool cll_empty(CircularLinkedList cll);
 
 index_t cll_length(CircularLinkedList cll);

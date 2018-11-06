@@ -170,6 +170,8 @@ Status stk_erase(Stack *stk);
 
 int stk_peek(Stack stk);
 
+bool stk_full(Stack stk);
+
 bool stk_empty(Stack stk);
 
 index_t stk_height(Stack stk);

@@ -34,7 +34,9 @@
 ///
 /// Located in file DoublyLinkedList.c
 ///
-/// TODO Add support to negative index searches
+/// \b TODO
+/// - Add Link and Unlink functions
+/// - Add support to negative index searches
 struct DoublyLinkedList_s
 {
     /// \brief List length.
@@ -251,6 +253,8 @@ Status dll_delete(DoublyLinkedList *dll);
 Status dll_erase(DoublyLinkedList *dll);
 
 bool dll_contains(DoublyLinkedList dll, int key);
+
+bool dll_full(DoublyLinkedList dll);
 
 bool dll_empty(DoublyLinkedList dll);
 

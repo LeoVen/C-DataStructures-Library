@@ -2,11 +2,11 @@
 
 ## Planned Data Structures
 
-|   Structure Name   |   Source Code  |  Documentation | 
+|   Structure Name   |   Source Code  |  Documentation |
 | :----------------- | :------------: | :------------: |
 |       Array        | `[##########]` | `[#_________]` |
 |      AVLTree       | `[__________]` | `[__________]` |
-|  BinarySearchTree  | `[__________]` | `[__________]` |
+|  BinarySearchTree  | `[########__]` | `[##________]` |
 |     BinaryHeap     | `[__________]` | `[__________]` |
 |    BinomialHeap    | `[__________]` | `[__________]` |
 |       BTree        | `[__________]` | `[__________]` |
@@ -33,3 +33,11 @@
 |      TreeSet       | `[__________]` | `[__________]` |
 |        Trie        | `[__________]` | `[__________]` |
 |   __Completed__    |     __11__     |     __0__      |
+
+## Generic Data Structures
+
+|   Structure Name   |   Source Code  |  Documentation |
+|       GQueue       | `[########__]` | `[#####_____]` |
+|    GLinkedList     | `[__________]` | `[__________]` |
+|       GStack       | `[__________]` | `[__________]` |
+|   __Completed__    |     __0__      |     __0__      |

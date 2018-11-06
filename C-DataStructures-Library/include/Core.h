@@ -25,11 +25,21 @@ typedef enum Status
     DS_ERR_ITER                  =  6, /**< When an iteration reaches an unexpected value */
     DS_ERR_NULL_POINTER          =  7, /**< When a @c NULL parameter is passed to a function */
     DS_ERR_FULL                  =  8, /**< When a structure reaches its maximum capacity */
-    DS_ERR_INVALID_ARGUMENT      =  9  /**< When an argument passed is invalid for that operation */
+    DS_ERR_INVALID_ARGUMENT      =  9, /**< When an argument passed is invalid for that operation */
+    DS_ERR_NOT_FOUND             = 10, /**< When a search fails to find a value */
+    DS_ERR_INCOMPLETE_TYPE       = 11  /**< When a struct was not completely initialized */
 } Status;
 
 /// Signed value used to represent sizes and indexes. Its negative portion is
 /// only used to represent errors when the function doesn't return a Status.
 typedef long long int index_t;
+
+/// Prime numbers used for hashing
+static const unsigned int __primes[] = {
+    193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317,
+    196613, 393241, 786433, 1572869, 3145739, 6291469,
+    12582917, 25165843, 50331653, 100663319, 201326611,
+    402653189, 805306457, 1610612741,
+};
 
 #endif //C_DATASTRUCTURES_LIBRARY_CORE_H
