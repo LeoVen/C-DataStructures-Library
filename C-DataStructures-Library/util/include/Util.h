@@ -12,5 +12,6 @@
 #include "Integers.h"
 #include "Floats.h"
 #include "Chars.h"
+#include "Random.h"
 
 #endif //C_DATASTRUCTURES_LIBRARY_UTIL_H

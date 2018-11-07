@@ -721,5 +721,11 @@ int main()
 
     gque_delete(&gqueue);
 
+    long long total = 0, rands = 100000;
+    for (int i = 0; i < rands; i++)
+        total += rand_long(-20, 20);
+
+    printf("\nTotal: %lld", total);
+
     return 0;
 }

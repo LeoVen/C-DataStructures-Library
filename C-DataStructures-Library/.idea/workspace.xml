@@ -12,13 +12,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/include/AVLTree.h" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/AVLTree.c" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/include/Random.h" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/util/src/Random.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/BinarySearchTree.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/BinarySearchTree.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/BinarySearchTree.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/BinarySearchTree.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/include/Util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util/include/Util.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
@@ -86,8 +85,8 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="C_DataStructures_Library (disassembly)" value="2" />
-          <entry key="c" value="381" />
-          <entry key="h" value="408" />
+          <entry key="c" value="382" />
+          <entry key="h" value="412" />
           <entry key="md" value="1" />
           <entry key="txt" value="17" />
         </counts>
@@ -97,14 +96,14 @@
           <entry key="CMakeLists.txt" value="17" />
           <entry key="Disassembly" value="2" />
           <entry key="Markdown" value="1" />
-          <entry key="ObjectiveC" value="789" />
+          <entry key="ObjectiveC" value="794" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="GDB" value="31" />
-          <entry key="c" value="43248" />
-          <entry key="h" value="32631" />
+          <entry key="c" value="44138" />
+          <entry key="h" value="32896" />
           <entry key="md" value="1090" />
           <entry key="txt" value="457" />
         </counts>
@@ -115,7 +114,7 @@
           <entry key="Doxygen file" value="447" />
           <entry key="GDBCommands" value="31" />
           <entry key="Markdown" value="1090" />
-          <entry key="ObjectiveC" value="75432" />
+          <entry key="ObjectiveC" value="76587" />
         </counts>
       </usages-collector>
     </session>
@@ -128,11 +127,44 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="179">
-              <caret line="611" column="9" lean-forward="true" selection-start-line="611" selection-start-column="9" selection-end-line="611" selection-end-column="9" />
+            <state relative-caret-position="237">
+              <caret line="725" column="36" lean-forward="true" selection-start-line="725" selection-start-column="36" selection-end-line="725" selection-end-column="36" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Util.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="322">
+              <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+              <folding>
+                <element signature="e#191#212#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/src/Random.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="345">
+              <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+              <folding>
+                <element signature="e#112#131#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Random.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="363">
+              <caret line="17" column="39" lean-forward="true" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
             </state>
           </provider>
         </entry>
@@ -152,8 +184,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="115">
-              <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
+            <state relative-caret-position="161">
+              <caret line="28" selection-start-line="28" selection-end-line="28" />
             </state>
           </provider>
         </entry>
@@ -161,8 +193,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/AVLTree.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="35" column="1" lean-forward="true" selection-start-line="35" selection-start-column="1" selection-end-line="35" selection-end-column="1" />
+            <state relative-caret-position="282">
+              <caret line="72" selection-start-line="72" selection-end-line="72" />
               <folding>
                 <element signature="e#219#231#0" expanded="true" />
                 <element signature="e#1937#1938#0" expanded="true" />
@@ -175,7 +207,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>Queue</find>
       <find>int element</find>
       <find>.{79}</find>
       <find>que_</find>
@@ -205,6 +236,7 @@
       <find>avl_depth</find>
       <find>size_t</find>
       <find>for\b</find>
+      <find>RAND_MAX</find>
     </findStrings>
     <replaceStrings>
       <replace>index_</replace>
@@ -248,9 +280,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$USER_HOME$/Desktop/avl.c" />
-        <option value="$PROJECT_DIR$/../README.md" />
-        <option value="$PROJECT_DIR$/Queue/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/Queue/MainQueue.c" />
         <option value="$PROJECT_DIR$/generic/src/GQueue.h" />
         <option value="$PROJECT_DIR$/generic/util/Integers.h" />
@@ -298,6 +327,9 @@
         <option value="$PROJECT_DIR$/src/BinarySearchTree.c" />
         <option value="$PROJECT_DIR$/include/AVLTree.h" />
         <option value="$PROJECT_DIR$/src/AVLTree.c" />
+        <option value="$PROJECT_DIR$/util/include/Util.h" />
+        <option value="$PROJECT_DIR$/util/src/Random.c" />
+        <option value="$PROJECT_DIR$/util/include/Random.h" />
         <option value="$PROJECT_DIR$/main.c" />
       </list>
     </option>
@@ -387,6 +419,23 @@
               <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="include" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="C_DataStructures_Library" type="b2602c69:ProjectViewProjectNode" />
+              <item name="C-DataStructures-Library" type="462c0819:PsiDirectoryNode" />
+              <item name="util" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
@@ -405,8 +454,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\include" />
       <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\util\include" />
+      <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\include" />
       <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\util\src" />
       <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\util" />
       <recent name="C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\generic\include" />
@@ -510,12 +559,12 @@
       <workItem from="1541475112135" duration="70000" />
       <workItem from="1541511708228" duration="4780000" />
       <workItem from="1541527293946" duration="4005000" />
-      <workItem from="1541598007906" duration="6285000" />
+      <workItem from="1541598007906" duration="8814000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="360421000" />
+    <option name="totallyTimeSpent" value="362950000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -530,18 +579,18 @@
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.21406959" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.21406959" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.7704403" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3427673" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.8144654" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.5125786" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.5597484" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32861635" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32861635" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32861635" />
@@ -590,28 +639,6 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/PriorityQueue.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/avl.c" />
-    <entry file="file://$PROJECT_DIR$/src/DynamicArray.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1098">
-          <caret line="671" selection-start-line="671" selection-end-line="671" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/StackArray.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="176" column="7" selection-start-line="176" selection-start-column="7" selection-end-line="176" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../README.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -732,6 +759,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="299">
           <caret line="13" column="7" selection-start-line="13" selection-start-column="7" selection-end-line="13" selection-end-column="7" />
+          <folding>
+            <element signature="e#232#244#0" expanded="true" />
+            <element signature="e#5963#5964#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -863,13 +894,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Util.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="230">
-          <caret line="10" lean-forward="true" selection-start-line="10" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/UnitTest/UnitTest.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
@@ -933,14 +957,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/AVLTree.h">
+    <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="35" column="1" lean-forward="true" selection-start-line="35" selection-start-column="1" selection-end-line="35" selection-end-column="1" />
-          <folding>
-            <element signature="e#219#231#0" expanded="true" />
-            <element signature="e#1937#1938#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="161">
+          <caret line="28" selection-start-line="28" selection-end-line="28" />
         </state>
       </provider>
     </entry>
@@ -954,17 +974,62 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
+    <entry file="file://$PROJECT_DIR$/include/AVLTree.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="115">
-          <caret line="26" lean-forward="true" selection-start-line="26" selection-end-line="26" />
+        <state relative-caret-position="282">
+          <caret line="72" selection-start-line="72" selection-end-line="72" />
+          <folding>
+            <element signature="e#219#231#0" expanded="true" />
+            <element signature="e#1937#1938#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/MinGW/include/math.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="197">
+          <caret line="175" column="23" selection-start-line="175" selection-start-column="23" selection-end-line="175" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Random.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="363">
+          <caret line="17" column="39" lean-forward="true" selection-start-line="17" selection-start-column="39" selection-end-line="17" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/MinGW/include/stdlib.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="247">
+          <caret line="59" column="3" lean-forward="true" selection-start-line="59" selection-start-column="3" selection-end-line="59" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Util.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="14" column="19" selection-start-line="14" selection-start-column="19" selection-end-line="14" selection-end-column="19" />
+          <folding>
+            <element signature="e#191#212#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/Random.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="345">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+          <folding>
+            <element signature="e#112#131#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="179">
-          <caret line="611" column="9" lean-forward="true" selection-start-line="611" selection-start-column="9" selection-end-line="611" selection-end-column="9" />
+        <state relative-caret-position="237">
+          <caret line="725" column="36" lean-forward="true" selection-start-line="725" selection-start-column="36" selection-end-line="725" selection-end-column="36" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>
