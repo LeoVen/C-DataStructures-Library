@@ -51,7 +51,7 @@ struct BinarySearchTree_s
 
 /// Defines a type for <code> struct BinarySearchTree_s </code>.
 ///
-/// Every list is initialized by \c malloc with \c sizeof(BinarySearchTree_t).
+/// Every tree is initialized by \c malloc with \c sizeof(BinarySearchTree_t).
 typedef struct BinarySearchTree_s BinarySearchTree_t;
 
 /// Defines a type of pointer to <code> struct BinarySearchTree_s </code>.
@@ -62,32 +62,32 @@ typedef struct BinarySearchTree_s *BinarySearchTree;
 
 /// Initializes a BinarySearchTree.
 ///
-/// \param bst
+/// \param[in,out] bst
 ///
 /// \return
 Status bst_init(BinarySearchTree *bst);
 
 /// Inserts the specified element into the tree.
 ///
-/// \param bst
-/// \param element
+/// \param[in] bst
+/// \param[in] element
 ///
 /// \return
 Status bst_insert(BinarySearchTree bst, int element);
 
 /// Removes the specified element from the tree.
 ///
-/// \param bst
-/// \param element
+/// \param[in] bst
+/// \param[in] element
 ///
 /// \return
 Status bst_remove(BinarySearchTree bst, int element);
 
 /// Removes all instances of the specified element from the tree.
 ///
-/// \param bst
-/// \param element
-/// \param total
+/// \param[in] bst
+/// \param[in] element
+/// \param[out] total
 ///
 /// \return
 Status bst_remove_all(BinarySearchTree bst, int element, unsigned *total);

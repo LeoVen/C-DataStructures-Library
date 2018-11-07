@@ -15,6 +15,7 @@
 #include "DequeArray.h"
 #include "BinarySearchTree.h"
 #include "GQueue.h"
+#include "AVLTree.h"
 
 int main()
 {
@@ -546,7 +547,7 @@ int main()
 
     if (bst_init(&tree) == DS_OK)
     {
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 100; i++)
         {
             temp = rand() % 193;
 
@@ -555,6 +556,8 @@ int main()
             if (bst_insert(tree, temp) != DS_OK)
                 break;
         }
+
+        bst_display(tree, 3);
 
         while (!bst_empty(tree))
         {
@@ -598,6 +601,46 @@ int main()
     }
 
     bst_delete(&tree);
+
+    AVLTree avl;
+
+    max1 = 0, max2 = 0;
+
+    if (avl_init(&avl) == DS_OK)
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            temp = rand() % 193;
+
+            max1 += temp;
+
+            if (avl_insert(avl, temp) != DS_OK)
+            {
+                printf("\nSOMETHING WENT WRONG");
+
+                break;
+            }
+        }
+
+        avl_display(avl, 3);
+
+        while (!avl_empty(avl))
+        {
+            if (avl_pop(avl, &j) != DS_OK)
+            {
+                printf("\nSOMETHING WENT WRONG");
+
+                break;
+            }
+
+            max2 += j;
+        }
+
+        printf("\nTotal inserted values : %d", max1);
+        printf("\nTotal removed values  : %d", max2);
+    }
+
+    avl_delete(&avl);
 
     printf("\n\n\n");
 

@@ -36,6 +36,8 @@ Status bst_display_interactive(BinarySearchTreeNode node, index_t spaces);
 
 Status bst_display_clean(BinarySearchTreeNode node, index_t spaces);
 
+Status bst_display_quantity(BinarySearchTreeNode node, index_t spaces);
+
 Status bst_traversal_preorder(BinarySearchTreeNode node);
 
 Status bst_traversal_inorder(BinarySearchTreeNode node);
@@ -445,13 +447,17 @@ Status bst_display(BinarySearchTree bst, int display)
 
     if (display)
     {
-        printf("\n+----------------------+");
-        printf("\n|  Binary Search Tree  |");
-        printf("\n+----------------------+");
+        printf("\n+--------------------------------------------------+");
+        printf("\n|                Binary Search Tree                |");
+        printf("\n+--------------------------------------------------+");
     }
 
     switch (display)
     {
+        case -1:
+            printf("\n<PARENT(DATA)[D-DEPTH|H-HEIGHT]\n\n");
+            st = bst_display_clean(bst->root, 0);
+            break;
         case 0:
             printf("\n\n");
             st = bst_display_raw(bst->root, 0);
@@ -461,8 +467,8 @@ Status bst_display(BinarySearchTree bst, int display)
             st = bst_display_interactive(bst->root, 0);
             break;
         default:
-            printf("\n<PARENT(DATA)[D-DEPTH|H-HEIGHT]\n\n");
-            st = bst_display_clean(bst->root, 0);
+            printf("\n<PARENT(DATA)[QUANTITY]\n\n");
+            st = bst_display_quantity(bst->root, 0);
             break;
     }
 
@@ -501,7 +507,7 @@ Status bst_display_interactive(BinarySearchTreeNode node, index_t spaces)
     for (index_t i = 0; i < spaces; i++)
         printf("|-------");
 
-    printf("<%d(%d)[D-%llu|H-%llu]\n", (node->parent == NULL) ? 0 : node->parent->key,
+    printf("<%d(%d)[D-%llu|H-%llu]\n", (node->parent) ? node->parent->key : 0,
             node->key, bst_node_depth(node), bst_node_height(node) - 1);
 
     bst_display_interactive(node->left, spaces + 1);
@@ -519,12 +525,27 @@ Status bst_display_clean(BinarySearchTreeNode node, index_t spaces)
     for (index_t i = 0; i < spaces; i++)
         printf("|       ");
 
-    if (node->parent != NULL)
-        printf("< %d ( %d )\n", node->parent->key, node->key);
-    else
-        printf("< %d ( %d )\n", 0, node->key);
+    printf("< %d ( %d )\n", (node->parent) ? node->parent->key : 0, node->key);
 
     bst_display_clean(node->left, spaces + 1);
+
+    return DS_OK;
+}
+
+Status bst_display_quantity(BinarySearchTreeNode node, index_t spaces)
+{
+    if (node == NULL)
+        return DS_OK;
+
+    bst_display_quantity(node->right, spaces + 1);
+
+    for (index_t i = 0; i < spaces; i++)
+        printf("|_______");
+
+    printf("<%d(%d)[%d]\n", (node->parent) ? node->parent->key : 0,
+                node->key, node->count);
+
+    bst_display_quantity(node->left, spaces + 1);
 
     return DS_OK;
 }
