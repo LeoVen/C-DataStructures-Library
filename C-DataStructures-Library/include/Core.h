@@ -9,12 +9,13 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_CORE_H
 #define C_DATASTRUCTURES_LIBRARY_CORE_H
 
+#include <assert.h>
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <time.h>
 #include <string.h>
-#include <assert.h>
+#include <time.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,12 +42,15 @@ typedef enum Status
 typedef long long int index_t;
 
 /// Prime numbers used for hashing
-static const unsigned int __primes[] = {
-    193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317,
-    196613, 393241, 786433, 1572869, 3145739, 6291469,
-    12582917, 25165843, 50331653, 100663319, 201326611,
-    402653189, 805306457, 1610612741,
+/// https://planetmath.org/goodhashtableprimes
+static const unsigned int hash_primes[] = {
+    53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317,
+    196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843,
+    50331653, 100663319, 201326611, 402653189, 805306457, 1610612741
 };
+
+/// Size of hash_primes
+static const unsigned hash_primes_size = 26;
 
 #ifdef __cplusplus
 }

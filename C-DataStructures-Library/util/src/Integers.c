@@ -129,49 +129,49 @@ int compare_unsigned_long_long(void *element1, void *element2)
     return 0;
 }
 
-int *copy_int(void *element)
+void *copy_int(void *element)
 {
     int *e = (int*)element;
 
     return new_int(*e);
 }
 
-long *copy_long(void *element)
+void *copy_long(void *element)
 {
     long *e = (long*)element;
 
     return new_long(*e);
 }
 
-long long *copy_long_long(void *element)
+void *copy_long_long(void *element)
 {
     long long *e = (long long*)element;
 
     return new_long_long(*e);
 }
 
-unsigned *copy_unsigned(void *element)
+void *copy_unsigned(void *element)
 {
     unsigned *e = (unsigned*)element;
 
     return new_unsigned(*e);
 }
 
-unsigned long *copy_unsigned_long(void *element)
+void *copy_unsigned_long(void *element)
 {
     unsigned long *e = (unsigned long*)element;
 
     return new_unsigned_long(*e);
 }
 
-unsigned long long *copy_unsigned_long_long(void *element)
+void *copy_unsigned_long_long(void *element)
 {
     unsigned long long *e = (unsigned long long*)element;
 
     return new_unsigned_long_long(*e);
 }
 
-int *new_int(int element)
+void *new_int(int element)
 {
     int *e = malloc(sizeof(int));
 
@@ -180,7 +180,7 @@ int *new_int(int element)
     return e;
 }
 
-long *new_long(long element)
+void *new_long(long element)
 {
     long *e = malloc(sizeof(long));
 
@@ -189,7 +189,7 @@ long *new_long(long element)
     return e;
 }
 
-long long *new_long_long(long long element)
+void *new_long_long(long long element)
 {
     long long *e = malloc(sizeof(long long));
 
@@ -198,7 +198,7 @@ long long *new_long_long(long long element)
     return e;
 }
 
-unsigned *new_unsigned(unsigned element)
+void *new_unsigned(unsigned element)
 {
     unsigned *e = malloc(sizeof(unsigned));
 
@@ -207,7 +207,7 @@ unsigned *new_unsigned(unsigned element)
     return e;
 }
 
-unsigned long *new_unsigned_long(unsigned long element)
+void *new_unsigned_long(unsigned long element)
 {
     unsigned long *e = malloc(sizeof(unsigned long));
 
@@ -216,7 +216,7 @@ unsigned long *new_unsigned_long(unsigned long element)
     return e;
 }
 
-unsigned long long *new_unsigned_long_long(unsigned long long element)
+void *new_unsigned_long_long(unsigned long long element)
 {
     unsigned long long *e = malloc(sizeof(unsigned long long));
 

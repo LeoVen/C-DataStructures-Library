@@ -22,11 +22,11 @@ void display_string(void *element);
 int compare_char(void *element1, void *element2);
 int compare_string(void *element1, void *element2);
 
-char *copy_char(void *element);
-char *copy_string(void *element);
+void *copy_char(void *element);
+void *copy_string(void *element);
 
-char *new_char(char element);
-char *new_string(const char *element);
+void *new_char(char element);
+void *new_string(const char *element);
 
 #ifdef __cplusplus
 }

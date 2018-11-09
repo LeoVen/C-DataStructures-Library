@@ -16,10 +16,13 @@
 #include "BinarySearchTree.h"
 #include "GQueue.h"
 #include "AVLTree.h"
+#include "SortedList.h"
 
 int main()
 {
     srand(time(NULL));
+
+    Status st;
 
     SinglyLinkedList sll0;
 
@@ -642,19 +645,6 @@ int main()
 
     avl_delete(&avl);
 
-    printf("\n\n\n");
-
-    DequeArrayTests();
-    DequeTests();
-    DoublyLinkedListTests();
-    DynamicArrayTests();
-    CircularLinkedListTests();
-    QueueArrayTests();
-    QueueTests();
-    SinglyLinkedListTests();
-    StackArrayTests();
-    StackTests();
-
     GQueue gqueue;
 
     void *result;
@@ -726,6 +716,79 @@ int main()
         total += rand_long(-20, 20);
 
     printf("\nTotal: %lld", total);
+
+    SortedList slist;
+
+    if (sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        sli_set_limit(slist, 40);
+
+        for (int i = 60; i > 0; i--)
+        {
+            st = sli_insert(slist, new_int(rand()));
+
+            if (st != DS_ERR_FULL && st != DS_OK)
+                printf("ERROR");
+        }
+
+        sli_display(slist);
+
+        // READONLY!!
+        // Don't free this element. It is still in the list
+        int *max = sli_max(slist);
+        int *min = sli_min(slist);
+
+        if (max && min)
+        {
+            printf("\nMAX: %d", *max);
+            printf("\nMIN: %d", *min);
+            printf("\nLIST LENGTH : %lld", sli_length(slist));
+            printf("\nLIST LIMIT  : %lld", sli_limit(slist));
+            printf("\n\n");
+        }
+    }
+
+    sli_erase(&slist);
+
+    for (int i = 0; i < 20; i++)
+    {
+        sli_insert(slist, new_int(rand() % 10));
+    }
+
+    sli_display_array(slist);
+
+    int *search = new_int(1);
+
+    printf("\nFIRST INDEX OF %d : %lld", *search, sli_index_first(slist, search));
+    printf("\nLAST  INDEX OF %d : %lld", *search, sli_index_last(slist, search));
+
+    free(search);
+
+    sli_erase(&slist);
+
+    sli_set_order(slist, DESCENDING);
+
+    sli_insert(slist, new_int(10));
+    sli_insert(slist, new_int(8));
+    sli_insert(slist, new_int(11));
+    sli_insert(slist, new_int(9));
+
+    sli_display_raw(slist);
+
+    sli_free(&slist);
+
+    printf("\n\n\n");
+
+    DequeArrayTests();
+    DequeTests();
+    DoublyLinkedListTests();
+    DynamicArrayTests();
+    CircularLinkedListTests();
+    QueueArrayTests();
+    QueueTests();
+    SinglyLinkedListTests();
+    StackArrayTests();
+    StackTests();
 
     return 0;
 }

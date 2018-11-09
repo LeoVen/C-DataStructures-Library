@@ -43,16 +43,16 @@ int compare_string(void *element1, void *element2)
     return strcmp(e1, e2);
 }
 
-char *copy_char(void *element)
+void *copy_char(void *element)
 {
     char *e = (char*)element;
 
     return new_char(*e);
 }
 
-char *copy_string(void *element);
+void *copy_string(void *element);
 
-char *new_char(char element)
+void *new_char(char element)
 {
     char *e = malloc(sizeof(char));
 
@@ -61,7 +61,7 @@ char *new_char(char element)
     return e;
 }
 
-char *new_string(const char *element)
+void *new_string(const char *element)
 {
     return strdup(element);
 }

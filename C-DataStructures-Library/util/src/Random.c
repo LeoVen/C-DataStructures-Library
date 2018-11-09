@@ -7,7 +7,6 @@
  */
 
 #include "Random.h"
-#include <math.h>
 
 double random()
 {

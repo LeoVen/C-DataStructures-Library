@@ -68,28 +68,28 @@ int compare_long_double(void *element1, void *element2)
     return 0;
 }
 
-float *copy_float(void *element)
+void *copy_float(void *element)
 {
     float *e = (float*)element;
 
     return new_float(*e);
 }
 
-double *copy_double(void *element)
+void *copy_double(void *element)
 {
     double *e = (double*)element;
 
     return new_double(*e);
 }
 
-long double *copy_long_double(void *element)
+void *copy_long_double(void *element)
 {
     long double *e = (long double*)element;
 
     return new_long_double(*e);
 }
 
-float *new_float(float element)
+void *new_float(float element)
 {
     float *e = malloc(sizeof(float));
 
@@ -98,7 +98,7 @@ float *new_float(float element)
     return e;
 }
 
-double *new_double(double element)
+void *new_double(double element)
 {
     double *e = malloc(sizeof(double));
 
@@ -107,7 +107,7 @@ double *new_double(double element)
     return e;
 }
 
-long double *new_long_double(long double element)
+void *new_long_double(long double element)
 {
     long double *e = malloc(sizeof(long double));
 

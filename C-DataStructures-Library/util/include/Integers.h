@@ -29,19 +29,19 @@ int compare_unsigned(void *element1, void *element2);
 int compare_unsigned_long(void *element1, void *element2);
 int compare_unsigned_long_long(void *element1, void *element2);
 
-int *copy_int(void *element);
-long *copy_long(void *element);
-long long *copy_long_long(void *element);
-unsigned *copy_unsigned(void *element);
-unsigned long *copy_unsigned_long(void *element);
-unsigned long long *copy_unsigned_long_long(void *element);
+void *copy_int(void *element);
+void *copy_long(void *element);
+void *copy_long_long(void *element);
+void *copy_unsigned(void *element);
+void *copy_unsigned_long(void *element);
+void *copy_unsigned_long_long(void *element);
 
-int *new_int(int element);
-long *new_long(long element);
-long long *new_long_long(long long element);
-unsigned *new_unsigned(unsigned element);
-unsigned long *new_unsigned_long(unsigned long element);
-unsigned long long *new_unsigned_long_long(unsigned long long element);
+void *new_int(int element);
+void *new_long(long element);
+void *new_long_long(long long element);
+void *new_unsigned(unsigned element);
+void *new_unsigned_long(unsigned long element);
+void *new_unsigned_long_long(unsigned long long element);
 
 #ifdef __cplusplus
 }
