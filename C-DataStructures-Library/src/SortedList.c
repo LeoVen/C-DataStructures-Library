@@ -8,6 +8,8 @@
 
 #include "SortedList.h"
 
+/// \brief A generic sorted doubly-linked list.
+///
 /// This is a generic sorted doubly-linked list. Its elements can be added in
 /// ASCENDING or DESCENDING order. This property can be set when creating a new
 /// list or using sli_set_order(). You can also limit its length using
@@ -62,16 +64,16 @@ struct SortedList_s
     /// \brief Defines the order of elements.
     ///
     /// The order of elements can either be \c ASCENDING or \c DESCENDING.
-    SORT_ORDER order;
+    SortOrder order;
 
     /// \brief Comparator function.
     ///
     /// A function that compares one element with another that returns an int
     /// with the following rules:
     ///
-    /// - [ > 0 ] if first element is greater than the second;
-    /// - [ < 0 ] if second element is greater than the first;
-    /// - [  0  ] if elements are equal.
+    /// - <code>[ > 0 ]</code> if first element is greater than the second;
+    /// - <code>[ < 0 ]</code> if second element is greater than the first;
+    /// - <code>[ 0 ]</code> if elements are equal.
     sli_compare_f d_compare;
 
     /// \brief Copy function.
@@ -94,13 +96,19 @@ struct SortedList_s
 /// This node is an implementation detail and should never be used by the user.
 struct SortedListNode_s
 {
-    /// Data pointer.
+    /// \brief Data pointer.
+    ///
+    /// Points to node's data. The data needs to be dynamically allocated.
     void *data;
 
-    /// Next node on the list.
+    /// \brief Next node on the list.
+    ///
+    /// Next node on the list or \c NULL if this is the tail node.
     struct SortedListNode_s *next;
 
-    /// Previous node on the list.
+    /// \brief Previous node on the list.
+    ///
+    /// Previous node on the list or \c NULL if this is the head node.
     struct SortedListNode_s *prev;
 };
 
@@ -116,9 +124,14 @@ Status sli_make_node(SortedListNode *node, void *data);
 
 Status sli_free_node(SortedListNode *node, sli_free_f free_f);
 
+Status sli_get_node_at(SortedList list, SortedListNode *result,
+        index_t position);
+
+Status sli_insert_tail(SortedList list, void *element);
+
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-Status sli_init(SortedList *list, SORT_ORDER order)
+Status sli_init(SortedList *list, SortOrder order)
 {
     *list = malloc(sizeof(SortedList_t));
 
@@ -141,7 +154,7 @@ Status sli_init(SortedList *list, SORT_ORDER order)
     return DS_OK;
 }
 
-Status sli_create(SortedList *list, SORT_ORDER order, sli_compare_f compare_f, sli_copy_f copy_f,
+Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f, sli_copy_f copy_f,
         sli_display_f display_f, sli_free_f free_f)
 {
     *list = malloc(sizeof(SortedList_t));
@@ -229,6 +242,12 @@ Status sli_set_func_compare(SortedList list, sli_compare_f function)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
+    // Can only set a new compare function if the list is empty, otherwise you
+    // would be adding new elements in the list with a different logic than the
+    // elements already in the list.
+    if (!sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
     list->d_compare = function;
 
     return DS_OK;
@@ -264,19 +283,6 @@ Status sli_set_func_free(SortedList list, sli_free_f function)
     return DS_OK;
 }
 
-Status sli_set_order(SortedList list, SORT_ORDER order)
-{
-    if (list == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (!sli_empty(list))
-        return DS_ERR_INVALID_OPERATION;
-
-    list->order = order;
-
-    return DS_OK;
-}
-
 Status sli_set_limit(SortedList list, index_t limit)
 {
     if (list == NULL)
@@ -287,6 +293,19 @@ Status sli_set_limit(SortedList list, index_t limit)
         return DS_ERR_INVALID_OPERATION;
 
     list->limit = limit;
+
+    return DS_OK;
+}
+
+Status sli_set_order(SortedList list, SortOrder order)
+{
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (!sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    list->order = order;
 
     return DS_OK;
 }
@@ -307,12 +326,51 @@ index_t sli_limit(SortedList list)
     return list->limit;
 }
 
-SORT_ORDER sli_order(SortedList list)
+SortOrder sli_order(SortedList list)
 {
     if (list == NULL)
         return 0;
 
     return list->order;
+}
+
+/// \brief Array indexing wrapper.
+///
+/// This function is zero-based and returns a copy of the element located at
+/// the specified position.
+///
+/// \param list Reference list.
+/// \param result Resulting copy of the element.
+/// \param index Element position.
+///
+/// \return
+Status sli_get(SortedList list, void **result, index_t index)
+{
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    if (index < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    if (index >= list->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    if (list->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    SortedListNode node;
+
+    Status st = sli_get_node_at(list, &node, index);
+
+    if (st != DS_OK)
+        return st;
+
+    *result = list->d_copy(node->data);
+
+    return DS_OK;
 }
 
 Status sli_insert(SortedList list, void *element)
@@ -350,7 +408,7 @@ Status sli_insert(SortedList list, void *element)
             // Insert 'head'. Change list->head.
             if (list->d_compare(node->data, list->head->data) <= 0)
             {
-                // Current smallest element
+                // The new element will be the new smallest element
                 node->next = list->head;
 
                 list->head->prev = node;
@@ -369,7 +427,7 @@ Status sli_insert(SortedList list, void *element)
                 // Insert 'tail'. Change list->tail.
                 if (scan == NULL)
                 {
-                    // Current biggest element
+                    // The new element will be the new biggest element
                     node->prev = before;
 
                     before->next = node;
@@ -393,7 +451,7 @@ Status sli_insert(SortedList list, void *element)
             // Insert 'head'. Change list->head.
             if (list->d_compare(node->data, list->head->data) >= 0)
             {
-                // Current biggest element
+                // The new element will be the new biggest element
                 node->next = list->head;
 
                 list->head->prev = node;
@@ -412,7 +470,7 @@ Status sli_insert(SortedList list, void *element)
                 // Insert 'tail'. Change list->tail.
                 if (scan == NULL)
                 {
-                    // Current smallest element
+                    // The new element will be the new smallest element
                     node->prev = before;
 
                     before->next = node;
@@ -438,11 +496,170 @@ Status sli_insert(SortedList list, void *element)
     return DS_OK;
 }
 
-//Status sli_remove(SortedList list, void **result, index_t position);
-//
-//Status sli_remove_max(SortedList list, void **result);
-//
-//Status sli_remove_min(SortedList list, void **result);
+Status sli_remove(SortedList list, void **result, index_t position)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    if (position >= list->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    SortedListNode node;
+
+    // Remove head
+    if (position == 0)
+    {
+        node = list->head;
+
+        *result = node->data;
+
+        list->head = list->head->next;
+
+        if (list->head != NULL)
+            list->head->prev = NULL;
+    }
+    // Remove tail
+    else if (position == list->length - 1)
+    {
+        node = list->tail;
+
+        *result = node->data;
+
+        list->tail = list->tail->prev;
+
+        if (list->tail != NULL)
+            list->tail->next = NULL;
+    }
+    // Remove somewhere in the middle
+    else
+    {
+        Status st = sli_get_node_at(list, &node, position);
+
+        if (st != DS_OK)
+            return st;
+
+        // Unlink the current node
+        // Behold the power of doubly-linked lists!
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+
+        *result = node->data;
+    }
+
+    list->length--;
+
+    if (sli_empty(list))
+    {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+
+    return DS_OK;
+}
+
+Status sli_remove_max(SortedList list, void **result)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    SortedListNode node;
+
+    // Remove from tail.
+    if (list->order == ASCENDING)
+    {
+        node = list->tail;
+
+        *result = node->data;
+
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+
+        free(node);
+    }
+    // Remove from head.
+    else
+    {
+        node = list->head;
+
+        *result = node->data;
+
+        list->head = list->head->next;
+        list->head->prev = NULL;
+
+        free(node);
+    }
+
+    list->length--;
+
+    if (sli_empty(list))
+    {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+
+    return DS_OK;
+}
+
+Status sli_remove_min(SortedList list, void **result)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    SortedListNode node;
+
+    // Remove from head.
+    if (list->order == ASCENDING)
+    {
+        node = list->head;
+
+        *result = node->data;
+
+        list->head = list->head->next;
+        list->head->prev = NULL;
+
+        free(node);
+    }
+    // Remove from tail.
+    else
+    {
+        node = list->tail;
+
+        *result = node->data;
+
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+
+        free(node);
+    }
+
+    list->length--;
+
+    if (sli_empty(list))
+    {
+        list->head = NULL;
+        list->tail = NULL;
+    }
+
+    return DS_OK;
+}
 
 bool sli_full(SortedList list)
 {
@@ -487,9 +704,6 @@ index_t sli_index_first(SortedList list, void *key)
     if (list == NULL)
         return -1;
 
-    if (sli_empty(list))
-        return -1;
-
     SortedListNode scan = list->head;
 
     index_t index = 0;
@@ -512,9 +726,6 @@ index_t sli_index_last(SortedList list, void *key)
     if (list == NULL)
         return -1;
 
-    if (sli_empty(list))
-        return -1;
-
     SortedListNode scan = list->tail;
 
     index_t index = 0;
@@ -532,13 +743,383 @@ index_t sli_index_last(SortedList list, void *key)
     return -1;
 }
 
-//Status sli_reverse(SortedList list);
+bool sli_contains(SortedList list, void *key)
+{
+    if (list == NULL)
+        return false;
 
-//Status sli_merge(SortedList list1, SortedList list2);
-//
-//Status sli_unlink(SortedList list, SortedList *result, index_t position);
-//
-//Status sli_unlink_at(SortedList list, SortedList *result, index_t start, index_t end);
+    SortedListNode scan = list->head;
+
+    while (scan != NULL)
+    {
+        if (list->d_compare(scan->data, key) == 0)
+            return true;
+
+        scan = scan->next;
+    }
+
+    return false;
+}
+
+Status sli_reverse(SortedList list)
+{
+    // Reverse just like a doubly-linked list and change the list order
+    // ASCENDING -> DESCENDING
+    // DESCENDING -> ASCENDING
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (list->length != 1)
+    {
+        SortedListNode prev = NULL;
+        SortedListNode curr = list->head;
+        SortedListNode next = NULL;
+
+        list->tail = list->head;
+
+        while (curr != NULL)
+        {
+            next = curr->next;
+
+            curr->next = prev;
+            curr->prev = next;
+
+            prev = curr;
+
+            curr = next;
+        }
+
+        list->head = prev;
+    }
+
+    // If list length is 1 then just by doing this will do the trick
+    list->order = (list->order == ASCENDING) ? DESCENDING : ASCENDING;
+
+    return DS_OK;
+}
+
+Status sli_copy(SortedList list, SortedList *result)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
+            list->d_display, list->d_free);
+
+    if (st != DS_OK)
+        return st;
+
+    (*result)->limit = list->limit;
+
+    SortedListNode node, scan = list->head;
+
+    void *elem;
+
+    while (scan != NULL)
+    {
+        // Create a node with a copy of scan's data
+        elem = list->d_copy(scan->data);
+
+        st = sli_insert_tail(*result, elem);
+
+        if (st != DS_OK)
+        {
+            list->d_free(elem);
+
+            return st;
+        }
+
+        scan = scan->next;
+    }
+
+    (*result)->length = list->length;
+
+    return DS_OK;
+}
+
+Status sli_to_array(SortedList list, void ***result, index_t *length)
+{
+    *result = NULL;
+    *length = -1;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    *length = list->length;
+
+    *result = malloc(sizeof(void*) * (*length));
+
+    if (!(*result))
+        return DS_ERR_NULL_POINTER;
+
+    SortedListNode scan = list->head;
+
+    for (index_t i = 0; i < *length; i++)
+    {
+        (*result)[i] = list->d_copy(scan->data);
+
+        scan = scan->next;
+    }
+
+    return DS_OK;
+}
+
+/// \brief Merge two SortedLists.
+///
+/// Removes all elements from list2 and inserts into list1.
+///
+/// \param list1 List where elements are added to.
+/// \param list2 List where elements are removed from.
+///
+/// \return DS_ERR_NULL_POINTER if either list1 or list2 references to \c NULL.
+Status sli_merge(SortedList list1, SortedList list2)
+{
+    if (list1 == NULL || list2 == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    Status st;
+
+    void *result;
+
+    while (!sli_empty(list2))
+    {
+        st = sli_remove(list2, &result, 0);
+
+        if (st != DS_OK)
+            return st;
+
+        st = sli_insert(list1, result);
+
+        if (st != DS_OK)
+            return st;
+    }
+
+    return DS_OK;
+}
+
+/// \brief Unlinks elements from the list.
+///
+/// Unlinks all elements starting from \c position all the way to the end of
+/// the list. The \c result list must not have been initialized.
+///
+/// \param list
+/// \param result
+/// \param position
+/// \return
+Status sli_unlink(SortedList list, SortedList *result, index_t position)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    if (position >= list->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
+            list->d_display, list->d_free);
+
+    if (st != DS_OK)
+        return st;
+
+    (*result)->limit = list->limit;
+
+    SortedListNode node, new_tail;
+
+    // Special case
+    if (position == 0)
+    {
+        // Simply transfer everything from one list to another.
+        (*result)->length = list->length;
+        (*result)->head = list->head;
+        (*result)->tail = list->tail;
+
+        list->length = 0;
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    else
+    {
+        st = sli_get_node_at(list, &node, position);
+
+        if (st != DS_OK)
+            return st;
+
+        // New list tail. The position parameter is inclusive so go one node
+        // back.
+        new_tail = node->prev;
+
+        // Separating chains.
+        node->prev = NULL;
+        new_tail->next = NULL;
+
+        // Resulting list head is node and tail is the old list tail.
+        (*result)->head = node;
+        (*result)->tail = list->tail;
+
+        list->tail = new_tail;
+
+        // Recalculate lengths
+        (*result)->length = list->length - position;
+
+        list->length = position;
+    }
+
+    return DS_OK;
+}
+
+/// \brief Extracts a sublist.
+///
+/// Extracts a sublist from the specified list. The sublist is stored in the
+/// \c result SortedList.
+///
+/// \param list Reference list where the sublist is to be removed from.
+/// \param result An uninitialized SortedList to receive the resulting sublist.
+/// \param start Start of the sublist.
+/// \param end End of the sublist.
+///
+/// \return
+Status sli_sublist(SortedList list, SortedList *result, index_t start,
+        index_t end)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (start < 0 || end < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    if (end < start)
+        return DS_ERR_INVALID_ARGUMENT;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    if (end >= list->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
+            list->d_display, list->d_free);
+
+    if (st != DS_OK)
+        return st;
+
+    (*result)->limit = list->limit;
+
+    SortedListNode node;
+
+    // Remove only one node
+    if (start == end)
+    {
+        st = sli_get_node_at(list, &node, start);
+
+        if (st != DS_OK)
+            return st;
+
+        if (node->next != NULL)
+            node->next->prev = node->prev;
+        if (node->prev != NULL)
+            node->prev->next = node->next;
+
+        node->next = NULL, node->prev = NULL;
+
+        (*result)->head = node;
+        (*result)->tail = node;
+
+    }
+    // Simply transfer everything
+    else if (start == 0 && end == list->length - 1)
+    {
+        (*result)->head = list->head;
+        (*result)->tail = list->tail;
+
+        list->head = NULL;
+        list->tail = NULL;
+    }
+    // Remove from head to end
+    else if (start == 0)
+    {
+        st = sli_get_node_at(list, &node, end);
+
+        if (st != DS_OK)
+            return st;
+
+        // New list head. The position parameters are inclusive so go one node
+        // forward.
+        SortedListNode new_head = node->next;
+
+        // Separating chains.
+        node->next = NULL;
+        new_head->prev = NULL;
+
+        (*result)->head = list->head;
+        (*result)->tail = node;
+
+        list->head = new_head;
+    }
+    // Remove from start to tail
+    else if (end == list->length - 1)
+    {
+        st = sli_get_node_at(list, &node, start);
+
+        if (st != DS_OK)
+            return st;
+
+        // New list tail. The position parameters are inclusive so go one node
+        // back.
+        SortedListNode new_tail = node->prev;
+
+        // Separating chains.
+        node->prev = NULL;
+        new_tail->next = NULL;
+
+        // Resulting list head is node and tail is the old list tail.
+        (*result)->head = node;
+        (*result)->tail = list->tail;
+
+        list->tail = new_tail;
+    }
+    // Start and end are inner nodes
+    else
+    {
+        // 'before' the 'start' node and 'after' the 'end' node
+        SortedListNode before, after;
+
+        st += sli_get_node_at(list, &before, start - 1);
+        st += sli_get_node_at(list, &after, end + 1);
+
+        if (st != DS_OK)
+            return st;
+
+        (*result)->head = before->next;
+        (*result)->tail = after->prev;
+
+        before->next = after;
+        after->prev = before;
+
+        (*result)->head->prev = NULL;
+        (*result)->tail->next = NULL;
+    }
+
+    (*result)->length = end - start + 1;
+
+    list->length -= (*result)->length;
+
+    return DS_OK;
+}
 
 Status sli_display(SortedList list)
 {
@@ -674,6 +1255,93 @@ Status sli_free_node(SortedListNode *node, sli_free_f free_f)
     return DS_OK;
 }
 
+// This function effectively searches for a given node. If the position is
+// greater than the list length the search will begin at the end of the list,
+// reducing the amount of iterations needed. This effectively reduces searches
+// to O(n / 2) iterations.
+Status sli_get_node_at(SortedList list, SortedListNode *result,
+        index_t position)
+{
+    *result = NULL;
+
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_empty(list))
+        return DS_ERR_INVALID_OPERATION;
+
+    if (position < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    if (position >= list->length)
+        return DS_ERR_OUT_OF_RANGE;
+
+    // Start looking for the node at the start of the list
+    if (position <= list->length / 2)
+    {
+        (*result) = list->head;
+
+        for (index_t i = 0; i < position; i++)
+        {
+            // Bad iteration :(
+            if ((*result) == NULL)
+                return DS_ERR_ITER;
+
+            (*result) = (*result)->next;
+        }
+    }
+    // Start looking for the node at the end of the list
+    else
+    {
+        (*result) = list->tail;
+
+        for (index_t i = list->length - 1; i > position; i--)
+        {
+            // Bad iteration :(
+            if ((*result) == NULL)
+                return DS_ERR_ITER;
+
+            (*result) = (*result)->prev;
+        }
+    }
+
+    return DS_OK;
+}
+
+Status sli_insert_tail(SortedList list, void *element)
+{
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (sli_full(list))
+        return DS_ERR_FULL;
+
+    SortedListNode node;
+
+    Status st = sli_make_node(&node, element);
+
+    if (st != DS_OK)
+        return st;
+
+    if (sli_empty(list))
+    {
+        list->head = node;
+        list->tail = node;
+    }
+    else
+    {
+        list->tail->next = node;
+
+        node->prev = list->tail;
+
+        list->tail = node;
+    }
+
+    (list->length)++;
+
+    return DS_OK;
+}
+
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -684,7 +1352,7 @@ struct SortedListIterator_s
 {
     /// \brief Target SortedList.
     ///
-    /// Target SortedList. The iterator might need to use some informations
+    /// Target SortedList. The iterator might need to use some information
     /// provided by the list.
     struct SortedList_s *target;
 
@@ -697,7 +1365,7 @@ struct SortedListIterator_s
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-
+// VOID
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -724,4 +1392,270 @@ Status sli_iter_free(SortedListIterator *iter)
     *iter = NULL;
 
     return DS_OK;
+}
+
+Status sli_iter_next(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (!sli_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->cursor->next;
+
+    return DS_OK;
+}
+
+Status sli_iter_prev(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (!sli_iter_has_prev(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->cursor->prev;
+
+    return DS_OK;
+}
+
+Status sli_iter_to_head(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->target == NULL)
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->target->head;
+
+    return DS_OK;
+}
+
+Status sli_iter_to_tail(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->target == NULL)
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->target->tail;
+
+    return DS_OK;
+}
+
+bool sli_iter_has_next(SortedListIterator iter)
+{
+    return iter->cursor->next != NULL;
+}
+
+bool sli_iter_has_prev(SortedListIterator iter)
+{
+    return iter->cursor->prev != NULL;
+}
+
+Status sli_iter_get(SortedListIterator iter, void **result)
+{
+    *result = NULL;
+
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (iter->target->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    // Makes a copy of the element to preserve the list integrity.
+    *result = iter->target->d_copy(iter->cursor->data);
+
+    return DS_OK;
+}
+
+Status sli_iter_remove_next(SortedListIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (iter->cursor->next == NULL)
+        return DS_ERR_INVALID_OPERATION;
+
+    SortedListNode node = iter->cursor->next;
+
+    *result = node->data;
+
+    if (node->next == NULL)
+    {
+        // The 'next' node is the tail node. Change tail from target list.
+        iter->target->tail = iter->cursor;
+
+        iter->cursor->next = NULL;
+    }
+    else
+    {
+        // The 'next' node is somewhere in the middle of the list.
+        // Skip it...
+        iter->cursor->next = node->next;
+
+        node->next->prev = iter->cursor;
+    }
+
+    free(node);
+
+    iter->target->length--;
+
+    return DS_OK;
+}
+
+Status sli_iter_remove_curr(SortedListIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (iter->cursor->next == NULL)
+        return DS_ERR_INVALID_OPERATION;
+
+    SortedListNode node = iter->cursor;
+
+    *result = node->data;
+
+    // Special case
+    if (iter->target->length == 1)
+    {
+        iter->target->head = NULL;
+        iter->target->tail = NULL;
+    }
+    else if (node->next == NULL)
+    {
+        // The current node is the tail node. Change the cursor to the previous
+        // node and change the list tail pointer.
+        iter->cursor = iter->cursor->prev;
+
+        iter->cursor->next = NULL;
+
+        iter->target->tail = iter->cursor;
+    }
+    else if (node->prev == NULL)
+    {
+        // The current node is the head node. Change the cursor to the next
+        // node and change the list head pointer.
+        iter->cursor = iter->cursor->next;
+
+        iter->cursor->prev = NULL;
+
+        iter->target->head = iter->cursor;
+    }
+    else
+    {
+        // Go one node behind if possible
+        if (iter->cursor->prev != NULL)
+            iter->cursor = iter->cursor->prev;
+        else
+            iter->cursor = iter->cursor->next;
+
+        // Remove inner node
+        // Use doubly-linked list dark magic
+        node->prev->next = node->next;
+        node->next->prev = node->prev;
+
+        // WHOA...
+    }
+
+    free(node);
+
+    iter->target->length--;
+
+    return DS_OK;
+}
+
+Status sli_iter_remove_prev(SortedListIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return DS_ERR_ITER;
+
+    if (iter->cursor->prev == NULL)
+        return DS_ERR_INVALID_OPERATION;
+
+    SortedListNode node = iter->cursor->prev;
+
+    *result = node->data;
+
+    if (node->prev == NULL)
+    {
+        // The 'prev' node is the head node. Change head from target list.
+        iter->target->head = iter->cursor;
+
+        iter->cursor->prev = NULL;
+    }
+    else
+    {
+        // The 'prev' node is somewhere in the middle of the list.
+        // Skip it...
+        iter->cursor->prev = node->prev;
+
+        node->prev->next = iter->cursor;
+    }
+
+    free(node);
+
+    iter->target->length--;
+
+    return DS_OK;
+}
+
+void *sli_iter_peek_next(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return NULL;
+
+    if (iter->cursor->next == NULL)
+        return NULL;
+
+    return iter->cursor->next->data;
+}
+
+void *sli_iter_peek(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return NULL;
+
+    return iter->cursor->data;
+}
+
+void *sli_iter_peek_prev(SortedListIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (iter->cursor == NULL || iter->target == NULL)
+        return NULL;
+
+    if (iter->cursor->prev == NULL)
+        return NULL;
+
+    return iter->cursor->prev->data;
 }

@@ -29,7 +29,7 @@ typedef enum Status
     DS_ERR_NEGATIVE_VALUE        =  3, /**< When an invalid negative parameter is passed */
     DS_ERR_ALLOC                 =  4, /**< When a function fails to allocate memory  */
     DS_ERR_UNEXPECTED_RESULT     =  5, /**< When an unexpected result happens. Contact developers. */
-    DS_ERR_ITER                  =  6, /**< When an iteration reaches an unexpected value */
+    DS_ERR_ITER                  =  6, /**< When there is an iterator error */
     DS_ERR_NULL_POINTER          =  7, /**< When a @c NULL parameter is passed to a function */
     DS_ERR_FULL                  =  8, /**< When a structure reaches its maximum capacity */
     DS_ERR_INVALID_ARGUMENT      =  9, /**< When an argument passed is invalid for that operation */

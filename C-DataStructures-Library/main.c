@@ -719,13 +719,20 @@ int main()
 
     SortedList slist;
 
+    int *content, *max, *min;
+
     if (sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free) == DS_OK)
     {
         sli_set_limit(slist, 40);
 
         for (int i = 60; i > 0; i--)
         {
-            st = sli_insert(slist, new_int(rand()));
+            content = new_int(rand());
+
+            st = sli_insert(slist, content);
+
+            if (st == DS_ERR_FULL)
+                free(content); // Could not add it to the list
 
             if (st != DS_ERR_FULL && st != DS_OK)
                 printf("ERROR");
@@ -735,8 +742,8 @@ int main()
 
         // READONLY!!
         // Don't free this element. It is still in the list
-        int *max = sli_max(slist);
-        int *min = sli_min(slist);
+        max = sli_max(slist);
+        min = sli_min(slist);
 
         if (max && min)
         {
@@ -774,6 +781,233 @@ int main()
     sli_insert(slist, new_int(9));
 
     sli_display_raw(slist);
+
+    sli_free(&slist);
+
+    int *elem;
+    if (sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        for (int i = 0; i < 10000; i++)
+        {
+            elem = new_int(rand());
+
+            st = sli_insert(slist, elem);
+
+            if (st != DS_OK)
+            {
+                free(elem);
+
+                printf("ERROR\n");
+            }
+        }
+
+        sli_display_array(slist);
+
+        SortedListIterator sli_iter;
+        bool removed = false;
+
+        if (sli_iter_init(&sli_iter, slist) == DS_OK)
+        {
+            // Using iterator to remove all even numbers (except for the last number)
+            while (sli_iter_has_next(sli_iter))
+            {
+                sli_iter_next(sli_iter);
+
+                elem = sli_iter_peek_prev(sli_iter);
+
+                if (elem != NULL)
+                {
+                    if ((*elem) % 2 == 0)
+                    {
+                        st = sli_iter_remove_prev(sli_iter, &result);
+
+                        if (st != DS_OK)
+                            printf("ERROR\n");
+
+                        free(result);
+                    }
+                }
+            }
+
+            sli_display_array(slist);
+
+            // Rewind
+            sli_iter_to_head(sli_iter);
+
+            // Remove all numbers divisible by 3
+            while (sli_iter_has_next(sli_iter))
+            {
+                elem = sli_iter_peek(sli_iter);
+
+                if (elem != NULL)
+                {
+                    if ((*elem) % 3 == 0)
+                    {
+                        st = sli_iter_remove_curr(sli_iter, &result);
+
+                        if (st != DS_OK)
+                            printf("ERROR\n");
+
+                        free(result);
+
+                        removed = true;
+                    }
+                    else
+                        removed = false;
+                }
+
+                if (!removed)
+                    sli_iter_next(sli_iter);
+            }
+
+            sli_display_array(slist);
+
+            // Rewind
+            sli_iter_to_head(sli_iter);
+
+            // Remove all numbers divisible by 5 (except for the first number)
+            while (sli_iter_has_next(sli_iter))
+            {
+                elem = sli_iter_peek_next(sli_iter);
+
+                if (elem != NULL)
+                {
+                    if ((*elem) % 5 == 0)
+                    {
+                        st = sli_iter_remove_next(sli_iter, &result);
+
+                        if (st != DS_OK)
+                            printf("ERROR\n");
+
+                        free(result);
+
+                        removed = true;
+                    }
+                    else
+                        removed = false;
+                }
+
+                if (!removed)
+                    sli_iter_next(sli_iter);
+            }
+
+            sli_display_array(slist);
+
+            while (!sli_empty(slist))
+            {
+                st = sli_remove(slist, &result, rand() % sli_length(slist));
+
+                if (st != DS_OK)
+                    printf("ERROR\n");
+
+                free(result);
+            }
+
+            // Should be empty
+            sli_display_array(slist);
+        }
+    }
+
+    sli_free(&slist);
+
+    if (sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        for (int i = 0; i < 20; i++)
+        {
+            sli_insert(slist, new_int(i));
+        }
+
+        SortedList new_slist;
+        if (sli_unlink(slist, &new_slist, sli_length(slist) / 2) == DS_OK)
+        {
+            sli_display_array(slist);
+            printf("Length: %lld\n", sli_length(slist));
+            max = sli_max(slist);
+            min = sli_min(slist);
+            if (max && min)
+            {
+                printf("MAX: %d\n", *max);
+                printf("MIN: %d\n", *min);
+            }
+
+            sli_reverse(new_slist);
+
+            sli_display_array(new_slist);
+            printf("Length: %lld\n", sli_length(new_slist));
+            max = sli_max(new_slist);
+            min = sli_min(new_slist);
+            if (max && min)
+            {
+                printf("MAX: %d\n", *max);
+                printf("MIN: %d\n", *min);
+            }
+
+            sli_free(&new_slist);
+        }
+    }
+
+    void **result_array;
+
+    printf("\n\nsli_to_array:\n");
+    if (sli_to_array(slist, &result_array, &l) == DS_OK)
+    {
+        for (index_t i = 0; i < l; i++)
+        {
+            display_int(result_array[i]);
+
+            printf(" ");
+        }
+
+        for (index_t i = 0; i < l; i++)
+            free(result_array[i]);
+
+        free(result_array);
+
+        printf("\nOriginal List:");
+        sli_display_array(slist);
+    }
+
+    if (sli_erase(&slist) == DS_OK)
+    {
+        printf("\n\nSublist\n\n");
+
+        for (int i = 0; i < 20; i++)
+            sli_insert(slist, new_int(i));
+
+        printf("\nOriginal List:");
+        sli_display_array(slist);
+
+        SortedList sli_sub;
+
+        if (sli_sublist(slist, &sli_sub, 5, 14) == DS_OK)
+        {
+            printf("\nNew original list:");
+            sli_display_array(slist);
+            printf("Length: %lld\n", sli_length(slist));
+            max = sli_max(slist);
+            min = sli_min(slist);
+            if (max && min)
+            {
+                printf("MAX: %d\n", *max);
+                printf("MIN: %d\n", *min);
+            }
+
+            printf("\nCreated sublist:");
+            sli_display_array(sli_sub);
+            printf("Length: %lld\n", sli_length(sli_sub));
+            max = sli_max(sli_sub);
+            min = sli_min(sli_sub);
+            if (max && min)
+            {
+                printf("MAX: %d\n", *max);
+                printf("MIN: %d\n", *min);
+            }
+
+            sli_free(&sli_sub);
+        }
+        else
+            printf("\nERROR");
+    }
 
     sli_free(&slist);
 
