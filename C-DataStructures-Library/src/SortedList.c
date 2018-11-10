@@ -554,6 +554,8 @@ Status sli_remove(SortedList list, void **result, index_t position)
         *result = node->data;
     }
 
+    free(node);
+
     list->length--;
 
     if (sli_empty(list))

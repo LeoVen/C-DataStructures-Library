@@ -906,6 +906,8 @@ int main()
             // Should be empty
             sli_display_array(slist);
         }
+
+        sli_iter_free(&sli_iter);
     }
 
     sli_free(&slist);

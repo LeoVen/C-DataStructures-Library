@@ -12,7 +12,7 @@
 #include "Core.h"
 
 /// Generates a random number between 0 and 1.
-double random();
+double rrandom();
 
 /// Generates an integer between min and max with both included.
 int rand_int(index_t min, index_t max);

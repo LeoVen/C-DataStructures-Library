@@ -12,15 +12,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/include/CoreTree.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Core.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Core.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/CoreSort.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/CoreSort.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SortedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SortedList.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SortedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/include/Random.h" beforeDir="false" afterPath="$PROJECT_DIR$/util/include/Random.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util/src/Random.c" beforeDir="false" afterPath="$PROJECT_DIR$/util/src/Random.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
@@ -121,6 +118,40 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1594144637">
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.open.time.11" value="1" />
+          <entry key="project.opened" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="c" value="2" />
+          <entry key="h" value="2" />
+          <entry key="txt" value="2" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="CMakeLists.txt" value="2" />
+          <entry key="ObjectiveC" value="4" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="c" value="36" />
+          <entry key="h" value="10" />
+          <entry key="txt" value="36" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="CMakeLists.txt" value="36" />
+          <entry key="ObjectiveC" value="46" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="C_DataStructures_Library" />
@@ -130,8 +161,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1013">
-              <caret line="1004" lean-forward="true" selection-start-line="1004" selection-end-line="1004" />
+            <state relative-caret-position="144">
+              <caret line="897" column="28" selection-start-line="897" selection-start-column="28" selection-end-line="897" selection-end-column="28" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -151,11 +182,38 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/SortedList.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="206">
-              <caret line="342" column="48" selection-start-line="342" selection-start-column="48" selection-end-line="342" selection-end-column="48" />
+            <state relative-caret-position="230">
+              <caret line="504" lean-forward="true" selection-start-line="504" selection-end-line="504" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="253">
+              <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/util/include/Random.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="276">
+              <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/util/src/Random.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="23">
+              <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
             </state>
           </provider>
         </entry>
@@ -163,8 +221,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-135">
-              <caret line="763" lean-forward="true" selection-start-line="763" selection-end-line="763" />
+            <state relative-caret-position="23">
+              <caret line="763" selection-start-line="763" selection-end-line="763" />
             </state>
           </provider>
         </entry>
@@ -172,7 +230,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/CoreTree.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="230">
+            <state>
               <caret line="10" selection-start-line="10" selection-end-line="10" />
             </state>
           </provider>
@@ -181,39 +239,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/include/CoreSort.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4122">
-              <caret line="65" selection-start-line="65" selection-end-line="68" selection-end-column="77" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/DoublyLinkedList.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="497" column="17" lean-forward="true" selection-start-line="481" selection-start-column="4" selection-end-line="497" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/Core.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="621">
-              <caret line="33" column="89" selection-start-line="33" selection-start-column="89" selection-end-line="33" selection-end-column="89" />
-              <folding>
-                <element signature="e#190#209#0" expanded="true" />
-                <element signature="e#346#358#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="230">
+              <caret line="10" selection-start-line="10" selection-end-line="10" />
             </state>
           </provider>
         </entry>
@@ -222,7 +249,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>e2</find>
       <find>gque_delete_node</find>
       <find>bst_delete_node</find>
       <find>size</find>
@@ -252,9 +278,9 @@
       <find>sli_delete</find>
       <find>SORT_ORDER</find>
       <find>copy</find>
+      <find>random</find>
     </findStrings>
     <replaceStrings>
-      <replace>dqa_</replace>
       <replace>dqa_full</replace>
       <replace>dqa_grow</replace>
       <replace>`$1`</replace>
@@ -284,6 +310,7 @@
       <replace>index_t</replace>
       <replace>sli_free</replace>
       <replace>SortOrder</replace>
+      <replace>rrandom</replace>
     </replaceStrings>
     <dirStrings>
       <dir>C:\Users\lvenk\Documents\GitHub\C-DataStructures-Library\C-DataStructures-Library\generic\util</dir>
@@ -301,7 +328,6 @@
         <option value="$PROJECT_DIR$/generic/util/Floats.c" />
         <option value="$PROJECT_DIR$/generic/util/Char.c" />
         <option value="$PROJECT_DIR$/generic/include/Char.h" />
-        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/src/CircularLinkedList.c" />
         <option value="$PROJECT_DIR$/src/Deque.c" />
         <option value="$PROJECT_DIR$/src/DoublyLinkedList.c" />
@@ -332,8 +358,6 @@
         <option value="$PROJECT_DIR$/src/AVLTree.c" />
         <option value="$PROJECT_DIR$/util/include/Util.h" />
         <option value="$PROJECT_DIR$/generic/src/GQueue.c" />
-        <option value="$PROJECT_DIR$/util/src/Random.c" />
-        <option value="$PROJECT_DIR$/util/include/Random.h" />
         <option value="$PROJECT_DIR$/util/include/Chars.h" />
         <option value="$PROJECT_DIR$/util/include/Floats.h" />
         <option value="$PROJECT_DIR$/util/src/Floats.c" />
@@ -344,8 +368,11 @@
         <option value="$PROJECT_DIR$/include/CoreSort.h" />
         <option value="$PROJECT_DIR$/include/CoreTree.h" />
         <option value="$PROJECT_DIR$/include/SortedList.h" />
+        <option value="$PROJECT_DIR$/util/include/Random.h" />
+        <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/main.c" />
         <option value="$PROJECT_DIR$/src/SortedList.c" />
+        <option value="$PROJECT_DIR$/util/src/Random.c" />
       </list>
     </option>
   </component>
@@ -400,6 +427,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -455,17 +483,16 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Collections-C" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.completion" />
+    <property name="settings.editor.selected.configurable" value="CMakeSettings" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -578,11 +605,12 @@
       <workItem from="1541688058456" duration="752000" />
       <workItem from="1541705395744" duration="20394000" />
       <workItem from="1541734546065" duration="26008000" />
+      <workItem from="1541812262818" duration="1573000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="416632000" />
+    <option name="totallyTimeSpent" value="418205000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -594,21 +622,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
+    <frame x="67" y="25" width="1299" height="743" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" weight="0.22314675" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.22266561" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.7861635" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.24685535" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.24386252" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.24685535" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.6242138" />
+      <window_info anchor="bottom" id="Messages" order="8" weight="0.28641573" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32861635" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32861635" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32861635" />
@@ -658,20 +686,7 @@
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/Queue/src/Queue.c" />
-    <entry file="file://C:/MinGW/include/string.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="135" column="39" selection-start-line="135" selection-start-column="39" selection-end-line="135" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="31" lean-forward="true" selection-start-line="8" selection-start-column="31" selection-end-line="8" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/MinGW/include/string.h" />
     <entry file="file://$PROJECT_DIR$/src/QueueArray.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54">
@@ -775,13 +790,7 @@
         <state relative-caret-position="-483" />
       </provider>
     </entry>
-    <entry file="file://C:/MinGW/include/assert.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="18" lean-forward="true" selection-start-line="18" selection-end-line="18" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/MinGW/include/assert.h" />
     <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="294">
@@ -803,20 +812,8 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://C:/MinGW/include/math.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="197">
-          <caret line="175" column="23" selection-start-line="175" selection-start-column="23" selection-end-line="175" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/MinGW/include/stdlib.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="247">
-          <caret line="59" column="3" lean-forward="true" selection-start-line="59" selection-start-column="3" selection-end-line="59" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://C:/MinGW/include/math.h" />
+    <entry file="file://C:/MinGW/include/stdlib.h" />
     <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="161">
@@ -838,28 +835,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/util/src/Random.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="8" column="19" selection-start-line="8" selection-start-column="19" selection-end-line="8" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/util/include/Random.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="253">
-          <caret line="11" column="17" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/AVLTree.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="15" selection-start-line="15" selection-end-line="15" />
-          <folding>
-            <element signature="e#219#231#0" expanded="true" />
-            <element signature="e#1937#1938#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -937,16 +916,40 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2489">
           <caret line="51" column="57" lean-forward="true" selection-start-line="51" selection-start-column="57" selection-end-line="51" selection-end-column="57" />
-          <folding>
-            <element signature="e#197#214#0" expanded="true" />
-            <element signature="e#254#266#0" expanded="true" />
-          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/BinarySearchTree.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="120" selection-start-line="120" selection-end-line="120" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CoreTree.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="10" selection-start-line="10" selection-end-line="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1357">
+          <caret line="60" lean-forward="true" selection-start-line="60" selection-end-line="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/DoublyLinkedList.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/include/Core.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="621">
+        <state relative-caret-position="83">
           <caret line="33" column="89" selection-start-line="33" selection-start-column="89" selection-end-line="33" selection-end-column="89" />
           <folding>
             <element signature="e#190#209#0" expanded="true" />
@@ -955,58 +958,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/BinarySearchTree.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="409">
-          <caret line="120" selection-start-line="120" selection-end-line="120" />
-          <folding>
-            <element signature="e#265#277#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-135">
-          <caret line="763" lean-forward="true" selection-start-line="763" selection-end-line="763" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/CoreTree.h">
+    <entry file="file://$PROJECT_DIR$/include/CoreSort.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
           <caret line="10" selection-start-line="10" selection-end-line="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/CoreSort.h">
+    <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="15" column="12" selection-start-line="15" selection-start-column="12" selection-end-line="15" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4122">
-          <caret line="65" selection-start-line="65" selection-end-line="68" selection-end-column="77" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/DoublyLinkedList.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="497" column="17" lean-forward="true" selection-start-line="481" selection-start-column="4" selection-end-line="497" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1013">
-          <caret line="1004" lean-forward="true" selection-start-line="1004" selection-end-line="1004" />
-          <folding>
-            <element signature="e#0#17#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="23">
+          <caret line="763" selection-start-line="763" selection-end-line="763" />
         </state>
       </provider>
     </entry>
@@ -1020,10 +982,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="897" column="28" selection-start-line="897" selection-start-column="28" selection-end-line="897" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#17#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/SortedList.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="206">
-          <caret line="342" column="48" selection-start-line="342" selection-start-column="48" selection-end-line="342" selection-end-column="48" />
+        <state relative-caret-position="230">
+          <caret line="504" lean-forward="true" selection-start-line="504" selection-end-line="504" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="253">
+          <caret line="11" lean-forward="true" selection-start-line="11" selection-end-line="11" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/include/Random.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/util/src/Random.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="23">
+          <caret line="1" column="10" selection-start-line="1" selection-start-column="10" selection-end-line="1" selection-end-column="10" />
         </state>
       </provider>
     </entry>
