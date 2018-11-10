@@ -12,28 +12,42 @@
 #include "Core.h"
 #include "CoreSort.h"
 
-/// A sorted doubly-linked list.
+// A sorted doubly-linked list. See the source file for the documentation.
 struct SortedList_s;
 
-/// A type for a sorted doubly-linked list.
+/// \brief A type for a sorted doubly-linked list.
+///
+/// A type for a <code> struct SortedList_s </code> so you don't have to always
+/// write the full name of it.
 typedef struct SortedList_s SortedList_t;
 
-/// A pointer type for a sorted doubly-linked list.
+/// \brief A pointer type for a sorted doubly-linked list.
+///
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
 typedef struct SortedList_s *SortedList;
 
+/// \brief Display function type.
+///
 /// A type for a function that displays an element in the console.
 typedef void(*sli_display_f)(void *);
 
+/// \brief Comparator function type.
+///
 /// A type for a function that compares two elements, returning:
 /// - [ > 0] when the first element is greater than the second;
 /// - [ < 0] when the first element is less than the second;
 /// - 0 when both elements are equal.
 typedef int(*sli_compare_f)(void *, void *);
 
+/// \brief A Copy function type.
+///
 /// A type for a function that takes an input (first parameter) and returns an
 /// exact copy of that element.
 typedef void *(*sli_copy_f)(void *);
 
+/// \brief A Free function type.
+///
 /// A type for a function responsible for completely freeing an element from
 /// memory.
 typedef void(*sli_free_f)(void *);
@@ -78,6 +92,8 @@ Status sli_get(SortedList list, void **result, index_t index);
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 Status sli_insert(SortedList list, void *element);
+
+Status sli_insert_all(SortedList list, void **elements, index_t count);
 
 Status sli_remove(SortedList list, void **result, index_t position);
 

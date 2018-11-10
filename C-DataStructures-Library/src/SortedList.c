@@ -33,6 +33,43 @@
 /// function you won't be able to delete the list or its elements. You must set
 /// a delete function that will be responsible for freeing from memory all
 /// elements.
+///
+/// \b Functions \b List
+/// - sli_init()
+/// - sli_create()
+/// - sli_free()
+/// - sli_erase()
+/// - sli_set_func_compare()
+/// - sli_set_func_copy()
+/// - sli_set_func_display()
+/// - sli_set_func_free()
+/// - sli_set_limit()
+/// - sli_set_order()
+/// - sli_length()
+/// - sli_limit()
+/// - sli_order()
+/// - sli_get()
+/// - sli_insert()
+/// - sli_insert_all()
+/// - sli_remove()
+/// - sli_remove_max()
+/// - sli_remove_min()
+/// - sli_full()
+/// - sli_empty()
+/// - sli_max()
+/// - sli_min()
+/// - sli_index_first()
+/// - sli_index_last()
+/// - sli_contains()
+/// - sli_reverse()
+/// - sli_copy()
+/// - sli_to_array()
+/// - sli_merge()
+/// - sli_unlink()
+/// - sli_sublist()
+/// - sli_display()
+/// - sli_display_array()
+/// - sli_display_raw()
 struct SortedList_s
 {
     /// \brief List length.
@@ -93,6 +130,8 @@ struct SortedList_s
     sli_free_f d_free;
 };
 
+/// \brief A SortedList_s node.
+///
 /// This node is an implementation detail and should never be used by the user.
 struct SortedListNode_s
 {
@@ -131,6 +170,17 @@ Status sli_insert_tail(SortedList list, void *element);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
+/// \brief Initializes the SortedList_s structure.
+///
+/// This function initializes the SortedList_s structure but does not sets any
+/// default functions. If you don't set them latter you won't be able to add
+/// elements, copy the list, free the list or display it.
+///
+/// \param list List to be allocated.
+/// \param order The sorting order of the list's elements.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_OK if all operations are successful.
 Status sli_init(SortedList *list, SortOrder order)
 {
     *list = malloc(sizeof(SortedList_t));
@@ -154,6 +204,20 @@ Status sli_init(SortedList *list, SortOrder order)
     return DS_OK;
 }
 
+/// \brief Creates a SortedList_s.
+///
+/// This function completely creates a SortedList_s. This sets the list order
+/// of elements and all of its default functions.
+///
+/// \param list List to be allocated.
+/// \param order The sorting order of the list's elements.
+/// \param compare_f A function that compares two elements.
+/// \param copy_f A function that makes an exact copy of an element.
+/// \param display_f A function that displays in the console an element.
+/// \param free_f A function that completely frees from memory an element.
+///
+/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_OK if all operations are successful.
 Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f, sli_copy_f copy_f,
         sli_display_f display_f, sli_free_f free_f)
 {
@@ -492,6 +556,27 @@ Status sli_insert(SortedList list, void *element)
     }
 
     list->length++;
+
+    return DS_OK;
+}
+
+Status sli_insert_all(SortedList list, void **elements, index_t count)
+{
+    if (list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (count < 0)
+        return DS_ERR_NEGATIVE_VALUE;
+
+    Status st;
+
+    for (index_t i = 0; i < count; i++)
+    {
+        st = sli_insert(list, elements[i]);
+
+        if (st != DS_OK)
+            return st;
+    }
 
     return DS_OK;
 }
@@ -1350,6 +1435,28 @@ Status sli_insert_tail(SortedList list, void *element)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
+/// \brief An iterator for a SortedList_s
+///
+/// This iterator provides many useful functions to iterate along a SortedList.
+/// It only provides functions that won't change the sorted property so
+/// adding elements with the iterator is forbidden.
+///
+/// \b Functions \b List
+/// - sli_iter_init()
+/// - sli_iter_free()
+/// - sli_iter_next()
+/// - sli_iter_prev()
+/// - sli_iter_to_head()
+/// - sli_iter_to_tail()
+/// - sli_iter_has_next()
+/// - sli_iter_has_prev()
+/// - sli_iter_get()
+/// - sli_iter_remove_next()
+/// - sli_iter_remove_curr()
+/// - sli_iter_remove_prev()
+/// - sli_iter_peek_next()
+/// - sli_iter_peek()
+/// - sli_iter_peek_prev()
 struct SortedListIterator_s
 {
     /// \brief Target SortedList.
