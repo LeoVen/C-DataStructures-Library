@@ -386,21 +386,6 @@ int main()
     qua_delete(&qua0);
     qua_delete(&qua1);
 
-    Array array;
-
-    if (arr_init(&array, 20) == DS_OK)
-    {
-        for (int i = 0; i < 20; i++)
-        {
-            if (arr_insert(array, (index_t)i, i) != DS_OK)
-                break;
-        }
-
-        arr_display(array);
-    }
-
-    arr_delete(&array);
-
     CircularBuffer cbf0, cbf1;
 
     if (cbf_init(&cbf0, 40) == DS_OK)
@@ -1012,6 +997,41 @@ int main()
     }
 
     sli_free(&slist);
+
+    Array array;
+
+    if (arr_create(&array, 20, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        for (int i = 0; i < arr_length(array); i++)
+        {
+            if (arr_set(array, (index_t)i, new_int(i)) != DS_OK)
+                break;
+        }
+
+        arr_display(array);
+    }
+
+    arr_free(&array);
+
+    if (arr_create(&array, 1000, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        for (int i = 0; i < arr_length(array); i++)
+        {
+            if (arr_set(array, (index_t)i, new_int(rand())) != DS_OK)
+                break;
+        }
+
+        printf("\nOriginal Array");
+        arr_display(array);
+
+        if (arr_sort(array) == DS_OK)
+        {
+            printf("\nSorted Array");
+            arr_display(array);
+        }
+    }
+
+    arr_free(&array);
 
     printf("\n\n\n");
 

@@ -17,12 +17,8 @@
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Array.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Core.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Core.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SortedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SortedList.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Array.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Array.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SortedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
@@ -51,7 +47,7 @@
     <session id="166045188">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="59" />
+          <entry key="project.closed" value="60" />
           <entry key="project.open.time.0" value="2" />
           <entry key="project.open.time.1" value="1" />
           <entry key="project.open.time.10" value="1" />
@@ -169,8 +165,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/SortedList.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="202">
-              <caret line="136" column="67" selection-start-line="136" selection-start-column="67" selection-end-line="136" selection-end-column="67" />
+            <state relative-caret-position="4365">
+              <caret line="2512" column="79" lean-forward="true" selection-start-line="2512" selection-start-column="79" selection-end-line="2512" selection-end-column="79" />
             </state>
           </provider>
         </entry>
@@ -568,12 +564,12 @@
       <workItem from="1541812262818" duration="1573000" />
       <workItem from="1541815440540" duration="2339000" />
       <workItem from="1541985564264" duration="4254000" />
-      <workItem from="1541994448762" duration="23402000" />
+      <workItem from="1541994448762" duration="23788000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="448200000" />
+    <option name="totallyTimeSpent" value="448586000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -594,7 +590,7 @@
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.24386252" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.9371069" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.8081761" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
@@ -965,17 +961,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/Core.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="38" column="21" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="21" />
-          <folding>
-            <element signature="e#190#209#0" expanded="true" />
-            <element signature="e#346#358#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/include/SortedList.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="230">
@@ -987,10 +972,21 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/Core.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="336">
+          <caret line="38" column="21" selection-start-line="38" selection-start-column="4" selection-end-line="38" selection-end-column="21" />
+          <folding>
+            <element signature="e#190#209#0" expanded="true" />
+            <element signature="e#346#358#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/SortedList.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="202">
-          <caret line="136" column="67" selection-start-line="136" selection-start-column="67" selection-end-line="136" selection-end-column="67" />
+        <state relative-caret-position="4365">
+          <caret line="2512" column="79" lean-forward="true" selection-start-line="2512" selection-start-column="79" selection-end-line="2512" selection-end-column="79" />
         </state>
       </provider>
     </entry>
