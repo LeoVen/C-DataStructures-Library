@@ -12,7 +12,11 @@
 #include "Core.h"
 #include "CoreSort.h"
 
-// A sorted doubly-linked list. See the source file for the documentation.
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// A sorted doubly-linked list. See the source file for the full documentation.
 struct SortedList_s;
 
 /// \brief A type for a sorted doubly-linked list.
@@ -26,11 +30,6 @@ typedef struct SortedList_s SortedList_t;
 /// Useful for not having to declare every variable as pointer type. This
 /// typedef does that for you.
 typedef struct SortedList_s *SortedList;
-
-/// \brief Display function type.
-///
-/// A type for a function that displays an element in the console.
-typedef void(*sli_display_f)(void *);
 
 /// \brief Comparator function type.
 ///
@@ -46,6 +45,12 @@ typedef int(*sli_compare_f)(void *, void *);
 /// exact copy of that element.
 typedef void *(*sli_copy_f)(void *);
 
+/// \brief Display function type.
+///
+/// A type for a function that displays an element in the console. Please do
+/// not print a newline character.
+typedef void(*sli_display_f)(void *);
+
 /// \brief A Free function type.
 ///
 /// A type for a function responsible for completely freeing an element from
@@ -54,7 +59,7 @@ typedef void(*sli_free_f)(void *);
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status sli_init(SortedList *list, SortOrder order);
+Status sli_init(SortedList *list);
 
 Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f,
                 sli_copy_f copy_f, sli_display_f display_f, sli_free_f free_f);
@@ -146,18 +151,24 @@ Status sli_display_raw(SortedList list);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// A sorted list iterator.
+// A sorted list iterator. See the source file for the full documentation.
 struct SortedListIterator_s;
 
-/// A type for a sorted list iterator.
+/// \brief A type for a sorted list iterator.
+///
+/// A type for a <code> struct SortedListIterator_s </code>.
 typedef struct SortedListIterator_s SortedListIterator_t;
 
-/// A pointer type for a sorted list iterator.
+/// \brief A pointer type for a sorted list iterator.
+///
+/// A pointer type for a <code> struct SortedListIterator_s </code>.
 typedef struct SortedListIterator_s *SortedListIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 Status sli_iter_init(SortedListIterator *iter, SortedList target);
+
+Status sli_iter_retarget(SortedListIterator *iter, SortedList target);
 
 Status sli_iter_free(SortedListIterator *iter);
 
@@ -201,5 +212,9 @@ void *sli_iter_peek_next(SortedListIterator iter);
 void *sli_iter_peek(SortedListIterator iter);
 
 void *sli_iter_peek_prev(SortedListIterator iter);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_SORTEDLIST_H

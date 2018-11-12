@@ -27,7 +27,7 @@
 |  SinglyLinkedList  | `[#########_]` | `[__________]` | `[__________]` | `[######____]` |
 |      SkipList      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |    SortedArray     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|     SortedList     | `[##########]` | `[##########]` | `[__________]` | `[###_______]` |
+|     SortedList     | `[##########]` | `[##########]` | `[__________]` | `[##########]` |
 |  SortedUnionList   | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |   SortedHashMap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |    SparseMatrix    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -37,7 +37,7 @@
 |      TreeSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |      TreeMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |        Trie        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   __Completed__    |     __14__     |     __1__      |     __0__      |     __0__      |
+|   __Completed__    |     __14__     |     __1__      |     __0__      |     __1__      |
 
 ## Generic Data Structures
 
@@ -66,6 +66,13 @@
 An array is an abstraction of a C array composed of a data buffer and a length variable. It is a static array, that is, it won't increase in size. Higher level languages provide a quick variable to get the array's length and this abstraction does exactly that. When you initialize the structure a length variable is stored and you can easily do a for loop like shown below.
 
 ```c
+Array my_array;
+
+// Initializes an array of 20 positions
+arr_init(&my_array, 20);
+
+// Many lines of code of code after...
+
 int len = arr_length(my_array);
 
 for (int i = 0; i < len; i++)
@@ -76,7 +83,7 @@ for (int i = 0; i < len; i++)
 }
 ```
 
-Note that the length variable is protected (implementation detail) and only accessible by a function. This is done so to prevent the user from changing the length variable of the array's struct, possibly causing run-time errors. Also accessing the buffer is protected and you must use ```arr_set()``` to set a value in the array and ```arr_get()``` to get the value from the array.
+Note that the length variable is protected (implementation detail) and only accessible via a function. This is done so to prevent the user from changing the length variable of the array's struct, possibly causing run-time errors. Also access to the buffer is protected and you must use ```arr_set()``` to set a value in the array and ```arr_get()``` to get the value from the array.
 
 ### AVLTree
 

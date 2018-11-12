@@ -128,11 +128,21 @@ struct SortedList_s
     ///
     /// A function that completely frees an element from memory.
     sli_free_f d_free;
+
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    index_t version_id;
 };
 
 /// \brief A SortedList_s node.
 ///
-/// This node is an implementation detail and should never be used by the user.
+/// Implementation detail. This is a doubly-linked node with a pointer to the
+/// previous node (or \c NULL if it is the head node) and another pointer to
+/// the next node (or \c NULL if it is the tail node).
 struct SortedListNode_s
 {
     /// \brief Data pointer.
@@ -151,22 +161,26 @@ struct SortedListNode_s
     struct SortedListNode_s *prev;
 };
 
-/// A type for a sorted list node.
+/// \brief A type for a sorted list node.
+///
+/// Defines a type to a <code> struct SortedListNode_s </code>.
 typedef struct SortedListNode_s SortedListNode_t;
 
-/// A pointer type for a sorted list node.
+/// \brief A pointer type for a sorted list node.
+///
+/// Define a pointer type to a <code> struct SortedListNode_s </code>.
 typedef struct SortedListNode_s *SortedListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-Status sli_make_node(SortedListNode *node, void *data);
+static Status sli_make_node(SortedListNode *node, void *data);
 
-Status sli_free_node(SortedListNode *node, sli_free_f free_f);
+static Status sli_free_node(SortedListNode *node, sli_free_f free_f);
 
-Status sli_get_node_at(SortedList list, SortedListNode *result,
+static Status sli_get_node_at(SortedList list, SortedListNode *result,
         index_t position);
 
-Status sli_insert_tail(SortedList list, void *element);
+static Status sli_insert_tail(SortedList list, void *element);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -174,14 +188,14 @@ Status sli_insert_tail(SortedList list, void *element);
 ///
 /// This function initializes the SortedList_s structure but does not sets any
 /// default functions. If you don't set them latter you won't be able to add
-/// elements, copy the list, free the list or display it.
+/// elements, copy the list, free the list or display it. It also sets a
+/// default order of \c DESCENDING.
 ///
-/// \param list List to be allocated.
-/// \param order The sorting order of the list's elements.
+/// \param[in,out] list SortedList_s to be allocated.
 ///
-/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_ALLOC if list allocation failed.
 /// \return DS_OK if all operations are successful.
-Status sli_init(SortedList *list, SortOrder order)
+Status sli_init(SortedList *list)
 {
     *list = malloc(sizeof(SortedList_t));
 
@@ -190,8 +204,9 @@ Status sli_init(SortedList *list, SortOrder order)
 
     (*list)->length = 0;
     (*list)->limit = 0;
+    (*list)->version_id = 0;
 
-    (*list)->order = order;
+    (*list)->order = DESCENDING;
 
     (*list)->head = NULL;
     (*list)->tail = NULL;
@@ -209,17 +224,17 @@ Status sli_init(SortedList *list, SortOrder order)
 /// This function completely creates a SortedList_s. This sets the list order
 /// of elements and all of its default functions.
 ///
-/// \param list List to be allocated.
-/// \param order The sorting order of the list's elements.
-/// \param compare_f A function that compares two elements.
-/// \param copy_f A function that makes an exact copy of an element.
-/// \param display_f A function that displays in the console an element.
-/// \param free_f A function that completely frees from memory an element.
+/// \param[in,out] list SortedList_s to be allocated.
+/// \param[in] order The sorting order of the list's elements.
+/// \param[in] compare_f A function that compares two elements.
+/// \param[in] copy_f A function that makes an exact copy of an element.
+/// \param[in] display_f A function that displays in the console an element.
+/// \param[in] free_f A function that completely frees from memory an element.
 ///
-/// \return DS_ERR_ALLOC if allocation failed.
+/// \return DS_ERR_ALLOC if list allocation failed.
 /// \return DS_OK if all operations are successful.
-Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f, sli_copy_f copy_f,
-        sli_display_f display_f, sli_free_f free_f)
+Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f,
+        sli_copy_f copy_f, sli_display_f display_f, sli_free_f free_f)
 {
     *list = malloc(sizeof(SortedList_t));
 
@@ -228,6 +243,7 @@ Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f, sl
 
     (*list)->length = 0;
     (*list)->limit = 0;
+    (*list)->version_id = 0;
 
     (*list)->order = order;
 
@@ -242,6 +258,17 @@ Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f, sl
     return DS_OK;
 }
 
+/// \brief Frees from memory a SortedList_s and all its elements.
+///
+/// This function frees from memory all the list's elements using its default
+/// free function and then frees the list's structure. The variable is then set
+/// to \c NULL.
+///
+/// \param[in,out] list SortedList_s to be freed from memory.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_free(SortedList *list)
 {
     if (*list == NULL)
@@ -273,22 +300,33 @@ Status sli_free(SortedList *list)
     return DS_OK;
 }
 
+/// \brief Erases a SortedList_s.
+///
+/// This function is equivalent to freeing a list and the creating it again.
+/// This will reset the list to its initial state with no elements, but will
+/// keep all of its default functions and the order of elements.
+///
+/// \param[in,out] list SortedList_s to be erased.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_erase(SortedList *list)
 {
     if (*list == NULL)
-        return DS_OK;
+        return DS_ERR_NULL_POINTER;
 
     SortedList new_list;
 
     Status st = sli_create(&new_list, (*list)->order, (*list)->d_compare,
-                           (*list)->d_copy, (*list)->d_display, (*list)->d_free);
+            (*list)->d_copy, (*list)->d_display, (*list)->d_free);
 
     if (st !=  DS_OK)
         return st;
 
     st = sli_free(list);
 
-    // Probably didn't set the delete function...
+    // Probably didn't set the free function...
     if (st !=  DS_OK)
     {
         free(new_list);
@@ -301,6 +339,19 @@ Status sli_erase(SortedList *list)
     return DS_OK;
 }
 
+/// \brief Sets the default compare function.
+///
+/// Use this function to set a default compare function. It can only be done
+/// when the list is empty, otherwise you would have elements sorted with a
+/// different logic. The function needs to comply with the sli_compare_f
+/// specifications.
+///
+/// \param[in] list SortedList_s to set the default compare function.
+/// \param[in] function An sli_compare_f kind of function.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is not empty.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_func_compare(SortedList list, sli_compare_f function)
 {
     if (list == NULL)
@@ -317,6 +368,16 @@ Status sli_set_func_compare(SortedList list, sli_compare_f function)
     return DS_OK;
 }
 
+/// \brief Sets the default copy function.
+///
+/// Use this function to set a default compare function. It needs to comply
+/// with the sli_copy_f specifications.
+///
+/// \param[in] list SortedList_s to set the default copy function.
+/// \param[in] function An sli_copy_f kind of function.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_func_copy(SortedList list, sli_copy_f function)
 {
     if (list == NULL)
@@ -327,6 +388,16 @@ Status sli_set_func_copy(SortedList list, sli_copy_f function)
     return DS_OK;
 }
 
+/// \brief Sets the default display function
+///
+/// Use this function to set a default display function. It needs to comply
+/// with the sli_display_f specifications. Useful for debugging.
+///
+/// \param[in] list SortedList_s to set the default display function.
+/// \param[in] function An sli_display_f kind of function.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_func_display(SortedList list, sli_display_f function)
 {
     if (list == NULL)
@@ -337,6 +408,16 @@ Status sli_set_func_display(SortedList list, sli_display_f function)
     return DS_OK;
 }
 
+/// \brief Sets the default free function
+///
+/// Use this function to set a default free function. It needs to comply
+/// with the sli_free_f specifications.
+///
+/// \param[in] list SortedList_s to set the default free function.
+/// \param[in] function An sli_free_f kind of function.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_func_free(SortedList list, sli_free_f function)
 {
     if (list == NULL)
@@ -347,6 +428,19 @@ Status sli_set_func_free(SortedList list, sli_free_f function)
     return DS_OK;
 }
 
+/// \brief Sets a limit to the specified SortedList_s's length.
+///
+/// Limit's the SortedList_s's length. You can only set a limit greater or
+/// equal to the list's current length and greater than 0. To remove this
+/// limitation simply set the limit to 0 or less.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[in] limit Maximum list length.
+///
+/// \return DS_ERR_INVALID_OPERATION if the limitation is less than the list's
+/// current length.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_limit(SortedList list, index_t limit)
 {
     if (list == NULL)
@@ -361,6 +455,17 @@ Status sli_set_limit(SortedList list, index_t limit)
     return DS_OK;
 }
 
+/// \brief Sets the sorting order of elements of the specified SortedList_s.
+///
+/// Sets the sorting order of elements to either \c ASCENDING or \c DESCENDING.
+/// You can only set it when the list is empty.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[in] order Sorting order of elements.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is not empty.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_set_order(SortedList list, SortOrder order)
 {
     if (list == NULL)
@@ -374,6 +479,14 @@ Status sli_set_order(SortedList list, SortOrder order)
     return DS_OK;
 }
 
+/// \brief Returns the SortedList_s's length.
+///
+/// Returns the list's current length or -1 if the list references to \c NULL.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return -1 if the list reference is \c NULL.
+/// \return The list's length.
 index_t sli_length(SortedList list)
 {
     if (list == NULL)
@@ -382,6 +495,14 @@ index_t sli_length(SortedList list)
     return list->length;
 }
 
+/// \brief Returns the SortedList_s's limit.
+///
+/// Returns the list limit or -1 if the list references to \c NULL.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return -1 if the list reference is \c NULL.
+/// \return The list's limit.
 index_t sli_limit(SortedList list)
 {
     if (list == NULL)
@@ -390,6 +511,15 @@ index_t sli_limit(SortedList list)
     return list->limit;
 }
 
+/// \brief Returns the SortedList_s's sorting order.
+///
+/// Return the list's sorting order, either ASCENDING, DESCENDING or 0 if the
+/// list references to \c NULL.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return 0 if the list references to \c NULL.
+/// \return The list order.
 SortOrder sli_order(SortedList list)
 {
     if (list == NULL)
@@ -398,16 +528,22 @@ SortOrder sli_order(SortedList list)
     return list->order;
 }
 
-/// \brief Array indexing wrapper.
+/// \brief Returns a copy of an element at a given position.
 ///
 /// This function is zero-based and returns a copy of the element located at
-/// the specified position.
+/// the specified index.
 ///
-/// \param list Reference list.
-/// \param result Resulting copy of the element.
-/// \param index Element position.
+/// \param[in] list SortedList_s reference.
+/// \param[out] result Resulting copy of the element.
+/// \param[in] index Element position.
 ///
-/// \return
+/// \return DS_ERR_INCOMPLETE_TYPE if a default copy function is not set.
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NEGATIVE_VALUE if index parameter is negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_OUT_OF_RANGE if index parameter is greater than or equal
+/// to the list's length.
+/// \return DS_OK if all operations are successful.
 Status sli_get(SortedList list, void **result, index_t index)
 {
     if (list == NULL)
@@ -437,6 +573,19 @@ Status sli_get(SortedList list, void **result, index_t index)
     return DS_OK;
 }
 
+/// \brief Inserts an element to the specified SortedList_s.
+///
+/// Inserts an element according to the sort order specified by the list. This
+/// function can take up to O(n) to add an element in its correct position.
+///
+/// \param[in] list SortedList_s reference where the element is to be inserted.
+/// \param[in] element Element to be inserted in the list.
+///
+/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
+/// length reached the specified limit.
+/// \return DS_ERR_INCOMPLETE_TYPE if a default compare function is not set.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_insert(SortedList list, void *element)
 {
     if (list == NULL)
@@ -455,13 +604,13 @@ Status sli_insert(SortedList list, void *element)
     if (st != DS_OK)
         return st;
 
-    // First node
+    // First node.
     if (sli_empty(list))
     {
         list->head = node;
         list->tail = node;
     }
-    // Insert node in its position
+    // Insert node in its position.
     else
     {
         SortedListNode scan = list->head;
@@ -472,7 +621,7 @@ Status sli_insert(SortedList list, void *element)
             // Insert 'head'. Change list->head.
             if (list->d_compare(node->data, list->head->data) <= 0)
             {
-                // The new element will be the new smallest element
+                // The new element will be the new smallest element.
                 node->next = list->head;
 
                 list->head->prev = node;
@@ -481,7 +630,8 @@ Status sli_insert(SortedList list, void *element)
             }
             else
             {
-                while (scan != NULL && list->d_compare(node->data, scan->data) > 0)
+                while (scan != NULL &&
+                       list->d_compare(node->data, scan->data) > 0)
                 {
                     before = scan;
 
@@ -491,7 +641,7 @@ Status sli_insert(SortedList list, void *element)
                 // Insert 'tail'. Change list->tail.
                 if (scan == NULL)
                 {
-                    // The new element will be the new biggest element
+                    // The new element will be the new biggest element.
                     node->prev = before;
 
                     before->next = node;
@@ -509,13 +659,13 @@ Status sli_insert(SortedList list, void *element)
                 }
             }
         }
-        // Defaults to DESCENDING
+        // Defaults to DESCENDING.
         else
         {
             // Insert 'head'. Change list->head.
             if (list->d_compare(node->data, list->head->data) >= 0)
             {
-                // The new element will be the new biggest element
+                // The new element will be the new biggest element.
                 node->next = list->head;
 
                 list->head->prev = node;
@@ -524,7 +674,8 @@ Status sli_insert(SortedList list, void *element)
             }
             else
             {
-                while (scan != NULL && list->d_compare(node->data, scan->data) < 0)
+                while (scan != NULL &&
+                       list->d_compare(node->data, scan->data) < 0)
                 {
                     before = scan;
 
@@ -534,7 +685,7 @@ Status sli_insert(SortedList list, void *element)
                 // Insert 'tail'. Change list->tail.
                 if (scan == NULL)
                 {
-                    // The new element will be the new smallest element
+                    // The new element will be the new smallest element.
                     node->prev = before;
 
                     before->next = node;
@@ -557,9 +708,23 @@ Status sli_insert(SortedList list, void *element)
 
     list->length++;
 
+    list->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Inserts an array of elements to the specified SortedList_s.
+///
+/// Inserts an array of void pointers into the list, with a size of \c count.
+///
+/// \param[in] list SortedList_s reference where all elements are to be
+/// inserted.
+/// \param[in] elements Elements to be inserted in the list.
+/// \param[in] count Amount of elements to be inserted.
+///
+/// \return DS_ERR_NEGATIVE_VALUE if count parameter is negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_insert_all(SortedList list, void **elements, index_t count)
 {
     if (list == NULL)
@@ -581,6 +746,22 @@ Status sli_insert_all(SortedList list, void **elements, index_t count)
     return DS_OK;
 }
 
+/// \brief Removes an element at a specified position from a SortedList_s.
+///
+/// Removes an element at the specified position. The position is 0 based so
+/// the first element is at the position 0.
+///
+/// \param[in] list SortedList_s reference where an element is to be removed.
+/// \param[out] result Resulting element removed from the list.
+/// \param[in] position Element's position.
+///
+/// \return DS_ERR_INVALID_OPERATION if list is empty.
+/// \return DS_ERR_ITER if during iteration the scanner references to \c NULL.
+/// \return DS_ERR_NEGATIVE_VALUE if position parameter is negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_OUT_OF_RANGE if position parameter is greater than or equal
+/// to the list's length.
+/// \return DS_OK if all operations are successful.
 Status sli_remove(SortedList list, void **result, index_t position)
 {
     *result = NULL;
@@ -643,6 +824,8 @@ Status sli_remove(SortedList list, void **result, index_t position)
 
     list->length--;
 
+    list->version_id++;
+
     if (sli_empty(list))
     {
         list->head = NULL;
@@ -652,6 +835,18 @@ Status sli_remove(SortedList list, void **result, index_t position)
     return DS_OK;
 }
 
+/// \brief Removes the highest value from the specified SortedList_s.
+///
+/// Removes the highest value from the list. Depending on the sort order of
+/// elements this function is equivalent to removing an element from the head
+/// of the list or from tail.
+///
+/// \param[in] list SortedList_s reference where an element is to be removed.
+/// \param[out] result Resulting element removed from the list.
+///
+/// \return DS_ERR_INVALID_OPERATION if list is empty.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_remove_max(SortedList list, void **result)
 {
     *result = NULL;
@@ -697,9 +892,23 @@ Status sli_remove_max(SortedList list, void **result)
         list->tail = NULL;
     }
 
+    list->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Removes the smallest value from the specified SortedList_s.
+///
+/// Removes the smallest value from the list. Depending on the sort order of
+/// elements this function is equivalent to removing an element from the head
+/// of the list or from tail.
+///
+/// \param[in] list SortedList_s reference where an element is to be removed.
+/// \param[out] result Resulting element removed from the list.
+///
+/// \return DS_ERR_INVALID_OPERATION if list is empty.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_remove_min(SortedList list, void **result)
 {
     *result = NULL;
@@ -745,19 +954,59 @@ Status sli_remove_min(SortedList list, void **result)
         list->tail = NULL;
     }
 
+    list->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Checks if the specified SortedList_s is full.
+///
+/// Returns true if the list is full or false otherwise. The list can only be
+/// full if its limit is set to a value higher than 0 and respecting all rules
+/// from sli_set_limit().
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return True if the list is full.
+/// \return False if the list is not full.
 bool sli_full(SortedList list)
 {
     return list->limit > 0 && list->length >= list->limit;
 }
 
+/// \brief Checks if specified SortedList_s list is empty.
+///
+/// Returns true if the list is empty or false otherwise. The list is empty
+/// when its length is 0. If every function works properly there is no need to
+/// check if the head or tail pointers are \c NULL or not. The length variable
+/// already tracks it.
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return True if the list is empty.
+/// \return False if the list is not empty.
 bool sli_empty(SortedList list)
 {
     return list->length == 0;
 }
 
+/// \brief Returns the highest element from the specified SortedList_s.
+///
+/// Returns a reference to the highest element in the list or NULL if the list
+/// is empty. Use this as a read-only. If you make any changes to this element
+/// the internal structure of the list will change and may cause undefined
+/// behaviour.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return NULL if the list references to \c NULL or if the list is empty.
+/// \return The highest element in the list.
 void *sli_max(SortedList list)
 {
     if (list == NULL)
@@ -772,6 +1021,17 @@ void *sli_max(SortedList list)
     return list->head->data;
 }
 
+/// \brief Returns the smallest element from the specified SortedList_s.
+///
+/// Returns a reference to the smallest element in the list or NULL if the list
+/// is empty. Use this as a read-only. If you make any changes to this element
+/// the internal structure of the list will change and may cause undefined
+/// behaviour.
+///
+/// \param[in] list SortedList_s reference.
+///
+/// \return NULL if the list references to \c NULL or if the list is empty.
+/// \return The highest element in the list.
 void *sli_min(SortedList list)
 {
     if (list == NULL)
@@ -786,10 +1046,21 @@ void *sli_min(SortedList list)
     return list->tail->data;
 }
 
+/// \brief Returns the index of the first element that matches a key.
+///
+/// Returns the index of the first element that matches a given key or -1 if it
+/// could not be found.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[in] key Key to be searched in the list.
+///
+/// \return -2 if the list references to \c NULL.
+/// \return -1 if the element was not found.
+/// \return The index of the matched element.
 index_t sli_index_first(SortedList list, void *key)
 {
     if (list == NULL)
-        return -1;
+        return -2;
 
     SortedListNode scan = list->head;
 
@@ -808,10 +1079,21 @@ index_t sli_index_first(SortedList list, void *key)
     return -1;
 }
 
+/// \brief Returns the index of the last element that matches a key.
+///
+/// Returns the index of the first element that matches a given key or -1 if it
+/// could not be found.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[in] key Key to be searched in the list.
+///
+/// \return -2 if the list references to \c NULL.
+/// \return -1 if the element was not found.
+/// \return The index of the matched element.
 index_t sli_index_last(SortedList list, void *key)
 {
     if (list == NULL)
-        return -1;
+        return -2;
 
     SortedListNode scan = list->tail;
 
@@ -830,11 +1112,20 @@ index_t sli_index_last(SortedList list, void *key)
     return -1;
 }
 
+/// \brief Checks if a given element is present in the specified SortedList_s.
+///
+/// Returns true if the element is present in the list, otherwise false.
+///
+/// \warning This function does not checks for \c NULL references for either
+/// the list parameter or if the default compare function is set.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[in] key Key to be matched.
+///
+/// \return True if the element is present in the list.
+/// \return False if the element is not present in the list.
 bool sli_contains(SortedList list, void *key)
 {
-    if (list == NULL)
-        return false;
-
     SortedListNode scan = list->head;
 
     while (scan != NULL)
@@ -848,6 +1139,16 @@ bool sli_contains(SortedList list, void *key)
     return false;
 }
 
+/// \brief Reverses a SortedList_s.
+///
+/// Reverses the chain of elements from the list and changes the sort order of
+/// elements. This function only changes the \c next and \c prev pointers from
+/// each element and the \c head and \c tail pointers of the list struct.
+///
+/// \param[in] list SortedList_s reference to be reversed.
+///
+/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_reverse(SortedList list)
 {
     // Reverse just like a doubly-linked list and change the list order
@@ -883,15 +1184,31 @@ Status sli_reverse(SortedList list)
     // If list length is 1 then just by doing this will do the trick
     list->order = (list->order == ASCENDING) ? DESCENDING : ASCENDING;
 
+    list->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Makes a copy of the specified SortedList_s.
+///
+/// Makes an exact copy of a list.
+///
+/// \param[in] list SortedList_s to be copied.
+/// \param[out] result Resulting copy.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if either a default copy or a default free
+/// functions are not set.
+/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_copy(SortedList list, SortedList *result)
 {
     *result = NULL;
 
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (list->d_copy == NULL || list->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
 
     Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
             list->d_display, list->d_free);
@@ -901,13 +1218,12 @@ Status sli_copy(SortedList list, SortedList *result)
 
     (*result)->limit = list->limit;
 
-    SortedListNode node, scan = list->head;
+    SortedListNode scan = list->head;
 
     void *elem;
 
     while (scan != NULL)
     {
-        // Create a node with a copy of scan's data
         elem = list->d_copy(scan->data);
 
         st = sli_insert_tail(*result, elem);
@@ -922,13 +1238,26 @@ Status sli_copy(SortedList list, SortedList *result)
         scan = scan->next;
     }
 
-    (*result)->length = list->length;
-
     return DS_OK;
 }
 
+/// \brief Copies the elements of the list to a C array.
+///
+/// Makes a copy of every element into an array respecting the order of the
+/// elements in the list. The array needs to be an array of void pointers and
+/// uninitialized. If any error is returned, the default values for \c result
+/// and \c length are \c NULL and -1 respectively.
+///
+/// \param[in] list SortedList_s reference.
+/// \param[out] result Resulting array.
+/// \param[out] length Resulting array's length.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default copy function is not set.
+/// \return DS_ERR_NULL_POINTER if list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_to_array(SortedList list, void ***result, index_t *length)
 {
+    // If anything goes wrong...
     *result = NULL;
     *length = -1;
 
@@ -937,6 +1266,9 @@ Status sli_to_array(SortedList list, void ***result, index_t *length)
 
     if (sli_empty(list))
         return DS_ERR_INVALID_OPERATION;
+
+    if (list->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
 
     *length = list->length;
 
@@ -957,14 +1289,15 @@ Status sli_to_array(SortedList list, void ***result, index_t *length)
     return DS_OK;
 }
 
-/// \brief Merge two SortedLists.
+/// \brief Merge two SortedList_s.
 ///
-/// Removes all elements from list2 and inserts into list1.
+/// Removes all elements from list2 and inserts them into list1.
 ///
-/// \param list1 List where elements are added to.
-/// \param list2 List where elements are removed from.
+/// \param[in] list1 SortedList_s where elements are added to.
+/// \param[in] list2 SortedList_s where elements are removed from.
 ///
-/// \return DS_ERR_NULL_POINTER if either list1 or list2 references to \c NULL.
+/// \return DS_ERR_NULL_POINTER if either list1 or list2 references are
+/// \c NULL.
 Status sli_merge(SortedList list1, SortedList list2)
 {
     if (list1 == NULL || list2 == NULL)
@@ -990,15 +1323,21 @@ Status sli_merge(SortedList list1, SortedList list2)
     return DS_OK;
 }
 
-/// \brief Unlinks elements from the list.
+/// \brief Unlinks elements from the specified SortedList_s.
 ///
 /// Unlinks all elements starting from \c position all the way to the end of
 /// the list. The \c result list must not have been initialized.
 ///
-/// \param list
-/// \param result
-/// \param position
-/// \return
+/// \param[in] list SortedList_s reference.
+/// \param[out] result Resulting sublist.
+/// \param[in] position Position to unlink the elements from the list.
+///
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NEGATIVE_VALUE if position parameter is negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_OUT_OF_RANGE if position parameter is greater than or equal
+/// to the list's length.
+/// \return DS_OK if all operations are successful.
 Status sli_unlink(SortedList list, SortedList *result, index_t position)
 {
     *result = NULL;
@@ -1064,20 +1403,31 @@ Status sli_unlink(SortedList list, SortedList *result, index_t position)
         list->length = position;
     }
 
+    list->version_id++;
+
     return DS_OK;
 }
 
-/// \brief Extracts a sublist.
+/// \brief Extracts a sublist from the specified SortedList_s.
 ///
-/// Extracts a sublist from the specified list. The sublist is stored in the
-/// \c result SortedList.
+/// Extracts a sublist from the specified SortedList_s. The sublist is stored
+/// in the \c result SortedList_s.
 ///
-/// \param list Reference list where the sublist is to be removed from.
-/// \param result An uninitialized SortedList to receive the resulting sublist.
-/// \param start Start of the sublist.
-/// \param end End of the sublist.
+/// \param[in] list SortedList_s where the sublist is to be removed from.
+/// \param[out] result An uninitialized SortedList_s to receive the resulting
+/// sublist.
+/// \param[in] start Start of the sublist.
+/// \param[in] end End of the sublist.
 ///
-/// \return
+/// \return DS_ERR_INVALID_ARGUMENT if the start parameter is greater than the
+/// end parameter.
+/// \return DS_ERR_INVALID_OPERATION if the list is empty.
+/// \return DS_ERR_NEGATIVE_VALUE if either start or end parameters are
+/// negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_OUT_OF_RANGE if the end parameter is greater than or equal
+/// to the list's length.
+/// \return DS_OK if all operations are successful.
 Status sli_sublist(SortedList list, SortedList *result, index_t start,
         index_t end)
 {
@@ -1205,9 +1555,21 @@ Status sli_sublist(SortedList list, SortedList *result, index_t start,
 
     list->length -= (*result)->length;
 
+    list->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Displays a SortedList_s in the console.
+///
+/// Displays a SortedList_s in the console with its elements separated by
+/// arrows indicating a doubly-linked list.
+///
+/// \param[in] list The SortedList_s to be displayed in the console.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sli_display(SortedList list)
 {
     if (list == NULL)
@@ -1241,6 +1603,16 @@ Status sli_display(SortedList list)
     return DS_OK;
 }
 
+/// \brief Displays a SortedList_s in the console.
+///
+/// Displays a SortedList_s in the console like an array with its elements
+/// separated by commas, delimited with brackets.
+///
+/// \param[in] list The SortedList_s to be displayed in the console.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sli_display_array(SortedList list)
 {
     if (list == NULL)
@@ -1276,6 +1648,16 @@ Status sli_display_array(SortedList list)
     return DS_OK;
 }
 
+/// \brief Displays a SortedList_s in the console.
+///
+/// Displays a SortedList_s in the console with its elements separated by
+/// spaces.
+///
+/// \param[in] list The SortedList_s to be displayed in the console.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
+/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_OK if all operations were successful.
 Status sli_display_raw(SortedList list)
 {
     if (list == NULL)
@@ -1313,7 +1695,17 @@ Status sli_display_raw(SortedList list)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-Status sli_make_node(SortedListNode *node, void *data)
+/// \brief Builds a new SortedListNode_s.
+///
+/// Implementation detail. Function responsible for allocating a new
+/// SortedListNode_s.
+///
+/// \param[in,out] node SortedListNode_s to be allocated.
+/// \param[in] data Node's data member.
+///
+/// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_OK if all operations are successful.
+static Status sli_make_node(SortedListNode *node, void *data)
 {
     *node = malloc(sizeof(SortedListNode_t));
 
@@ -1328,7 +1720,17 @@ Status sli_make_node(SortedListNode *node, void *data)
     return DS_OK;
 }
 
-Status sli_free_node(SortedListNode *node, sli_free_f free_f)
+/// \brief Frees a SortedListNode_s and its data.
+///
+/// Implementation detail. Frees a SortedListNode_s and its data using the
+/// list's default free function.
+///
+/// \param[in,out] node SortedListNode_s to be freed from memory.
+/// \param[in] free_f List's default free function.
+///
+/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_OK if all operations are successful.
+static Status sli_free_node(SortedListNode *node, sli_free_f free_f)
 {
     if (*node == NULL)
         return DS_ERR_NULL_POINTER;
@@ -1342,13 +1744,30 @@ Status sli_free_node(SortedListNode *node, sli_free_f free_f)
     return DS_OK;
 }
 
-// This function effectively searches for a given node. If the position is
-// greater than the list length the search will begin at the end of the list,
-// reducing the amount of iterations needed. This effectively reduces searches
-// to O(n / 2) iterations.
-Status sli_get_node_at(SortedList list, SortedListNode *result,
+/// \brief Gets a node from a specific position.
+///
+/// Implementation detail. Searches for a node in O(n / 2), the search starts
+/// at the tail pointer if position is greater than half the list's length,
+/// otherwise it starts at the head pointer.
+///
+/// \param[in] list SortedList_s to search for the node.
+/// \param[out] result Resulting node.
+/// \param[in] position Node's position.
+///
+/// \return DS_ERR_INVALID_OPERATION if list is empty.
+/// \return DS_ERR_ITER if during iteration the scanner references to \c NULL.
+/// \return DS_ERR_NEGATIVE_VALUE if position parameter is negative.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_OUT_OF_RANGE if position parameter is greater than or equal
+/// to the list's length.
+/// \return DS_OK if all operations are successful.
+static Status sli_get_node_at(SortedList list, SortedListNode *result,
         index_t position)
 {
+    // This function effectively searches for a given node. If the position is
+    // greater than the list length the search will begin at the end of the list,
+    // reducing the amount of iterations needed. This effectively reduces searches
+    // to O(n / 2) iterations.
     *result = NULL;
 
     if (list == NULL)
@@ -1395,7 +1814,17 @@ Status sli_get_node_at(SortedList list, SortedListNode *result,
     return DS_OK;
 }
 
-Status sli_insert_tail(SortedList list, void *element)
+/// \brief Inserts an element at the tail of the list.
+///
+/// Implementation detail. Used to copy a list.
+///
+/// \param[in] list SortedList_s to insert the element.
+/// \param[in] element Element to be inserted at the tail of the list.
+///
+/// \return DS_ERR_FULL if the list has reached its limited length.
+/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_OK if all operations are successful.
+static Status sli_insert_tail(SortedList list, void *element)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -1438,8 +1867,27 @@ Status sli_insert_tail(SortedList list, void *element)
 /// \brief An iterator for a SortedList_s
 ///
 /// This iterator provides many useful functions to iterate along a SortedList.
-/// It only provides functions that won't change the sorted property so
-/// adding elements with the iterator is forbidden.
+/// It only provides functions that won't change the sorted property so adding
+/// elements with the iterator is forbidden.
+///
+/// To initialize an iterator use sli_iter_init(). To free it from memory use
+/// sli_iter_free(). Note that this will not free its target SortedList_s.
+///
+/// If any modifications are done to the structure of the iterator's target,
+/// it will no longer function because the iterator keeps a copy of the
+/// version_id of its target when initialized. You can use sli_iter_retarget()
+/// to target the iterator to another SortedList_s or the same one if it was
+/// modified.
+///
+/// You can use sli_iter_next() and sli_iter_prev() to iterate through the
+/// list. You can also use sli_iter_to_head() to move the cursor to the head of
+/// the list or sli_iter_to_tail() to move the cursor to the tail of the list.
+///
+/// You can also remove elements during iteration. This will update both IDs
+/// from the iterator's and the target's. This is done so that if you have two
+/// iterators targeting the same structure, the first modification caused by
+/// one of them will disable the other. This is to prevent any undefined
+/// behaviour.
 ///
 /// \b Functions \b List
 /// - sli_iter_init()
@@ -1462,7 +1910,7 @@ struct SortedListIterator_s
     /// \brief Target SortedList.
     ///
     /// Target SortedList. The iterator might need to use some information
-    /// provided by the list.
+    /// provided by the list or change some of its data members.
     struct SortedList_s *target;
 
     /// \brief Current element.
@@ -1470,14 +1918,32 @@ struct SortedListIterator_s
     /// Points to the current node. The iterator is always initialized with the
     /// cursor pointing to the start (head) of the list.
     struct SortedListNode_s *cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure.
+    index_t target_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-// VOID
+static bool sli_iter_target_modified(SortedListIterator iter);
+
+static bool sli_iter_invalid_state(SortedListIterator iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
+/// \brief Initializes a SortedListIterator_s.
+///
+/// Initializes a SortedListIterator_s with a target SortedList_s. The iterator
+/// requires no default functions.
+///
+/// \param[in,out] iter Iterator to be initialized.
+/// \param[in] target Target SortedList_s.
+///
+/// \return DS_ERR_ALLOC if iterator allocation failed.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_init(SortedListIterator *iter, SortedList target)
 {
     *iter = malloc(sizeof(SortedListIterator_t));
@@ -1486,11 +1952,47 @@ Status sli_iter_init(SortedListIterator *iter, SortedList target)
         return DS_ERR_ALLOC;
 
     (*iter)->target = target;
+    (*iter)->target_id = target->version_id;
     (*iter)->cursor = target->head;
 
     return DS_OK;
 }
 
+/// \brief Re-targets the iterator.
+///
+/// This function is equivalent to calling sli_iter_free() and then
+/// sli_iter_init().
+///
+/// \param[in,out] iter Iterator to be re-targeted.
+/// \param[in] target Target SortedList_s.
+///
+/// \return DS_ERR_ALLOC if iterator reallocation failed.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
+Status sli_iter_retarget(SortedListIterator *iter, SortedList target)
+{
+    Status st = sli_iter_free(iter);
+
+    if (st != DS_OK)
+        return st;
+
+    st = sli_iter_init(iter, target);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
+}
+
+/// \brief Frees from memory a SortedListIterator_s.
+///
+/// Frees from memory a SortedListIterator_s. Note that this does not
+/// deallocates the target SortedList_s.
+///
+/// \param[in,out] iter SortedListIterator_s to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_free(SortedListIterator *iter)
 {
     if (*iter == NULL)
@@ -1503,13 +2005,29 @@ Status sli_iter_free(SortedListIterator *iter)
     return DS_OK;
 }
 
+/// \brief Iterates to the next element.
+///
+/// Moves the cursor to the next element if possible.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_ERR_ITER if there is no next element.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_next(SortedListIterator iter)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     if (!sli_iter_has_next(iter))
         return DS_ERR_ITER;
@@ -1519,13 +2037,29 @@ Status sli_iter_next(SortedListIterator iter)
     return DS_OK;
 }
 
+/// \brief Iterates to the previous element.
+///
+/// Moves the cursor to the previous element if possible.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_ERR_ITER if there is no previous element.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_prev(SortedListIterator iter)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     if (!sli_iter_has_prev(iter))
         return DS_ERR_ITER;
@@ -1535,42 +2069,111 @@ Status sli_iter_prev(SortedListIterator iter)
     return DS_OK;
 }
 
+/// \brief Sends the cursor to the head of the list.
+///
+/// Sends the cursor to the head of the list.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_to_head(SortedListIterator iter)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     iter->cursor = iter->target->head;
 
     return DS_OK;
 }
 
+/// \brief Sends the cursor to the tail of the list.
+///
+/// Sends the cursor to the tail of the list.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_to_tail(SortedListIterator iter)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     iter->cursor = iter->target->tail;
 
     return DS_OK;
 }
 
+/// \brief Checks if the iterator has a next element.
+///
+/// Returns true if the current iterator's cursor has a next element. Returns
+/// false if it is the tail node.
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return True if there is a next element.
+/// \return False if there is no next element.
 bool sli_iter_has_next(SortedListIterator iter)
 {
     return iter->cursor->next != NULL;
 }
 
+/// \brief Checks if the iterator has a previous element.
+///
+/// Returns true if the current iterator's cursor has a previous element.
+/// Returns false if it is the head node.
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return True if there is a previous element.
+/// \return False if there is no previous element.
 bool sli_iter_has_prev(SortedListIterator iter)
 {
     return iter->cursor->prev != NULL;
 }
 
+/// \brief Gets a copy of the cursors's data.
+///
+/// Gets a copy of the cursor's data. The result defaults to \c NULL if any
+/// errors are returned.
+///
+/// \param[in] iter Iterator reference.
+/// \param[out] result Resulting element.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_ERR_INCOMPLETE_TYPE if a default copy function is not set.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_get(SortedListIterator iter, void **result)
 {
     *result = NULL;
@@ -1578,8 +2181,11 @@ Status sli_iter_get(SortedListIterator iter, void **result)
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     if (iter->target->d_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
@@ -1590,15 +2196,33 @@ Status sli_iter_get(SortedListIterator iter, void **result)
     return DS_OK;
 }
 
+/// \brief Removes the next element relative to the iterator's cursor.
+///
+/// Removes the next element relative to the iterator's cursor. This function
+/// will change both version IDs, from the list and the iterator's.
+///
+/// \param[in] iter Iterator reference.
+/// \param[out] result Resulting element.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_ERR_ITER if there is no next element.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_remove_next(SortedListIterator iter, void **result)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
 
-    if (iter->cursor->next == NULL)
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!sli_iter_has_next(iter))
         return DS_ERR_INVALID_OPERATION;
 
     SortedListNode node = iter->cursor->next;
@@ -1625,19 +2249,36 @@ Status sli_iter_remove_next(SortedListIterator iter, void **result)
 
     iter->target->length--;
 
+    iter->target_id++;
+    iter->target->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Removes the current element pointed by the iterator's cursor.
+///
+/// Removes the current element pointed by the iterator's cursor. This function
+/// will change both version IDs, from the list and the iterator's.
+///
+/// \param[in] iter Iterator reference.
+/// \param[out] result Resulting element.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_remove_curr(SortedListIterator iter, void **result)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
 
-    if (iter->cursor->next == NULL)
-        return DS_ERR_INVALID_OPERATION;
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
 
     SortedListNode node = iter->cursor;
 
@@ -1689,18 +2330,39 @@ Status sli_iter_remove_curr(SortedListIterator iter, void **result)
 
     iter->target->length--;
 
+    iter->target_id++;
+    iter->target->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Removes the previous element relative to the iterator's cursor.
+///
+/// Removes the previous element relative to the iterator's cursor. This
+/// function will change both version IDs, from the list and the iterator's.
+///
+/// \param[in] iter Iterator reference.
+/// \param[out] result Resulting element.
+///
+/// \return DS_ERR_NULL_POINTER if the iterator references to \c NULL.
+/// \return DS_ERR_ITER_STATE if either the iterator's target or the cursor are
+/// referencing to \c NULL.
+/// \return DS_ERR_ITER_MODIFICATION if the target list has a different
+/// version_id than the iterator's.
+/// \return DS_ERR_ITER if there is no previous element.
+/// \return DS_OK if all operations are successful.
 Status sli_iter_remove_prev(SortedListIterator iter, void **result)
 {
     if (iter == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (iter->cursor == NULL || iter->target == NULL)
-        return DS_ERR_ITER;
+    if (sli_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
 
-    if (iter->cursor->prev == NULL)
+    if (sli_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!sli_iter_has_prev(iter))
         return DS_ERR_INVALID_OPERATION;
 
     SortedListNode node = iter->cursor->prev;
@@ -1727,44 +2389,125 @@ Status sli_iter_remove_prev(SortedListIterator iter, void **result)
 
     iter->target->length--;
 
+    iter->target_id++;
+    iter->target->version_id++;
+
     return DS_OK;
 }
 
+/// \brief Returns the next element if available.
+///
+/// Returns the pointer to the next element in the list. Use it as a read-only.
+/// If you make any changes to this element the internal structure of the list
+/// will change and may cause undefined behaviour.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return NULL if the iterator references to \c NULL, if either the cursor or
+/// the target pointers are referencing to \c NULL, if the list's version_id is
+/// different from the iterator's or if there is no next element.
+/// \return The next element.
 void *sli_iter_peek_next(SortedListIterator iter)
 {
     if (iter == NULL)
         return NULL;
 
-    if (iter->cursor == NULL || iter->target == NULL)
+    if (sli_iter_invalid_state(iter))
         return NULL;
 
-    if (iter->cursor->next == NULL)
+    if (sli_iter_target_modified(iter))
+        return NULL;
+
+    if (!sli_iter_has_next(iter))
         return NULL;
 
     return iter->cursor->next->data;
 }
 
+/// \brief Returns the element pointed by the cursor.
+///
+/// Returns the element pointed by the iterator cursor. Use it as a read-only
+/// If you make any changes to this element the internal structure of the list
+/// list will change and may cause undefined behaviour.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return NULL if the iterator references to \c NULL, if either the cursor or
+/// the target pointers are referencing to \c NULL, if the list's version_id is
+/// different from the iterator's or if there is no next element.
+/// \return The current element.
 void *sli_iter_peek(SortedListIterator iter)
 {
     if (iter == NULL)
         return NULL;
 
-    if (iter->cursor == NULL || iter->target == NULL)
+    if (sli_iter_invalid_state(iter))
+        return NULL;
+
+    if (sli_iter_target_modified(iter))
         return NULL;
 
     return iter->cursor->data;
 }
 
+/// \brief Returns the previous element if available.
+///
+/// Returns the pointer to the previous element in the list. Use it as a
+/// read-only. If you make any changes to this element the internal structure
+/// of the lists will change and may cause undefined behaviour.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return NULL if the iterator references to \c NULL, if either the cursor or
+/// the target pointers are referencing to \c NULL, if the list's version_id is
+/// different from the iterator's or if there is no next element.
+/// \return The previous element.
 void *sli_iter_peek_prev(SortedListIterator iter)
 {
     if (iter == NULL)
         return NULL;
 
-    if (iter->cursor == NULL || iter->target == NULL)
+    if (sli_iter_invalid_state(iter))
         return NULL;
 
-    if (iter->cursor->prev == NULL)
+    if (sli_iter_target_modified(iter))
+        return NULL;
+
+    if (!sli_iter_has_prev(iter))
         return NULL;
 
     return iter->cursor->prev->data;
 }
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+/// \brief Checks if the target list was modified.
+///
+/// Implementation detail. Checks both IDs. If they don't match, then the list
+/// was change since after the creation of the iterator.
+///
+/// \param[in] iter Iterator reference.
+///
+/// \return True if the target was modified.
+/// \return False if the target was not modified.
+static bool sli_iter_target_modified(SortedListIterator iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+/// \brief Checks if the iterator is in an invalid state.
+///
+/// Implementation detail. Returns true if either the cursor or the target
+/// pointers are referencing to \c NULL.
+///
+/// \param iter Iterator reference.
+///
+/// \return True if either the cursor or the target are referencing to \c NULL.
+/// \return False if neither the cursor or the target are referencing to
+/// \c NULL.
+static bool sli_iter_invalid_state(SortedListIterator iter)
+{
+    return iter->cursor == NULL || iter->target == NULL;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
