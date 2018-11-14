@@ -11,8 +11,16 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 const char *status_string(Status st);
 
 void status_print(Status st);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_STATUS_H

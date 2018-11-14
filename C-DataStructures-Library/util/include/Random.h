@@ -11,6 +11,10 @@
 
 #include "Core.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /// Generates a random number between 0 and 1.
 double rrandom();
 
@@ -22,5 +26,9 @@ long long rand_long(index_t min, index_t max);
 
 /// Generates a double between min and max with both included.
 double rand_float(double min, double max);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //C_DATASTRUCTURES_LIBRARY_RANDOM_H

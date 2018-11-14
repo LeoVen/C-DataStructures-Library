@@ -10,18 +10,49 @@
 
 struct Array_s
 {
-
+    /// \brief Data buffer.
+    ///
+    /// A C array where elements are stored in.
     void **buffer;
 
     /// \brief Array length.
     ///
-    /// Current buffer length.
+    /// Tracks the C array length.
     index_t length;
 
+    /// \brief Comparator function.
+    ///
+    /// A function that compares one element with another that returns an int
+    /// with the following rules:
+    ///
+    /// - <code>[ > 0 ]</code> if first element is greater than the second;
+    /// - <code>[ < 0 ]</code> if second element is greater than the first;
+    /// - <code>[ 0 ]</code> if elements are equal.
     arr_compare_f d_compare;
+
+    /// \brief Copy function.
+    ///
+    /// A function that returns an exact copy of an element.
     arr_copy_f d_copy;
+
+    /// \brief Display function.
+    ///
+    /// A function that displays an element in the console. Useful for
+    /// debugging.
     arr_display_f d_display;
+
+    /// \brief Deallocator function.
+    ///
+    /// A function that completely frees an element from memory.
     arr_free_f d_free;
+
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    index_t version_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
@@ -55,6 +86,8 @@ Status arr_init(Array *array, index_t length)
 
     (*array)->length = length;
 
+    (*array)->version_id = 0;
+
     return DS_OK;
 }
 
@@ -83,6 +116,8 @@ Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
         (*array)->buffer[i] = NULL;
 
     (*array)->length = length;
+
+    (*array)->version_id = 0;
 
     return DS_OK;
 }
@@ -185,6 +220,26 @@ index_t arr_length(Array array)
     return array->length;
 }
 
+index_t arr_set_next(Array array, void *element)
+{
+    if (array == NULL)
+        return -2;
+
+    for (index_t i = 0; i < array->length; i++)
+    {
+        if (array->buffer[i] != NULL)
+        {
+            array->buffer[i] = element;
+
+            array->version_id++;
+
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 Status arr_set(Array array, index_t index, void *element)
 {
     if (array == NULL)
@@ -200,28 +255,12 @@ Status arr_set(Array array, index_t index, void *element)
     {
         array->buffer[index] = element;
 
+        array->version_id++;
+
         return DS_OK;
     }
 
     return DS_ERR_INVALID_OPERATION;
-}
-
-index_t arr_set_next(Array array, void *element)
-{
-    if (array == NULL)
-        return -2;
-
-    for (index_t i = 0; i < array->length; i++)
-    {
-        if (array->buffer[i] != NULL)
-        {
-            array->buffer[i] = element;
-
-            return i;
-        }
-    }
-
-    return -1;
 }
 
 index_t arr_set_last(Array array, void *element)
@@ -235,22 +274,13 @@ index_t arr_set_last(Array array, void *element)
         {
             array->buffer[i] = element;
 
+            array->version_id++;
+
             return i;
         }
     }
 
     return -1;
-}
-
-void *arr_get(Array array, index_t index)
-{
-    if (array == NULL)
-        return NULL;
-
-    if (index < 0 || index >= array->length)
-        return NULL;
-
-    return array->buffer[index];
 }
 
 void *arr_get_next(Array array, index_t *index)
@@ -273,6 +303,17 @@ void *arr_get_next(Array array, index_t *index)
     return NULL;
 }
 
+void *arr_get(Array array, index_t index)
+{
+    if (array == NULL)
+        return NULL;
+
+    if (index < 0 || index >= array->length)
+        return NULL;
+
+    return array->buffer[index];
+}
+
 void *arr_get_last(Array array, index_t *index)
 {
     *index = -1;
@@ -293,21 +334,6 @@ void *arr_get_last(Array array, index_t *index)
     return NULL;
 }
 
-void *arr_pop(Array array, index_t index)
-{
-    if (array == NULL)
-        return NULL;
-
-    if (index < 0 || index >= array->length)
-        return NULL;
-
-    void *element = array->buffer[index];
-
-    array->buffer[index] = NULL;
-
-    return element;
-}
-
 void *arr_pop_next(Array array, index_t *index)
 {
     *index = -1;
@@ -325,11 +351,30 @@ void *arr_pop_next(Array array, index_t *index)
 
             *index = i;
 
+            array->version_id++;
+
             return element;
         }
     }
 
     return NULL;
+}
+
+void *arr_pop(Array array, index_t index)
+{
+    if (array == NULL)
+        return NULL;
+
+    if (index < 0 || index >= array->length)
+        return NULL;
+
+    void *element = array->buffer[index];
+
+    array->buffer[index] = NULL;
+
+    array->version_id++;
+
+    return element;
 }
 
 void *arr_pop_last(Array array, index_t *index)
@@ -348,6 +393,8 @@ void *arr_pop_last(Array array, index_t *index)
             array->buffer[i] = NULL;
 
             *index = i;
+
+            array->version_id++;
 
             return element;
         }
@@ -387,6 +434,8 @@ Status arr_sort(Array array)
         return DS_ERR_INCOMPLETE_TYPE;
 
     arr_quicksort(array, array->buffer, array->length);
+
+    array->version_id++;
 
     return DS_OK;
 }
@@ -536,3 +585,279 @@ static void arr_quicksort(Array array, void **buffer, index_t length)
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
+
+/// \brief An iterator for an Array_s.
+///
+/// A simple iterator that can traverse backwards and forwards through the
+/// elements of the array.
+struct ArrayIterator_s
+{
+    /// \brief Target Array_s.
+    ///
+    /// Target Array_s. The iterator might need to use some information
+    /// provided by the array or change some of its data members.
+    struct Array_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Index of the current element pointed by the cursor;
+    index_t cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure.
+    index_t target_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool arr_iter_target_modified(ArrayIterator iter);
+
+static bool arr_iter_invalid_state(ArrayIterator iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+Status arr_iter_init(ArrayIterator *iter, Array target)
+{
+    *iter = malloc(sizeof(ArrayIterator_t));
+
+    if (!(*iter))
+        return DS_ERR_ALLOC;
+
+    (*iter)->target = target;
+    (*iter)->target_id = target->version_id;
+    (*iter)->cursor = 0;
+
+    return DS_OK;
+}
+
+Status arr_iter_retarget(ArrayIterator *iter, Array target)
+{
+    Status st = arr_iter_free(iter);
+
+    if (st != DS_OK)
+        return st;
+
+    st = arr_iter_init(iter, target);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
+}
+
+Status arr_iter_free(ArrayIterator *iter)
+{
+    if (*iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*iter);
+
+    *iter = NULL;
+
+    return DS_OK;
+}
+
+Status arr_iter_next(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!arr_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor++;
+
+    return DS_OK;
+}
+
+Status arr_iter_prev(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!arr_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor--;
+
+    return DS_OK;
+}
+
+Status arr_iter_to_start(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    iter->cursor = 0;
+
+    return DS_OK;
+}
+
+Status arr_iter_to_end(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    iter->cursor = iter->target->length - 1;
+
+    return DS_OK;
+}
+
+bool arr_iter_has_next(ArrayIterator iter)
+{
+    return iter->cursor < iter->target->length - 1;
+}
+
+bool arr_iter_has_prev(ArrayIterator iter)
+{
+    return iter->cursor > 0;
+}
+
+Status arr_iter_set(ArrayIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    iter->target->d_free(iter->target->buffer[iter->cursor]);
+
+    iter->target->buffer[iter->cursor] = element;
+
+    return DS_OK;
+}
+
+Status arr_iter_get(ArrayIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+
+    return DS_OK;
+}
+
+Status arr_iter_pop(ArrayIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (arr_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (arr_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    *result = iter->target->buffer[iter->cursor];
+
+    iter->target->buffer[iter->cursor] = NULL;
+
+    return DS_OK;
+}
+
+void *arr_iter_peek_next(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (arr_iter_invalid_state(iter))
+        return NULL;
+
+    if (arr_iter_target_modified(iter))
+        return NULL;
+
+    if (!arr_iter_has_next(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor + 1];
+}
+
+void *arr_iter_peek(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (arr_iter_invalid_state(iter))
+        return NULL;
+
+    if (arr_iter_target_modified(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor];
+}
+
+void *arr_iter_peek_prev(ArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (arr_iter_invalid_state(iter))
+        return NULL;
+
+    if (arr_iter_target_modified(iter))
+        return NULL;
+
+    if (!arr_iter_has_prev(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor - 1];
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool arr_iter_target_modified(ArrayIterator iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+static bool arr_iter_invalid_state(ArrayIterator iter)
+{
+    if (iter->target == NULL)
+        return true;
+
+    return iter->cursor < 0 || iter->cursor >= iter->target->length;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
