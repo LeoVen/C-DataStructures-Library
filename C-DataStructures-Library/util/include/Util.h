@@ -13,5 +13,6 @@
 #include "Floats.h"
 #include "Chars.h"
 #include "Random.h"
+#include "Status.h"
 
 #endif //C_DATASTRUCTURES_LIBRARY_UTIL_H

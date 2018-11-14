@@ -9,7 +9,6 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_CORE_H
 #define C_DATASTRUCTURES_LIBRARY_CORE_H
 
-#include <assert.h>
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -21,23 +20,59 @@
 extern "C" {
 #endif
 
-typedef enum Status
+/// \brief Status enumerator returned by functions to report errors.
+///
+/// This enumerator is the core of all data structures. Since C is a low level
+/// language and Exceptions are absent, this is a necessary way of reporting
+/// errors to the user that can work like exceptions, but not as powerful as
+/// they are.
+enum Status
 {
-    DS_OK                        =  0, /**< Returned by a function when all operations were successful */
-    DS_ERR_OUT_OF_RANGE          =  1, /**< When an invalid index or position is passed as argument */
-    DS_ERR_INVALID_OPERATION     =  2, /**< When an invalid operation is made (e.g. remove element of an empty list ) */
-    DS_ERR_NEGATIVE_VALUE        =  3, /**< When an invalid negative parameter is passed */
-    DS_ERR_ALLOC                 =  4, /**< When a function fails to allocate memory  */
-    DS_ERR_UNEXPECTED_RESULT     =  5, /**< When an unexpected result happens. Contact developers. */
-    DS_ERR_NULL_POINTER          =  6, /**< When a @c NULL parameter is passed to a function */
-    DS_ERR_FULL                  =  7, /**< When a structure reaches its maximum capacity */
-    DS_ERR_INVALID_ARGUMENT      =  8, /**< When an argument passed is invalid for that operation */
-    DS_ERR_NOT_FOUND             =  9, /**< When a search fails to find a value */
-    DS_ERR_INCOMPLETE_TYPE       = 10, /**< When a struct was not completely initialized */
-    DS_ERR_ITER                  = 12, /**< When there is an iterator error */
-    DS_ERR_ITER_MODIFICATION     = 13, /**< When a structure is modified during iteration */
-    DS_ERR_ITER_STATE            = 14  /**< When the state of an iterator is corrupted */
-} Status;
+    /// Returned by a function when all operations are successful.
+    DS_OK                         =  0,
+
+    /// When an invalid index or position is passed as argument.
+    DS_ERR_OUT_OF_RANGE           =  1,
+
+    /// When an invalid operation is called.
+    DS_ERR_INVALID_OPERATION      =  2,
+
+    /// When an invalid negative parameter is passed.
+    DS_ERR_NEGATIVE_VALUE         =  3,
+
+    /// When a function fails to allocate memory.
+    DS_ERR_ALLOC                  =  4,
+
+    /// When an unexpected result happens. Contact developers.
+    DS_ERR_UNEXPECTED_RESULT      =  5,
+
+    /// When an invalid NULL parameter is passed to a function.
+    DS_ERR_NULL_POINTER           =  6,
+
+    /// When a structure reaches its maximum capacity.
+    DS_ERR_FULL                   =  7,
+
+    /// When an argument passed is invalid for that operation.
+    DS_ERR_INVALID_ARGUMENT       =  8,
+
+    /// When a search fails to find a value.
+    DS_ERR_NOT_FOUND              =  9,
+
+    /// When a structure is not completely initialized.
+    DS_ERR_INCOMPLETE_TYPE        = 10,
+
+    /// When there is an iteration error or an iterator error.
+    DS_ERR_ITER                   = 11,
+
+    /// When a structure is modified during iteration.
+    DS_ERR_ITER_MODIFICATION      = 12,
+
+    /// When the state of an iterator is invalid.
+    DS_ERR_ITER_STATE             = 13
+};
+
+/// Defines a type to an <code> enum Status </code>
+typedef enum Status Status;
 
 /// Signed value used to represent sizes and indexes. Its negative portion is
 /// only used to represent errors when the function doesn't return a Status.

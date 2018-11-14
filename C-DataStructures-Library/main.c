@@ -862,7 +862,7 @@ int main()
                         st = sli_iter_remove_next(sli_iter, &result);
 
                         if (st != DS_OK)
-                            printf("ERROR\n");
+                            status_print(st);
 
                         free(result);
 
@@ -883,7 +883,7 @@ int main()
                 st = sli_remove(slist, &result, rand() % sli_length(slist));
 
                 if (st != DS_OK)
-                    printf("ERROR\n");
+                    status_print(st);
 
                 free(result);
             }
