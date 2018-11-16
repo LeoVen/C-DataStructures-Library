@@ -123,6 +123,8 @@ static Status stk_free_node(StackNode *node, stk_free_f free_f);
 
 static Status stk_free_node_shallow(StackNode *node);
 
+static Status stk_insert_bottom(Stack stack, StackNode ref, void *element);
+
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 /// Initializes the Stack_s structure.
@@ -604,79 +606,91 @@ Status stk_copy(Stack stack, Stack *result)
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
+    if (stack->d_copy == NULL || stack->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
     Status st = stk_create(result, stack->d_compare, stack->d_copy,
             stack->d_display, stack->d_free);
 
     if (st != DS_OK)
         return st;
 
-    if (stk_empty(stack))
-        return DS_OK;
+    (*result)->limit = stack->limit;
 
-    Stack temp;
+    StackNode prev = NULL, copy, scan = stack->top;
 
-    st = stk_init(&temp);
-
-    if (st != DS_OK)
-        return st;
-
-    StackNode scan = stack->top;
+    void *elem;
 
     while (scan != NULL)
     {
-        st = stk_push(temp, scan->data);
+        elem = stack->d_copy(scan->data);
+
+        st = stk_make_node(&copy, elem);
 
         if (st != DS_OK)
+        {
+            stk_free_node(&copy, stack->d_free);
+
             return st;
+        }
+
+        if (prev == NULL)
+        {
+            prev = copy;
+
+            (*result)->top = prev;
+        }
+        else
+        {
+            prev->below = copy;
+
+            prev = prev->below;
+        }
 
         scan = scan->below;
+
+        copy = NULL;
     }
 
-    scan = temp->top;
-
-    while (scan != NULL)
-    {
-        st = stk_push(*result, scan->data);
-
-        if (st != DS_OK)
-            return st;
-
-        scan = scan->below;
-    }
-
-    st = stk_free(&temp);
-
-    if (st != DS_OK)
-        return st;
+    (*result)->height = stack->height;
 
     return DS_OK;
 }
 
 /// Displays a \c Stack in the console.
 ///
-/// \param stk The stack to be displayed in the console.
+/// \param stack The stack to be displayed in the console.
 ///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status stk_display(Stack stk)
+Status stk_display(Stack stack)
 {
-    if (stk == NULL)
+    if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stk_empty(stk))
+    if (stack->d_display == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    if (stk_empty(stack))
     {
         printf("\nStack\n[ empty]\n");
 
         return DS_OK;
     }
 
-    StackNode scan = stk->top;
+    StackNode scan = stack->top;
 
     printf("\nStack");
 
     while (scan != NULL)
     {
-        printf("\n|%10d |", scan->data);
+        printf("| ");
+
+        stack->d_display(scan->data);
+
+        printf(" |\n");
+
         scan = scan->below;
     }
 
@@ -688,62 +702,77 @@ Status stk_display(Stack stk)
 /// Displays a \c Stack in the console like an array with its values separated
 /// by commas, delimited with brackets.
 ///
-/// \param stk The stack to be displayed in the console.
+/// \param stack The stack to be displayed in the console.
 ///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status stk_display_array(Stack stk)
+Status stk_display_array(Stack stack)
 {
-    if (stk == NULL)
+    if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stk_empty(stk))
+    if (stack->d_display == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    if (stk_empty(stack))
     {
         printf("\n[ empty ]\n");
 
         return DS_OK;
     }
 
-    StackNode scan = stk->top;
+    StackNode scan = stack->top;
 
     printf("\n[ ");
 
     while (scan->below != NULL)
     {
-        printf("%d, ", scan->data);
+        stack->d_display(scan->data);
+
+        printf(", ");
 
         scan = scan->below;
     }
 
-    printf("%d ]\n", scan->data);
+    stack->d_display(scan->data);
+
+    printf(" ]\n");
 
     return DS_OK;
 }
 
 /// Displays a \c Stack in the console with its values separated by spaces.
 ///
-/// \param stk The stack to be displayed in the console.
+/// \param stack The stack to be displayed in the console.
 ///
+/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status stk_display_raw(Stack stk)
+Status stk_display_raw(Stack stack)
 {
-    if (stk == NULL)
+    if (stack == NULL)
         return DS_ERR_NULL_POINTER;
+
+    if (stack->d_display == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
 
-    if (stk_empty(stk))
+    if (stk_empty(stack))
         return DS_OK;
 
-    StackNode scan = stk->top;
+    StackNode scan = stack->top;
 
     while (scan != NULL)
     {
-        printf("%d ", scan->data);
+        stack->d_display(scan->data);
+
+        printf(" ");
 
         scan = scan->below;
     }
+
     printf("\n");
 
     return DS_OK;
@@ -786,6 +815,35 @@ static Status stk_free_node_shallow(StackNode *node)
     free(*node);
 
     *node = NULL;
+
+    return DS_OK;
+}
+
+static Status stk_insert_bottom(Stack stack, StackNode ref, void *element)
+{
+    if (stack == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_full(stack))
+        return DS_ERR_FULL;
+
+    StackNode node;
+
+    Status st = stk_make_node(&node, element);
+
+    if (st != DS_OK)
+        return st;
+
+    if (stk_empty(stack) || ref == NULL)
+    {
+        stack->top = node;
+    }
+    else
+    {
+        ref->below = node;
+    }
+
+    (stack->height)++;
 
     return DS_OK;
 }

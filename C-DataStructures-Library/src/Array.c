@@ -87,7 +87,7 @@ Status arr_init(Array *array, index_t length)
     if (!(*array))
         return DS_ERR_ALLOC;
 
-    (*array)->buffer = malloc(sizeof(int) * length);
+    (*array)->buffer = malloc(sizeof(void*) * length);
 
     if (!(*array)->buffer)
         return DS_ERR_ALLOC;
@@ -118,7 +118,7 @@ Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
     if (!(*array))
         return DS_ERR_ALLOC;
 
-    (*array)->buffer = malloc(sizeof(int) * length);
+    (*array)->buffer = malloc(sizeof(void*) * length);
 
     if (!(*array)->buffer)
         return DS_ERR_ALLOC;

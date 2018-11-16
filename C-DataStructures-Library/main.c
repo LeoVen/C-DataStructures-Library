@@ -931,8 +931,14 @@ int main()
                 stk_push(stk0, new_int(i));
         }
 
+        printf("\nOriginal Stack");
+        stk_display_array(stk0);
+
         if (stk_copy(stk0, &stk1) == DS_OK)
         {
+            printf("\nCopied Stack");
+            stk_display_array(stk1);
+
             while (stk_height(stk0) > 0)
             {
                 stk_remove(stk0, &result);
@@ -952,17 +958,6 @@ int main()
 
     stk_free(&stk0);
     stk_free(&stk1);
-
-    AVLTree avlt;
-
-    if (avl_init(&avlt) == DS_OK)
-    {
-        for (int i = 1; i <= 7; i++)
-            avl_insert(avlt, i);
-
-
-        avl_display(avlt, 1);
-    }
 
     printf("\n\n\n");
 

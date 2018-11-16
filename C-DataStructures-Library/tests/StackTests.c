@@ -24,17 +24,26 @@ Status stk_test_limit(UnitTest ut)
     st = stk_set_limit(stack, 10);
 
     if (st != DS_OK)
-        return st;
+        goto error;
 
+    int *elem;
     for (int i = 0; i < 20; i++)
     {
-        st = stk_insert(stack, new_int(i));
+        elem = new_int(i);
+
+        st = stk_insert(stack, elem);
+
+        if (st == DS_ERR_FULL)
+        {
+            free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
     ut_equals_index_t(ut, stk_height(stack), stk_limit(stack), __func__);
     ut_equals_int(ut, stk_set_limit(stack, 9), DS_ERR_INVALID_OPERATION, __func__);
 
+    // This gets freed later
     int *t = new_int(1);
 
     ut_equals_int(ut, stk_push(stack, t), DS_ERR_FULL, __func__);

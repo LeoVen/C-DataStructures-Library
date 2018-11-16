@@ -114,11 +114,11 @@ Status stk_copy(Stack stack, Stack *result);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status stk_display(Stack stk);
+Status stk_display(Stack stack);
 
-Status stk_display_array(Stack stk);
+Status stk_display_array(Stack stack);
 
-Status stk_display_raw(Stack stk);
+Status stk_display_raw(Stack stack);
 
 #ifdef __cplusplus
 }
