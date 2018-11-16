@@ -16,15 +16,10 @@
   <component name="ChangeListManager">
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Array.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Array.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/SortedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SortedList.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/Stack.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/Stack.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/CircularBuffer.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/AVLTree.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/AVLTree.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Array.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Array.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/SortedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Stack.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/Stack.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/StackTests.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/StackTests.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CircularBuffer.c" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../README.md" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
@@ -99,8 +94,8 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="C_DataStructures_Library (disassembly)" value="2" />
-          <entry key="c" value="413" />
-          <entry key="h" value="463" />
+          <entry key="c" value="414" />
+          <entry key="h" value="464" />
           <entry key="md" value="1" />
           <entry key="txt" value="18" />
         </counts>
@@ -110,7 +105,7 @@
           <entry key="CMakeLists.txt" value="18" />
           <entry key="Disassembly" value="2" />
           <entry key="Markdown" value="1" />
-          <entry key="ObjectiveC" value="876" />
+          <entry key="ObjectiveC" value="878" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
@@ -218,7 +213,7 @@
         <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="276">
-              <caret line="844" lean-forward="true" selection-start-line="844" selection-end-line="844" />
+              <caret line="844" selection-start-line="844" selection-end-line="844" />
             </state>
           </provider>
         </entry>
@@ -226,8 +221,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="32">
-              <caret line="1042" column="28" selection-start-line="1042" selection-start-column="28" selection-end-line="1042" selection-end-column="28" />
+            <state relative-caret-position="230">
+              <caret line="352" lean-forward="true" selection-start-line="352" selection-end-line="352" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -239,7 +234,7 @@
         <entry file="file://$PROJECT_DIR$/src/SortedList.c">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="-365">
-              <caret line="194" column="3" lean-forward="true" selection-start-line="194" selection-start-column="3" selection-end-line="194" selection-end-column="3" />
+              <caret line="194" column="3" selection-start-line="194" selection-start-column="3" selection-end-line="194" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -253,15 +248,6 @@
                 <element signature="e#209#226#0" expanded="true" />
                 <element signature="e#269#281#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/include/Array.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="363">
-              <caret line="124" selection-start-line="124" selection-end-line="124" selection-end-column="79" />
             </state>
           </provider>
         </entry>
@@ -296,10 +282,10 @@
       <find>list</find>
       <find>SortedList_s</find>
       <find>sli</find>
-      <find>Stack</find>
       <find>free</find>
       <find>SortedList</find>
       <find>list SortedList</find>
+      <find>Stack</find>
     </findStrings>
     <replaceStrings>
       <replace>GQueueNode</replace>
@@ -616,12 +602,12 @@
       <workItem from="1542117816332" duration="1226000" />
       <workItem from="1542206201595" duration="9025000" />
       <workItem from="1542225725120" duration="7108000" />
-      <workItem from="1542376995147" duration="15360000" />
+      <workItem from="1542376995147" duration="15875000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="486968000" />
+    <option name="totallyTimeSpent" value="487483000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -636,18 +622,18 @@
     <frame x="-8" y="-8" width="1382" height="784" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" weight="0.25567323" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.25567323" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32861635" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.24386252" />
-      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.5833333" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.5833333" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32861635" />
       <window_info anchor="bottom" id="Database Changes" order="7" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="8" weight="0.4544025" />
+      <window_info active="true" anchor="bottom" id="Messages" order="8" visible="true" weight="0.4544025" />
       <window_info anchor="bottom" id="Terminal" order="9" weight="0.32861635" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" weight="0.32861635" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.32861635" />
@@ -758,24 +744,10 @@
       </provider>
     </entry>
     <entry file="file://C:/MinGW/include/assert.h" />
-    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/UnitTest/UnitTest.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="391">
           <caret line="17" column="25" lean-forward="true" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
         </state>
       </provider>
     </entry>
@@ -980,7 +952,7 @@
     <entry file="file://$PROJECT_DIR$/src/AVLTree.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
-          <caret line="844" lean-forward="true" selection-start-line="844" selection-end-line="844" />
+          <caret line="844" selection-start-line="844" selection-end-line="844" />
         </state>
       </provider>
     </entry>
@@ -1025,7 +997,7 @@
     <entry file="file://$PROJECT_DIR$/src/SortedList.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-365">
-          <caret line="194" column="3" lean-forward="true" selection-start-line="194" selection-start-column="3" selection-end-line="194" selection-end-column="3" />
+          <caret line="194" column="3" selection-start-line="194" selection-start-column="3" selection-end-line="194" selection-end-column="3" />
         </state>
       </provider>
     </entry>
@@ -1036,10 +1008,24 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/CircularBuffer.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1881">
+          <caret line="229" lean-forward="true" selection-start-line="229" selection-end-line="229" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/include/CircularBuffer.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/main.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="32">
-          <caret line="1042" column="28" selection-start-line="1042" selection-start-column="28" selection-end-line="1042" selection-end-column="28" />
+        <state relative-caret-position="230">
+          <caret line="352" lean-forward="true" selection-start-line="352" selection-end-line="352" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>

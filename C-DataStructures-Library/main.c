@@ -10,7 +10,6 @@
 #include "StackArray.h"
 #include "QueueArray.h"
 #include "Array.h"
-#include "CircularBuffer.h"
 #include "CircularLinkedList.h"
 #include "DequeArray.h"
 #include "BinarySearchTree.h"
@@ -351,88 +350,6 @@ int main()
 
     qua_delete(&qua0);
     qua_delete(&qua1);
-
-    CircularBuffer cbf0, cbf1;
-
-    if (cbf_init(&cbf0, 40) == DS_OK)
-    {
-        for (int i = 1; i < 80; i++)
-        {
-            if (i % 3 == 0)
-            {
-                if (cbf_remove(cbf0, &j) != DS_OK)
-                    break;
-            }
-            else
-            {
-                if (cbf_insert(cbf0, i) != DS_OK)
-                    break;
-            }
-        }
-
-        cbf_display(cbf0);
-        cbf_display_array(cbf0);
-    }
-
-    if (cbf_init(&cbf1, 10) == DS_OK)
-    {
-        for (int i = 0; i < 4; i++)
-        {
-            cbf_insert(cbf1, 1);
-        }
-
-        cbf_remove(cbf1, &j);
-        cbf_remove(cbf1, &j);
-
-        while (cbf1->end != 0)
-        {
-            cbf_insert(cbf1, 1);
-        }
-
-        cbf_display(cbf1);
-        cbf_display_array(cbf1);
-
-        printf("\nCapacity : %lld", cbf1->capacity);
-        printf("\nSize     : %lld", cbf1->size);
-        printf("\nStart    : %lld", cbf1->start);
-        printf("\nEnd      : %lld\n\n", cbf1->end);
-
-        if (cbf_erase(&cbf1) == DS_OK)
-        {
-            cbf_insert(cbf1, 10);
-
-            cbf_display(cbf1);
-            cbf_display_array(cbf1);
-
-            printf("\nCapacity : %lld", cbf1->capacity);
-            printf("\nSize     : %lld", cbf1->size);
-            printf("\nStart    : %lld", cbf1->start);
-            printf("\nEnd      : %lld\n", cbf1->end);
-        }
-
-        if (cbf_delete(&cbf1) == DS_OK)
-        {
-            if (cbf_copy(cbf0, &cbf1) == DS_OK)
-            {
-                printf("\nOriginal");
-                cbf_display(cbf0);
-                printf("\nCapacity : %lld", cbf0->capacity);
-                printf("\nSize     : %lld", cbf0->size);
-                printf("\nStart    : %lld", cbf0->start);
-                printf("\nEnd      : %lld\n", cbf0->end);
-
-                printf("\nCopy");
-                cbf_display(cbf1);
-                printf("\nCapacity : %lld", cbf1->capacity);
-                printf("\nSize     : %lld", cbf1->size);
-                printf("\nStart    : %lld", cbf1->start);
-                printf("\nEnd      : %lld\n\n", cbf1->end);
-            }
-        }
-    }
-
-    cbf_delete(&cbf0);
-    cbf_delete(&cbf1);
 
     CircularLinkedList cll0, cll1;
 
