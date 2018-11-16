@@ -91,40 +91,6 @@ int main()
 
     dll_delete(&dll);
 
-    Stack stk0, stk1;
-
-    if (stk_init(&stk0) == DS_OK)
-    {
-        for (int i = 0; i < 300; i++)
-        {
-            if (i % 3 == 0 || i % 5 == 0)
-                stk_pop(stk0, &j);
-            else
-                stk_push(stk0, i);
-        }
-
-        if (stk_copy(stk0, &stk1) == DS_OK)
-        {
-            while (stk0->height > 0)
-            {
-                stk_pop(stk0, &j);
-
-                stk_push(stk1, j);
-            }
-
-            stk_display_array(stk0);
-            printf("\nHeight stk0: %lld\n", stk0->height);
-
-            stk_display_array(stk1);
-            printf("\nHeight stk1: %lld\n", stk1->height);
-
-        }
-
-    }
-
-    stk_delete(&stk0);
-    stk_delete(&stk1);
-
     Queue que0, que1;
 
     if (que_init(&que0) == DS_OK)
@@ -1032,6 +998,54 @@ int main()
     }
 
     arr_free(&array);
+
+
+    Stack stk0, stk1;
+
+    if (stk_create(&stk0, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        for (int i = 0; i < 300; i++)
+        {
+            if (i % 3 == 0 || i % 5 == 0)
+            {
+                stk_slice(stk0);
+            }
+            else
+                stk_push(stk0, new_int(i));
+        }
+
+        if (stk_copy(stk0, &stk1) == DS_OK)
+        {
+            while (stk_height(stk0) > 0)
+            {
+                stk_remove(stk0, &result);
+
+                stk_push(stk1, result);
+            }
+
+            stk_display_array(stk0);
+            printf("\nHeight stk0: %lld\n", stk_height(stk0));
+
+            stk_display_array(stk1);
+            printf("\nHeight stk1: %lld\n", stk_height(stk1));
+
+        }
+
+    }
+
+    stk_free(&stk0);
+    stk_free(&stk1);
+
+    AVLTree avlt;
+
+    if (avl_init(&avlt) == DS_OK)
+    {
+        for (int i = 1; i <= 7; i++)
+            avl_insert(avlt, i);
+
+
+        avl_display(avlt, 1);
+    }
 
     printf("\n\n\n");
 

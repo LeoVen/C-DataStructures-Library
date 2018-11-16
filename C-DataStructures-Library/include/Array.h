@@ -66,6 +66,8 @@ Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
 
 Status arr_free(Array *array);
 
+Status arr_free_shallow(Array *array);
+
 Status arr_erase(Array *array);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
@@ -81,6 +83,8 @@ Status arr_set_func_free(Array array, arr_free_f function);
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
 index_t arr_length(Array array);
+
+index_t arr_count(Array array);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 

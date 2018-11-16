@@ -66,6 +66,8 @@ Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f,
 
 Status sli_free(SortedList *list);
 
+Status sli_free_shallow(SortedList *list);
+
 Status sli_erase(SortedList *list);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///

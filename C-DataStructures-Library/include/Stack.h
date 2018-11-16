@@ -15,174 +15,110 @@
 extern "C" {
 #endif
 
-/// This is a linked list implementation of a \c Stack with FILO (First-in
-/// Last-out) or LIFO (Last-in First-out) operations, so the first item added
-/// is the last one to be removed. It is implemented as a SinglyLinkedList but
-///  with restricted operations to preserve the FILO (LIFO) order of elements.
-/// The function \c stk_push() is equivalent to \c sll_insert_head() and the
-/// function \c stk_pop() is equivalent to \c sll_remove_head(). Removal and
-/// insertions are O(1). Both push and pop functions operate on what would be
-/// the \c head of a SinglyLinkedList.
-///
-/// \b Advantages over \c StackArray
-/// - Indefinitely grows
-/// - No need to reallocate buffers
-///
-/// \b Drawbacks
-/// - No random access
-/// - More memory usage as in every node there is a pointer to the next node
-///
-/// \b Functions
-/// Located in file Stack.c
-struct Stack_s
-{
-    /// \brief Current amount of elements in the \c Stack.
-    ///
-    /// Current amount of elements in the \c Stack.
-    index_t height;
+// A singly-linked list implementation of a stack. See the source file for the
+// full documentation.
+struct Stack_s;
 
-    /// \brief Stack height limit.
-    ///
-    /// If it is set to 0 or a negative value then the stack has no limit to
-    /// its height. Otherwise it won't be able to have more elements than the
-    /// specified value. The stack is always initialized with no restrictions
-    /// to its length, that is, \c limit equals 0. The user won't be able to
-    /// limit the stack height if it already has more elements than the
-    /// specified limit.
-    index_t limit;
-
-    /// \brief The element at the top of the \c Stack.
-    ///
-    /// The element at the top of \c Stack. Push and Pop operate relative to
-    /// this pointer. It points to \c NULL if the \c Stack is empty.
-    struct StackNode_s *top;
-};
-
-/// Defines a type for <code> struct Stack_s </code>.
+/// \brief A type for a FIFO singly-linked list.
 ///
-/// Every stack is initialized by \c malloc with \c sizeof(Stack_t).
+/// A type for a <code> struct Stack_s </code> so you don't have to always
+/// write the full name of it.
 typedef struct Stack_s Stack_t;
 
-/// Defines a type of pointer to <code> struct Stack_s </code>.
+/// \brief A pointer type for a FIFO singly-linked list.
 ///
-/// This typedef is used to avoid having to declare every stack as a pointer
-/// type since they all must be dynamically allocated.
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
 typedef struct Stack_s *Stack;
 
-/// Initializes a new \c Stack with initial length 0 and its pointer member
-/// pointing to \c NULL.
+/// \brief Comparator function type.
 ///
-/// \param[in,out] stk The stack to be initialized.
-///
-/// \return DS_ERR_ALLOC if stack allocation failed.
-/// \return DS_OK if all operations were successful.
-Status stk_init(Stack *stk);
+/// A type for a function that compares two elements, returning:
+/// - [ > 0] when the first element is greater than the second;
+/// - [ < 0] when the first element is less than the second;
+/// - 0 when both elements are equal.
+typedef int(*stk_compare_f)(void *, void *);
 
-/// Inserts an element into the specified stack. The element is added relative
-/// to the \c rear pointer.
+/// \brief A Copy function type.
 ///
-/// \param[in] stk The stack where the element is to be inserted.
-/// \param[in] element The element to be inserted on the stack.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (more than 0) and the list height
-/// reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_push(Stack stk, int element);
+/// A type for a function that takes an input (first parameter) and returns an
+/// exact copy of that element.
+typedef void *(*stk_copy_f)(void *);
 
-/// Removes an element from the specified stack relative to the top pointer.
+/// \brief Display function type.
 ///
-/// \param[in] stk The stack where the element is to be removed from.
-/// \param[out] result The resulting element removed from the stack.
-///
-/// \return DS_ERR_INVALID_OPERATION if the stack is empty.
-/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_pop(Stack stk, int *result);
+/// A type for a function that displays an element in the console. Please do
+/// not print a newline character.
+typedef void(*stk_display_f)(void *);
 
-/// Alias to stk_push().
+/// \brief A Free function type.
 ///
-/// \param[in] stk The stack where the element is to be inserted.
-/// \param[in] element The element to be inserted on the stack.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (more than 0) and the list height
-/// reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-///
-/// \see stk_push()
-Status stk_insert(Stack stk, int element);
+/// A type for a function responsible for completely freeing an element from
+/// memory.
+typedef void(*stk_free_f)(void *);
 
-/// Alias to stk_pop().
-///
-/// \param[in] stk The stack where the element is to be removed from.
-/// \param[out] result The resulting element removed from the stack.
-///
-/// \return DS_ERR_INVALID_OPERATION if the stack is empty.
-/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-///
-/// \see stk_pop()
-Status stk_remove(Stack stk, int *result);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Displays a \c Stack in the console.
-///
-/// \param stk The stack to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_display(Stack stk);
+Status stk_init(Stack *stack);
 
-/// Displays a \c Stack in the console like an array with its values separated
-/// by commas, delimited with brackets.
-///
-/// \param stk The stack to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_display_array(Stack stk);
+Status stk_create(Stack *stack, stk_compare_f compare_f, stk_copy_f copy_f,
+                  stk_display_f display_f, stk_free_f free_f);
 
-/// Displays a \c Stack in the console with its values separated by spaces.
-///
-/// \param stk The stack to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_display_raw(Stack stk);
+Status stk_free(Stack *stack);
 
-/// Iterates through every node of the stack and frees them from memory along
-/// with its data. Then the Stack structure is deallocated and set to \c NULL.
-///
-/// \param stk The stack to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_delete(Stack *stk);
+Status stk_free_shallow(Stack *stack);
 
-/// This function sets the stack to its initial state, erasing all of its data
-/// and re-initializing the structure. It is equivalent to calling stk_delete()
-/// and then stk_init().
-///
-/// \param stk The stack to be erased.
-///
-/// \return DS_ERR_ALLOC if stack allocation failed.
-/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status stk_erase(Stack *stk);
+Status stk_erase(Stack *stack);
 
-int stk_peek(Stack stk);
+/////////////////////////////////////////////////////////////////// SETTERS ///
+
+Status stk_set_func_compare(Stack stack, stk_compare_f function);
+
+Status stk_set_func_copy(Stack stack, stk_copy_f function);
+
+Status stk_set_func_display(Stack stack, stk_display_f function);
+
+Status stk_set_func_free(Stack stack, stk_free_f function);
+
+Status stk_set_limit(Stack stack, index_t limit);
+
+/////////////////////////////////////////////////////////////////// GETTERS ///
+
+index_t stk_height(Stack stack);
+
+index_t stk_limit(Stack stk);
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+Status stk_push(Stack stack, void *element);
+
+void *stk_pop(Stack stack);
+
+Status stk_insert(Stack stack, void *element);
+
+Status stk_remove(Stack stack, void **result);
+
+Status stk_slice(Stack stack);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
 bool stk_full(Stack stk);
 
 bool stk_empty(Stack stk);
 
-index_t stk_height(Stack stk);
+/////////////////////////////////////////////////////////////////// UTILITY ///
 
-Status stk_limit(Stack stk, index_t limit);
+void *stk_peek(Stack stk);
 
-Status stk_copy(Stack stk, Stack *result);
+Status stk_copy(Stack stack, Stack *result);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+Status stk_display(Stack stk);
+
+Status stk_display_array(Stack stk);
+
+Status stk_display_raw(Stack stk);
 
 #ifdef __cplusplus
 }

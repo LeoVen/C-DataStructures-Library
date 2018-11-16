@@ -168,7 +168,7 @@ typedef struct SortedListNode_s SortedListNode_t;
 
 /// \brief A pointer type for a sorted list node.
 ///
-/// Define a pointer type to a <code> struct SortedListNode_s </code>.
+/// Defines a pointer type to a <code> struct SortedListNode_s </code>.
 typedef struct SortedListNode_s *SortedListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
@@ -176,6 +176,8 @@ typedef struct SortedListNode_s *SortedListNode;
 static Status sli_make_node(SortedListNode *node, void *data);
 
 static Status sli_free_node(SortedListNode *node, sli_free_f free_f);
+
+static Status sli_free_node_shallow(SortedListNode *node);
 
 static Status sli_get_node_at(SortedList list, SortedListNode *result,
         index_t position);
@@ -300,6 +302,44 @@ Status sli_free(SortedList *list)
     return DS_OK;
 }
 
+/// \brief Frees from memory a SortedList_s.
+///
+/// This function frees from memory all the list's nodes without freeing its
+/// data and then frees the list's structure. The variable is then set to
+/// \c NULL.
+///
+/// \param[in,out] list SortedList_s to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
+Status sli_free_shallow(SortedList *list)
+{
+    if (*list == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    SortedListNode prev = (*list)->head;
+
+    Status st;
+
+    while ((*list)->head != NULL)
+    {
+        (*list)->head = (*list)->head->next;
+
+        st = sli_free_node_shallow(&prev);
+
+        if (st != DS_OK)
+            return st;
+
+        prev = (*list)->head;
+    }
+
+    free((*list));
+
+    (*list) = NULL;
+
+    return DS_OK;
+}
+
 /// \brief Erases a SortedList_s.
 ///
 /// This function is equivalent to freeing a list and the creating it again.
@@ -343,7 +383,7 @@ Status sli_erase(SortedList *list)
 ///
 /// Use this function to set a default compare function. It can only be done
 /// when the list is empty, otherwise you would have elements sorted with a
-/// different logic. The function needs to comply with the sli_compare_f
+/// different logic. This function needs to comply with the sli_compare_f
 /// specifications.
 ///
 /// \param[in] list SortedList_s to set the default compare function.
@@ -1744,6 +1784,18 @@ static Status sli_free_node(SortedListNode *node, sli_free_f free_f)
     return DS_OK;
 }
 
+static Status sli_free_node_shallow(SortedListNode *node)
+{
+    if (*node == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*node);
+
+    *node = NULL;
+
+    return DS_OK;
+}
+
 /// \brief Gets a node from a specific position.
 ///
 /// Implementation detail. Searches for a node in O(n / 2), the search starts
@@ -1907,7 +1959,7 @@ static Status sli_insert_tail(SortedList list, void *element)
 /// - sli_iter_peek_prev()
 struct SortedListIterator_s
 {
-    /// \brief Target SortedList.
+    /// \brief Target SortedList_s.
     ///
     /// Target SortedList. The iterator might need to use some information
     /// provided by the list or change some of its data members.

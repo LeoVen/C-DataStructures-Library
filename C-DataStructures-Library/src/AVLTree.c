@@ -789,7 +789,7 @@ int avl_height_update(AVLTreeNode node)
     return 1 + ((height_l >= height_r) ? height_l : height_r);
 }
 
-/// Left-Left case
+/// Right rotation
 /// 
 /// T1, T2, T3 and T4 are subtrees.
 /// 
@@ -843,7 +843,7 @@ Status avl_rotate_right(AVLTreeNode *node_z)
     return DS_OK;
 }
 
-/// Right-Right case
+/// Left rotation
 ///
 /// T1, T2, T3 and T4 are subtrees.
 ///

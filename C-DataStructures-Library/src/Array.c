@@ -8,6 +8,22 @@
 
 #include "Array.h"
 
+/// \brief A C array wrapper.
+///
+/// An Array_s is an abstraction of a C array composed of a data buffer and a
+/// length variable. It is a static array, that is, it won't increase in size.
+/// Higher level languages provide a quick way to get the array's and this
+/// struct abstracts exactly that.
+///
+/// It also maintains a \c version_id that keeps track of changes and is used
+/// by the ArrayIterator_s.
+///
+/// To initialize an Array_s use arr_init(). To free it from memory use
+/// arr_free().
+///
+/// Since access to the buffer is protected you can use arr_set() and arr_get()
+/// to set an index to a given value or get a value from the index respectively
+/// respectively.
 struct Array_s
 {
     /// \brief Data buffer.
@@ -143,6 +159,19 @@ Status arr_free(Array *array)
     return DS_OK;
 }
 
+Status arr_free_shallow(Array *array)
+{
+    if (*array == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free((*array)->buffer);
+    free((*array));
+
+    (*array) = NULL;
+
+    return DS_OK;
+}
+
 Status arr_erase(Array *array)
 {
     if (*array == NULL)
@@ -220,6 +249,22 @@ index_t arr_length(Array array)
     return array->length;
 }
 
+index_t arr_count(Array array)
+{
+    if (array == NULL)
+        return -1;
+
+    index_t count = 0;
+
+    for (index_t i = 0; i < array->length; i++)
+    {
+        if (array->buffer[i] != NULL)
+            count++;
+    }
+
+    return count;
+}
+
 index_t arr_set_next(Array array, void *element)
 {
     if (array == NULL)
@@ -237,6 +282,7 @@ index_t arr_set_next(Array array, void *element)
         }
     }
 
+    // Array is full
     return -1;
 }
 
@@ -280,6 +326,7 @@ index_t arr_set_last(Array array, void *element)
         }
     }
 
+    // Array is full
     return -1;
 }
 
@@ -300,6 +347,7 @@ void *arr_get_next(Array array, index_t *index)
         }
     }
 
+    // Array is empty
     return NULL;
 }
 
@@ -311,6 +359,7 @@ void *arr_get(Array array, index_t index)
     if (index < 0 || index >= array->length)
         return NULL;
 
+    // This might return NULL
     return array->buffer[index];
 }
 
@@ -331,6 +380,7 @@ void *arr_get_last(Array array, index_t *index)
         }
     }
 
+    // Array is empty
     return NULL;
 }
 
@@ -475,6 +525,8 @@ Status arr_switch(Array array, index_t pos1, index_t pos2)
     void *temp = array->buffer[pos1];
     array->buffer[pos1] = array->buffer[pos2];
     array->buffer[pos2] = temp;
+
+    array->version_id++;
 
     return DS_OK;
 }
