@@ -112,6 +112,8 @@ void *stk_peek(Stack stk);
 
 Status stk_copy(Stack stack, Stack *result);
 
+Status stk_stack(Stack stack1, Stack stack2);
+
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
 Status stk_display(Stack stack);
@@ -119,6 +121,38 @@ Status stk_display(Stack stack);
 Status stk_display_array(Stack stack);
 
 Status stk_display_raw(Stack stack);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+// A stack iterator. See the source file for the full documentation.
+struct StackIterator_s;
+
+/// \brief A type for a stack iterator.
+///
+/// A type for a <code> struct StackIterator_s </code>.
+typedef struct StackIterator_s StackIterator_t;
+
+/// \brief A pointer type for a stack iterator.
+///
+/// A pointer type for a <code> struct StackIterator_s </code>.
+typedef struct StackIterator_s *StackIterator;
+
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
+
+Status stk_iter_init(StackIterator *iter, Stack target);
+
+// TODO
+///////////////////////////////////////////////////////////////// ITERATION ///
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+////////////////////////////////////////////////////////// SETTER AND GETTER ///
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
 
 #ifdef __cplusplus
 }

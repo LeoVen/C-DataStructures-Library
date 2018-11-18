@@ -17,11 +17,11 @@
 /// less than or equal to 0.
 ///
 /// To initialize a list use sli_init(). This only initializes the structure.
-/// If you don't set the proper functions later you won't be able to insert
+/// If you don't set the default functions later you won't be able to insert
 /// elements, copy the list, display the list or even delete it. If you want to
 /// initialize it completely, use instead sli_create(). Here you must pass in
-/// default functions (compare, copy, display and free), making a complete
-/// list.
+/// default functions (compare, copy, display and free) according with the
+/// specifications of each type of function.
 ///
 /// To add an element to the list use sli_insert(). To remove, you have three
 /// options: sli_remove() that removes an element at a given position;
@@ -189,7 +189,7 @@ static Status sli_insert_tail(SortedList list, void *element);
 /// \brief Initializes the SortedList_s structure.
 ///
 /// This function initializes the SortedList_s structure but does not sets any
-/// default functions. If you don't set them latter you won't be able to add
+/// default functions. If you don't set them later you won't be able to add
 /// elements, copy the list, free the list or display it. It also sets a
 /// default order of \c DESCENDING.
 ///
@@ -266,7 +266,7 @@ Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f,
 /// free function and then frees the list's structure. The variable is then set
 /// to \c NULL.
 ///
-/// \param[in,out] list SortedList_s to be freed from memory.
+/// \param[in,out] list The SortedList_s to be freed from memory.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
@@ -428,7 +428,7 @@ Status sli_set_func_copy(SortedList list, sli_copy_f function)
     return DS_OK;
 }
 
-/// \brief Sets the default display function
+/// \brief Sets the default display function.
 ///
 /// Use this function to set a default display function. It needs to comply
 /// with the sli_display_f specifications. Useful for debugging.
@@ -448,7 +448,7 @@ Status sli_set_func_display(SortedList list, sli_display_f function)
     return DS_OK;
 }
 
-/// \brief Sets the default free function
+/// \brief Sets the default free function.
 ///
 /// Use this function to set a default free function. It needs to comply
 /// with the sli_free_f specifications.
@@ -1961,7 +1961,7 @@ struct SortedListIterator_s
 {
     /// \brief Target SortedList_s.
     ///
-    /// Target SortedList. The iterator might need to use some information
+    /// Target SortedList_s. The iterator might need to use some information
     /// provided by the list or change some of its data members.
     struct SortedList_s *target;
 
@@ -1974,7 +1974,9 @@ struct SortedListIterator_s
     /// \brief Target version ID.
     ///
     /// When the iterator is initialized it stores the version_id of the target
-    /// structure.
+    /// structure. This is kept to prevent iteration on the target structure
+    /// that may have been modified and thus causing undefined behaviours or
+    /// run-time crashes.
     index_t target_id;
 };
 

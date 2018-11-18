@@ -8,17 +8,26 @@
 
 #include "Queue.h"
 
-/// This is a linked list implementation of a \c Queue with FIFO (First-in
-/// First-out) or LILO (Last-in Last-out) operations, so the first item added
-/// is the first one to be removed. It is implemented as a SinglyLinkedList but
-///  with restricted operations to preserve the FIFO (LILO) order of elements.
-/// The function \c que_enqueue() is equivalent to \c sll_insert_tail() and the
-/// function \c que_dequeue() is equivalent to \c sll_remove_head(). This is
-/// done in such a way that removal and insertions are O(1) without the need of
-/// a second pointer to the previous element (like a Deque implemented with a
-/// DoublyLinkedList).
+/// \brief A linked list implementation of a generic queue.
 ///
-/// \b Advantages over \c QueueArray
+/// This is a linked list implementation of a Queue with FIFO (First-in
+/// First-out) or LILO (Last-in Last-out) operations, so the first item added
+/// is the first one to be removed. It is implemented as a SinglyLinkedList_s
+/// but with restricted operations to preserve the FIFO (LILO) order of
+/// elements. The function \c que_enqueue() is equivalent to \c
+/// sll_insert_tail() and the function \c que_dequeue() is equivalent to
+/// \c sll_remove_head(). This is done in such a way that removal and
+/// insertions are O(1) without the need of a second pointer to the previous
+///  element (like a Deque implemented with a DoublyLinkedList).
+///
+/// To initialize the queue use que_init(). This only initializes the structure.
+/// If you don't set the default functions later you won't be able do certain
+/// operations. If you want to initialize it completely, use instead
+/// que_create(). Here you must pass in default functions (compare, copy,
+/// display and free) according with the specifications of each type of
+/// function.
+///
+/// \b Advantages over QueueArray_s
 /// - Indefinitely grows
 /// - No need to reallocate buffers or shift elements
 ///

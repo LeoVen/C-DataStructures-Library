@@ -8,18 +8,25 @@
 
 #include "Stack.h"
 
-/// This is a linked list implementation of a \c Stack with FILO (First-in
+/// \brief A linked list implementation of a generic stack.
+///
+/// This is a linked list implementation of a Stack with FILO (First-in
 /// Last-out) or LIFO (Last-in First-out) operations, so the first item added
-/// is the last one to be removed. It is implemented as a SinglyLinkedList but
-///  with restricted operations to preserve the FILO (LIFO) order of elements.
-/// The function \c stk_push() is equivalent to \c sll_insert_head() and the
-/// function \c stk_pop() is equivalent to \c sll_remove_head(). Removal and
-/// insertions are O(1). Both push and pop functions operate on what would be
-/// the \c head of a SinglyLinkedList.
+/// is the last one to be removed. It is implemented as a SinglyLinkedList_s
+/// but with restricted operations to preserve the FILO (LIFO) order of
+/// elements. The function \c stk_push() is equivalent to \c sll_insert_head()
+/// and the function \c stk_pop() is equivalent to \c sll_remove_head().
+/// Removal and insertions are O(1). Both push and pop functions operate on
+/// what would be the \c head of a SinglyLinkedList_s.
 ///
-/// To initialize the stack use stk_init().
+/// To initialize the stack use stk_init(). This only initializes the structure.
+/// If you don't set the default functions later you won't be able do certain
+/// operations. If you want to initialize it completely, use instead
+/// sli_create(). Here you must pass in default functions (compare, copy,
+/// display and free) according with the specifications of each type of
+/// function.
 ///
-/// \b Advantages over \c StackArray
+/// \b Advantages over StackArray_s
 /// - Indefinitely grows
 /// - No need to reallocate buffers
 ///
@@ -33,7 +40,7 @@ struct Stack_s
 {
     /// \brief Current amount of elements in the \c Stack.
     ///
-    /// Current amount of elements in the \c Stack.
+    /// Current amount of elements in the Stack_s.
     index_t height;
 
     /// \brief Stack height limit.
@@ -48,8 +55,8 @@ struct Stack_s
 
     /// \brief The element at the top of the \c Stack.
     ///
-    /// The element at the top of \c Stack. Push and Pop operate relative to
-    /// this pointer. It points to \c NULL if the \c Stack is empty.
+    /// The element at the top of Stack_s. stk_push() and stk_pop() operate
+    /// relative to this pointer. It points to \c NULL if the stack is empty.
     struct StackNode_s *top;
 
     /// \brief Comparator function.
@@ -122,8 +129,6 @@ static Status stk_make_node(StackNode *node, void *element);
 static Status stk_free_node(StackNode *node, stk_free_f free_f);
 
 static Status stk_free_node_shallow(StackNode *node);
-
-static Status stk_insert_bottom(Stack stack, StackNode ref, void *element);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -657,6 +662,35 @@ Status stk_copy(Stack stack, Stack *result)
     return DS_OK;
 }
 
+/// \brief Stacks one stack at the top of the other.
+///
+/// Stacks the \c stack2 on top of the \c stack1, emptying the \c stack2. Both
+/// stacks need to have been initialized.
+///
+/// \param[in] stack1
+/// \param[in] stack2
+///
+/// \return
+Status stk_stack(Stack stack1, Stack stack2)
+{
+    if (stack1 == NULL || stack2 == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_empty(stack2))
+        return DS_OK;
+
+    if (stk_empty(stack1))
+    {
+        // TODO
+    }
+    else
+    {
+        // TODO
+    }
+
+    return DS_OK;
+}
+
 /// Displays a \c Stack in the console.
 ///
 /// \param stack The stack to be displayed in the console.
@@ -819,44 +853,68 @@ static Status stk_free_node_shallow(StackNode *node)
     return DS_OK;
 }
 
-static Status stk_insert_bottom(Stack stack, StackNode ref, void *element)
-{
-    if (stack == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (stk_full(stack))
-        return DS_ERR_FULL;
-
-    StackNode node;
-
-    Status st = stk_make_node(&node, element);
-
-    if (st != DS_OK)
-        return st;
-
-    if (stk_empty(stack) || ref == NULL)
-    {
-        stack->top = node;
-    }
-    else
-    {
-        ref->below = node;
-    }
-
-    (stack->height)++;
-
-    return DS_OK;
-}
-
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
+/// \brief An iterator for a Stack_s.
 struct StackIterator_s
 {
+    /// \brief Target Stack_s.
+    ///
+    /// Target Stack_s. The iterator might need to use some information
+    /// provided by the stack or change some of its data members.
     struct Stack_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Points to the current node. The iterator is always initialized with the
+    /// cursor pointing to the start (top) of the stack.
     struct StackNode_s *cursor;
-    index_t target_it;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure. This is kept to prevent iteration on the target structure
+    /// that may have been modified and thus causing undefined behaviours or
+    /// run-time crashes.
+    index_t target_id;
 };
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool stk_iter_target_modified(StackIterator iter);
+
+static bool stk_iter_invalid_state(StackIterator iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+Status stk_iter_init(StackIterator *iter, Stack target)
+{
+    *iter = malloc(sizeof(StackIterator_t));
+
+    if (!(*iter))
+        return DS_ERR_ALLOC;
+
+    (*iter)->target = target;
+    (*iter)->target_id = target->version_id;
+    (*iter)->cursor = target->top;
+
+    return DS_OK;
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool stk_iter_target_modified(StackIterator iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+static bool stk_iter_invalid_state(StackIterator iter)
+{
+    return iter->cursor == NULL || iter->target == NULL;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
