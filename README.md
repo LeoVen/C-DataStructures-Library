@@ -9,53 +9,33 @@
 |  BinarySearchTree  | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
 |    BinomialHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |       BTree        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| CircularLinkedList | `[##########]` | `[__________]` | `[__________]` | `[#####_____]` |
-|       Deque        | `[##########]` | `[__________]` | `[__________]` | `[######____]` |
-|     DequeArray     | `[##########]` | `[__________]` | `[__________]` | `[###_______]` |
+| CircularLinkedList | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
+|       Deque        | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
+|     DequeArray     | `[##########]` | `[__________]` | `[##________]` | `[###_______]` |
 |     Dictionary     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|  DoublyLinkedList  | `[########__]` | `[__________]` | `[__________]` | `[#####_____]` |
-|    DynamicArray    | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
+|  DoublyLinkedList  | `[########__]` | `[__________]` | `[##________]` | `[#####_____]` |
+|    DynamicArray    | `[##########]` | `[__________]` | `[#_________]` | `[##________]` |
 |      HashMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |      HashSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |        Heap        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |    PriorityHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |   PriorityQueue    | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
-|       Queue        | `[##########]` | `[__________]` | `[__________]` | `[#######___]` |
-|     QueueArray     | `[##########]` | `[__________]` | `[__________]` | `[######____]` |
+|       Queue        | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
+|     QueueArray     | `[##########]` | `[__________]` | `[##________]` | `[######____]` |
 |     RadixTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |    RedBlackTree    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|  SinglyLinkedList  | `[#########_]` | `[__________]` | `[__________]` | `[######____]` |
+|  SinglyLinkedList  | `[#########_]` | `[__________]` | `[#_________]` | `[######____]` |
 |      SkipList      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |    SortedArray     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |     SortedList     | `[##########]` | `[##########]` | `[__________]` | `[##########]` |
 |   SortedHashMap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |     SplayTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       Stack        | `[##########]` | `[__________]` | `[__________]` | `[#######___]` |
-|     StackArray     | `[##########]` | `[__________]` | `[__________]` | `[######____]` |
+|       Stack        | `[##########]` | `[#_________]` | `[#_________]` | `[#######___]` |
+|     StackArray     | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
 |      TreeSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |      TreeMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |        Trie        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   __Completed__    |     __14__     |     __2__      |     __0__      |     __1__      |
-
-## Generic Data Structures
-
-|   Structure Name   |   Source Code  |    Iterator    |      Tests     |  Documentation |
-| :----------------- | :------------: | :------------: | :------------: | :------------: |
-|       GArray       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      GAVLTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       GDeque       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|     GDictionary    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      GHashMap      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      GHashSet      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       GHeap        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|    GLinkedList     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   GPriorityQueue   | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       GQueue       | `[########__]` | `[__________]` | `[__________]` | `[####______]` |
-|     GSkipList      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       GStack       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      GTreeMap      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      GTreeSet      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   __Completed__    |     __0__      |     __0__      |     __0__      |     __0__      |
+|   __Completed__    |     __14__     |     __3__      |     __0__      |     __1__      |
 
 ## Summary
 
@@ -85,7 +65,7 @@ Note that the length variable is protected (implementation detail) and only acce
 
 ### AVLTree
 
-An AVL tree is a type of a tree that has all the properties of a binary search tree with an aditional one: at any given node, the absolute difference between heights of left sub-tree and right sub-tree cannot be greater than 1. This property is essential to keep the tree balanced.
+An AVL tree is a type of a tree that has all the properties of a binary search tree with an additional one: at any given node, the absolute difference between heights of left sub-tree and right sub-tree cannot be greater than 1. This property is essential to keep the tree balanced.
 
 Operations like insertion and removal are the same as a binary search tree differentiating only at the end of each function where the tree might need to be re-balanced. There are two rotations done to keep the tree balanced:
 
@@ -130,10 +110,10 @@ Some other properties:
 
 * The maximum number of nodes at a level __L__ is given by <b>2^(L - 1)</b>;
 * The maximum number of nodes of a tree with height __H__ is given by <b>2^h - 1</b>;
-* A binary tree with __N__ nodes, the minumum number of levels is <b>Log<sub>2</sub>(N + 1)</b>;
+* A binary tree with __N__ nodes, the minimum number of levels is <b>Log<sub>2</sub>(N + 1)</b>;
 * A binary tree with __N__ leaves nas at least <b>Log<sub>2</sub>(L) + 1</b>.
 
-The problem with binary search trees is that they can get skewed. To solve this there are other variations like AVL trees and Red-black trees that can balance the distribution of nodes. If we add the numbers from 1 to 7 in order this is what would happen to a binary search tree versus an AVL tree:
+The problem with binary search trees is that they can get skewed. To solve this there are other variations like AVL trees and Red-black trees that can balance the distribution of nodes. If we add the numbers from 1 to 7 sequentially this is what would happen to a binary search tree versus an AVL tree:
 
 ```
 
@@ -167,21 +147,37 @@ Not implemented yet.
 
 ### CircularLinkedList
 
-A circular linked list is a singly-linked list where its nodes wrap around making a circular structure.
+A circular linked list is a doubly-linked list where its nodes wrap around making a circular structure. There are no `head` or `tail` pointers, only a cursor that can iterate through the circular list. One of its advantages are that there is no need to check for `NULL` pointers since the list technically has no 'head' or 'tail'.
+
+Due to its nature this structure comes with an iterator and there are 5 main input/output functions where they all operate relative to the list's cursor:
+
+* cll_insert_after();
+* cll_insert_before();
+* cll_remove_after();
+* cll_remove_current();
+* cll_remove_before().
+
+Being a doubly-linked list, all operations listed above take `O(1)`.
 
 ### Deque
 
 A deque is a double-ended queue implemented as a doubly-linked list. Both operations `enqueue` and `dequeue` can be done to both ends of the queue.
 
+The disadvantage of a Deque implemented as a linked list compared to a DequeArray that is implemented as a circular buffer is that it is very space inefficient where every node needs to store two pointers to its adjacent nodes; but it comes with an advantage where the linked list grows indefinitely and there is no need to shift elements or resize a buffer.
+
+Its implementation is just like a doubly-linked list with limitations to input and output to both edges of the list.
+
 ### DequeArray
 
-A deque array is the implementation of a deque using a circular buffer.
+A deque array is the implementation of a deque using a circular buffer. It is very space efficient but unlike a Deque implemented as a linked list, a DequeArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity.
 
 ### Dictionary
 
 Not implemented yet.
 
 ### DoublyLinkedList
+
+TODO: Summary
 
 ### Dynamic Array
 
@@ -203,9 +199,15 @@ Not implemented yet.
 
 ### PriorityQueue
 
+TODO: Summary
+
 ### Queue
 
+TODO: Summary
+
 ### QueueArray
+
+TODO: Summary
 
 ### RadixTree
 
@@ -217,6 +219,8 @@ Not implemented yet.
 
 ### SinglyLinkedList
 
+TODO: Summary
+
 ### SkipList
 
 Not implemented yet.
@@ -226,6 +230,8 @@ Not implemented yet.
 Not implemented yet.
 
 ### SortedList
+
+TODO: Summary
 
 ### SortedHashMap
 
@@ -237,7 +243,11 @@ Not implemented yet.
 
 ### Stack
 
+TODO: Summary
+
 ### StackArray
+
+TODO: Summary
 
 ### TreeSet
 
