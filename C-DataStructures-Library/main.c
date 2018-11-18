@@ -13,7 +13,6 @@
 #include "CircularLinkedList.h"
 #include "DequeArray.h"
 #include "BinarySearchTree.h"
-#include "GQueue.h"
 #include "AVLTree.h"
 #include "SortedList.h"
 
@@ -27,6 +26,7 @@ int main()
 
     int j;
     index_t l;
+    void *result;
 
     if (sll_init(&sll0) == DS_OK)
     {
@@ -92,31 +92,37 @@ int main()
 
     Queue que0, que1;
 
-    if (que_init(&que0) == DS_OK)
+    if (que_create(&que0, compare_int, copy_int, display_int, free) == DS_OK)
     {
         for (int i = 0; i < 10; i++)
-            que_enqueue(que0, i);
+            que_enqueue(que0, new_int(i));
+
+        printf("\nOriginal Queue:");
+        que_display_array(que0);
 
         if (que_copy(que0, &que1) == DS_OK)
         {
-            l = que1->length;
+            printf("\nCopied Queue:");
+            que_display_array(que1);
+
+            l = que_length(que1);
             for (index_t i = 0; i < l; i++)
             {
-                que_dequeue(que0, &j);
+                que_dequeue(que0, &result);
 
-                que_enqueue(que1, j);
+                que_enqueue(que1, result);
             }
 
             que_display_array(que0);
-            printf("\nLength que0: %lld\n", que0->length);
+            printf("\nLength que0: %lld\n", que_length(que0));
 
             que_display_array(que1);
-            printf("\nLength que1: %lld\n", que1->length);
+            printf("\nLength que1: %lld\n", que_length(que1));
         }
     }
 
-    que_delete(&que0);
-    que_delete(&que1);
+    que_free(&que0);
+    que_free(&que1);
 
     Deque deq0, deq1;
 
@@ -512,72 +518,6 @@ int main()
     }
 
     avl_delete(&avl);
-
-    GQueue gqueue;
-
-    void *result;
-
-    const char *strings[10] = {"Hello World", "Lorem Ipsum", "Fire and Blood",
-                               "May the force be with you", "Winter is Coming",
-                               "Hear me Roar", "Ours is the fury", "Mooncake",
-                               "Far over the misty mountains cold", "Gandalf"};
-
-    /* 0 - int
-     * 1 - float
-     * 2 - unsigned
-     */
-    signed char flag;
-
-    if (gque_init(&gqueue) == DS_OK)
-    {
-        gqueue->d_free = free;
-
-        for (int i = 0, num = 0; i < 100; i++)
-        {
-            if (i % 3 == 0)
-            {
-                gque_enqueue(gqueue, new_float((float)i + (float)i * 20.0f / 193.0f), 1);
-            }
-            else if (i % 4 == 0)
-            {
-                gque_enqueue(gqueue, new_string(strings[rand() % 10]), 2);
-            }
-            else
-            {
-                gque_enqueue(gqueue, new_int(num++), 0);
-            }
-        }
-
-        printf("\nGenericQueue\n[ ");
-        while (!gque_empty(gqueue))
-        {
-            gque_dequeue(gqueue, &result, &flag);
-
-            switch (flag)
-            {
-                case 0:
-                    display_int(result);
-                    break;
-                case 1:
-                    display_float(result);
-                    break;
-                case 2:
-                    display_string(result);
-                    break;
-                default:
-                    printf("ERROR");
-            }
-
-            free(result);
-
-            if (!gque_empty(gqueue))
-                printf(", ");
-        }
-
-        printf(" ]\n");
-    }
-
-    gque_delete(&gqueue);
 
     long long total = 0, rands = 100000;
     for (int i = 0; i < rands; i++)
