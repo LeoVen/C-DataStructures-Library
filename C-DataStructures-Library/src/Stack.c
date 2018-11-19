@@ -860,6 +860,8 @@ static Status stk_free_node_shallow(StackNode *node)
 ///////////////////////////////////////////////////////////////////////////////
 
 /// \brief An iterator for a Stack_s.
+///
+///
 struct StackIterator_s
 {
     /// \brief Target Stack_s.
@@ -903,6 +905,237 @@ Status stk_iter_init(StackIterator *iter, Stack target)
     (*iter)->cursor = target->top;
 
     return DS_OK;
+}
+
+Status stk_iter_retarget(StackIterator *iter, Stack target)
+{
+    Status st = stk_iter_free(iter);
+
+    if (st != DS_OK)
+        return st;
+
+    st = stk_iter_init(iter, target);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
+}
+
+Status stk_iter_free(StackIterator *iter)
+{
+    if (*iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*iter);
+
+    *iter = NULL;
+
+    return DS_OK;
+}
+
+Status stk_iter_next(StackIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!stk_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->cursor->below;
+
+    return DS_OK;
+}
+
+Status stk_iter_to_top(StackIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!stk_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->target->top;
+
+    return DS_OK;
+}
+
+bool stk_iter_has_next(StackIterator iter)
+{
+    return iter->cursor->below != NULL;
+}
+
+Status stk_iter_get(StackIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_copy == NULL || iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    *result = iter->target->d_copy(iter->cursor->data);
+
+    return DS_OK;
+}
+
+Status stk_iter_set(StackIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    iter->target->d_free(iter->cursor->data);
+
+    iter->cursor->data = element;
+
+    return DS_OK;
+}
+
+Status stk_iter_insert(StackIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    StackNode node;
+
+    Status st = stk_make_node(&node, element);
+
+    if (st != DS_OK)
+        return st;
+
+    if (stk_empty(iter->target))
+    {
+        iter->target->top = node;
+
+        iter->cursor = node;
+    }
+    else
+    {
+        node->below = iter->cursor->below;
+
+        iter->cursor->below = node;
+    }
+
+    iter->target->height++;
+
+    iter->target->version_id++;
+    iter->target_id++;
+
+    return DS_OK;
+}
+
+Status stk_iter_remove(StackIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (stk_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (stk_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!stk_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    Status st;
+
+    if (stk_height(iter->target) == 1)
+    {
+        *result = iter->cursor->data;
+
+        st = stk_free_node_shallow(&(iter->cursor));
+
+        if (st != DS_OK)
+            return st;
+
+        iter->cursor = NULL;
+
+        iter->target->top = NULL;
+    }
+    else
+    {
+        StackNode node = iter->cursor->below;
+
+        *result = node->data;
+
+        iter->cursor->below = node->below;
+
+        st = stk_free_node_shallow(&node);
+
+        if (st != DS_OK)
+            return st;
+    }
+
+    iter->target->height--;
+
+    iter->target->version_id++;
+    iter->target_id++;
+
+    return DS_OK;
+}
+
+void *stk_iter_peek_next(StackIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (stk_iter_invalid_state(iter))
+        return NULL;
+
+    if (stk_iter_target_modified(iter))
+        return NULL;
+
+    if (!stk_iter_has_next(iter))
+        return NULL;
+
+    return iter->cursor->below->data;
+}
+
+void *stk_iter_peek(StackIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (stk_iter_invalid_state(iter))
+        return NULL;
+
+    if (stk_iter_target_modified(iter))
+        return NULL;
+
+    return iter->cursor->data;
 }
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///

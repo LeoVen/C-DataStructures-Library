@@ -143,16 +143,37 @@ typedef struct StackIterator_s *StackIterator;
 
 Status stk_iter_init(StackIterator *iter, Stack target);
 
-// TODO
+Status stk_iter_retarget(StackIterator *iter, Stack target);
+
+Status stk_iter_free(StackIterator *iter);
+
 ///////////////////////////////////////////////////////////////// ITERATION ///
+
+Status stk_iter_next(StackIterator iter);
+
+Status stk_iter_to_top(StackIterator iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
+bool stk_iter_has_next(StackIterator iter);
+
 ////////////////////////////////////////////////////////// SETTER AND GETTER ///
+
+Status stk_iter_get(StackIterator iter, void **result);
+
+Status stk_iter_set(StackIterator iter, void *element);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
+Status stk_iter_insert(StackIterator iter, void *element);
+
+Status stk_iter_remove(StackIterator iter, void **result);
+
 /////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *stk_iter_peek_next(StackIterator iter);
+
+void *stk_iter_peek(StackIterator iter);
 
 #ifdef __cplusplus
 }
