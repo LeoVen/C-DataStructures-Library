@@ -29,15 +29,16 @@
 /// that removes the smallest element.
 ///
 /// To delete a list use sli_free(). This completely frees all elements and
-/// sets the list pointer to NULL. Note that if you haven't set a delete
-/// function you won't be able to delete the list or its elements. You must set
-/// a delete function that will be responsible for freeing from memory all
-/// elements.
+/// sets the list pointer to \c NULL. Note that if you haven't set a default
+/// free function you won't be able to delete the list or its elements. You
+/// must set a free function that will be responsible for freeing from memory
+/// all elements.
 ///
 /// \b Functions \b List
 /// - sli_init()
 /// - sli_create()
 /// - sli_free()
+/// - sli_free_shallow()
 /// - sli_erase()
 /// - sli_set_func_compare()
 /// - sli_set_func_copy()
@@ -186,7 +187,7 @@ static Status sli_insert_tail(SortedList list, void *element);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// \brief Initializes the SortedList_s structure.
+/// \brief Initializes a SortedList_s structure.
 ///
 /// This function initializes the SortedList_s structure but does not sets any
 /// default functions. If you don't set them later you won't be able to add
@@ -621,6 +622,7 @@ Status sli_get(SortedList list, void **result, index_t index)
 /// \param[in] list SortedList_s reference where the element is to be inserted.
 /// \param[in] element Element to be inserted in the list.
 ///
+/// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
 /// length reached the specified limit.
 /// \return DS_ERR_INCOMPLETE_TYPE if a default compare function is not set.
@@ -1254,7 +1256,7 @@ Status sli_reverse(SortedList list)
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if either a default copy or a default free
 /// functions are not set.
-/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_ERR_NULL_POINTER if list references to \c NULL.
 /// \return DS_OK if all operations are successful.
 Status sli_copy(SortedList list, SortedList *result)
 {
@@ -1800,6 +1802,15 @@ static Status sli_free_node(SortedListNode *node, sli_free_f free_f)
     return DS_OK;
 }
 
+/// \brief Frees a SortedListNode_s.
+///
+/// Implementation detail. Frees a SortedListNode_s and leaves its data
+/// untouched.
+///
+/// \param[in,out] node SortedListNode_s to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_OK if all operations are successful.
 static Status sli_free_node_shallow(SortedListNode *node)
 {
     if (*node == NULL)
@@ -2570,7 +2581,7 @@ static bool sli_iter_target_modified(SortedListIterator iter)
 /// Implementation detail. Returns true if either the cursor or the target
 /// pointers are referencing to \c NULL.
 ///
-/// \param iter Iterator reference.
+/// \param[in] iter Iterator reference.
 ///
 /// \return True if either the cursor or the target are referencing to \c NULL.
 /// \return False if neither the cursor or the target are referencing to

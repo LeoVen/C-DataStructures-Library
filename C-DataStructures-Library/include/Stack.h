@@ -86,15 +86,15 @@ Status stk_set_limit(Stack stack, index_t limit);
 
 index_t stk_height(Stack stack);
 
-index_t stk_limit(Stack stk);
+index_t stk_limit(Stack stack);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 Status stk_push(Stack stack, void *element);
 
-void *stk_pop(Stack stack);
-
 Status stk_insert(Stack stack, void *element);
+
+void *stk_pop(Stack stack);
 
 Status stk_remove(Stack stack, void **result);
 
@@ -102,13 +102,15 @@ Status stk_slice(Stack stack);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool stk_full(Stack stk);
+bool stk_full(Stack stack);
 
-bool stk_empty(Stack stk);
+bool stk_empty(Stack stack);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *stk_peek(Stack stk);
+void *stk_peek(Stack stack);
+
+bool stk_contains(Stack stack, void *key);
 
 Status stk_copy(Stack stack, Stack *result);
 

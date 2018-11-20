@@ -19,12 +19,25 @@
 /// Removal and insertions are O(1). Both push and pop functions operate on
 /// what would be the \c head of a SinglyLinkedList_s.
 ///
-/// To initialize the stack use stk_init(). This only initializes the structure.
-/// If you don't set the default functions later you won't be able do certain
-/// operations. If you want to initialize it completely, use instead
+/// To initialize the stack use stk_init(). This only initializes the
+/// structure. If you don't set the default functions later you won't be able
+/// do certain operations. If you want to initialize it completely, use instead
 /// sli_create(). Here you must pass in default functions (compare, copy,
 /// display and free) according with the specifications of each type of
 /// function.
+///
+/// To insert elements in the stack use stk_push() or stk_insert() as an alias.
+/// To remove an element you have three options: stk_pop() that will return
+/// \c NULL if something goes wrong; stk_remove() that returns a Status and the
+/// result is in the arguments; or stk_slice() that will simply remove the top
+/// element without returning it, so this function needs a default free
+/// function to work.
+///
+/// To delete a stack use stk_free(). This completely frees all elements and
+/// sets the stack pointer to \c NULL. Note that if you haven't set a default
+/// free function you won't be able to delete the stack or its elements. You
+/// must set a free function that will be responsible for freeing from memory
+/// all elements.
 ///
 /// \b Advantages over StackArray_s
 /// - Indefinitely grows
@@ -97,7 +110,7 @@ struct Stack_s
 /// \brief A Stack_s node.
 ///
 /// Implementation detail. This is a singly-linked node. It has one data member
-/// and one pointer to the next node or \c NULL if it is the bottom-most node.
+/// and one pointer to the next node or \c NULL if it is the bottommost node.
 struct StackNode_s
 {
     /// \brief Data pointer.
@@ -107,7 +120,7 @@ struct StackNode_s
 
     /// \brief Node underneath the current node.
     ///
-    /// Node underneath the current node or \c NULL if it is the bottom-most
+    /// Node underneath the current node or \c NULL if it is the bottommost
     /// node.
     struct StackNode_s *below;
 };
@@ -132,7 +145,7 @@ static Status stk_free_node_shallow(StackNode *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// Initializes the Stack_s structure.
+/// \brief Initializes a Stack_s structure.
 ///
 /// Initializes a new Stack_s with no default functions. Be sure to initialize
 /// them when needed or some functions might return with an error.
@@ -236,6 +249,16 @@ Status stk_free(Stack *stack)
     return DS_OK;
 }
 
+/// \brief Frees from memory a Stack_s.
+///
+/// This function frees from memory all the stack's nodes without freeing its
+/// data and then frees the stack's structure. The variable is then set to
+/// \c NULL.
+///
+/// \param[in,out] stack Stack_s to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status stk_free_shallow(Stack *stack)
 {
     if ((*stack) == NULL)
@@ -264,11 +287,13 @@ Status stk_free_shallow(Stack *stack)
     return DS_OK;
 }
 
+/// \brief Erases a Stack_s.
+///
 /// This function sets the stack to its initial state, erasing all of its data
 /// and re-initializing the structure. It is equivalent to calling stk_free()
 /// and then stk_init().
 ///
-/// \param stack The stack to be erased.
+/// \param[in,out] stack The stack to be erased.
 ///
 /// \return DS_ERR_ALLOC if stack allocation failed.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -407,6 +432,15 @@ Status stk_set_limit(Stack stack, index_t limit)
     return DS_OK;
 }
 
+/// \brief Returns the Stack_s's height.
+///
+/// Returns the total elements in the Stack_s or -1 if the stack references to
+/// \c NULL.
+///
+/// \param[in] stack Stack_s reference.
+///
+/// \return -1 if the stack reference is \c NULL.
+/// \return The stack's height.
 index_t stk_height(Stack stack)
 {
     if (stack == NULL)
@@ -415,6 +449,14 @@ index_t stk_height(Stack stack)
     return stack->height;
 }
 
+/// \brief Returns the Stack_s's limit.
+///
+/// Returns the stack limit or -1 if the stack references to \c NULL.
+///
+/// \param[in] stack Stack_s reference.
+///
+/// \return -1 if the stack reference is \c NULL.
+/// \return The stack's limit.
 index_t stk_limit(Stack stack)
 {
     if (stack == NULL)
@@ -423,11 +465,13 @@ index_t stk_limit(Stack stack)
     return stack->limit;
 }
 
-/// Inserts an element into the specified stack. The element is added relative
-/// to the \c rear pointer.
+/// \brief Inserts an element to the specified Stack_s.
 ///
-/// \param[in] stack The stack where the element is to be inserted.
-/// \param[in] element The element to be inserted on the stack.
+/// Inserts an element into the specified Stack_s. The element at the top of
+/// of the stack.
+///
+/// \param[in] stack Stack_s reference where the element is to be inserted.
+/// \param[in] element Element to be inserted in the stack.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_ERR_FULL if \c limit is set (more than 0) and the stack height
@@ -456,6 +500,25 @@ Status stk_push(Stack stack, void *element)
     stack->version_id++;
 
     return DS_OK;
+}
+
+/// \brief Alias to stk_push().
+///
+/// An alias to stk_push().
+///
+/// \param[in] stack The stack where the element is to be inserted.
+/// \param[in] element The element to be inserted on the stack.
+///
+/// \return DS_ERR_ALLOC if node allocation failed.
+/// \return DS_ERR_FULL if \c limit is set (more than 0) and the stack height
+/// reached the specified limit.
+/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+///
+/// \see stk_push()
+Status stk_insert(Stack stack, void *element)
+{
+    return stk_push(stack, element);
 }
 
 /// \brief Pops an element from the specified Stack_s.
@@ -492,26 +555,10 @@ void *stk_pop(Stack stack)
     return result;
 }
 
-/// Alias to stk_push().
+/// \brief Removes an element from the specified Stack_s.
 ///
-/// \param[in] stack The stack where the element is to be inserted.
-/// \param[in] element The element to be inserted on the stack.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (more than 0) and the stack height
-/// reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-///
-/// \see stk_push()
-Status stk_insert(Stack stack, void *element)
-{
-    return stk_push(stack, element);
-}
-
-/// \brief Works like stk_pop().
-///
-/// Alias to stk_pop() but result is in the arguments and returns a Status.
+/// Works like stk_pop() but the resulting element is in the arguments and
+/// the function returns a Status.
 ///
 /// \param[in] stack The stack where the element is to be removed from.
 /// \param[out] result The resulting element removed from the stack.
@@ -583,16 +630,52 @@ Status stk_slice(Stack stack)
     return DS_OK;
 }
 
+/// \brief Checks if the specified Stack_s is full.
+///
+/// Returns true if the stack is full or false otherwise. The stack can only be
+/// full if its limit is set to a value higher than 0 and respecting all rules
+/// from stk_set_limit().
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] stack Stack_s reference.
+///
+/// \return True if the stack is full.
+/// \return False if the stack is not full.
 bool stk_full(Stack stack)
 {
     return stack->limit > 0 && stack->height >= stack->limit;
 }
 
+/// \brief Checks if specified Stack_s stack is empty.
+///
+/// Returns true if the stack is empty or false otherwise. The stack is empty
+/// when its length is 0. If every function works properly there is no need to
+/// check if the top pointer is \c NULL or not. The length variable already
+/// tracks it.
+///
+/// \warning This function does not checks for \c NULL references and is prone
+/// to provoke run-time errors if not used correctly.
+///
+/// \param[in] stack Stack_s reference.
+///
+/// \return True if the stack is empty.
+/// \return False if the stack is not empty.
 bool stk_empty(Stack stack)
 {
     return stack->height == 0;
 }
 
+/// \brief Peeks the topmost element.
+///
+/// Returns the pointer to the topmost element. Please use it as a read-only.
+///
+/// \param[in] stack Stack_s reference.
+///
+/// \return \c NULL if either the stack parameter references to \c NULL or if
+/// the stack is empty.
+/// \return The topmost element.
 void *stk_peek(Stack stack)
 {
     if (stack == NULL)
@@ -604,6 +687,46 @@ void *stk_peek(Stack stack)
     return stack->top->data;
 }
 
+/// \brief Checks if a given element is present in the specified Stack_s.
+///
+/// Returns true if the element is present in the stack, otherwise false.
+///
+/// \warning This function does not checks for \c NULL references for either
+/// the stack parameter or if the default compare function is set.
+///
+/// \param[in] stack Stack_s reference.
+/// \param[in] key Key to be matched.
+///
+/// \return True if the element is present in the stack.
+/// \return False if the element is not present in the stack.
+bool stk_contains(Stack stack, void *key)
+{
+    StackNode scan = stack->top;
+
+    while (scan != NULL)
+    {
+        if (stack->d_compare(scan->data, key) == 0)
+            return true;
+
+        scan = scan->below;
+    }
+
+    return false;
+}
+
+/// \brief Makes a copy of the specified Stack_s.
+///
+/// Makes an exact copy of a stack using a default copy function for each
+/// element. It appends every node at the end of the stack until the end of the
+/// source stack.
+///
+/// \param[in] stack Stack_s to be copied.
+/// \param[out] result Resulting copy.
+///
+/// \return DS_ERR_INCOMPLETE_TYPE if either a default copy or a default free
+/// functions are not set.
+/// \return DS_ERR_NULL_POINTER if stack references to \c NULL.
+/// \return DS_OK if all operations are successful.
 Status stk_copy(Stack stack, Stack *result)
 {
     *result = NULL;
@@ -665,12 +788,17 @@ Status stk_copy(Stack stack, Stack *result)
 /// \brief Stacks one stack at the top of the other.
 ///
 /// Stacks the \c stack2 on top of the \c stack1, emptying the \c stack2. Both
-/// stacks need to have been initialized.
+/// stacks need to have been initialized. If the stack1 is empty it will
+/// receive all elements contained in the stack2, otherwise the bottommost
+/// node of stack2 will point to the top node of stack1. If both stacks are
+/// empty nothing will happen.
 ///
-/// \param[in] stack1
-/// \param[in] stack2
+/// \param[in] stack1 Stack to receive elements.
+/// \param[in] stack2 Stack where the elements are going to be taken from.
 ///
-/// \return
+/// \return DS_ERR_NULL_POINTER if either stack1 or stack2 are referencing to
+/// \c NULL.
+/// \return DS_OK if all operations were successful.
 Status stk_stack(Stack stack1, Stack stack2)
 {
     if (stack1 == NULL || stack2 == NULL)
@@ -681,19 +809,41 @@ Status stk_stack(Stack stack1, Stack stack2)
 
     if (stk_empty(stack1))
     {
-        // TODO
+        stack1->top = stack2->top;
+        stack1->height = stack2->height;
+
+        stack2->top = NULL;
+        stack2->height = 0;
     }
     else
     {
-        // TODO
+        StackNode scan = stack2->top;
+
+        while (scan->below !=  NULL)
+            scan = scan->below;
+
+        // stack2 goes on top of stack1
+        scan->below = stack1->top;
+
+        stack1->top = stack2->top;
+        stack1->height += stack2->height;
+
+        stack2->top = NULL;
+        stack2->height = 0;
     }
+
+    stack1->version_id++;
+    stack2->version_id++;
 
     return DS_OK;
 }
 
-/// Displays a \c Stack in the console.
+/// \brief Displays a Stack_s in the console.
 ///
-/// \param stack The stack to be displayed in the console.
+/// Displays a Stack_s in the console with each element in one line separated
+/// by vertical lines or pipes to represent a stack of boxes.
+///
+/// \param[in] stack The stack to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -733,10 +883,13 @@ Status stk_display(Stack stack)
     return DS_OK;
 }
 
-/// Displays a \c Stack in the console like an array with its values separated
-/// by commas, delimited with brackets.
+/// \brief Displays a Stack_s in the console like an array.
 ///
-/// \param stack The stack to be displayed in the console.
+/// Displays a Stack_s in the console like an array with its values separated
+/// by commas, delimited with brackets. The first element is the topmost
+/// element in the stack and the last element is the bottommost element.
+///
+/// \param[in] stack The stack to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -776,9 +929,11 @@ Status stk_display_array(Stack stack)
     return DS_OK;
 }
 
-/// Displays a \c Stack in the console with its values separated by spaces.
+/// \brief Displays a Stack_s in the console.
 ///
-/// \param stack The stack to be displayed in the console.
+/// Displays a Stack_s in the console with its values separated by spaces.
+///
+/// \param[in] stack The stack to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -814,6 +969,7 @@ Status stk_display_raw(Stack stack)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
+// Makes a node.
 static Status stk_make_node(StackNode *node, void *element)
 {
     (*node) = malloc(sizeof(StackNode_t));
@@ -827,6 +983,7 @@ static Status stk_make_node(StackNode *node, void *element)
     return DS_OK;
 }
 
+// Frees a node and its element.
 static Status stk_free_node(StackNode *node, stk_free_f free_f)
 {
     if ((*node) == NULL)
@@ -841,6 +998,7 @@ static Status stk_free_node(StackNode *node, stk_free_f free_f)
     return DS_OK;
 }
 
+// Frees a node but does not frees the element.
 static Status stk_free_node_shallow(StackNode *node)
 {
     if (*node == NULL)
@@ -861,7 +1019,7 @@ static Status stk_free_node_shallow(StackNode *node)
 
 /// \brief An iterator for a Stack_s.
 ///
-///
+/// This iterator is a forward-only iterator.
 struct StackIterator_s
 {
     /// \brief Target Stack_s.

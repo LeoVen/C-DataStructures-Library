@@ -10,6 +10,108 @@
 #include "UnitTest.h"
 #include "Util.h"
 
+// Tests insertion
+Status sli_test_insertion(UnitTest ut)
+{
+    SortedList lists[6];
+
+    int arr[7] = {2, 1, 0, 3, 6, 5, 4};
+
+    Status st;
+
+    st += sli_create(&(lists[0]), ASCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[1]), ASCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[2]), ASCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[3]), DESCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[4]), DESCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[5]), DESCENDING, compare_int, copy_int, display_int, free);
+
+    // Might cause memory leaks in exchange for not causing a run-time error
+    if (st != DS_OK)
+        return st;
+
+    for (int i = 0; i < 7; i++)
+    {
+        st += sli_insert(lists[0], new_int(i));          // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[1], new_int(arr[i]));     // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[2], new_int(6 - i));      // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[3], new_int(i));          // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+        st += sli_insert(lists[4], new_int(arr[6 - i])); // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+        st += sli_insert(lists[5], new_int(6 - i));      // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+    }
+
+    if (st != DS_OK)
+        goto error;
+
+    void *R0[3] = {NULL, NULL, NULL},
+            *R1[3] = {NULL, NULL, NULL},
+            *R2[3] = {NULL, NULL, NULL},
+            *R3[3] = {NULL, NULL, NULL},
+            *R4[3] = {NULL, NULL, NULL},
+            *R5[3] = {NULL, NULL, NULL};
+
+    st += sli_get(lists[0], &(R0[0]), 0); // Front
+    st += sli_get(lists[0], &(R0[1]), 3); // Middle
+    st += sli_get(lists[0], &(R0[2]), 6); // End
+    st += sli_get(lists[1], &(R1[0]), 0); // Front
+    st += sli_get(lists[1], &(R1[1]), 3); // Middle
+    st += sli_get(lists[1], &(R1[2]), 6); // End
+    st += sli_get(lists[2], &(R2[0]), 0); // Front
+    st += sli_get(lists[2], &(R2[1]), 3); // Middle
+    st += sli_get(lists[2], &(R2[2]), 6); // End
+    st += sli_get(lists[3], &(R3[0]), 0); // Front
+    st += sli_get(lists[3], &(R3[1]), 3); // Middle
+    st += sli_get(lists[3], &(R3[2]), 6); // End
+    st += sli_get(lists[4], &(R4[0]), 0); // Front
+    st += sli_get(lists[4], &(R4[1]), 3); // Middle
+    st += sli_get(lists[4], &(R4[2]), 6); // End
+    st += sli_get(lists[5], &(R5[0]), 0); // Front
+    st += sli_get(lists[5], &(R5[1]), 3); // Middle
+    st += sli_get(lists[5], &(R5[2]), 6); // End
+
+    if (st != DS_OK)
+        goto error;
+
+    // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+    ut_equals_int(ut, *(int*)R0[0], 0, __func__);
+    ut_equals_int(ut, *(int*)R0[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R0[2], 6, __func__);
+    ut_equals_int(ut, *(int*)R1[0], 0, __func__);
+    ut_equals_int(ut, *(int*)R1[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R1[2], 6, __func__);
+    ut_equals_int(ut, *(int*)R2[0], 0, __func__);
+    ut_equals_int(ut, *(int*)R2[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R2[2], 6, __func__);
+    // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+    ut_equals_int(ut, *(int*)R3[0], 6, __func__);
+    ut_equals_int(ut, *(int*)R3[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R3[2], 0, __func__);
+    ut_equals_int(ut, *(int*)R4[0], 6, __func__);
+    ut_equals_int(ut, *(int*)R4[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R4[2], 0, __func__);
+    ut_equals_int(ut, *(int*)R5[0], 6, __func__);
+    ut_equals_int(ut, *(int*)R5[1], 3, __func__);
+    ut_equals_int(ut, *(int*)R5[2], 0, __func__);
+
+    for (int i = 0; i < 3; i++)
+    {
+        free(R0[i]);free(R1[i]);free(R2[i]);free(R3[i]);free(R4[i]);free(R5[i]);
+    }
+
+    for (int i = 0; i < 6; i++)
+    {
+        sli_free(&(lists[i]));
+    }
+
+    return DS_OK;
+
+    error:
+    for (int i = 0; i < 6; i++) {
+        sli_free(&(lists[i]));
+    }
+    return st;
+}
+
 // Tests all the functions that shouldn't allow lists without the default
 // functions set.
 Status sli_test_incomplete(UnitTest ut)
@@ -206,6 +308,7 @@ Status SortedListTests(void)
     if (st != DS_OK)
         goto error;
 
+    st += sli_test_insertion(ut);
     st += sli_test_incomplete(ut);
     st += sli_test_limit(ut);
     st += sli_test_indexof(ut);
