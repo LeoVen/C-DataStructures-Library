@@ -8,45 +8,55 @@
 
 #include "CircularLinkedList.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests limit functionality
 Status cll_test_limit(UnitTest ut)
 {
     CircularLinkedList list;
 
-    Status st = cll_init(&list);
+    Status st = cll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
-    st = cll_limit(list, 10);
+    st = cll_set_limit(list, 10);
 
     if (st != DS_OK)
         goto error;
 
+    void *elem;
     for (int i = 0; i < 20; i++)
     {
-        st = cll_insert_before(list, i);
+        elem = new_int(i);
+
+        st = cll_insert_before(list, elem);
+
+        if (st == DS_ERR_FULL)
+        {
+            free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, list->length, list->limit, __func__);
-    ut_equals_int(ut, cll_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_index_t(ut, cll_length(list), cll_limit(list), __func__);
+    ut_equals_int(ut, cll_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    ut_equals_int(ut, cll_insert_after(list, 1), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, cll_insert_before(list, 1), DS_ERR_FULL, __func__);
+    int *t = new_int(1);
+    ut_equals_int(ut, cll_insert_after(list, t), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, cll_insert_before(list, t), DS_ERR_FULL, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, cll_limit(list, 0), DS_OK, __func__);
-    ut_equals_index_t(ut, list->limit, 0, __func__);
-    ut_equals_int(ut, cll_insert_before(list, 10), DS_OK, __func__);
+    ut_equals_int(ut, cll_set_limit(list, 0), DS_OK, __func__);
+    ut_equals_index_t(ut, cll_limit(list), 0, __func__);
+    ut_equals_int(ut, cll_insert_before(list, t), DS_OK, __func__);
 
-    cll_delete(&list);
+    cll_free(&list);
 
     return DS_OK;
 
     error:
-    cll_delete(&list);
+    cll_free(&list);
     return st;
 }
 

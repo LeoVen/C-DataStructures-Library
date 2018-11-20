@@ -359,10 +359,19 @@ int main()
 
     CircularLinkedList cll0, cll1;
 
-    if (cll_init(&cll0) == DS_OK)
+    void *element;
+
+    if (cll_create(&cll0, compare_int, copy_int, display_int, free) == DS_OK)
     {
         for (int i = 0; i < 10; i++)
-            cll_insert_before(cll0, i);
+        {
+            element =  new_int(i);
+
+            st = cll_insert_before(cll0, element);
+
+            if (st != DS_OK)
+                free(element);
+        }
 
         cll_display(cll0);
 
@@ -377,27 +386,29 @@ int main()
         {
             printf("\nOriginal: ");
             cll_display(cll0);
-            printf("\nCurrent data: %d", cll_peek(cll0));
-            printf("\nLength: %lld\n", cll0->length);
+            printf("\nCurrent data: %d", *(int*)cll_peek(cll0));
+            printf("\nLength: %lld\n", cll_length(cll0));
 
             printf("\nCopy: ");
             cll_display(cll1);
-            printf("\nCurrent data: %d", cll_peek(cll1));
-            printf("\nLength: %lld\n", cll1->length);
+            printf("\nCurrent data: %d", *(int*)cll_peek(cll1));
+            printf("\nLength: %lld\n", cll_length(cll1));
         }
 
         printf("\n");
 
-        while (cll0->length > 0)
+        while (cll_length(cll0) > 0)
         {
-            cll_remove_before(cll0, &j);
+            cll_remove_before(cll0, &result);
 
-            printf("%d ", j);
+            printf("%d ", *(int*)result);
+
+            free(result);
         }
     }
 
-    cll_delete(&cll0);
-    cll_delete(&cll1);
+    cll_free(&cll0);
+    cll_free(&cll1);
 
     DequeArray deque;
 

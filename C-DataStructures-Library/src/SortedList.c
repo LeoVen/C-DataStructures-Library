@@ -32,7 +32,8 @@
 /// sets the list pointer to \c NULL. Note that if you haven't set a default
 /// free function you won't be able to delete the list or its elements. You
 /// must set a free function that will be responsible for freeing from memory
-/// all elements.
+/// all elements. You can also use sli_free_shallow() that will only free the
+/// list structure.
 ///
 /// \b Functions \b List
 /// - sli_init()
