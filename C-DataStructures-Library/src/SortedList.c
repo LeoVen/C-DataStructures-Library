@@ -907,7 +907,9 @@ Status sli_remove_max(SortedList list, void **result)
         *result = node->data;
 
         list->tail = list->tail->prev;
-        list->tail->next = NULL;
+
+        if (list->tail != NULL)
+            list->tail->next = NULL;
 
         free(node);
     }
@@ -919,7 +921,9 @@ Status sli_remove_max(SortedList list, void **result)
         *result = node->data;
 
         list->head = list->head->next;
-        list->head->prev = NULL;
+
+        if (list->head != NULL)
+            list->head->prev = NULL;
 
         free(node);
     }
@@ -969,7 +973,9 @@ Status sli_remove_min(SortedList list, void **result)
         *result = node->data;
 
         list->head = list->head->next;
-        list->head->prev = NULL;
+
+        if (list->head != NULL)
+            list->head->prev = NULL;
 
         free(node);
     }
@@ -981,7 +987,9 @@ Status sli_remove_min(SortedList list, void **result)
         *result = node->data;
 
         list->tail = list->tail->prev;
-        list->tail->next = NULL;
+
+        if (list->tail != NULL)
+            list->tail->next = NULL;
 
         free(node);
     }
@@ -1094,12 +1102,16 @@ void *sli_min(SortedList list)
 /// \param[in] list SortedList_s reference.
 /// \param[in] key Key to be searched in the list.
 ///
-/// \return -2 if the list references to \c NULL.
+/// \return -3 if the list references to \c NULL.
+/// \return -2 if there is no default compare function.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
 index_t sli_index_first(SortedList list, void *key)
 {
     if (list == NULL)
+        return -3;
+
+    if (list->d_compare == NULL)
         return -2;
 
     SortedListNode scan = list->head;
@@ -1127,12 +1139,16 @@ index_t sli_index_first(SortedList list, void *key)
 /// \param[in] list SortedList_s reference.
 /// \param[in] key Key to be searched in the list.
 ///
-/// \return -2 if the list references to \c NULL.
+/// \return -3 if the list references to \c NULL.
+/// \return -2 if there is no default compare function.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
 index_t sli_index_last(SortedList list, void *key)
 {
     if (list == NULL)
+        return -3;
+
+    if (list->d_compare == NULL)
         return -2;
 
     SortedListNode scan = list->tail;

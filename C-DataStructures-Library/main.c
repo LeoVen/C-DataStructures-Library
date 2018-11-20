@@ -909,6 +909,7 @@ int main()
     QueueArrayTests();
     QueueTests();
     SinglyLinkedListTests();
+    SortedListTests();
     StackArrayTests();
     StackTests();
 
