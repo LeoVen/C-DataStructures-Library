@@ -117,7 +117,56 @@ Status que_display_raw(Queue que);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+// A queue iterator. See the source file for the full documentation.
+struct QueueIterator_s;
+
+/// \brief A type for a queue iterator.
+///
+/// A type for a <code> struct QueueIterator_s </code>.
+typedef struct QueueIterator_s QueueIterator_t;
+
+/// \brief A pointer type for a queue iterator.
+///
+/// A pointer type for a <code> struct QueueIterator_s </code>.
+typedef struct QueueIterator_s *QueueIterator;
+
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
+
+Status que_iter_init(QueueIterator *iter, Queue target);
+
+Status que_iter_retarget(QueueIterator *iter, Queue target);
+
+Status que_iter_free(QueueIterator *iter);
+
+///////////////////////////////////////////////////////////////// ITERATION ///
+
+Status que_iter_next(QueueIterator iter);
+
+Status que_iter_to_front(QueueIterator iter);
+
+Status que_iter_to_rear(QueueIterator iter);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+bool que_iter_has_next(QueueIterator iter);
+
+////////////////////////////////////////////////////////// SETTER AND GETTER ///
+
+Status que_iter_get(QueueIterator iter, void **result);
+
+Status que_iter_set(QueueIterator iter, void *element);
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+Status que_iter_insert(QueueIterator iter, void *element);
+
+Status que_iter_remove(QueueIterator iter, void **result);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *que_iter_peek_next(QueueIterator iter);
+
+void *que_iter_peek(QueueIterator iter);
 
 #ifdef __cplusplus
 }

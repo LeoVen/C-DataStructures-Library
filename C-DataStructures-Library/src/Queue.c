@@ -789,4 +789,316 @@ static Status que_free_node_shallow(QueueNode *node)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+/// \brief An iterator for a Queue_s.
+///
+/// This iterator is a forward-only iterator.
+struct QueueIterator_s
+{
+    /// \brief Target Queue_s.
+    ///
+    /// Target Queue_s. The iterator might need to use some information
+    /// provided by the queue or change some of its data members.
+    struct Queue_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Points to the current node. The iterator is always initialized with the
+    /// cursor pointing to the start (front) of the queue.
+    struct QueueNode_s *cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure. This is kept to prevent iteration on the target structure
+    /// that may have been modified and thus causing undefined behaviours or
+    /// run-time crashes.
+    index_t target_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool que_iter_target_modified(QueueIterator iter);
+
+static bool que_iter_invalid_state(QueueIterator iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+Status que_iter_init(QueueIterator *iter, Queue target)
+{
+    *iter = malloc(sizeof(QueueIterator_t));
+
+    if (!(*iter))
+        return DS_ERR_ALLOC;
+
+    (*iter)->target = target;
+    (*iter)->target_id = target->version_id;
+    (*iter)->cursor = target->front;
+
+    return DS_OK;
+}
+
+Status que_iter_retarget(QueueIterator *iter, Queue target)
+{
+    Status st = que_iter_free(iter);
+
+    if (st != DS_OK)
+        return st;
+
+    st = que_iter_init(iter, target);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
+}
+
+Status que_iter_free(QueueIterator *iter)
+{
+    if (*iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*iter);
+
+    *iter = NULL;
+
+    return DS_OK;
+}
+
+Status que_iter_next(QueueIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!que_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->cursor->prev;
+
+    return DS_OK;
+}
+
+Status que_iter_to_front(QueueIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!que_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->target->front;
+
+    return DS_OK;
+}
+
+Status que_iter_to_rear(QueueIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!que_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor = iter->target->rear;
+
+    return DS_OK;
+}
+
+bool que_iter_has_next(QueueIterator iter)
+{
+    return iter->cursor->prev != NULL;
+}
+
+Status que_iter_get(QueueIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_copy == NULL || iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    *result = iter->target->d_copy(iter->cursor->data);
+
+    return DS_OK;
+}
+
+Status que_iter_set(QueueIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    iter->target->d_free(iter->cursor->data);
+
+    iter->cursor->data = element;
+
+    return DS_OK;
+}
+
+Status que_iter_insert(QueueIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    QueueNode node;
+
+    Status st = que_make_node(&node, element);
+
+    if (st != DS_OK)
+        return st;
+
+    if (que_empty(iter->target))
+    {
+        iter->target->front = node;
+        iter->target->rear = node;
+
+        iter->cursor = node;
+    }
+    else
+    {
+        node->prev = iter->cursor->prev;
+
+        iter->cursor->prev = node;
+    }
+
+    iter->target->length++;
+
+    iter->target->version_id++;
+    iter->target_id++;
+
+    return DS_OK;
+}
+
+Status que_iter_remove(QueueIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (que_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (que_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!que_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    Status st;
+
+    if (que_length(iter->target) == 1)
+    {
+        *result = iter->cursor->data;
+
+        st = que_free_node_shallow(&(iter->cursor));
+
+        if (st != DS_OK)
+            return st;
+
+        iter->cursor = NULL;
+
+        iter->target->front = NULL;
+        iter->target->rear = NULL;
+    }
+    else
+    {
+        QueueNode node = iter->cursor->prev;
+
+        *result = node->data;
+
+        iter->cursor->prev = node->prev;
+
+        st = que_free_node_shallow(&node);
+
+        if (st != DS_OK)
+            return st;
+    }
+
+    iter->target->length--;
+
+    iter->target->version_id++;
+    iter->target_id++;
+
+    return DS_OK;
+}
+
+void *que_iter_peek_next(QueueIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (que_iter_invalid_state(iter))
+        return NULL;
+
+    if (que_iter_target_modified(iter))
+        return NULL;
+
+    if (!que_iter_has_next(iter))
+        return NULL;
+
+    return iter->cursor->prev->data;
+}
+
+void *que_iter_peek(QueueIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (que_iter_invalid_state(iter))
+        return NULL;
+
+    if (que_iter_target_modified(iter))
+        return NULL;
+
+    return iter->cursor->data;
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool que_iter_target_modified(QueueIterator iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+static bool que_iter_invalid_state(QueueIterator iter)
+{
+    return iter->cursor == NULL || iter->target == NULL;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
