@@ -33,7 +33,14 @@
 /// free function you won't be able to delete the list or its elements. You
 /// must set a free function that will be responsible for freeing from memory
 /// all elements. You can also use sli_free_shallow() that will only free the
-/// list structure.
+/// list structure. If you simply want to erase all its contents use
+/// sli_erase(). This will keep all default functions and all elements will be
+/// removed from the list and freed from memory.
+///
+/// The list maintains a version id that keeps track of structural changes done
+/// to the list. This prevents any iterators from working the moment the list
+/// structure is changed. It works to prevent any undefined behaviour or
+/// run-time errors.
 ///
 /// \b Functions \b List
 /// - sli_init()

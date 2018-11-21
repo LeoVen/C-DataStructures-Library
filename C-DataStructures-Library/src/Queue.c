@@ -21,11 +21,31 @@
 ///  element (like a Deque implemented with a DoublyLinkedList).
 ///
 /// To initialize the queue use que_init(). This only initializes the structure.
-/// If you don't set the default functions later you won't be able do certain
-/// operations. If you want to initialize it completely, use instead
+/// If you don't set the default functions later you won't be able to do
+/// certain operations. If you want to initialize it completely, use instead
 /// que_create(). Here you must pass in default functions (compare, copy,
 /// display and free) according with the specifications of each type of
-/// function.
+/// function. You can also use que_free_shallow() that will only free the queue
+/// structure.
+///
+/// To insert elements in the queue use que_enqueue() and it is equivalent to
+/// inserting an element at the tail of a linked list. To remove an element use
+/// que_dequeue() and it is equivalent to removing and element at the head of
+/// a linked list.
+///
+/// To delete a queue use que_free(). This completely frees all elements and
+/// sets the queue pointers to \c NULL. Note that if you haven't set a default
+/// free function you won't be able to delete the queue or its elements. You
+/// must set a free function that will be responsible for freeing from memory
+/// all elements. You can also use que_free_shallow() that will only free the
+/// queue structure. If you simply want to erase all its contents use
+/// que_erase(). This will keep all default functions and all elements will be
+/// removed from the queue and freed from memory.
+///
+/// The queue maintains a version id that keeps track of structural changes
+/// done to the queue. This prevents any iterators from working the moment the
+/// queue structure is changed. It works to prevent any undefined behaviour or
+/// run-time errors.
 ///
 /// \b Advantages over QueueArray_s
 /// - Indefinitely grows
@@ -357,7 +377,7 @@ Status que_set_func_compare(Queue queue, que_compare_f function)
 /// with the que_copy_f specifications.
 ///
 /// \param[in] queue Queue_s to set the default copy function.
-/// \param[in] function An que_copy_f kind of function.
+/// \param[in] function A que_copy_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
@@ -377,7 +397,7 @@ Status que_set_func_copy(Queue queue, que_copy_f function)
 /// with the que_display_f specifications. Useful for debugging.
 ///
 /// \param[in] queue Queue_s to set the default display function.
-/// \param[in] function An que_display_f kind of function.
+/// \param[in] function A que_display_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
@@ -397,7 +417,7 @@ Status que_set_func_display(Queue queue, que_display_f function)
 /// with the que_free_f specifications.
 ///
 /// \param[in] queue Queue_s to set the default free function.
-/// \param[in] function An que_free_f kind of function.
+/// \param[in] function A que_free_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
@@ -539,36 +559,36 @@ Status que_dequeue(Queue queue, void **result)
     return DS_OK;
 }
 
-bool que_full(Queue que)
+bool que_full(Queue queue)
 {
-    return que->limit > 0 && que->length >= que->limit;
+    return queue->limit > 0 && queue->length >= queue->limit;
 }
 
-bool que_empty(Queue que)
+bool que_empty(Queue queue)
 {
-    return que->length == 0;
+    return queue->length == 0;
 }
 
-void *que_peek_front(Queue que)
+void *que_peek_front(Queue queue)
 {
-    if (que == NULL)
+    if (queue == NULL)
         return NULL;
 
-    if (que_empty(que))
+    if (que_empty(queue))
         return NULL;
 
-    return que->front->data;
+    return queue->front->data;
 }
 
-void *que_peek_rear(Queue que)
+void *que_peek_rear(Queue queue)
 {
-    if (que == NULL)
+    if (queue == NULL)
         return NULL;
 
-    if (que_empty(que))
+    if (que_empty(queue))
         return NULL;
 
-    return que->rear->data;
+    return queue->rear->data;
 }
 
 Status que_copy(Queue queue, Queue *result)

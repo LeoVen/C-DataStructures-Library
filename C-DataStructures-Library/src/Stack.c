@@ -21,9 +21,9 @@
 ///
 /// To initialize the stack use stk_init(). This only initializes the
 /// structure. If you don't set the default functions later you won't be able
-/// do certain operations. If you want to initialize it completely, use instead
-/// sli_create(). Here you must pass in default functions (compare, copy,
-/// display and free) according with the specifications of each type of
+/// to do certain operations. If you want to initialize it completely, use
+/// instead stk_create(). Here you must pass in default functions (compare,
+/// copy, display and free) according with the specifications of each type of
 /// function.
 ///
 /// To insert elements in the stack use stk_push() or stk_insert() as an alias.
@@ -37,7 +37,15 @@
 /// sets the stack pointer to \c NULL. Note that if you haven't set a default
 /// free function you won't be able to delete the stack or its elements. You
 /// must set a free function that will be responsible for freeing from memory
-/// all elements.
+/// all elements. You can also use stk_free_shallow() that will only free the
+/// stack structure. If you simply want to erase all its contents use
+/// stk_erase(). This will keep all default functions and all elements will be
+/// removed from the stack and freed from memory.
+///
+/// The stack maintains a version id that keeps track of structural changes
+/// done to the stack. This prevents any iterators from working the moment the
+/// stack structure is changed. It works to prevent any undefined behaviour or
+/// run-time errors.
 ///
 /// \b Advantages over StackArray_s
 /// - Indefinitely grows

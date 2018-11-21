@@ -87,31 +87,31 @@ index_t que_limit(Queue queue);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status que_enqueue(Queue que, void *element);
+Status que_enqueue(Queue queue, void *element);
 
-Status que_dequeue(Queue que, void **result);
+Status que_dequeue(Queue queue, void **result);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool que_full(Queue que);
+bool que_full(Queue queue);
 
-bool que_empty(Queue que);
+bool que_empty(Queue queue);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *que_peek_front(Queue que);
+void *que_peek_front(Queue queue);
 
-void *que_peek_rear(Queue que);
+void *que_peek_rear(Queue queue);
 
-Status que_copy(Queue que, Queue *result);
+Status que_copy(Queue queue, Queue *result);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status que_display(Queue que);
+Status que_display(Queue queue);
 
-Status que_display_array(Queue que);
+Status que_display_array(Queue queue);
 
-Status que_display_raw(Queue que);
+Status que_display_raw(Queue queue);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

@@ -34,7 +34,9 @@ Status que_test_limit(UnitTest ut)
         st = que_enqueue(queue, elem);
 
         if (st == DS_ERR_FULL)
+        {
             free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);

@@ -8,22 +8,52 @@
 
 #include "Array.h"
 
-/// \brief A C array wrapper.
+/// \brief A C generic array wrapper.
 ///
 /// An Array_s is an abstraction of a C array composed of a data buffer and a
 /// length variable. It is a static array, that is, it won't increase in size.
-/// Higher level languages provide a quick way to get the array's and this
-/// struct abstracts exactly that.
+/// Higher level languages provide a quick way to get the array's length and
+/// this struct abstracts exactly that.
 ///
-/// It also maintains a \c version_id that keeps track of changes and is used
-/// by the ArrayIterator_s.
+/// Every position of the array is set to \c NULL. As you add elements these
+/// holes will be filled up. To set a given position in the array with a new
+/// element that position needs to be equal to \c NULL, that is, an empty
+/// space. To remove an element from a position, that position must not be
+/// \c NULL. There are functions that will remove/add an item at the first/last
+/// position if available and then will provide an index to where the change
+/// was done.
 ///
-/// To initialize an Array_s use arr_init(). To free it from memory use
-/// arr_free().
+/// To initialize the array use arr_init(). This only initializes the
+/// structure. If you don't set the default functions later you won't be able
+/// to do certain operations. If you want to initialize it completely, use
+/// instead arr_create(). Here you must pass in default functions (compare,
+/// copy, display and free) according with the specifications of each type of
+/// function.
+///
+/// To add elements to the array use arr_set(). It will only work if the index
+/// represents an empty slot. You can also use arr_set_next() to place an
+/// element at the next available slot or arr_set_last() to place it in the
+/// last available slot. These two last functions will return an index to where
+/// the element was added to.
+///
+/// To remove elements you can use arr_pop(). You can also use arr_pop_next()
+/// to remove the next available element or arr_pop_last() to remove tha last
+/// available element.
 ///
 /// Since access to the buffer is protected you can use arr_set() and arr_get()
-/// to set an index to a given value or get a value from the index respectively
-/// respectively.
+/// to set an index to a given value or get a value from the specified index
+/// respectively. You can also use arr_get_next() to get the next available
+/// element or arr_get_last() to get the last available element.
+///
+/// Note that arr_set() will first check if the given index is an empty slot.
+/// If so it will simply populate that position. If there is an element already
+/// then it will use the default free function on it and then place the new
+/// element at that position.
+///
+/// The array maintains a version id that keeps track of structural changes
+/// done to the array. This prevents any iterators from working the moment the
+/// array structure is changed. It works to prevent any undefined behaviour or
+/// run-time errors.
 struct Array_s
 {
     /// \brief Data buffer.
@@ -475,40 +505,100 @@ bool arr_empty(Array array)
     return true;
 }
 
-Status arr_sort(Array array)
+void *arr_max(Array array)
 {
     if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+        return NULL;
 
-    if (array->d_compare == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    index_t index;
 
-    arr_quicksort(array, array->buffer, array->length);
+    void *result = arr_get_next(array, &index);
 
-    array->version_id++;
+    if (result == NULL)
+        return NULL;
 
-    return DS_OK;
+    for (index_t i = index; i < array->length; i++)
+    {
+        if (array->d_compare(array->buffer[i], result) > 0)
+            result = array->buffer[i];
+    }
+
+    return result;
 }
 
-Status arr_copy(Array array, Array *result)
+void *arr_min(Array array)
 {
     if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+        return NULL;
 
-    if (array->d_copy == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    if (array->d_compare == NULL)
+        return NULL;
 
-    Status st = arr_create(result, array->length, array->d_compare,
-                           array->d_copy, array->d_display, array->d_free);
+    index_t index;
 
-    if (st != DS_OK)
-        return st;
+    void *result = arr_get_next(array, &index);
 
+    if (result == NULL)
+        return NULL;
+
+    for (index_t i = index; i < array->length; i++)
+    {
+        if (array->d_compare(array->buffer[i], result) < 0)
+            result = array->buffer[i];
+    }
+
+    return result;
+}
+
+index_t arr_index_first(Array array, void *key)
+{
+    if (array == NULL)
+        return -3;
+
+    if (array->d_compare == NULL)
+        return -2;
+
+    index_t index = 0;
+
+    for (index_t i = 0; i < array->length; i++, index++)
+    {
+        if (array->d_compare(array->buffer[i], key) == 0)
+            return index;
+    }
+
+    // Not found
+    return -1;
+}
+
+index_t arr_index_last(Array array, void *key)
+{
+    if (array == NULL)
+        return -3;
+
+    if (array->d_compare == NULL)
+        return -2;
+
+    index_t index = array->length - 1;
+
+    for (index_t i = array->length - 1; i >= 0; i--, index--)
+    {
+        if (array->d_compare(array->buffer[i], key) == 0)
+            return index;
+    }
+
+    // Not found
+    return -1;
+}
+
+bool arr_contains(Array array, void *key)
+{
     for (index_t i = 0; i < array->length; i++)
-        (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
-                               array->d_copy(array->buffer[i]);
+    {
+        if (array->d_compare(array->buffer[i], key) == 0)
+            return true;
+    }
 
-    return DS_OK;
+    return false;
 }
 
 Status arr_switch(Array array, index_t pos1, index_t pos2)
@@ -545,6 +635,69 @@ Status arr_reverse(Array arr)
         if (st != DS_OK)
             return st;
     }
+
+    return DS_OK;
+}
+
+Status arr_sort(Array array)
+{
+    if (array == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (array->d_compare == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    arr_quicksort(array, array->buffer, array->length);
+
+    array->version_id++;
+
+    return DS_OK;
+}
+
+Status arr_to_array(Array array, void ***result, index_t *length)
+{
+    // If anything goes wrong...
+    *result = NULL;
+    *length = -1;
+
+    if (array == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (array->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    *length = array->length;
+
+    *result = malloc(sizeof(void*) * (*length));
+
+    if (!(*result))
+        return DS_ERR_NULL_POINTER;
+
+    for (index_t i = 0; i < *length; i++)
+    {
+        (*result)[i] = array->d_copy(array->buffer[i]);
+    }
+
+    return DS_OK;
+}
+
+Status arr_copy(Array array, Array *result)
+{
+    if (array == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (array->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    Status st = arr_create(result, array->length, array->d_compare,
+                           array->d_copy, array->d_display, array->d_free);
+
+    if (st != DS_OK)
+        return st;
+
+    for (index_t i = 0; i < array->length; i++)
+        (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
+                               array->d_copy(array->buffer[i]);
 
     return DS_OK;
 }

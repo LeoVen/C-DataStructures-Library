@@ -114,13 +114,25 @@ bool arr_empty(Array array);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-Status arr_sort(Array array);
+void *arr_max(Array array);
 
-Status arr_copy(Array array, Array *result);
+void *arr_min(Array array);
+
+index_t arr_index_first(Array array, void *key);
+
+index_t arr_index_last(Array array, void *key);
+
+bool arr_contains(Array array, void *key);
 
 Status arr_switch(Array array, index_t pos1, index_t pos2);
 
 Status arr_reverse(Array array);
+
+Status arr_copy(Array array, Array *result);
+
+Status arr_to_array(Array array, void ***result, index_t *length);
+
+Status arr_sort(Array array);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

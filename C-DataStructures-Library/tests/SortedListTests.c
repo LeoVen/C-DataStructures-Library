@@ -177,15 +177,16 @@ Status sli_test_limit(UnitTest ut)
         goto error;
 
     void *elem;
-
     for (int i = 0; i < 20; i++)
     {
         elem = new_int(i);
 
         st = sli_insert(list, elem);
 
-        if (st !=  DS_OK)
+        if (st ==  DS_ERR_FULL)
+        {
             free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
