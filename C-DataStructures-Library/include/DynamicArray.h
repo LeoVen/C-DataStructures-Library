@@ -15,153 +15,155 @@
 extern "C" {
 #endif
 
-/// A DynamicArray is an Array that grows in size when needed. It has a
-/// \c capacity that grows according to \c growth_rate. Both parameters can be
-/// set by the user using the function dar_create() when creating a new array.
-/// It can also be locked, disabling the growth functionality, or unlocked,
-/// enabling it back.
+// A dynamic C array wrapper. See the source file for the documentation.
+struct DynamicArray_s;
+
+/// \brief A type for a an DynamicArray_s.
 ///
-///
-/// TODO Add support to negative index searches
-struct DynamicArray_s
-{
-    /// \brief Data buffer.
-    ///
-    /// Buffer where elements are stored in.
-    int *buffer;
-
-    /// \brief Current amount of elements in the \c DynamicArray.
-    ///
-    /// Current amount of elements in the \c DynamicArray.
-    index_t size;
-
-    /// \brief \c DynamicArray buffer maximum capacity.
-    ///
-    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
-    /// reallocated and increases according to \c growth_rate.
-    index_t capacity;
-
-    /// \brief Buffer growth rate.
-    ///
-    /// Buffer growth rate. The new buffer capacity is calculated as:
-    ///
-    /// <code> capacity *= (growth_rate / 100.0) </code>
-    index_t growth_rate;
-
-    /// \brief Flag for locked capacity.
-    ///
-    /// If \c locked is set to true the buffer will not grow and if any
-    /// elements are inserted with a full buffer \c DS_ERR_FULL will be
-    /// returned.
-    bool locked;
-};
-
-/// Defines a type for <code> struct DynamicArray_s </code>.
-///
-/// Every dynamic array is initialized by \c malloc with
-/// \c sizeof(DynamicArray_t).
+/// A type for a <code> struct DynamicArray_s </code> so you don't have to
+/// always write the full name of it.
 typedef struct DynamicArray_s DynamicArray_t;
 
-/// Defines a type of pointer to <code> struct DynamicArray_s </code>.
+/// \brief A pointer type for an DynamicArray_s.
 ///
-/// This typedef is used to avoid having to declare every array as a pointer
-/// type since they all must be dynamically allocated.
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
 typedef struct DynamicArray_s *DynamicArray;
 
-/// Initializes a \c DynamicArray with an initial capacity of 32 and a growth
-/// rate of 200, that is, twice the size after each growth.
+/// \brief Display function type.
 ///
-/// \param[in,out] dar The dynamic array to be initialized.
+/// A type for a function that displays an element in the console.
+typedef void(*dar_display_f)(void *);
+
+/// \brief Comparator function type.
 ///
-/// \return DS_ERR_ALLOC if dynamic array allocation failed.
-/// \return DS_OK if all operations were successful.
+/// A type for a function that compares two elements, returning:
+/// - [ > 0] when the first element is greater than the second;
+/// - [ < 0] when the first element is less than the second;
+/// - 0 when both elements are equal.
 ///
-/// \see dar_create
-Status dar_init(DynamicArray *dar);
+/// Used when sorting the array.
+typedef int(*dar_compare_f)(void *, void *);
 
-/// Initializes a \c DynamicArray with a user defined \c initial_capacity and
-/// \c growth_rate. This function only accepts an \c initial_capacity greater
-/// than 8 and a \c growth_rate greater than 100; but keep in mind that in some
-/// cases if the \c initial_capacity is too small and the \c growth_rate is too
-/// close to 100 there won't be an increase in capacity and the minimum growth
-/// will be triggered.
+/// \brief A Copy function type.
 ///
-/// \param[in,out] dar The dynamic array to be initialized.
-/// \param[in] initial_capacity Buffer initial capacity.
-/// \param[in] growth_rate Buffer growth rate.
+/// A type for a function that takes an input (first parameter) and returns an
+/// exact copy of that element.
+typedef void *(*dar_copy_f)(void *);
+
+/// \brief A Free function type.
 ///
-/// \return DS_ERR_ALLOC if dynamic array allocation failed.
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
-/// growth_rate is less than or equal to 100.
-/// \return DS_OK if all operations were successful.
-///
-/// \see qua_init
-Status dar_create(DynamicArray *dar, index_t initial_capacity, index_t growth_rate);
+/// A type for a function responsible for completely freeing an element from
+/// memory.
+typedef void(*dar_free_f)(void *);
 
-/// Initializes a new DynamicArray from an already existing data array.
-///
-/// \param dar The dynamic array to be initialized.
-/// \param array The source array.
-/// \param arr_size The size of the source array.
-///
-/// \return DS_ERR_ALLOC if dynamic array allocation or reallocation failed.
-/// \return DS_ERR_NEGATIVE_VALUE if \c arr_size parameter is a negative value.
-/// \return DS_OK if all operations were successful.
-Status dar_make(DynamicArray *dar, int *array, index_t arr_size);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status dar_insert(DynamicArray dar, int *array, index_t arr_size, index_t index);
+Status dar_init(DynamicArray *d_array);
 
-Status dar_insert_front(DynamicArray dar, int value);
+Status dar_create(DynamicArray *d_array, index_t initial_capacity,
+        index_t growth_rate, dar_compare_f compare_f, dar_copy_f copy_f,
+        dar_display_f display_f, dar_free_f free_f);
 
-Status dar_insert_at(DynamicArray dar, int value, index_t index);
+Status dar_free(DynamicArray *d_array);
 
-Status dar_insert_back(DynamicArray dar, int value);
+Status dar_free_shallow(DynamicArray *d_array);
 
-Status dar_remove(DynamicArray dar, index_t from, index_t to);
+Status dar_erase(DynamicArray *d_array);
 
-Status dar_remove_front(DynamicArray dar, int *result);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status dar_remove_at(DynamicArray dar, int *result, index_t index);
+Status dar_set_func_compare(DynamicArray d_array, dar_compare_f function);
 
-Status dar_remove_back(DynamicArray dar, int *result);
+Status dar_set_func_copy(DynamicArray d_array, dar_copy_f function);
 
-Status dar_update(DynamicArray dar, int value, index_t index);
+Status dar_set_func_display(DynamicArray d_array, dar_display_f function);
 
-Status dar_get(DynamicArray dar, int *result, index_t index);
+Status dar_set_func_free(DynamicArray d_array, dar_free_f function);
 
-Status dar_display(DynamicArray dar);
+Status dar_capacity_lock(DynamicArray d_array);
 
-Status dar_display_array(DynamicArray dar);
+Status dar_capacity_unlock(DynamicArray d_array);
 
-Status dar_display_raw(DynamicArray dar);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-Status dar_delete(DynamicArray *dar);
+index_t dar_capacity(DynamicArray d_array);
 
-Status dar_erase(DynamicArray *dar);
+index_t dar_size(DynamicArray d_array);
 
-index_t dar_cap(DynamicArray dar);
+index_t dar_growth_rate(DynamicArray d_array);
 
-index_t dar_size(DynamicArray dar);
+bool dar_is_locked(DynamicArray d_array);
 
-bool dar_empty(DynamicArray dar);
+void *dar_get(DynamicArray d_array, index_t index);
 
-bool dar_full(DynamicArray dar);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-bool dar_fits(DynamicArray dar, index_t size);
+Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
+        index_t index);
 
-bool dar_contains(DynamicArray dar, int value);
+Status dar_insert_front(DynamicArray d_array, void *element);
 
-Status dar_copy(DynamicArray dar, DynamicArray *result);
+Status dar_insert_at(DynamicArray d_array, void *element, index_t index);
 
-Status dar_prepend(DynamicArray dar1, DynamicArray dar2);
+Status dar_insert_back(DynamicArray d_array, void *element);
 
-Status dar_add(DynamicArray dar1, DynamicArray dar2, index_t index);
+Status dar_remove(DynamicArray d_array, index_t from, index_t to,
+        void ***result, index_t *size);
 
-Status dar_append(DynamicArray dar1, DynamicArray dar2);
+Status dar_remove_front(DynamicArray d_array, void **result);
 
-Status dar_cap_lock(DynamicArray dar);
+Status dar_remove_at(DynamicArray d_array, void **result, index_t index);
 
-Status dar_cap_unlock(DynamicArray dar);
+Status dar_remove_back(DynamicArray d_array, void **result);
+
+Status dar_delete(DynamicArray d_array, index_t from, index_t to);
+
+Status dar_prepend(DynamicArray d_array1, DynamicArray d_array2);
+
+Status dar_add(DynamicArray d_array1, DynamicArray d_array2, index_t index);
+
+Status dar_append(DynamicArray d_array1, DynamicArray d_array2);
+
+Status dar_replace(DynamicArray d_array, void *element, index_t index);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+bool dar_empty(DynamicArray d_array);
+
+bool dar_full(DynamicArray d_array);
+
+bool dar_fits(DynamicArray d_array, index_t size);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *dar_max(DynamicArray d_array);
+
+void *dar_min(DynamicArray d_array);
+
+index_t dar_index_first(DynamicArray d_array, void *key);
+
+index_t dar_index_last(DynamicArray d_array, void *key);
+
+bool dar_contains(DynamicArray d_array, void *element);
+
+Status dar_switch(DynamicArray d_array, index_t pos1, index_t pos2);
+
+Status dar_reverse(DynamicArray d_array);
+
+Status dar_copy(DynamicArray d_array, DynamicArray *result);
+
+Status dar_to_array(DynamicArray d_array, void ***result, index_t *length);
+
+Status dar_sort(DynamicArray d_array);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+Status dar_display(DynamicArray d_array);
+
+Status dar_display_array(DynamicArray d_array);
+
+Status dar_display_raw(DynamicArray d_array);
 
 #ifdef __cplusplus
 }

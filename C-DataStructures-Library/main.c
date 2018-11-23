@@ -26,7 +26,7 @@ int main()
 
     int j;
     index_t l;
-    void *result;
+    void *result, *element;
 
     if (sll_init(&sll0) == DS_OK)
     {
@@ -189,45 +189,81 @@ int main()
 
     DynamicArray dar0, dar1, dar2;
 
-    int arr[4] = {5, 5, 5, 5};
+    void *arr[4] = {new_int(5), new_int(5), new_int(5), new_int(5)};
 
-    if (dar_init(&dar0) == DS_OK)
+    if(dar_create(&dar0,32,200,compare_int,copy_int,display_int,free) == DS_OK)
     {
         for (int i = 0; i < 15; i++)
         {
-            if (dar_insert_back(dar0, i) != DS_OK)
-                break;
+            element = new_int(i);
+
+            st = dar_insert_back(dar0, element);
+
+            if (st != DS_OK)
+            {
+                free(element);
+                status_print(st);
+            }
         }
 
         dar_display(dar0);
 
-        if (dar_insert(dar0, arr, 4, dar0->size) == DS_OK)
+        if (dar_insert(dar0, arr, 4, dar_size(dar0)) == DS_OK)
         {
             dar_display(dar0);
 
-            printf("\nArray 0 size: %lld\n", dar0->size);
+            printf("\nArray 0 size: %lld\n", dar_size(dar0));
 
             if (dar_copy(dar0, &dar1) == DS_OK)
             {
-                if (dar_remove(dar1, 11, 13) == DS_OK)
+                if (dar_delete(dar1, 8, 13) == DS_OK)
                 {
                     dar_display(dar1);
 
-                    printf("\nArray 1 size: %lld\n", dar1->size);
+                    printf("\nArray 1 size: %lld\n", dar_size(dar1));
                 }
+
+                dar_free(&dar1);
             }
         }
+        dar_free(&dar0);
     }
 
-    dar_delete(&dar0);
-    dar_delete(&dar1);
-
-    if (dar_init(&dar0) == DS_OK && dar_init(&dar1) == DS_OK && dar_init(&dar2) == DS_OK)
+    if(dar_create(&dar0,32,200,compare_int,copy_int,display_int,free) == DS_OK
+    && dar_create(&dar1,32,200,compare_int,copy_int,display_int,free) == DS_OK
+    && dar_create(&dar2,32,200,compare_int,copy_int,display_int,free) == DS_OK)
     {
-        for (index_t i = 0, j = 9; i < j; i++, j--)
+        for (int i = 0, k = 9; i < k; i++, k--)
         {
-            if (dar_insert_back(dar0, i) != DS_OK || dar_insert_front(dar1, j) != DS_OK || dar_insert_back(dar2, 9))
-                break;
+            element = new_int(i);
+
+            st = dar_insert_back(dar0, element);
+
+            if (st != DS_OK)
+            {
+                status_print(st);
+                free(element);
+            }
+
+            element = new_int(k);
+
+            st = dar_insert_front(dar1, element);
+
+            if (st != DS_OK)
+            {
+                status_print(st);
+                free(element);
+            }
+
+            element = new_int(9);
+
+            st = dar_insert_back(dar2, element);
+
+            if (st != DS_OK)
+            {
+                status_print(st);
+                free(element);
+            }
         }
 
         printf("\nOriginal\n");
@@ -240,7 +276,9 @@ int main()
             printf("\nAppend dar1 to dar0\ndar0: ");
             dar_display_array(dar0);
 
-            dar_remove(dar0, 5, 9);
+            //dar_delete(dar0, 5, 9);
+            printf("SIZE 0 : %lld\n", dar_size(dar0));
+            printf("SIZE 1 : %lld\n", dar_size(dar1));
         }
 
         if (dar_prepend(dar1, dar0) == DS_OK)
@@ -248,31 +286,34 @@ int main()
             printf("\nAppend dar0 to dar1\ndar1: ");
             dar_display_array(dar1);
 
-            dar_remove(dar1, 5, 9);
+            //dar_delete(dar1, 5, 9);
+            printf("SIZE 0 : %lld\n", dar_size(dar0));
+            printf("SIZE 1 : %lld\n", dar_size(dar1));
         }
 
-        if (dar_add(dar0, dar2, 2) == DS_OK)
+        if (dar_add(dar1, dar2, 2) == DS_OK)
         {
-            printf("\nAdd dar2 to dar0 at index 2\ndar0: ");
-            dar_display_array(dar0);
+            printf("\nAdd dar2 to dar1 at index 2\ndar0: ");
+            dar_display_array(dar1);
 
-            dar_remove(dar0, 2, dar2->size + 1);
+            //dar_delete(dar0, 2, dar_size(dar2) + 1);
+            printf("SIZE 0 : %lld\n", dar_size(dar0));
+            printf("SIZE 2 : %lld\n", dar_size(dar2));
         }
 
         printf("\nEnd: ");
 
         dar_display_array(dar0);
-        printf("Size: %lld\n", dar0->size);
+        printf("Size: %lld\n", dar_size(dar0));
         dar_display_array(dar1);
-        printf("Size: %lld\n", dar1->size);
+        printf("Size: %lld\n", dar_size(dar1));
         dar_display_array(dar2);
-        printf("Size: %lld\n", dar2->size);
+        printf("Size: %lld\n", dar_size(dar2));
 
+        dar_free(&dar0);
+        dar_free(&dar1);
+        dar_free(&dar2);
     }
-
-    dar_delete(&dar0);
-    dar_delete(&dar1);
-    dar_delete(&dar2);
 
     StackArray sta0, sta1;
 
@@ -358,8 +399,6 @@ int main()
     qua_delete(&qua1);
 
     CircularLinkedList cll0, cll1;
-
-    void *element;
 
     if (cll_create(&cll0, compare_int, copy_int, display_int, free) == DS_OK)
     {
