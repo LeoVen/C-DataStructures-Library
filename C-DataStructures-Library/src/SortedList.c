@@ -1341,7 +1341,7 @@ Status sli_to_array(SortedList list, void ***result, index_t *length)
     *result = malloc(sizeof(void*) * (*length));
 
     if (!(*result))
-        return DS_ERR_NULL_POINTER;
+        return DS_ERR_ALLOC;
 
     SortedListNode scan = list->head;
 

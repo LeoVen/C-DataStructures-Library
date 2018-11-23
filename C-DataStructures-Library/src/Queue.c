@@ -162,7 +162,7 @@ static Status que_free_node_shallow(QueueNode *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// \brief Initializes the Queue_s structure.
+/// \brief Initializes a Queue_s structure.
 ///
 /// Initializes a new Queue_s structure with initial length and limit as 0.
 /// Note that it does not sets any default functions. If you don't set them

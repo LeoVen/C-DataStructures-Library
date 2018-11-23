@@ -510,19 +510,26 @@ void *arr_max(Array array)
     if (array == NULL)
         return NULL;
 
-    index_t index;
-
-    void *result = arr_get_next(array, &index);
-
-    if (result == NULL)
+    if (array->d_compare == NULL)
         return NULL;
 
-    for (index_t i = index; i < array->length; i++)
+    void *result = NULL;
+
+    for (index_t i = 0; i < array->length; i++)
     {
-        if (array->d_compare(array->buffer[i], result) > 0)
-            result = array->buffer[i];
+        // New element
+        if (array->buffer[i] != NULL)
+        {
+            if (result == NULL)
+                result = array->buffer[i];
+            else if (array->d_compare(array->buffer[i], result) > 0)
+            {
+                result = array->buffer[i];
+            }
+        }
     }
 
+    // Might return NULL if array is empty
     return result;
 }
 
@@ -534,19 +541,23 @@ void *arr_min(Array array)
     if (array->d_compare == NULL)
         return NULL;
 
-    index_t index;
+    void *result = NULL;
 
-    void *result = arr_get_next(array, &index);
-
-    if (result == NULL)
-        return NULL;
-
-    for (index_t i = index; i < array->length; i++)
+    for (index_t i = 0; i < array->length; i++)
     {
-        if (array->d_compare(array->buffer[i], result) < 0)
-            result = array->buffer[i];
+        // New element
+        if (array->buffer[i] != NULL)
+        {
+            if (result == NULL)
+                result = array->buffer[i];
+            else if (array->d_compare(array->buffer[i], result) < 0)
+            {
+                result = array->buffer[i];
+            }
+        }
     }
 
+    // Might return NULL if array is empty
     return result;
 }
 
@@ -558,12 +569,11 @@ index_t arr_index_first(Array array, void *key)
     if (array->d_compare == NULL)
         return -2;
 
-    index_t index = 0;
-
-    for (index_t i = 0; i < array->length; i++, index++)
+    for (index_t index = 0; index < array->length; index++)
     {
-        if (array->d_compare(array->buffer[i], key) == 0)
-            return index;
+        if (array->buffer[index] != NULL)
+            if (array->d_compare(array->buffer[index], key) == 0)
+                return index;
     }
 
     // Not found
@@ -578,12 +588,11 @@ index_t arr_index_last(Array array, void *key)
     if (array->d_compare == NULL)
         return -2;
 
-    index_t index = array->length - 1;
-
-    for (index_t i = array->length - 1; i >= 0; i--, index--)
+    for (index_t index = array->length - 1; index >= 0; index--)
     {
-        if (array->d_compare(array->buffer[i], key) == 0)
-            return index;
+        if (array->buffer[index] != NULL)
+            if (array->d_compare(array->buffer[index], key) == 0)
+                return index;
     }
 
     // Not found
@@ -594,8 +603,9 @@ bool arr_contains(Array array, void *key)
 {
     for (index_t i = 0; i < array->length; i++)
     {
-        if (array->d_compare(array->buffer[i], key) == 0)
-            return true;
+        if (array->buffer[i] != NULL)
+            if (array->d_compare(array->buffer[i], key) == 0)
+                return true;
     }
 
     return false;
@@ -621,20 +631,41 @@ Status arr_switch(Array array, index_t pos1, index_t pos2)
     return DS_OK;
 }
 
-Status arr_reverse(Array arr)
+Status arr_reverse(Array array)
 {
-    if (arr == NULL)
+    if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
     Status st;
 
-    for (index_t i = 0; i < arr->length / 2; i++)
+    for (index_t i = 0; i < array->length / 2; i++)
     {
-        st = arr_switch(arr, i, arr->length - i - 1);
+        st = arr_switch(array, i, array->length - i - 1);
 
         if (st != DS_OK)
             return st;
     }
+
+    return DS_OK;
+}
+
+Status arr_copy(Array array, Array *result)
+{
+    if (array == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (array->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    Status st = arr_create(result, array->length, array->d_compare,
+                           array->d_copy, array->d_display, array->d_free);
+
+    if (st != DS_OK)
+        return st;
+
+    for (index_t i = 0; i < array->length; i++)
+        (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
+                               array->d_copy(array->buffer[i]);
 
     return DS_OK;
 }
@@ -675,29 +706,10 @@ Status arr_to_array(Array array, void ***result, index_t *length)
 
     for (index_t i = 0; i < *length; i++)
     {
-        (*result)[i] = array->d_copy(array->buffer[i]);
+        (*result)[i] = (array->buffer[i] == NULL) ?
+                NULL :
+                array->d_copy(array->buffer[i]);
     }
-
-    return DS_OK;
-}
-
-Status arr_copy(Array array, Array *result)
-{
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (array->d_copy == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    Status st = arr_create(result, array->length, array->d_compare,
-                           array->d_copy, array->d_display, array->d_free);
-
-    if (st != DS_OK)
-        return st;
-
-    for (index_t i = 0; i < array->length; i++)
-        (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
-                               array->d_copy(array->buffer[i]);
 
     return DS_OK;
 }
