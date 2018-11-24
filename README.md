@@ -2,7 +2,7 @@
 
 ## Planned Data Structures
 
-|   Structure Name   |   Source Code  |    Iterator    |      Tests     |  Documentation |
+|   Structure Name   |  Source Code   |    Iterator    |      Tests     |  Documentation |
 | :----------------- | :------------: | :------------: | :------------: | :------------: |
 |       Array        | `[##########]` | `[##########]` | `[__________]` | `[#_________]` |
 |      AVLTree       | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
@@ -10,6 +10,7 @@
 |    BinomialHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |       BTree        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | CircularLinkedList | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
+| CircularQueueList  | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |       Deque        | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
 |     DequeArray     | `[##########]` | `[__________]` | `[##________]` | `[###_______]` |
 |     Dictionary     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -29,12 +30,14 @@
 |    SortedArray     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |     SortedList     | `[##########]` | `[##########]` | `[###_______]` | `[##########]` |
 |   SortedHashMap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+|   SortedHashSet    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |     SplayTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |       Stack        | `[##########]` | `[##########]` | `[#_________]` | `[########__]` |
 |     StackArray     | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
 |      TreeSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |      TreeMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |        Trie        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| UnrolledLinkedList | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |   __Completed__    |     __14__     |     __4__      |     __0__      |     __1__      |
 
 ## Summary
@@ -177,7 +180,7 @@ Not implemented yet.
 
 ### DoublyLinkedList
 
-TODO: Summary
+A doubly-linked list is a linked list with two pointers, one to the previous node and another to the next node in the list. The list contains a pointer to its first element, the head node, and another to the last element, the tail node. Search in a doubly-linked list can take up to `O(n / 2)` when the position of the element is known because iteration can either start at the head or at the tail. This is a big advantage over singly-linked lists.
 
 ### Dynamic Array
 
@@ -260,3 +263,28 @@ Not implemented yet.
 ### Trie
 
 Not implemented yet.
+
+
+## Ideas
+
+A descriptor that operates relative to a global variable that simulates an object:
+
+```c
+// global scope
+struct Array_s GloalArray = NULL;
+
+// in main function
+// This structure comes with all array functions in it
+struct ArrayDescriptor_s array;
+arr_desc_init(array);
+
+// sets GlobalArray = my_array
+array->target(my_array);
+
+// Adds an element 20 at position 10
+// Note that there is no need to pass in a my_array reference
+// Because add() function operates relative to GlobalArray
+array->add(20, 10);
+
+arr_desc_free(array);
+```
