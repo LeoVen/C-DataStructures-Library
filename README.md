@@ -152,6 +152,16 @@ Not implemented yet.
 
 A circular linked list is a doubly-linked list where its nodes wrap around making a circular structure. There are no `head` or `tail` pointers, only a cursor that can iterate through the circular list. One of its advantages are that there is no need to check for `NULL` pointers since the list technically has no 'head' or 'tail'.
 
+```
+                                       cursor
+                                         │
+                                         v
+         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+     ┌─> │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ ───┐
+     │   └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘    │
+     └──────────────────────────────────────────────────────────────────────────────────┘
+```
+
 Due to its nature this structure comes with an iterator and there are 5 main input/output functions where they all operate relative to the list's cursor:
 
 * cll_insert_after();
@@ -168,11 +178,44 @@ A deque is a double-ended queue implemented as a doubly-linked list. Both operat
 
 The disadvantage of a Deque implemented as a linked list compared to a DequeArray that is implemented as a circular buffer is that it is very space inefficient where every node needs to store two pointers to its adjacent nodes; but it comes with an advantage where the linked list grows indefinitely and there is no need to shift elements or resize a buffer.
 
+```
+         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+NULL <-- │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
+         └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+           │                                                                     │
+         front                                                                  rear
+```
+
 Its implementation is just like a doubly-linked list with limitations to input and output to both edges of the list.
 
 ### DequeArray
 
-A deque array is the implementation of a deque using a circular buffer. It is very space efficient but unlike a Deque implemented as a linked list, a DequeArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity.
+A deque array is the implementation of a deque using a circular buffer. It is very space efficient but unlike a Deque implemented as a linked list, a DequeArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a deque array, both front and rear pointers can wrap around the buffer making its implementation a bit more complex than a doubly-linked list.
+
+```
+front and rear indexes have not wrapped around the buffer
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│   │   │ H | I | J | K | L |   |   |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │               │
+        front            rear
+
+rear index have wrapped around the buffer
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ Q │ R │ S |   |   |   | L | M | N | O | P |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │               │
+         rear           front
+         
+front index have wrapped around the buffer
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ F │ G │ H |   |   |   | A | B | C | D | E |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │               │
+         rear           front
+```
+
+Note that when the `rear` index or the `front` index wraps around the buffer the configuration is the same.
 
 ### Dictionary
 
