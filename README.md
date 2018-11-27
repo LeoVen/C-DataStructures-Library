@@ -8,6 +8,7 @@
 |      AVLTree       | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
 |  BinarySearchTree  | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
 |    BinomialHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+|      BitSet        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |       BTree        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | CircularLinkedList | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
 | CircularQueueList  | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -144,6 +145,10 @@ This makes search as `O(N)` and is much slower than it should be so a balanced b
 
 Not implemented yet.
 
+### BitSet
+
+Not implemented yet.
+
 ### BTree
 
 Not implemented yet.
@@ -172,6 +177,10 @@ Due to its nature this structure comes with an iterator and there are 5 main inp
 
 Being a doubly-linked list, all operations listed above take `O(1)`.
 
+### CircularQueueList
+
+Not implemented yet.
+
 ### Deque
 
 A deque is a double-ended queue implemented as a doubly-linked list. Both operations `enqueue` and `dequeue` can be done to both ends of the queue.
@@ -194,25 +203,25 @@ A deque array is the implementation of a deque using a circular buffer. It is ve
 
 ```
 front and rear indexes have not wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│   │   │ H | I | J | K | L |   |   |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │               │
-        front            rear
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│   │   │ H | I | J | K | L | M |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │                   │
+        front                rear
 
 rear index have wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ Q │ R │ S |   |   |   | L | M | N | O | P |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │               │
-         rear           front
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ P │ Q │ R |   |   |   |   | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │                   │
+         rear               front
          
 front index have wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ F │ G │ H |   |   |   | A | B | C | D | E |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │               │
-         rear           front
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ F │ G │ H |   |   |   |   | C | D | E |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │                   │
+         rear               front
 ```
 
 Note that when the `rear` index or the `front` index wraps around the buffer the configuration is the same.
@@ -223,9 +232,35 @@ Not implemented yet.
 
 ### DoublyLinkedList
 
-A doubly-linked list is a linked list with two pointers, one to the previous node and another to the next node in the list. The list contains a pointer to its first element, the head node, and another to the last element, the tail node. Search in a doubly-linked list can take up to `O(n / 2)` when the position of the element is known because iteration can either start at the head or at the tail. This is a big advantage over singly-linked lists.
+A doubly-linked list is a sequence of items, usually called nodes that are linked through pointers. It works like an array but has a structural difference where in an array the items are stored contiguously and in a linked list the items are stored in nodes that can be anywhere in memory. It is called doubly-linked because each node, besides having a data member and a pointer to the next node in the list, it also has a pointer to the previous node in the chained data structure.
+
+```
+         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+NULL <-- │ A │ <-> │ B │ <-> │ C │ <-> │ D │ <-> │ E │ <-> │ F │ <-> │ G │ <-> │ H │ --> NULL
+         └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+           │                                                                     │
+          head                                                                  tail
+```
+
+Operations for inserting and removing elements at both ends take `O(1)`, and removing elements at the middle of the list take a maximum of `O(n / 2)` because if the index of the element is known we can know the best way to traverse the list to iterate the minimum amount of times, either starting from the start or the end of the list. This can be a big advantage over singly-linked lists.
 
 ### Dynamic Array
+
+A dynamic array automatically grows when its current capacity can't hold another item. When the array is full it is reallocated where a new buffer is allocated and then the original contents are copied to this new and bigger buffer. So in theory this array can take up as much space as needed if there is enough memory.
+
+```
+                              can't add another element
+                                          |
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ A │ B │ C | D | E | F | G | H | I | J |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+  │   │   │   │   │   │   │   │   │   │
+  V   V   V   V   V   V   V   V   V   V
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ A │ B │ C | D | E | F | G | H | I | J |   |   |   |   |   |   |   |   |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+new buffer gets reallocated, its original content is copied and the old buffer is freed
+```
 
 ### HashMap
 
@@ -245,15 +280,91 @@ Not implemented yet.
 
 ### PriorityQueue
 
-TODO: Summary
+The priority queue is a linked list implementation. It has a lot in common with a sorted list, but in this case the elements are sorted according to their priority.
 
 ### Queue
 
-TODO: Summary
+A queue is a FIFO structure where the first element inserted is the first to be removed. It is a singly-linked implementation where enqueueing is equivalent to inserting and element at the tail of the list and dequeuing is equivalent to removing an element from the head of the list. This is done so both operations take `O(1)`, since the worst possible operation in a singly-linked list is removing the tail element where we would have to iterate over the entire list until the penultimate element.
+
+ ```
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ A │ --> │ B │ --> │ C │ --> │ D │ --> │ E │ --> │ F │ --> │ G │ --> │ H │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │                                                                     │
+    front                                                                  rear
+ ```
+ 
+ Elements are dequeued from the `front` pointer and enqueued from the `rear` pointer.
 
 ### QueueArray
 
-TODO: Summary
+A queue array is the implementation of a queue using a circular buffer. It is very space efficient but unlike a queue implemented as a linked list, a QueueArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a queue both front and rear indexes only go forward, that is, incremented by one when an operation is successful. If we enqueue an element the rear index goes up by one. If we dequeue and element the front index goes up by one.
+
+```
+front and rear indexes have not wrapped around the buffer
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│   │   │ H | I | J | K | L | M |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │                   │
+        front                rear
+
+rear index have wrapped around the buffer
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ P │ Q │ R |   |   |   |   | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │                   │
+         rear               front
+```
+
+If the queue buffer is not full then the `rear` index will wrap around the buffer. When the buffer is full both front and rear are indexes are next to each other. After the buffer is reallocated there are two options to shift the elements. This is done to shift the least amount of elements as possible.
+
+When the rear pointer is closer to the end it is much more efficient to simply send the last elements to the end of the buffer.
+
+```
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ P │ Q │ R | S | T | U | V | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                          │   │
+                        rear front
+
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ P │ Q │ R | S | T | U | V |   |   |   |   |   |   |   |   |   |   | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                          │                                           │
+                         rear                                       front
+```
+
+But when the rear index is closer to the beginning of the buffer we can append the left portion to the right of the right-end portion.
+
+```
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ P │ Q │ R | I | J | K | L | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+          │   │
+        rear front
+
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│   │   │   | I | J | K | L | M | N | O | P | Q | R |   |   |   |   |   |   |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                                   │
+            front                                rear
+```
+
+There is also a third option when there is no need to shift elements. This happens when you insert elements until the buffer is full and does no removes a single element. Everything stays as they should be. This can also be caused after removing elements if when the buffer fills up it coincides when the front index is `0` and the rear is `capacity - 1`.
+
+```
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ F │ G │ H | I | J | K | L | M | N | O |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+  │                                   │
+front                                rear
+
+┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+│ F │ G │ H | I | J | K | L | M | N | O |   |   |   |   |   |   |   |   |   |   |   |
+└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+  │                                   │
+front                                rear
+```
 
 ### RadixTree
 
@@ -283,6 +394,10 @@ TODO: Summary
 
 Not implemented yet.
 
+### SortedHashSet
+
+Not implemented yet.
+
 ### SplayTree
 
 Not implemented yet.
@@ -307,6 +422,9 @@ Not implemented yet.
 
 Not implemented yet.
 
+### UnrolledLinkedList
+
+Not implemented yet.
 
 ## Ideas
 
