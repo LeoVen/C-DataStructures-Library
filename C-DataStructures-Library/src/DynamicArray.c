@@ -359,7 +359,7 @@ void *dar_get(DynamicArray d_array, index_t index)
     return d_array->d_copy(d_array->buffer[index]);
 }
 
-Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
+Status dar_insert(DynamicArray d_array, void **array, index_t array_size,
         index_t index)
 {
     if (d_array == NULL)
@@ -368,10 +368,10 @@ Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
     if (index > d_array->size)
         return DS_ERR_OUT_OF_RANGE;
 
-    if (index < 0 || arr_size < 0)
+    if (index < 0 || array_size < 0)
         return DS_ERR_NEGATIVE_VALUE;
 
-    for (index_t i = 0; i < arr_size; i++)
+    for (index_t i = 0; i < array_size; i++)
     {
         if (array[i] == NULL)
             return DS_ERR_INVALID_ARGUMENT;
@@ -379,7 +379,7 @@ Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
 
     Status st;
 
-    while (!dar_fits(d_array, arr_size))
+    while (!dar_fits(d_array, array_size))
     {
         st = dar_grow(d_array);
 
@@ -390,16 +390,16 @@ Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
     // Shift elements around
     for (index_t i = d_array->size; i > index; i--)
     {
-        d_array->buffer[i + arr_size - 1] = d_array->buffer[i - 1];
+        d_array->buffer[i + array_size - 1] = d_array->buffer[i - 1];
     }
 
     // Add new elements to the buffer
-    for (index_t i = index, j = 0; j < arr_size; i++, j++)
+    for (index_t i = index, j = 0; j < array_size; i++, j++)
     {
         d_array->buffer[i] = array[j];
     }
 
-    d_array->size += arr_size;
+    d_array->size += array_size;
 
     d_array->version_id++;
 
@@ -1246,4 +1246,290 @@ static void dar_quicksort(DynamicArray d_array, void **buffer, index_t size)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// TODO
+/// \brief A DynamicArray_s iterator.
+///
+/// A simple iterator that can traverse backwards and forwards through the
+/// elements of the dynamic array.
+struct DynamicArrayIterator_s
+{
+    /// \brief Target DynamicArray_s.
+    ///
+    /// Target DynamicArray_s. The iterator might need to use some information
+    /// provided by the array or change some of its data members.
+    struct DynamicArray_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Index of the current element pointed by the cursor;
+    index_t cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure.
+    index_t target_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool dar_iter_target_modified(DynamicArrayIterator iter);
+
+static bool dar_iter_invalid_state(DynamicArrayIterator iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+Status dar_iter_init(DynamicArrayIterator *iter, DynamicArray target)
+{
+    *iter = malloc(sizeof(DynamicArrayIterator_t));
+
+    if (!(*iter))
+        return DS_ERR_ALLOC;
+
+    (*iter)->target = target;
+    (*iter)->target_id = target->version_id;
+    (*iter)->cursor = 0;
+
+    return DS_OK;
+}
+
+Status dar_iter_retarget(DynamicArrayIterator *iter, DynamicArray target)
+{
+    Status st = dar_iter_free(iter);
+
+    if (st != DS_OK)
+        return st;
+
+    st = dar_iter_init(iter, target);
+
+    if (st != DS_OK)
+        return st;
+
+    return DS_OK;
+}
+
+Status dar_iter_free(DynamicArrayIterator *iter)
+{
+    if (*iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*iter);
+
+    *iter = NULL;
+
+    return DS_OK;
+}
+
+Status dar_iter_next(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!dar_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor++;
+
+    return DS_OK;
+}
+
+Status dar_iter_prev(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (!dar_iter_has_next(iter))
+        return DS_ERR_ITER;
+
+    iter->cursor--;
+
+    return DS_OK;
+}
+
+Status dar_iter_to_start(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    iter->cursor = 0;
+
+    return DS_OK;
+}
+
+Status dar_iter_to_end(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    iter->cursor = iter->target->size - 1;
+
+    return DS_OK;
+}
+
+bool dar_iter_has_next(DynamicArrayIterator iter)
+{
+    return iter->cursor < iter->target->size - 1;
+}
+
+bool dar_iter_has_prev(DynamicArrayIterator iter)
+{
+    return iter->cursor > 0;
+}
+
+Status dar_iter_set(DynamicArrayIterator iter, void *element)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_free == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    if (iter->target->buffer[iter->cursor] != NULL)
+        iter->target->d_free(iter->target->buffer[iter->cursor]);
+
+    iter->target->buffer[iter->cursor] = element;
+
+    iter->target_id++;
+    iter->target->version_id++;
+
+    return DS_OK;
+}
+
+Status dar_iter_get(DynamicArrayIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    if (iter->target->d_copy == NULL)
+        return DS_ERR_INCOMPLETE_TYPE;
+
+    if (iter->target->buffer[iter->cursor] != NULL)
+        *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+    else
+        *result = NULL;
+
+    return DS_OK;
+}
+
+Status dar_iter_pop(DynamicArrayIterator iter, void **result)
+{
+    if (iter == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    if (dar_iter_invalid_state(iter))
+        return DS_ERR_ITER_STATE;
+
+    if (dar_iter_target_modified(iter))
+        return DS_ERR_ITER_MODIFICATION;
+
+    Status st = dar_remove_at(iter->target, result, iter->cursor);
+
+    if (st != DS_OK)
+        return st;
+
+    iter->target_id = iter->target->version_id;
+
+    return DS_OK;
+}
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *dar_iter_peek_next(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (dar_iter_invalid_state(iter))
+        return NULL;
+
+    if (dar_iter_target_modified(iter))
+        return NULL;
+
+    if (!dar_iter_has_next(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor + 1];
+}
+
+void *dar_iter_peek(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (dar_iter_invalid_state(iter))
+        return NULL;
+
+    if (dar_iter_target_modified(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor];
+}
+
+void *dar_iter_peek_prev(DynamicArrayIterator iter)
+{
+    if (iter == NULL)
+        return NULL;
+
+    if (dar_iter_invalid_state(iter))
+        return NULL;
+
+    if (dar_iter_target_modified(iter))
+        return NULL;
+
+    if (!dar_iter_has_prev(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor - 1];
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool dar_iter_target_modified(DynamicArrayIterator iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+static bool dar_iter_invalid_state(DynamicArrayIterator iter)
+{
+    if (iter->target == NULL)
+        return true;
+
+    return iter->cursor < 0 || iter->cursor >= iter->target->size;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///

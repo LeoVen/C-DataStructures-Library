@@ -970,9 +970,13 @@ Status arr_iter_set(ArrayIterator iter, void *element)
     if (iter->target->d_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    iter->target->d_free(iter->target->buffer[iter->cursor]);
+    if (iter->target->buffer[iter->cursor] != NULL)
+        iter->target->d_free(iter->target->buffer[iter->cursor]);
 
     iter->target->buffer[iter->cursor] = element;
+
+    iter->target_id++;
+    iter->target->version_id++;
 
     return DS_OK;
 }
@@ -991,7 +995,10 @@ Status arr_iter_get(ArrayIterator iter, void **result)
     if (iter->target->d_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+    if (iter->target->buffer[iter->cursor] != NULL)
+        *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+    else
+        *result = NULL;
 
     return DS_OK;
 }
@@ -1010,6 +1017,9 @@ Status arr_iter_pop(ArrayIterator iter, void **result)
     *result = iter->target->buffer[iter->cursor];
 
     iter->target->buffer[iter->cursor] = NULL;
+
+    iter->target_id++;
+    iter->target->version_id++;
 
     return DS_OK;
 }

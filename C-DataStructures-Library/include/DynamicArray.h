@@ -99,7 +99,7 @@ void *dar_get(DynamicArray d_array, index_t index);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status dar_insert(DynamicArray d_array, void **array, index_t arr_size,
+Status dar_insert(DynamicArray d_array, void **array, index_t array_size,
         index_t index);
 
 Status dar_insert_front(DynamicArray d_array, void *element);
@@ -164,6 +164,63 @@ Status dar_display(DynamicArray d_array);
 Status dar_display_array(DynamicArray d_array);
 
 Status dar_display_raw(DynamicArray d_array);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+// An array iterator. See the source file for the full documentation.
+struct DynamicArrayIterator_s;
+
+/// \brief A type for a dynamic array iterator.
+///
+/// A type for a <code> struct DynamicArrayIterator_s </code>.
+typedef struct DynamicArrayIterator_s DynamicArrayIterator_t;
+
+/// \brief A pointer type for a dynamic array iterator.
+///
+/// A pointer type for a <code> struct DynamicArrayIterator_s </code>.
+typedef struct DynamicArrayIterator_s *DynamicArrayIterator;
+
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
+
+Status dar_iter_init(DynamicArrayIterator *iter, DynamicArray target);
+
+Status dar_iter_retarget(DynamicArrayIterator *iter, DynamicArray target);
+
+Status dar_iter_free(DynamicArrayIterator *iter);
+
+///////////////////////////////////////////////////////////////// ITERATION ///
+
+Status dar_iter_next(DynamicArrayIterator iter);
+
+Status dar_iter_prev(DynamicArrayIterator iter);
+
+Status dar_iter_to_start(DynamicArrayIterator iter);
+
+Status dar_iter_to_end(DynamicArrayIterator iter);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+bool dar_iter_has_next(DynamicArrayIterator iter);
+
+bool dar_iter_has_prev(DynamicArrayIterator iter);
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+Status dar_iter_set(DynamicArrayIterator iter, void *element);
+
+Status dar_iter_get(DynamicArrayIterator iter, void **result);
+
+Status dar_iter_pop(DynamicArrayIterator iter, void **result);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *dar_iter_peek_next(DynamicArrayIterator iter);
+
+void *dar_iter_peek(DynamicArrayIterator iter);
+
+void *dar_iter_peek_prev(DynamicArrayIterator iter);
 
 #ifdef __cplusplus
 }
