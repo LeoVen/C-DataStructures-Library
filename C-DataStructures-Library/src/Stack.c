@@ -846,12 +846,18 @@ Status stk_stack(Stack stack1, Stack stack2)
     return DS_OK;
 }
 
+Status stk_to_array(Stack stack,  void ***result, index_t *length)
+{
+    // TODO
+    return DS_ERR_INVALID_OPERATION;
+}
+
 /// \brief Displays a Stack_s in the console.
 ///
 /// Displays a Stack_s in the console with each element in one line separated
 /// by vertical lines or pipes to represent a stack of boxes.
 ///
-/// \param[in] stack The stack to be displayed in the console.
+/// \param[in] stack The Stack_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -897,7 +903,7 @@ Status stk_display(Stack stack)
 /// by commas, delimited with brackets. The first element is the topmost
 /// element in the stack and the last element is the bottommost element.
 ///
-/// \param[in] stack The stack to be displayed in the console.
+/// \param[in] stack The Stack_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
@@ -941,7 +947,7 @@ Status stk_display_array(Stack stack)
 ///
 /// Displays a Stack_s in the console with its values separated by spaces.
 ///
-/// \param[in] stack The stack to be displayed in the console.
+/// \param[in] stack The Stack_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.

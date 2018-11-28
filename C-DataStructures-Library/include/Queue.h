@@ -15,14 +15,21 @@
 extern "C" {
 #endif
 
-// A doubly-linked list implementation of a Queue. See the source file for the
+// A singly-linked list implementation of a Queue. See the source file for the
 // full documentation.
-struct Queue;
+struct Queue_s;
 
-/// Defines a type for <code> struct Queue_s </code>.
+/// \brief A type for a FIFO singly-linked list.
 ///
-/// Every queue is initialized by \c malloc with \c sizeof(Queue_t).
+/// A type for a <code> struct Queue_s </code> so you don't have to always
+/// write the full name of it.
 typedef struct Queue_s Queue_t;
+
+/// \brief A pointer type for a FIFO singly-linked list.
+///
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
+typedef struct Queue_s *Queue;
 
 /// \brief Comparator function type.
 ///
@@ -50,12 +57,6 @@ typedef void(*que_display_f)(void *);
 /// memory.
 typedef void(*que_free_f)(void *);
 
-/// Defines a type of pointer to <code> struct Queue_s </code>.
-///
-/// This typedef is used to avoid having to declare every queue as a pointer
-/// type since they all must be dynamically allocated.
-typedef struct Queue_s *Queue;
-
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 Status que_init(Queue *queue);
@@ -64,6 +65,8 @@ Status que_create(Queue *queue, que_compare_f compare_f, que_copy_f copy_f,
                   que_display_f display_f, que_free_f free_f);
 
 Status que_free(Queue *queue);
+
+Status que_free_shallow(Queue *queue);
 
 Status que_erase(Queue *queue);
 
@@ -103,7 +106,13 @@ void *que_peek_front(Queue queue);
 
 void *que_peek_rear(Queue queue);
 
+bool que_contains(Queue queue, void *key);
+
 Status que_copy(Queue queue, Queue *result);
+
+Status que_append(Queue queue, Queue queue2);
+
+Status que_to_array(Queue queue,  void ***result, index_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

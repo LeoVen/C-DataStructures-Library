@@ -6,9 +6,9 @@
  * @date 23/10/2018
  */
 
-#include <Util.h>
 #include "DynamicArray.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests locked capacity
 Status dar_test_locked(UnitTest ut)

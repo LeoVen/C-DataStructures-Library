@@ -357,6 +357,7 @@ Status sli_free_shallow(SortedList *list)
 ///
 /// \param[in,out] list SortedList_s to be erased.
 ///
+/// \return DS_ERR_ALLOC if list allocation failed.
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
@@ -534,7 +535,7 @@ Status sli_set_order(SortedList list, SortOrder order)
 ///
 /// \param[in] list SortedList_s reference.
 ///
-/// \return -1 if the list reference is \c NULL.
+/// \return -1 if the list references to \c NULL.
 /// \return The list's length.
 index_t sli_length(SortedList list)
 {
@@ -550,7 +551,7 @@ index_t sli_length(SortedList list)
 ///
 /// \param[in] list SortedList_s reference.
 ///
-/// \return -1 if the list reference is \c NULL.
+/// \return -1 if the list references to \c NULL.
 /// \return The list's limit.
 index_t sli_limit(SortedList list)
 {
@@ -1634,7 +1635,7 @@ Status sli_sublist(SortedList list, SortedList *result, index_t start,
 /// \param[in] list The SortedList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status sli_display(SortedList list)
 {
@@ -1677,7 +1678,7 @@ Status sli_display(SortedList list)
 /// \param[in] list The SortedList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status sli_display_array(SortedList list)
 {
@@ -1722,7 +1723,7 @@ Status sli_display_array(SortedList list)
 /// \param[in] list The SortedList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status sli_display_raw(SortedList list)
 {

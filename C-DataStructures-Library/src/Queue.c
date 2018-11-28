@@ -240,7 +240,7 @@ Status que_create(Queue *queue, que_compare_f compare_f, que_copy_f copy_f,
 /// \param queue The Queue_s to be freed from memory.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_free(Queue *queue)
 {
@@ -314,14 +314,17 @@ Status que_free_shallow(Queue *queue)
     return DS_OK;
 }
 
-/// This function sets the queue to its initial state, erasing all of its data
-/// and re-initializing the structure with the same default functions.
+/// \brief Erases a Queue_s.
 ///
-/// \param queue The queue to be erased.
+/// This function is equivalent to freeing a queue and the creating it again.
+/// This will reset the queue to its initial state with no elements, but will
+/// keep all of its default functions.
+///
+/// \param[in,out] queue Queue_s to be erased.
 ///
 /// \return DS_ERR_ALLOC if queue allocation failed.
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_erase(Queue *queue)
 {
@@ -483,7 +486,7 @@ index_t que_limit(Queue queue)
 /// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_ERR_FULL if \c limit is set (different than 0) and the queue
 /// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_enqueue(Queue queue, void *element)
 {
@@ -524,7 +527,7 @@ Status que_enqueue(Queue queue, void *element)
 /// \param[out] result The resulting element removed from the queue.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the queue is empty.
-/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_dequeue(Queue queue, void **result)
 {
@@ -591,6 +594,12 @@ void *que_peek_rear(Queue queue)
     return queue->rear->data;
 }
 
+bool que_contains(Queue queue, void *key)
+{
+    // TODO
+    return false;
+}
+
 Status que_copy(Queue queue, Queue *result)
 {
     *result = NULL;
@@ -635,14 +644,26 @@ Status que_copy(Queue queue, Queue *result)
     return DS_OK;
 }
 
+Status que_append(Queue queue, Queue queue2)
+{
+    // TODO
+    return DS_OK;
+}
+
+Status que_to_array(Queue queue,  void ***result, index_t *length)
+{
+    // TODO
+    return DS_ERR_INVALID_OPERATION;
+}
+
 /// \brief Displays a Queue_s in the console.
 ///
-/// Displays a Queue_s in the console starting from \c front to \c tail.
+/// Displays a Queue_s in the console starting from \c front to \c rear.
 ///
-/// \param[in] queue The queue to be displayed in the console.
+/// \param[in] queue The Queue_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_display(Queue queue)
 {
@@ -679,13 +700,13 @@ Status que_display(Queue queue)
 
 /// \brief Displays a Queue_s in the console like an array.
 ///
-/// Displays a Queue_s in the console starting from \c front to \c tail like an
+/// Displays a Queue_s in the console starting from \c front to \c rear like an
 /// array with its elements separated by commas, delimited with brackets.
 ///
-/// \param[in] queue The queue to be displayed in the console.
+/// \param[in] queue The Queue_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_display_array(Queue queue)
 {
@@ -724,13 +745,13 @@ Status que_display_array(Queue queue)
 
 /// \brief Displays a Queue_s in the console.
 ///
-/// Displays a Queue_s in the console starting from \c front to \c tail with
+/// Displays a Queue_s in the console starting from \c front to \c rear with
 /// its elements separated by spaces.
 ///
-/// \param[in] queue The queue to be displayed in the console.
+/// \param[in] queue The Queue_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
+/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations were successful.
 Status que_display_raw(Queue queue)
 {

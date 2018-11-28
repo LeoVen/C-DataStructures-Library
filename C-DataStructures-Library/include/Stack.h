@@ -19,13 +19,13 @@ extern "C" {
 // full documentation.
 struct Stack_s;
 
-/// \brief A type for a FIFO singly-linked list.
+/// \brief A type for a FILO singly-linked list.
 ///
 /// A type for a <code> struct Stack_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct Stack_s Stack_t;
 
-/// \brief A pointer type for a FIFO singly-linked list.
+/// \brief A pointer type for a FILO singly-linked list.
 ///
 /// Useful for not having to declare every variable as pointer type. This
 /// typedef does that for you.
@@ -115,6 +115,8 @@ bool stk_contains(Stack stack, void *key);
 Status stk_copy(Stack stack, Stack *result);
 
 Status stk_stack(Stack stack1, Stack stack2);
+
+Status stk_to_array(Stack stack,  void ***result, index_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

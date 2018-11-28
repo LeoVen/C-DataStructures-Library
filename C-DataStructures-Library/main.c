@@ -126,41 +126,64 @@ int main()
 
     Deque deq0, deq1;
 
-    if (deq_init(&deq0) == DS_OK)
+    if (deq_create(&deq0, compare_int, copy_int, display_int, free) == DS_OK)
     {
         for (int i = 0; i < 100; i++)
         {
-            if (i % 4 == 0)
-                deq_dequeue_front(deq0, &j);
-            else if (i % 5 == 0)
-                deq_dequeue_rear(deq0, &j);
+            if (i % 4 == 0 && !deq_empty(deq0))
+            {
+                deq_dequeue_front(deq0, &result);
+
+                free(result);
+            }
+            else if (i % 5 == 0 && !deq_empty(deq0))
+            {
+                deq_dequeue_rear(deq0, &result);
+
+                free(result);
+            }
             else if (i % 3 == 0)
-                deq_enqueue_front(deq0, i);
+            {
+                element = new_int(i);
+
+                st = deq_enqueue_front(deq0, element);
+
+                if (st != DS_OK)
+                    free(element);
+            }
             else
-                deq_enqueue_rear(deq0, i);
+            {
+                element = new_int(i);
+
+                st = deq_enqueue_rear(deq0, element);
+
+                if (st != DS_OK)
+                    free(element);
+            }
         }
 
         if (deq_copy(deq0, &deq1) == DS_OK)
         {
-            l = deq0->length;
+            l = deq_length(deq0);
 
             for (index_t i = 0; i < l; i++)
             {
-                deq_dequeue_front(deq0, &j);
+                deq_dequeue_front(deq0, &result);
 
-                deq_enqueue_rear(deq1, j);
+                deq_enqueue_rear(deq1, result);
             }
 
             deq_display_array(deq0);
-            printf("\nLength deq0: %lld\n", deq0->length);
+            printf("Length deq0: %lld\n", deq_length(deq0));
 
             deq_display_array(deq1);
-            printf("\nLength deq0: %lld\n", deq1->length);
-        }
-    }
+            printf("Length deq1: %lld\n", deq_length(deq1));
 
-    deq_delete(&deq0);
-    deq_delete(&deq1);
+            deq_free(&deq1);
+        }
+
+        deq_free(&deq0);
+    }
 
     PriorityQueue prq0, prq1;
 
