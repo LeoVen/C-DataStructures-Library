@@ -33,16 +33,17 @@ extern "C" {
 /// neighbouring nodes
 ///
 /// \b Functions
+///
 /// Located in file Deque.c
 struct Deque_s
 {
     /// \brief Current amount of elements in the \c Deque.
     ///
-    /// Current amount of nodes linked between the \c front and \c rear
+    /// Deque current amount of nodes linked between the \c front and \c rear
     /// pointers.
     index_t length;
 
-    /// \brief Queue length limit.
+    /// \brief Deque length limit.
     ///
     /// If it is set to 0 or a negative value then the deque has no limit to
     /// its length. Otherwise it won't be able to have more elements than the

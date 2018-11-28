@@ -30,7 +30,7 @@ struct DynamicArray_s
     /// Current amount of elements in the \c DynamicArray.
     index_t size;
 
-    /// \brief \c DynamicArray buffer maximum capacity.
+    /// \brief Buffer maximum capacity.
     ///
     /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
     /// reallocated and increases according to \c growth_rate.
@@ -151,7 +151,7 @@ Status dar_init(DynamicArray *d_array)
 /// \param[in] free_f A function that completely frees from memory an element.
 ///
 /// \return DS_ERR_ALLOC if dynamic array allocation failed.
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
+/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 4 or
 /// growth_rate is less than or equal to 100.
 /// \return DS_OK if all operations were successful.
 Status dar_create(DynamicArray *d_array, index_t initial_capacity,

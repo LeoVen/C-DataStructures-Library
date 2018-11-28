@@ -24,8 +24,11 @@ int rand_int(index_t min, index_t max);
 /// Generates a long integer between min and max with both included.
 long long rand_long(index_t min, index_t max);
 
-/// Generates a double between min and max with both included.
-double rand_float(double min, double max);
+/// Generates a double between min and max.
+double rand_double(double min, double max);
+
+/// Generates a float between min and max.
+float rand_float(float min, float max);
 
 #ifdef __cplusplus
 }

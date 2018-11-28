@@ -59,7 +59,7 @@
 /// Located in file Stack.c
 struct Stack_s
 {
-    /// \brief Current amount of elements in the \c Stack.
+    /// \brief Current amount of elements in the Stack_s.
     ///
     /// Current amount of elements in the Stack_s.
     index_t height;
@@ -873,7 +873,7 @@ Status stk_display(Stack stack)
 
     StackNode scan = stack->top;
 
-    printf("\nStack");
+    printf("\nStack\n");
 
     while (scan != NULL)
     {
