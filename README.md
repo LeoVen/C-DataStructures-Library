@@ -2,43 +2,43 @@
 
 ## Planned Data Structures
 
-|   Structure Name   |  Source Code   |    Iterator    |      Tests     |  Documentation |
-| :----------------- | :------------: | :------------: | :------------: | :------------: |
-|       Array        | `[##########]` | `[##########]` | `[__________]` | `[#_________]` |
-|      AVLTree       | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
-|  BinarySearchTree  | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
-|    BinomialHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      BitSet        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       BTree        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| CircularLinkedList | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
-| CircularQueueList  | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       Deque        | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
-|     DequeArray     | `[##########]` | `[__________]` | `[##________]` | `[###_______]` |
-|     Dictionary     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|  DoublyLinkedList  | `[########__]` | `[__________]` | `[##________]` | `[#####_____]` |
-|    DynamicArray    | `[##########]` | `[__________]` | `[#_________]` | `[##________]` |
-|      HashMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      HashSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|        Heap        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|    PriorityHeap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   PriorityQueue    | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
-|       Queue        | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
-|     QueueArray     | `[##########]` | `[__________]` | `[##________]` | `[######____]` |
-|     RadixTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|    RedBlackTree    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|  SinglyLinkedList  | `[#########_]` | `[__________]` | `[#_________]` | `[######____]` |
-|      SkipList      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|    SortedArray     | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|     SortedList     | `[##########]` | `[##########]` | `[###_______]` | `[##########]` |
-|   SortedHashMap    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   SortedHashSet    | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|     SplayTree      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|       Stack        | `[##########]` | `[##########]` | `[#_________]` | `[########__]` |
-|     StackArray     | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
-|      TreeSet       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|      TreeMap       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|        Trie        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| UnrolledLinkedList | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+|      Structure Name      |  Source Code   |    Iterator    |      Tests     |  Documentation |
+| :----------------------- | :------------: | :------------: | :------------: | :------------: |
+| [Array][1]               | `[##########]` | `[##########]` | `[__________]` | `[#_________]` |
+| [AVLTree][2]             | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
+| [BinarySearchTree][3]    | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
+| [BinomialHeap][4]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [BitSet][5]              | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [BTree][6]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [CircularLinkedList][7]  | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
+| [CircularQueueList][8]   | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [Deque][9]               | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
+| [DequeArray][10]         | `[##########]` | `[__________]` | `[##________]` | `[###_______]` |
+| [Dictionary][11]         | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [DoublyLinkedList][12]   | `[########__]` | `[__________]` | `[##________]` | `[#####_____]` |
+| [DynamicArray][13]       | `[##########]` | `[__________]` | `[#_________]` | `[##________]` |
+| [HashMap][14]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [HashSet][15]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [Heap][16]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [PriorityHeap][17]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [PriorityQueue][18]      | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
+| [Queue][19]              | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
+| [QueueArray][20]         | `[##########]` | `[__________]` | `[##________]` | `[######____]` |
+| [RadixTree][21]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [RedBlackTree][22]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [SinglyLinkedList][23]   | `[#########_]` | `[__________]` | `[#_________]` | `[######____]` |
+| [SkipList][24]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [SortedArray][25]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [SortedList][26]         | `[##########]` | `[##########]` | `[###_______]` | `[##########]` |
+| [SortedHashMap][27]      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [SortedHashSet][28]      | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [SplayTree][29]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [Stack][30]              | `[##########]` | `[##########]` | `[#_________]` | `[########__]` |
+| [StackArray][31]         | `[##########]` | `[__________]` | `[#_________]` | `[######____]` |
+| [TreeSet][32]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [TreeMap][33]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [Trie][34]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [UnrolledLinkedList][35] | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 |   __Completed__    |     __14__     |     __4__      |     __0__      |     __1__      |
 
 ## Summary
@@ -158,13 +158,13 @@ Not implemented yet.
 A circular linked list is a doubly-linked list where its nodes wrap around making a circular structure. There are no `head` or `tail` pointers, only a cursor that can iterate through the circular list. One of its advantages are that there is no need to check for `NULL` pointers since the list technically has no 'head' or 'tail'.
 
 ```
-                                       cursor
-                                         │
-                                         v
-         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
-     ┌─> │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ ───┐
-     │   └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘    │
-     └──────────────────────────────────────────────────────────────────────────────────┘
+                                      cursor
+                                        │
+                                        v
+        ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    ┌─> │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ ───┐
+    │   └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘    │
+    └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 Due to its nature this structure comes with an iterator and there are 5 main input/output functions where they all operate relative to the list's cursor:
@@ -202,26 +202,26 @@ Its implementation is just like a doubly-linked list with limitations to input a
 A deque array is the implementation of a deque using a circular buffer. It is very space efficient but unlike a Deque implemented as a linked list, a DequeArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a deque array, both front and rear pointers can wrap around the buffer making its implementation a bit more complex than a doubly-linked list.
 
 ```
-front and rear indexes have not wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│   │   │ H | I | J | K | L | M |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │                   │
-        front                rear
-
-rear index have wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ P │ Q │ R |   |   |   |   | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │                   │
-         rear               front
-         
-front index have wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ F │ G │ H |   |   |   |   | C | D | E |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │                   │
-         rear               front
+    front and rear indexes have not wrapped around the buffer
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │   │   │ H | I | J | K | L | M |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                   │
+            front                rear
+    
+    rear index have wrapped around the buffer
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ P │ Q │ R |   |   |   |   | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                   │
+             rear               front
+             
+    front index have wrapped around the buffer
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ F │ G │ H |   |   |   |   | C | D | E |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                   │
+             rear               front
 ```
 
 Note that when the `rear` index or the `front` index wraps around the buffer the configuration is the same.
@@ -236,7 +236,7 @@ A doubly-linked list is a sequence of items, usually called nodes that are linke
 
 ```
          ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
-NULL <-- │ A │ <-> │ B │ <-> │ C │ <-> │ D │ <-> │ E │ <-> │ F │ <-> │ G │ <-> │ H │ --> NULL
+NULL <-- │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
          └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
            │                                                                     │
           head                                                                  tail
@@ -249,17 +249,17 @@ Operations for inserting and removing elements at both ends take `O(1)`, and rem
 A dynamic array automatically grows when its current capacity can't hold another item. When the array is full it is reallocated where a new buffer is allocated and then the original contents are copied to this new and bigger buffer. So in theory this array can take up as much space as needed if there is enough memory.
 
 ```
-                              can't add another element
-                                          |
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ A │ B │ C | D | E | F | G | H | I | J |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-  │   │   │   │   │   │   │   │   │   │
-  V   V   V   V   V   V   V   V   V   V
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ A │ B │ C | D | E | F | G | H | I | J |   |   |   |   |   |   |   |   |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-new buffer gets reallocated, its original content is copied and the old buffer is freed
+                                  can't add another element
+                                              |
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+      │   │   │   │   │   │   │   │   │   │
+      V   V   V   V   V   V   V   V   V   V
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J |   |   |   |   |   |   |   |   |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+    new buffer gets reallocated, its original content is copied and the old buffer is freed
 ```
 
 ### HashMap
@@ -301,19 +301,19 @@ A queue is a FIFO structure where the first element inserted is the first to be 
 A queue array is the implementation of a queue using a circular buffer. It is very space efficient but unlike a queue implemented as a linked list, a QueueArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a queue both front and rear indexes only go forward, that is, incremented by one when an operation is successful. If we enqueue an element the rear index goes up by one. If we dequeue and element the front index goes up by one.
 
 ```
-front and rear indexes have not wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│   │   │ H | I | J | K | L | M |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │                   │
-        front                rear
-
-rear index have wrapped around the buffer
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ P │ Q │ R |   |   |   |   | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │                   │
-         rear               front
+    front and rear indexes have not wrapped around the buffer
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │   │   │ H | I | J | K | L | M |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                   │
+            front                rear
+    
+    rear index have wrapped around the buffer
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ P │ Q │ R |   |   |   |   | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │                   │
+             rear               front
 ```
 
 If the queue buffer is not full then the `rear` index will wrap around the buffer. When the buffer is full both front and rear are indexes are next to each other. After the buffer is reallocated there are two options to shift the elements. This is done to shift the least amount of elements as possible.
@@ -321,49 +321,49 @@ If the queue buffer is not full then the `rear` index will wrap around the buffe
 When the rear pointer is closer to the end it is much more efficient to simply send the last elements to the end of the buffer.
 
 ```
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ P │ Q │ R | S | T | U | V | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-                          │   │
-                        rear front
-
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ P │ Q │ R | S | T | U | V |   |   |   |   |   |   |   |   |   |   | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-                          │                                           │
-                         rear                                       front
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ P │ Q │ R | S | T | U | V | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                              │   │
+                            rear front
+    
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ P │ Q │ R | S | T | U | V |   |   |   |   |   |   |   |   |   |   | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                              │                                           │
+                             rear                                       front
 ```
 
 But when the rear index is closer to the beginning of the buffer we can append the left portion to the right of the right-end portion.
 
 ```
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ P │ Q │ R | I | J | K | L | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-          │   │
-        rear front
-
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│   │   │   | I | J | K | L | M | N | O | P | Q | R |   |   |   |   |   |   |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-              │                                   │
-            front                                rear
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ P │ Q │ R | I | J | K | L | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+              │   │
+            rear front
+    
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │   │   │   | I | J | K | L | M | N | O | P | Q | R |   |   |   |   |   |   |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                  │                                   │
+                front                                rear
 ```
 
 There is also a third option when there is no need to shift elements. This happens when you insert elements until the buffer is full and does no removes a single element. Everything stays as they should be. This can also be caused after removing elements if when the buffer fills up it coincides when the front index is `0` and the rear is `capacity - 1`.
 
 ```
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ F │ G │ H | I | J | K | L | M | N | O |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-  │                                   │
-front                                rear
-
-┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-│ F │ G │ H | I | J | K | L | M | N | O |   |   |   |   |   |   |   |   |   |   |   |
-└───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-  │                                   │
-front                                rear
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ F │ G │ H | I | J | K | L | M | N | O |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+      │                                   │
+    front                                rear
+    
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ F │ G │ H | I | J | K | L | M | N | O |   |   |   |   |   |   |   |   |   |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+      │                                   │
+    front                                rear
 ```
 
 ### RadixTree
@@ -376,7 +376,17 @@ Not implemented yet.
 
 ### SinglyLinkedList
 
-TODO: Summary
+A singly-linked list is a sequence of items, usually called nodes that are linked through pointers. It works like an array but has a structural difference where in an array the items are stored contiguously and in a linked list the items are stored in nodes that can be anywhere in memory. It is called singly-linked because each node has only one pointer to the next node in the list.
+
+```
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │                                                                     │
+     head                                                                  tail
+```
+
+Operations for inserting and removing elements at the head of the list take `O(1)`; to add an element at the tail of the list take `O(1)` but to remove it it is always `O(n - 1)` and this is a big disadvantage that singly-linked lists have over doubly-linked lists; removing elements at the middle of the list can take up t `O(n)` we must always start searching for an element at the head of the list.
 
 ### SkipList
 
@@ -388,7 +398,28 @@ Not implemented yet.
 
 ### SortedList
 
-TODO: Summary
+A sorted list is a generic doubly-linked sorted list. Its elements are sorted with a user-provided `compare` function. This list is very inefficient at inserting elements with the cost os keeping them sorted. A tree would keep the elements sorted much more easily but it would not be a linear structure. Being a linked list many operations will take `O(n)` but others like `sli_max()` and `sli_min()`, that retrieves the maximum and the minimum values, take only `O(1)` where in a balanced tree it would take `O(log n)`. Iteration is also simplified and you can also remove elements more easily.  
+
+```c
+SortedList slist;
+
+sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free);
+
+for (int i = 7; i >= 0; i--)
+    sli_insert(slist, new_int(i));
+
+sli_free(&slist); 
+```
+
+The above code would produce the following list
+
+```
+         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+NULL <-- │ 0 │ <-> │ 1 │ <-> │ 2 │ <-> │ 3 │ <-> │ 4 │ <-> │ 5 │ <-> │ 6 │ <-> │ 7 │ --> NULL
+         └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+           │                                                                     │
+          head                                                                  tail
+```
 
 ### SortedHashMap
 
@@ -449,3 +480,39 @@ array->add(20, 10);
 
 arr_desc_free(array);
 ```
+
+[1]: #array
+[2]: #avltree
+[3]: #binarysearchtree
+[4]: #binomialheap
+[5]: #bitset
+[6]: #btree
+[7]: #circularlinkedlist
+[8]: #circularqueuelist
+[9]: #deque
+[10]: #dequearray
+[11]: #dictionary
+[12]: #doublylinkedlist
+[13]: #dynamic-array
+[14]: #hashmap
+[15]: #hashset
+[16]: #heap
+[17]: #priorityheap
+[18]: #priorityqueue
+[19]: #queue
+[20]: #queuearray
+[21]: #radixtree
+[22]: #redblacktree
+[23]: #singlylinkedlist
+[24]: #skiplist
+[25]: #sortedarray
+[26]: #sortedlist
+[27]: #sortedhashmap
+[28]: #sortedhashset
+[29]: #splaytree
+[30]: #stack
+[31]: #stackarray
+[32]: #treeset
+[33]: #treemap
+[34]: #trie
+[35]: #unrolledlinkedlist
