@@ -596,6 +596,8 @@ SortOrder sli_order(SortedList list)
 /// \return DS_OK if all operations are successful.
 Status sli_get(SortedList list, void **result, index_t index)
 {
+    *result = NULL;
+
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
@@ -2033,9 +2035,13 @@ static bool sli_iter_invalid_state(SortedListIterator iter);
 /// \param[in] target Target SortedList_s.
 ///
 /// \return DS_ERR_ALLOC if iterator allocation failed.
+/// \return DS_ERR_NULL_POINTER if the target parameter references to \c NULL.
 /// \return DS_OK if all operations are successful.
 Status sli_iter_init(SortedListIterator *iter, SortedList target)
 {
+    if (target == NULL)
+        return DS_ERR_NULL_POINTER;
+
     *iter = malloc(sizeof(SortedListIterator_t));
 
     if (!(*iter))
@@ -2598,6 +2604,411 @@ static bool sli_iter_target_modified(SortedListIterator iter)
 static bool sli_iter_invalid_state(SortedListIterator iter)
 {
     return iter->cursor == NULL || iter->target == NULL;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+// Global sorted list used by the Wrapper.
+static SortedList GlobalSortedList = NULL;
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+// All these functions are part of the SortedListWrapper.
+
+static Status sli_wrap_set_compare(sli_compare_f function);
+
+static Status sli_wrap_set_copy(sli_copy_f function);
+
+static Status sli_wrap_set_display(sli_display_f function);
+
+static Status sli_wrap_set_free(sli_free_f function);
+
+static Status sli_wrap_set_limit(index_t limit);
+
+static Status sli_wrap_set_order(SortOrder order);
+
+static index_t sli_wrap_length(void);
+
+static index_t sli_wrap_limit(void);
+
+static SortOrder sli_wrap_order(void);
+
+static Status sli_wrap_get(void **result, index_t index);
+
+static Status sli_wrap_insert(void *element);
+
+static Status sli_wrap_insert_all(void **elements, index_t count);
+
+static Status sli_wrap_remove(void **result, index_t position);
+
+static Status sli_wrap_remove_max(void **result);
+
+static Status sli_wrap_remove_min(void **result);
+
+static bool sli_wrap_full(void);
+
+static bool sli_wrap_empty(void);
+
+static void *sli_wrap_max(void);
+
+static void *sli_wrap_min(void);
+
+static index_t sli_wrap_index_first(void *key);
+
+static index_t sli_wrap_index_last(void *key);
+
+static bool sli_wrap_contains(void *key);
+
+static Status sli_wrap_reverse(void);
+
+static Status sli_wrap_copy(SortedList *result);
+
+static Status sli_wrap_to_array(void ***result, index_t *length);
+
+static Status sli_wrap_merge(SortedList list);
+
+static Status sli_wrap_unlink(SortedList *result, index_t position);
+
+static Status sli_wrap_sublist(SortedList *result, index_t start, index_t end);
+
+static Status sli_wrap_display(void);
+
+static Status sli_wrap_display_array(void);
+
+static Status sli_wrap_display_raw(void);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+/// \brief Initializes a SortedListWrapper_s.
+///
+/// Initializes a SortedListWrapper_s with a given target.
+///
+/// \param wrapper Wrapper to be initialized.
+/// \param target Target SortedList_s.
+///
+/// \return DS_ERR_ALLOC if wrapper allocation failed.
+/// \return DS_ERR_NULL_POINTER if the target parameter references to \c NULL.
+/// \return DS_OK if all operations are successful.
+Status sli_wrap_init(SortedListWrapper *wrapper, SortedList target)
+{
+    if (target == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    *wrapper = malloc(sizeof(SortedListWrapper_t));
+
+    if (!(*wrapper))
+        return DS_ERR_ALLOC;
+
+    GlobalSortedList = target;
+
+    // Setting all wrapper functions
+    (*wrapper)->set_compare = sli_wrap_set_compare;
+    (*wrapper)->set_copy = sli_wrap_set_copy;
+    (*wrapper)->set_display = sli_wrap_set_display;
+    (*wrapper)->set_free = sli_wrap_set_free;
+    (*wrapper)->set_limit = sli_wrap_set_limit;
+    (*wrapper)->set_order = sli_wrap_set_order;
+
+    (*wrapper)->length = sli_wrap_length;
+    (*wrapper)->limit = sli_wrap_limit;
+    (*wrapper)->order = sli_wrap_order;
+    (*wrapper)->get_copy = sli_wrap_get;
+
+    (*wrapper)->insert = sli_wrap_insert;
+    (*wrapper)->insert_all = sli_wrap_insert_all;
+    (*wrapper)->remove = sli_wrap_remove;
+    (*wrapper)->remove_max = sli_wrap_remove_max;
+    (*wrapper)->remove_min = sli_wrap_remove_min;
+
+    (*wrapper)->full = sli_wrap_full;
+    (*wrapper)->empty = sli_wrap_empty;
+
+    (*wrapper)->max = sli_wrap_max;
+    (*wrapper)->min = sli_wrap_min;
+    (*wrapper)->index_first = sli_wrap_index_first;
+    (*wrapper)->index_last = sli_wrap_index_last;
+    (*wrapper)->contains = sli_wrap_contains;
+    (*wrapper)->reverse = sli_wrap_reverse;
+    (*wrapper)->copy = sli_wrap_copy;
+    (*wrapper)->to_array = sli_wrap_to_array;
+
+    (*wrapper)->merge = sli_wrap_merge;
+    (*wrapper)->unlink = sli_wrap_unlink;
+    (*wrapper)->sublist = sli_wrap_sublist;
+
+    (*wrapper)->display = sli_wrap_display;
+    (*wrapper)->display_array = sli_wrap_display_array;
+    (*wrapper)->display_raw = sli_wrap_display_raw;
+
+    return DS_OK;
+}
+
+/// \brief Re-targets the wrapper.
+///
+/// This function simply changes the value of the GlobalSortedList to a new
+/// target.
+///
+/// \param wrapper Wrapper to be re-targeted.
+/// \param target Target SortedList_s.
+///
+/// \return DS_ERR_NULL_POINTER if either the wrapper or the target are
+/// referencing to \c NULL.
+/// \return DS_OK if all operations are successful.
+Status sli_wrap_retarget(SortedListWrapper wrapper, SortedList target)
+{
+    if (wrapper == NULL || target == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    GlobalSortedList = target;
+
+    return DS_OK;
+}
+
+/// \brief Frees from memory a SortedListWrapper_s.
+///
+/// Frees from memory a SortedListIterator_s. Note that this does not
+/// deallocates the target SortedList_s.
+///
+/// \param[in,out] iter SortedListIterator_s to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_OK if all operations are successful.
+Status sli_wrap_free(SortedListWrapper *wrapper)
+{
+    if (*wrapper == NULL)
+        return DS_ERR_NULL_POINTER;
+
+    free(*wrapper);
+
+    *wrapper = NULL;
+
+    GlobalSortedList = NULL;
+
+    return DS_OK;
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static Status sli_wrap_set_compare(sli_compare_f function)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_func_compare(GlobalSortedList, function);
+}
+
+static Status sli_wrap_set_copy(sli_copy_f function)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_func_copy(GlobalSortedList, function);
+}
+
+static Status sli_wrap_set_display(sli_display_f function)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_func_display(GlobalSortedList, function);
+}
+
+static Status sli_wrap_set_free(sli_free_f function)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_func_free(GlobalSortedList, function);
+}
+
+static Status sli_wrap_set_limit(index_t limit)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_limit(GlobalSortedList, limit);
+}
+
+static Status sli_wrap_set_order(SortOrder order)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_set_order(GlobalSortedList, order);
+}
+
+static index_t sli_wrap_length(void)
+{
+    return sli_length(GlobalSortedList);
+}
+
+static index_t sli_wrap_limit(void)
+{
+    return sli_limit(GlobalSortedList);
+}
+
+static SortOrder sli_wrap_order(void)
+{
+    return sli_order(GlobalSortedList);
+}
+
+static Status sli_wrap_get(void **result, index_t index)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_get(GlobalSortedList, result, index);
+}
+
+static Status sli_wrap_insert(void *element)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_insert(GlobalSortedList, element);
+}
+
+static Status sli_wrap_insert_all(void **elements, index_t count)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_insert_all(GlobalSortedList, elements, count);
+}
+
+static Status sli_wrap_remove(void **result, index_t position)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_remove(GlobalSortedList, result, position);
+}
+
+static Status sli_wrap_remove_max(void **result)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_remove_max(GlobalSortedList, result);
+}
+
+static Status sli_wrap_remove_min(void **result)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_remove_min(GlobalSortedList, result);
+}
+
+static bool sli_wrap_full(void)
+{
+    return sli_full(GlobalSortedList);
+}
+
+static bool sli_wrap_empty(void)
+{
+    return sli_empty(GlobalSortedList);
+}
+
+static void *sli_wrap_max(void)
+{
+    return sli_max(GlobalSortedList);
+}
+
+static void *sli_wrap_min(void)
+{
+    return sli_min(GlobalSortedList);
+}
+
+static index_t sli_wrap_index_first(void *key)
+{
+    return sli_index_first(GlobalSortedList, key);
+}
+
+static index_t sli_wrap_index_last(void *key)
+{
+    return sli_index_last(GlobalSortedList, key);
+}
+
+static bool sli_wrap_contains(void *key)
+{
+    return sli_contains(GlobalSortedList, key);
+}
+
+static Status sli_wrap_reverse(void)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_reverse(GlobalSortedList);
+}
+
+static Status sli_wrap_copy(SortedList *result)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_copy(GlobalSortedList, result);
+}
+
+static Status sli_wrap_to_array(void ***result, index_t *length)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_to_array(GlobalSortedList, result, length);
+}
+
+static Status sli_wrap_merge(SortedList list)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_merge(GlobalSortedList, list);
+}
+
+static Status sli_wrap_unlink(SortedList *result, index_t position)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_unlink(GlobalSortedList, result, position);
+}
+
+static Status sli_wrap_sublist(SortedList *result, index_t start, index_t end)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_sublist(GlobalSortedList, result, start, end);
+}
+
+static Status sli_wrap_display(void)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_display(GlobalSortedList);
+}
+
+static Status sli_wrap_display_array(void)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_display_array(GlobalSortedList);
+}
+
+static Status sli_wrap_display_raw(void)
+{
+    if (GlobalSortedList == NULL)
+        return DS_ERR_WRAPPER;
+
+    return sli_display_raw(GlobalSortedList);
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///

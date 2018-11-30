@@ -298,7 +298,7 @@ A queue is a FIFO structure where the first element inserted is the first to be 
 
 ### QueueArray
 
-A queue array is the implementation of a queue using a circular buffer. It is very space efficient but unlike a queue implemented as a linked list, a QueueArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a queue both front and rear indexes only go forward, that is, incremented by one when an operation is successful. If we enqueue an element the rear index goes up by one. If we dequeue and element the front index goes up by one.
+A queue array is the implementation of a queue using a circular buffer. It is very space efficient but unlike a queue implemented as a linked list, a QueueArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a queue both front and rear indexes only go forward, that is, incremented by one when an operation is successful. If we enqueue an element the rear index goes up by one. If we dequeue an element the front index goes up by one.
 
 ```
     front and rear indexes have not wrapped around the buffer
@@ -462,8 +462,8 @@ Not implemented yet.
 A descriptor that operates relative to a global variable that simulates an object:
 
 ```c
-// global scope
-struct Array_s GloalArray = NULL;
+// global scope in source file
+static struct Array_s *GloalArray = NULL;
 
 // in main function
 // This structure comes with all array functions in it

@@ -972,6 +972,37 @@ int main()
     stk_free(&stk0);
     stk_free(&stk1);
 
+    // Wrapper showcase
+    SortedListWrapper listw;
+
+    if (sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free) == DS_OK)
+    {
+        if (sli_wrap_init(&listw, slist) == DS_OK)
+        {
+            for (int i = 0; i < 100; i++)
+            {
+                listw->insert(new_int(rand_int(-100, 100)));
+            }
+
+            listw->display_array();
+
+            printf("\n");
+            while (!listw->empty())
+            {
+                if (listw->remove_max(&result) == DS_OK)
+                {
+                    display_int(result);
+                    printf(" ");
+                    free(result);
+                }
+            }
+
+            sli_wrap_free(&listw);
+        }
+
+        sli_free(&slist);
+    }
+
     printf("\n\n\n");
 
     DequeArrayTests();

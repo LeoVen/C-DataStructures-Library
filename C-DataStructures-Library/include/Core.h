@@ -68,7 +68,10 @@ enum Status
     DS_ERR_ITER_MODIFICATION      = 12,
 
     /// When the state of an iterator is invalid.
-    DS_ERR_ITER_STATE             = 13
+    DS_ERR_ITER_STATE             = 13,
+
+    /// When a wrapper structure error occurs.
+    DS_ERR_WRAPPER                = 14
 };
 
 /// Defines a type to an <code> enum Status </code>
