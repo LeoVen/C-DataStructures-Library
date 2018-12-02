@@ -8,7 +8,7 @@
 | [AVLTree][2]             | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
 | [BinarySearchTree][3]    | `[##########]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][4]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [BitSet][5]              | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [BitArray][5]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BTree][6]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [CircularLinkedList][7]  | `[##########]` | `[##########]` | `[#_________]` | `[#####_____]` |
 | [CircularQueueList][8]   | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -145,7 +145,7 @@ This makes search as `O(N)` and is much slower than it should be so a balanced b
 
 Not implemented yet.
 
-### BitSet
+### BitArray
 
 Not implemented yet.
 
@@ -284,7 +284,7 @@ The priority queue is a linked list implementation. It has a lot in common with 
 
 ### Queue
 
-A queue is a FIFO structure where the first element inserted is the first to be removed. It is a singly-linked implementation where enqueueing is equivalent to inserting and element at the tail of the list and dequeuing is equivalent to removing an element from the head of the list. This is done so both operations take `O(1)`, since the worst possible operation in a singly-linked list is removing the tail element where we would have to iterate over the entire list until the penultimate element.
+A queue is a FIFO (First-in First-out) or LILO (Last-in Last-out) abstract data type where the first element inserted is the first to be removed. This is a singly-linked implementation where enqueueing is equivalent to inserting and element at the tail of the list and dequeuing is equivalent to removing an element from the head of the list. This is done so both operations take `O(1)`, since the worst possible operation in a singly-linked list is removing the tail element where we would have to iterate over the entire list until the penultimate element.
 
  ```
     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
@@ -380,7 +380,7 @@ A singly-linked list is a sequence of items, usually called nodes that are linke
 
 ```
     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
-    │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
+    │ G │ --> │ E │ --> │ C │ --> │ A │ --> │ B │ --> │ D │ --> │ F │ --> │ H │ --> NULL
     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
       │                                                                     │
      head                                                                  tail
@@ -411,7 +411,7 @@ for (int i = 7; i >= 0; i--)
 sli_free(&slist); 
 ```
 
-The above code would produce the following list
+The above code would produce the following list.
 
 ```
          ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
@@ -435,11 +435,53 @@ Not implemented yet.
 
 ### Stack
 
-TODO: Summary
+A stack is a FILO (First-in Last-out) or LIFO (Last-in First-out) abstract data type where the last element inserted is the first one to be removed. This is a singly-linked list implementation where all operations are done at the head of the list. Push and Pop are equivalent to inserting and removing an element at the head of the list respectively.
+
+```
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ G │ --> │ F │ --> │ E │ --> │ D │ --> │ C │ --> │ B │ --> │ A │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │
+     top
+
+    Pop(G)
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ F │ --> │ E │ --> │ D │ --> │ C │ --> │ B │ --> │ A │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │
+     top
+
+    Push(H)
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ H │ --> │ F │ --> │ E │ --> │ D │ --> │ C │ --> │ B │ --> │ A │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │
+     top
+```
 
 ### StackArray
 
-TODO: Summary
+A stack array is the implementation of a stack using an internal buffer. It is very space efficient and unlike a queue it does not need to be a circular buffer, making its implementation much simpler and the buffer reallocation. Since Push and Pop are only done at one end of the buffer, no elements will ever need to be shifted.
+
+```
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                      │
+                                     top
+    Push(J)
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                          │
+                                         top
+    Push(K)
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J | K |   |   |   |   |   |   |   |   |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                              │
+                                             top
+```
 
 ### TreeSet
 
@@ -459,33 +501,33 @@ Not implemented yet.
 
 ## Ideas
 
-A descriptor that operates relative to a global variable that simulates an object:
+A Wrapper that operates relative to a global variable that simulates an object:
 
 ```c
 // global scope in source file
-static struct Array_s *GloalArray = NULL;
+static Array GlobalArray = NULL;
 
 // in main function
 // This structure comes with all array functions in it
-struct ArrayDescriptor_s array;
-arr_desc_init(array);
+struct ArrayWrapper array_w;
 
 // sets GlobalArray = my_array
-array->target(my_array);
+arr_wrap_init(array_w, my_array);
 
 // Adds an element 20 at position 10
 // Note that there is no need to pass in a my_array reference
 // Because add() function operates relative to GlobalArray
-array->add(20, 10);
+array_w->add(20, 10);
 
-arr_desc_free(array);
+// Frees array_w and sets GlobalArray = NULL
+arr_desc_free(array_w);
 ```
 
 [1]: #array
 [2]: #avltree
 [3]: #binarysearchtree
 [4]: #binomialheap
-[5]: #bitset
+[5]: #bitarray
 [6]: #btree
 [7]: #circularlinkedlist
 [8]: #circularqueuelist
