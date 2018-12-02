@@ -64,7 +64,7 @@ struct Queue_s
     ///
     /// Queue current amount of elements linked between the \c front and
     /// \c rear pointers.
-    index_t length;
+    integer_t length;
 
     /// \brief Queue length limit.
     ///
@@ -74,7 +74,7 @@ struct Queue_s
     /// to its length, that is, \c limit equals 0. The user won't be able to
     /// limit the queue length if it already has more elements than the
     /// specified limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief The front of the queue.
     ///
@@ -120,7 +120,7 @@ struct Queue_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 /// \brief A Queue_s node.
@@ -447,7 +447,7 @@ Status que_set_func_free(Queue queue, que_free_f function)
 /// current length.
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status que_set_limit(Queue queue, index_t limit)
+Status que_set_limit(Queue queue, integer_t limit)
 {
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
@@ -461,7 +461,7 @@ Status que_set_limit(Queue queue, index_t limit)
     return DS_OK;
 }
 
-index_t que_length(Queue queue)
+integer_t que_length(Queue queue)
 {
     if (queue == NULL)
         return -1;
@@ -469,7 +469,7 @@ index_t que_length(Queue queue)
     return queue->length;
 }
 
-index_t que_limit(Queue queue)
+integer_t que_limit(Queue queue)
 {
     if (queue == NULL)
         return -1;
@@ -650,7 +650,7 @@ Status que_append(Queue queue, Queue queue2)
     return DS_OK;
 }
 
-Status que_to_array(Queue queue,  void ***result, index_t *length)
+Status que_to_array(Queue queue,  void ***result, integer_t *length)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;
@@ -853,7 +853,7 @@ struct QueueIterator_s
     /// structure. This is kept to prevent iteration on the target structure
     /// that may have been modified and thus causing undefined behaviours or
     /// run-time crashes.
-    index_t target_id;
+    integer_t target_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///

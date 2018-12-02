@@ -39,7 +39,7 @@ Status deq_test_limit(UnitTest ut)
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, deq_length(deque), deq_limit(deque), __func__);
+    ut_equals_integer_t(ut, deq_length(deque), deq_limit(deque), __func__);
     ut_equals_int(ut, deq_set_limit(deque, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     int *t = new_int(1);
@@ -48,7 +48,7 @@ Status deq_test_limit(UnitTest ut)
 
     // Removes the limit
     ut_equals_int(ut, deq_set_limit(deque, 0), DS_OK, __func__);
-    ut_equals_index_t(ut, deq_limit(deque), 0, __func__);
+    ut_equals_integer_t(ut, deq_limit(deque), 0, __func__);
     ut_equals_int(ut, deq_enqueue_front(deque, t), DS_OK, __func__);
 
     deq_free(&deque);

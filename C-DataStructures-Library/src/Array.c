@@ -64,7 +64,7 @@ struct Array_s
     /// \brief Array length.
     ///
     /// Tracks the C array length.
-    index_t length;
+    integer_t length;
 
     /// \brief Comparator function.
     ///
@@ -98,16 +98,16 @@ struct Array_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static void arr_quicksort(Array array, void **buffer, index_t length);
+static void arr_quicksort(Array array, void **buffer, integer_t length);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-Status arr_init(Array *array, index_t length)
+Status arr_init(Array *array, integer_t length)
 {
     if (length <= 0)
         return DS_ERR_INVALID_ARGUMENT;
@@ -120,14 +120,20 @@ Status arr_init(Array *array, index_t length)
     (*array)->buffer = malloc(sizeof(void*) * length);
 
     if (!(*array)->buffer)
+    {
+        free(*array);
+
+        *array = NULL;
+
         return DS_ERR_ALLOC;
+    }
 
     (*array)->d_compare = NULL;
     (*array)->d_copy = NULL;
     (*array)->d_display = NULL;
     (*array)->d_free = NULL;
 
-    for (index_t i = 0; i < length; i++)
+    for (integer_t i = 0; i < length; i++)
         (*array)->buffer[i] = NULL;
 
     (*array)->length = length;
@@ -137,7 +143,7 @@ Status arr_init(Array *array, index_t length)
     return DS_OK;
 }
 
-Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
+Status arr_create(Array *array, integer_t length, arr_compare_f compare_f,
                   arr_copy_f copy_f, arr_display_f display_f, arr_free_f free_f)
 {
     if (length <= 0)
@@ -151,14 +157,20 @@ Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
     (*array)->buffer = malloc(sizeof(void*) * length);
 
     if (!(*array)->buffer)
+    {
+        free(*array);
+
+        *array = NULL;
+
         return DS_ERR_ALLOC;
+    }
 
     (*array)->d_compare = compare_f;
     (*array)->d_copy = copy_f;
     (*array)->d_display = display_f;
     (*array)->d_free = free_f;
 
-    for (index_t i = 0; i < length; i++)
+    for (integer_t i = 0; i < length; i++)
         (*array)->buffer[i] = NULL;
 
     (*array)->length = length;
@@ -176,7 +188,7 @@ Status arr_free(Array *array)
     if ((*array)->d_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    for (index_t i = 0; i < (*array)->length; i++)
+    for (integer_t i = 0; i < (*array)->length; i++)
     {
         (*array)->d_free((*array)->buffer[i]);
     }
@@ -271,7 +283,7 @@ Status arr_set_func_free(Array array, arr_free_f function)
     return DS_OK;
 }
 
-index_t arr_length(Array array)
+integer_t arr_length(Array array)
 {
     if (array == NULL)
         return -1;
@@ -279,14 +291,14 @@ index_t arr_length(Array array)
     return array->length;
 }
 
-index_t arr_count(Array array)
+integer_t arr_count(Array array)
 {
     if (array == NULL)
         return -1;
 
-    index_t count = 0;
+    integer_t count = 0;
 
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
             count++;
@@ -295,12 +307,12 @@ index_t arr_count(Array array)
     return count;
 }
 
-index_t arr_set_next(Array array, void *element)
+integer_t arr_set_next(Array array, void *element)
 {
     if (array == NULL)
         return -2;
 
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
         {
@@ -316,7 +328,7 @@ index_t arr_set_next(Array array, void *element)
     return -1;
 }
 
-Status arr_set(Array array, index_t index, void *element)
+Status arr_set(Array array, integer_t index, void *element)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
@@ -339,12 +351,12 @@ Status arr_set(Array array, index_t index, void *element)
     return DS_ERR_INVALID_OPERATION;
 }
 
-index_t arr_set_last(Array array, void *element)
+integer_t arr_set_last(Array array, void *element)
 {
     if (array == NULL)
         return -2;
 
-    for (index_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
@@ -360,14 +372,14 @@ index_t arr_set_last(Array array, void *element)
     return -1;
 }
 
-void *arr_get_next(Array array, index_t *index)
+void *arr_get_next(Array array, integer_t *index)
 {
     *index = -1;
 
     if (array == NULL)
         return NULL;
 
-    for (index_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
@@ -381,7 +393,7 @@ void *arr_get_next(Array array, index_t *index)
     return NULL;
 }
 
-void *arr_get(Array array, index_t index)
+void *arr_get(Array array, integer_t index)
 {
     if (array == NULL)
         return NULL;
@@ -393,14 +405,14 @@ void *arr_get(Array array, index_t index)
     return array->buffer[index];
 }
 
-void *arr_get_last(Array array, index_t *index)
+void *arr_get_last(Array array, integer_t *index)
 {
     *index = -1;
 
     if (array == NULL)
         return NULL;
 
-    for (index_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
@@ -414,14 +426,14 @@ void *arr_get_last(Array array, index_t *index)
     return NULL;
 }
 
-void *arr_pop_next(Array array, index_t *index)
+void *arr_pop_next(Array array, integer_t *index)
 {
     *index = -1;
 
     if (array == NULL)
         return NULL;
 
-    for (index_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
@@ -440,7 +452,7 @@ void *arr_pop_next(Array array, index_t *index)
     return NULL;
 }
 
-void *arr_pop(Array array, index_t index)
+void *arr_pop(Array array, integer_t index)
 {
     if (array == NULL)
         return NULL;
@@ -457,14 +469,14 @@ void *arr_pop(Array array, index_t index)
     return element;
 }
 
-void *arr_pop_last(Array array, index_t *index)
+void *arr_pop_last(Array array, integer_t *index)
 {
     *index = -1;
 
     if (array == NULL)
         return NULL;
 
-    for (index_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
@@ -485,7 +497,7 @@ void *arr_pop_last(Array array, index_t *index)
 
 bool arr_full(Array array)
 {
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] == NULL)
             return false;
@@ -496,7 +508,7 @@ bool arr_full(Array array)
 
 bool arr_empty(Array array)
 {
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
             return false;
@@ -515,7 +527,7 @@ void *arr_max(Array array)
 
     void *result = NULL;
 
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         // New element
         if (array->buffer[i] != NULL)
@@ -543,7 +555,7 @@ void *arr_min(Array array)
 
     void *result = NULL;
 
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         // New element
         if (array->buffer[i] != NULL)
@@ -561,7 +573,7 @@ void *arr_min(Array array)
     return result;
 }
 
-index_t arr_index_first(Array array, void *key)
+integer_t arr_index_first(Array array, void *key)
 {
     if (array == NULL)
         return -3;
@@ -569,7 +581,7 @@ index_t arr_index_first(Array array, void *key)
     if (array->d_compare == NULL)
         return -2;
 
-    for (index_t index = 0; index < array->length; index++)
+    for (integer_t index = 0; index < array->length; index++)
     {
         if (array->buffer[index] != NULL)
             if (array->d_compare(array->buffer[index], key) == 0)
@@ -580,7 +592,7 @@ index_t arr_index_first(Array array, void *key)
     return -1;
 }
 
-index_t arr_index_last(Array array, void *key)
+integer_t arr_index_last(Array array, void *key)
 {
     if (array == NULL)
         return -3;
@@ -588,7 +600,7 @@ index_t arr_index_last(Array array, void *key)
     if (array->d_compare == NULL)
         return -2;
 
-    for (index_t index = array->length - 1; index >= 0; index--)
+    for (integer_t index = array->length - 1; index >= 0; index--)
     {
         if (array->buffer[index] != NULL)
             if (array->d_compare(array->buffer[index], key) == 0)
@@ -601,7 +613,7 @@ index_t arr_index_last(Array array, void *key)
 
 bool arr_contains(Array array, void *key)
 {
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
             if (array->d_compare(array->buffer[i], key) == 0)
@@ -611,7 +623,7 @@ bool arr_contains(Array array, void *key)
     return false;
 }
 
-Status arr_switch(Array array, index_t pos1, index_t pos2)
+Status arr_switch(Array array, integer_t pos1, integer_t pos2)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
@@ -638,7 +650,7 @@ Status arr_reverse(Array array)
 
     Status st;
 
-    for (index_t i = 0; i < array->length / 2; i++)
+    for (integer_t i = 0; i < array->length / 2; i++)
     {
         st = arr_switch(array, i, array->length - i - 1);
 
@@ -663,7 +675,7 @@ Status arr_copy(Array array, Array *result)
     if (st != DS_OK)
         return st;
 
-    for (index_t i = 0; i < array->length; i++)
+    for (integer_t i = 0; i < array->length; i++)
         (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
                                array->d_copy(array->buffer[i]);
 
@@ -685,7 +697,7 @@ Status arr_sort(Array array)
     return DS_OK;
 }
 
-Status arr_to_array(Array array, void ***result, index_t *length)
+Status arr_to_array(Array array, void ***result, integer_t *length)
 {
     // If anything goes wrong...
     *result = NULL;
@@ -704,7 +716,7 @@ Status arr_to_array(Array array, void ***result, index_t *length)
     if (!(*result))
         return DS_ERR_NULL_POINTER;
 
-    for (index_t i = 0; i < *length; i++)
+    for (integer_t i = 0; i < *length; i++)
     {
         (*result)[i] = (array->buffer[i] == NULL) ?
                 NULL :
@@ -731,7 +743,7 @@ Status arr_display(Array array)
 
     printf("\nArray\n[ ");
 
-    for (index_t i = 0; i < array->length - 1; i++)
+    for (integer_t i = 0; i < array->length - 1; i++)
     {
         array->d_display(array->buffer[i]);
 
@@ -755,7 +767,7 @@ Status arr_display_raw(Array array)
 
     printf("\n");
 
-    for (index_t i = 0; i < array->length - 1; i++)
+    for (integer_t i = 0; i < array->length - 1; i++)
     {
         array->d_display(array->buffer[i]);
 
@@ -769,14 +781,14 @@ Status arr_display_raw(Array array)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static void arr_quicksort(Array array, void **buffer, index_t length)
+static void arr_quicksort(Array array, void **buffer, integer_t length)
 {
     if (length < 2)
         return;
 
     void *pivot = buffer[length / 2];
 
-    index_t i, j;
+    integer_t i, j;
     for (i = 0, j = length - 1; ; i++, j--)
     {
         while (array->d_compare(buffer[i], pivot) < 0)
@@ -818,13 +830,13 @@ struct ArrayIterator_s
     /// \brief Current element.
     ///
     /// Index of the current element pointed by the cursor;
-    index_t cursor;
+    integer_t cursor;
 
     /// \brief Target version ID.
     ///
     /// When the iterator is initialized it stores the version_id of the target
     /// structure.
-    index_t target_id;
+    integer_t target_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///

@@ -13,14 +13,19 @@ double rrandom()
     return (double)rand() / (double)RAND_MAX;
 }
 
-int rand_int(index_t min, index_t max)
+int rand_int(int min, int max)
 {
     return (int)floor(rrandom() * ((double)max - (double)min + 1.0) + (double)min);
 }
 
-long long rand_long(index_t min, index_t max)
+long rand_long(long min, long max)
 {
-    return (long long)floor(rrandom() * ((double)max - (double)min + 1.0) + (double)min);
+    return (long)floor(rrandom() * ((double)max - (double)min + 1.0) + (double)min);
+}
+
+integer_t rand_integer(integer_t min, integer_t max)
+{
+    return (integer_t)floor(rrandom() *((double)max - (double)min + 1.0) + (double)min);
 }
 
 double rand_double(double min, double max)

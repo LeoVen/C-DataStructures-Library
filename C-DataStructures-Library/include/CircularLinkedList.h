@@ -79,13 +79,13 @@ Status cll_set_func_display(CircularLinkedList list, cll_display_f function);
 
 Status cll_set_func_free(CircularLinkedList list, cll_free_f function);
 
-Status cll_set_limit(CircularLinkedList list, index_t limit);
+Status cll_set_limit(CircularLinkedList list, integer_t limit);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t cll_length(CircularLinkedList list);
+integer_t cll_length(CircularLinkedList list);
 
-index_t cll_limit(CircularLinkedList list);
+integer_t cll_limit(CircularLinkedList list);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -123,11 +123,11 @@ Status cll_copy(CircularLinkedList cll, CircularLinkedList *result);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-Status cll_iter_next(CircularLinkedList cll, index_t positions);
+Status cll_iter_next(CircularLinkedList cll, integer_t positions);
 
-Status cll_iter(CircularLinkedList cll, index_t positions);
+Status cll_iter(CircularLinkedList cll, integer_t positions);
 
-Status cll_iter_prev(CircularLinkedList cll, index_t positions);
+Status cll_iter_prev(CircularLinkedList cll, integer_t positions);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

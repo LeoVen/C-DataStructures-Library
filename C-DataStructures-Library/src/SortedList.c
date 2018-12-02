@@ -85,7 +85,7 @@ struct SortedList_s
     ///
     /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
-    index_t length;
+    integer_t length;
 
     /// \brief List length limit.
     ///
@@ -95,7 +95,7 @@ struct SortedList_s
     /// its length, that is, \c limit equals 0. The user won't be able to limit
     /// the list length if it already has more elements than the specified
     /// limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief Points to the first Node on the list.
     ///
@@ -144,7 +144,7 @@ struct SortedList_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 /// \brief A SortedList_s node.
@@ -189,7 +189,7 @@ static Status sli_free_node(SortedListNode *node, sli_free_f free_f);
 static Status sli_free_node_shallow(SortedListNode *node);
 
 static Status sli_get_node_at(SortedList list, SortedListNode *result,
-        index_t position);
+        integer_t position);
 
 static Status sli_insert_tail(SortedList list, void *element);
 
@@ -491,7 +491,7 @@ Status sli_set_func_free(SortedList list, sli_free_f function)
 /// current length.
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_set_limit(SortedList list, index_t limit)
+Status sli_set_limit(SortedList list, integer_t limit)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -537,7 +537,7 @@ Status sli_set_order(SortedList list, SortOrder order)
 ///
 /// \return -1 if the list references to \c NULL.
 /// \return The list's length.
-index_t sli_length(SortedList list)
+integer_t sli_length(SortedList list)
 {
     if (list == NULL)
         return -1;
@@ -553,7 +553,7 @@ index_t sli_length(SortedList list)
 ///
 /// \return -1 if the list references to \c NULL.
 /// \return The list's limit.
-index_t sli_limit(SortedList list)
+integer_t sli_limit(SortedList list)
 {
     if (list == NULL)
         return -1;
@@ -594,7 +594,7 @@ SortOrder sli_order(SortedList list)
 /// \return DS_ERR_OUT_OF_RANGE if index parameter is greater than or equal
 /// to the list's length.
 /// \return DS_OK if all operations are successful.
-Status sli_get(SortedList list, void **result, index_t index)
+Status sli_get(SortedList list, void **result, integer_t index)
 {
     *result = NULL;
 
@@ -778,7 +778,7 @@ Status sli_insert(SortedList list, void *element)
 /// \return DS_ERR_NEGATIVE_VALUE if count parameter is negative.
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_insert_all(SortedList list, void **elements, index_t count)
+Status sli_insert_all(SortedList list, void **elements, integer_t count)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -788,7 +788,7 @@ Status sli_insert_all(SortedList list, void **elements, index_t count)
 
     Status st;
 
-    for (index_t i = 0; i < count; i++)
+    for (integer_t i = 0; i < count; i++)
     {
         st = sli_insert(list, elements[i]);
 
@@ -815,7 +815,7 @@ Status sli_insert_all(SortedList list, void **elements, index_t count)
 /// \return DS_ERR_OUT_OF_RANGE if position parameter is greater than or equal
 /// to the list's length.
 /// \return DS_OK if all operations are successful.
-Status sli_remove(SortedList list, void **result, index_t position)
+Status sli_remove(SortedList list, void **result, integer_t position)
 {
     *result = NULL;
 
@@ -1119,7 +1119,7 @@ void *sli_min(SortedList list)
 /// \return -2 if there is no default compare function.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
-index_t sli_index_first(SortedList list, void *key)
+integer_t sli_index_first(SortedList list, void *key)
 {
     if (list == NULL)
         return -3;
@@ -1129,7 +1129,7 @@ index_t sli_index_first(SortedList list, void *key)
 
     SortedListNode scan = list->head;
 
-    index_t index = 0;
+    integer_t index = 0;
 
     while (scan != NULL)
     {
@@ -1156,7 +1156,7 @@ index_t sli_index_first(SortedList list, void *key)
 /// \return -2 if there is no default compare function.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
-index_t sli_index_last(SortedList list, void *key)
+integer_t sli_index_last(SortedList list, void *key)
 {
     if (list == NULL)
         return -3;
@@ -1166,7 +1166,7 @@ index_t sli_index_last(SortedList list, void *key)
 
     SortedListNode scan = list->tail;
 
-    index_t index = 0;
+    integer_t index = 0;
 
     while (scan != NULL)
     {
@@ -1324,7 +1324,7 @@ Status sli_copy(SortedList list, SortedList *result)
 /// \return DS_ERR_INCOMPLETE_TYPE if a default copy function is not set.
 /// \return DS_ERR_NULL_POINTER if list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_to_array(SortedList list, void ***result, index_t *length)
+Status sli_to_array(SortedList list, void ***result, integer_t *length)
 {
     // If anything goes wrong...
     *result = NULL;
@@ -1348,7 +1348,7 @@ Status sli_to_array(SortedList list, void ***result, index_t *length)
 
     SortedListNode scan = list->head;
 
-    for (index_t i = 0; i < *length; i++)
+    for (integer_t i = 0; i < *length; i++)
     {
         (*result)[i] = list->d_copy(scan->data);
 
@@ -1407,7 +1407,7 @@ Status sli_merge(SortedList list1, SortedList list2)
 /// \return DS_ERR_OUT_OF_RANGE if position parameter is greater than or equal
 /// to the list's length.
 /// \return DS_OK if all operations are successful.
-Status sli_unlink(SortedList list, SortedList *result, index_t position)
+Status sli_unlink(SortedList list, SortedList *result, integer_t position)
 {
     *result = NULL;
 
@@ -1497,8 +1497,8 @@ Status sli_unlink(SortedList list, SortedList *result, index_t position)
 /// \return DS_ERR_OUT_OF_RANGE if the end parameter is greater than or equal
 /// to the list's length.
 /// \return DS_OK if all operations are successful.
-Status sli_sublist(SortedList list, SortedList *result, index_t start,
-        index_t end)
+Status sli_sublist(SortedList list, SortedList *result, integer_t start,
+        integer_t end)
 {
     *result = NULL;
 
@@ -1852,7 +1852,7 @@ static Status sli_free_node_shallow(SortedListNode *node)
 /// to the list's length.
 /// \return DS_OK if all operations are successful.
 static Status sli_get_node_at(SortedList list, SortedListNode *result,
-        index_t position)
+        integer_t position)
 {
     // This function effectively searches for a given node. If the position is
     // greater than the list length the search will begin at the end of the list,
@@ -1877,7 +1877,7 @@ static Status sli_get_node_at(SortedList list, SortedListNode *result,
     {
         (*result) = list->head;
 
-        for (index_t i = 0; i < position; i++)
+        for (integer_t i = 0; i < position; i++)
         {
             // Bad iteration :(
             if ((*result) == NULL)
@@ -1891,7 +1891,7 @@ static Status sli_get_node_at(SortedList list, SortedListNode *result,
     {
         (*result) = list->tail;
 
-        for (index_t i = list->length - 1; i > position; i--)
+        for (integer_t i = list->length - 1; i > position; i--)
         {
             // Bad iteration :(
             if ((*result) == NULL)
@@ -2015,7 +2015,7 @@ struct SortedListIterator_s
     /// structure. This is kept to prevent iteration on the target structure
     /// that may have been modified and thus causing undefined behaviours or
     /// run-time crashes.
-    index_t target_id;
+    integer_t target_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
@@ -2627,23 +2627,23 @@ static Status sli_wrap_set_display(sli_display_f function);
 
 static Status sli_wrap_set_free(sli_free_f function);
 
-static Status sli_wrap_set_limit(index_t limit);
+static Status sli_wrap_set_limit(integer_t limit);
 
 static Status sli_wrap_set_order(SortOrder order);
 
-static index_t sli_wrap_length(void);
+static integer_t sli_wrap_length(void);
 
-static index_t sli_wrap_limit(void);
+static integer_t sli_wrap_limit(void);
 
 static SortOrder sli_wrap_order(void);
 
-static Status sli_wrap_get(void **result, index_t index);
+static Status sli_wrap_get(void **result, integer_t index);
 
 static Status sli_wrap_insert(void *element);
 
-static Status sli_wrap_insert_all(void **elements, index_t count);
+static Status sli_wrap_insert_all(void **elements, integer_t count);
 
-static Status sli_wrap_remove(void **result, index_t position);
+static Status sli_wrap_remove(void **result, integer_t position);
 
 static Status sli_wrap_remove_max(void **result);
 
@@ -2657,9 +2657,9 @@ static void *sli_wrap_max(void);
 
 static void *sli_wrap_min(void);
 
-static index_t sli_wrap_index_first(void *key);
+static integer_t sli_wrap_index_first(void *key);
 
-static index_t sli_wrap_index_last(void *key);
+static integer_t sli_wrap_index_last(void *key);
 
 static bool sli_wrap_contains(void *key);
 
@@ -2667,13 +2667,13 @@ static Status sli_wrap_reverse(void);
 
 static Status sli_wrap_copy(SortedList *result);
 
-static Status sli_wrap_to_array(void ***result, index_t *length);
+static Status sli_wrap_to_array(void ***result, integer_t *length);
 
 static Status sli_wrap_merge(SortedList list);
 
-static Status sli_wrap_unlink(SortedList *result, index_t position);
+static Status sli_wrap_unlink(SortedList *result, integer_t position);
 
-static Status sli_wrap_sublist(SortedList *result, index_t start, index_t end);
+static Status sli_wrap_sublist(SortedList *result, integer_t start, integer_t end);
 
 static Status sli_wrap_display(void);
 
@@ -2773,9 +2773,9 @@ Status sli_wrap_retarget(SortedListWrapper wrapper, SortedList target)
 /// Frees from memory a SortedListIterator_s. Note that this does not
 /// deallocates the target SortedList_s.
 ///
-/// \param[in,out] iter SortedListIterator_s to be freed from memory.
+/// \param[in,out] wrapper SortedListWrapper_s to be freed from memory.
 ///
-/// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
+/// \return DS_ERR_NULL_POINTER if the wrapper references to \c NULL.
 /// \return DS_OK if all operations are successful.
 Status sli_wrap_free(SortedListWrapper *wrapper)
 {
@@ -2825,7 +2825,7 @@ static Status sli_wrap_set_free(sli_free_f function)
     return sli_set_func_free(GlobalSortedList, function);
 }
 
-static Status sli_wrap_set_limit(index_t limit)
+static Status sli_wrap_set_limit(integer_t limit)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2841,12 +2841,12 @@ static Status sli_wrap_set_order(SortOrder order)
     return sli_set_order(GlobalSortedList, order);
 }
 
-static index_t sli_wrap_length(void)
+static integer_t sli_wrap_length(void)
 {
     return sli_length(GlobalSortedList);
 }
 
-static index_t sli_wrap_limit(void)
+static integer_t sli_wrap_limit(void)
 {
     return sli_limit(GlobalSortedList);
 }
@@ -2856,7 +2856,7 @@ static SortOrder sli_wrap_order(void)
     return sli_order(GlobalSortedList);
 }
 
-static Status sli_wrap_get(void **result, index_t index)
+static Status sli_wrap_get(void **result, integer_t index)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2872,7 +2872,7 @@ static Status sli_wrap_insert(void *element)
     return sli_insert(GlobalSortedList, element);
 }
 
-static Status sli_wrap_insert_all(void **elements, index_t count)
+static Status sli_wrap_insert_all(void **elements, integer_t count)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2880,7 +2880,7 @@ static Status sli_wrap_insert_all(void **elements, index_t count)
     return sli_insert_all(GlobalSortedList, elements, count);
 }
 
-static Status sli_wrap_remove(void **result, index_t position)
+static Status sli_wrap_remove(void **result, integer_t position)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2924,12 +2924,12 @@ static void *sli_wrap_min(void)
     return sli_min(GlobalSortedList);
 }
 
-static index_t sli_wrap_index_first(void *key)
+static integer_t sli_wrap_index_first(void *key)
 {
     return sli_index_first(GlobalSortedList, key);
 }
 
-static index_t sli_wrap_index_last(void *key)
+static integer_t sli_wrap_index_last(void *key)
 {
     return sli_index_last(GlobalSortedList, key);
 }
@@ -2955,7 +2955,7 @@ static Status sli_wrap_copy(SortedList *result)
     return sli_copy(GlobalSortedList, result);
 }
 
-static Status sli_wrap_to_array(void ***result, index_t *length)
+static Status sli_wrap_to_array(void ***result, integer_t *length)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2971,7 +2971,7 @@ static Status sli_wrap_merge(SortedList list)
     return sli_merge(GlobalSortedList, list);
 }
 
-static Status sli_wrap_unlink(SortedList *result, index_t position)
+static Status sli_wrap_unlink(SortedList *result, integer_t position)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2979,7 +2979,7 @@ static Status sli_wrap_unlink(SortedList *result, index_t position)
     return sli_unlink(GlobalSortedList, result, position);
 }
 
-static Status sli_wrap_sublist(SortedList *result, index_t start, index_t end)
+static Status sli_wrap_sublist(SortedList *result, integer_t start, integer_t end)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;

@@ -127,7 +127,7 @@ Status sli_test_incomplete(UnitTest ut)
     void *EL[2] = {new_int(1), new_int(2)};
     void **RL;
 
-    index_t t;
+    integer_t t;
 
     ut_equals_int(ut, sli_insert(list, E), DS_ERR_INCOMPLETE_TYPE, __func__);
     ut_equals_int(ut, sli_insert_all(list, EL, 2), DS_ERR_INCOMPLETE_TYPE, __func__);
@@ -135,8 +135,8 @@ Status sli_test_incomplete(UnitTest ut)
     ut_equals_int(ut, sli_display(list), DS_ERR_INCOMPLETE_TYPE, __func__);
     ut_equals_int(ut, sli_display_array(list), DS_ERR_INCOMPLETE_TYPE, __func__);
     ut_equals_int(ut, sli_display_raw(list), DS_ERR_INCOMPLETE_TYPE, __func__);
-    ut_equals_index_t(ut, sli_index_first(list, E), -2, __func__);
-    ut_equals_index_t(ut, sli_index_last(list, E), -2, __func__);
+    ut_equals_integer_t(ut, sli_index_first(list, E), -2, __func__);
+    ut_equals_integer_t(ut, sli_index_last(list, E), -2, __func__);
 
     // This function (sli_to_array) require that we have at least one element
     // in the list:
@@ -190,7 +190,7 @@ Status sli_test_limit(UnitTest ut)
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, sli_length(list), sli_limit(list), __func__);
+    ut_equals_integer_t(ut, sli_length(list), sli_limit(list), __func__);
     ut_equals_int(ut, sli_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     int *t = new_int(-1);
@@ -199,7 +199,7 @@ Status sli_test_limit(UnitTest ut)
 
     // Removes the limit
     ut_equals_int(ut, sli_set_limit(list, 0), DS_OK, __func__);
-    ut_equals_index_t(ut, sli_limit(list), 0, __func__);
+    ut_equals_integer_t(ut, sli_limit(list), 0, __func__);
     ut_equals_int(ut, sli_insert(list, t), DS_OK, __func__);
 
     sli_free(&list);
@@ -239,7 +239,7 @@ Status sli_test_indexof(UnitTest ut)
 
     void *r0, *r1, *r2;
     void *d0, *d1, *d2;
-    index_t f1, f2;
+    integer_t f1, f2;
 
     void *n0 = new_int(0), *n1 = new_int(1), *n2 = new_int(2);
 
@@ -279,8 +279,8 @@ Status sli_test_indexof(UnitTest ut)
     f1 = sli_index_first(list, n3);
     f2 = sli_index_last(list, n3);
 
-    ut_equals_index_t(ut, f1, -1, __func__);
-    ut_equals_index_t(ut, f2, -1, __func__);
+    ut_equals_integer_t(ut, f1, -1, __func__);
+    ut_equals_integer_t(ut, f2, -1, __func__);
 
     free(r0);free(r1);free(r2);
     free(d0);free(d1);free(d2);

@@ -41,7 +41,7 @@ struct BinarySearchTree_s
     /// Total elements in the tree. This is not the total amount of nodes in
     /// the tree as repetitive values are stores in the same node with a \c
     /// count variable.
-    index_t count;
+    integer_t count;
 
     /// \brief Root node.
     ///
@@ -116,7 +116,7 @@ int bst_min(BinarySearchTree bst);
 
 int bst_peek(BinarySearchTree bst);
 
-index_t bst_height(BinarySearchTree bst);
+integer_t bst_height(BinarySearchTree bst);
 
 Status bst_traversal(BinarySearchTree bst, int traversal);
 

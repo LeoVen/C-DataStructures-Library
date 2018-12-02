@@ -80,13 +80,13 @@ Status stk_set_func_display(Stack stack, stk_display_f function);
 
 Status stk_set_func_free(Stack stack, stk_free_f function);
 
-Status stk_set_limit(Stack stack, index_t limit);
+Status stk_set_limit(Stack stack, integer_t limit);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t stk_height(Stack stack);
+integer_t stk_height(Stack stack);
 
-index_t stk_limit(Stack stack);
+integer_t stk_limit(Stack stack);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -116,7 +116,7 @@ Status stk_copy(Stack stack, Stack *result);
 
 Status stk_stack(Stack stack1, Stack stack2);
 
-Status stk_to_array(Stack stack,  void ***result, index_t *length);
+Status stk_to_array(Stack stack,  void ***result, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

@@ -35,13 +35,13 @@ AVLTreeNode avl_node_find(AVLTreeNode root, int value);
 
 int avl_depth(AVLTreeNode node);
 
-Status avl_display_raw(AVLTreeNode node, index_t spaces);
+Status avl_display_raw(AVLTreeNode node, integer_t spaces);
 
-Status avl_display_interactive(AVLTreeNode node, index_t spaces);
+Status avl_display_interactive(AVLTreeNode node, integer_t spaces);
 
-Status avl_display_clean(AVLTreeNode node, index_t spaces);
+Status avl_display_clean(AVLTreeNode node, integer_t spaces);
 
-Status avl_display_quantity(AVLTreeNode node, index_t spaces);
+Status avl_display_quantity(AVLTreeNode node, integer_t spaces);
 
 Status avl_traversal_preorder(AVLTreeNode node);
 
@@ -639,14 +639,14 @@ int avl_depth(AVLTreeNode node)
     return depth;
 }
 
-Status avl_display_raw(AVLTreeNode node, index_t spaces)
+Status avl_display_raw(AVLTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     avl_display_raw(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces * 6; i++)
+    for (integer_t i = 0; i < spaces * 6; i++)
         printf(" ");
 
     printf("%d\n", node->key);
@@ -656,14 +656,14 @@ Status avl_display_raw(AVLTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status avl_display_interactive(AVLTreeNode node, index_t spaces)
+Status avl_display_interactive(AVLTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     avl_display_interactive(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|-------");
 
     printf("<%d(%d)[D-%d|H-%d]\n", (node->parent) ? node->parent->key : 0,
@@ -674,14 +674,14 @@ Status avl_display_interactive(AVLTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status avl_display_clean(AVLTreeNode node, index_t spaces)
+Status avl_display_clean(AVLTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     avl_display_clean(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|       ");
 
     printf("<%d(%d)[D-%d|H-%d]\n", (node->parent) ? node->parent->key : 0,
@@ -692,14 +692,14 @@ Status avl_display_clean(AVLTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status avl_display_quantity(AVLTreeNode node, index_t spaces)
+Status avl_display_quantity(AVLTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     avl_display_quantity(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|_______");
 
     printf("<%d(%d)[%d]\n", (node->parent) ? node->parent->key : 0,

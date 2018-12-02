@@ -9,6 +9,7 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_CORESORT_H
 #define C_DATASTRUCTURES_LIBRARY_CORESORT_H
 
+/// Defines sorting order (ascending or descending).
 typedef enum SortOrder
 {
     ASCENDING = 1,

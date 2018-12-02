@@ -80,7 +80,7 @@ Status sli_set_func_display(SortedList list, sli_display_f function);
 
 Status sli_set_func_free(SortedList list, sli_free_f function);
 
-Status sli_set_limit(SortedList list, index_t limit);
+Status sli_set_limit(SortedList list, integer_t limit);
 
 Status sli_set_order(SortedList list, SortOrder order);
 
@@ -88,21 +88,21 @@ Status sli_set_order(SortedList list, SortOrder order);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t sli_length(SortedList list);
+integer_t sli_length(SortedList list);
 
-index_t sli_limit(SortedList list);
+integer_t sli_limit(SortedList list);
 
 SortOrder sli_order(SortedList list);
 
-Status sli_get(SortedList list, void **result, index_t index);
+Status sli_get(SortedList list, void **result, integer_t index);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 Status sli_insert(SortedList list, void *element);
 
-Status sli_insert_all(SortedList list, void **elements, index_t count);
+Status sli_insert_all(SortedList list, void **elements, integer_t count);
 
-Status sli_remove(SortedList list, void **result, index_t position);
+Status sli_remove(SortedList list, void **result, integer_t position);
 
 Status sli_remove_max(SortedList list, void **result);
 
@@ -120,9 +120,9 @@ void *sli_max(SortedList list);
 
 void *sli_min(SortedList list);
 
-index_t sli_index_first(SortedList list, void *key);
+integer_t sli_index_first(SortedList list, void *key);
 
-index_t sli_index_last(SortedList list, void *key);
+integer_t sli_index_last(SortedList list, void *key);
 
 bool sli_contains(SortedList list, void *key);
 
@@ -130,16 +130,16 @@ Status sli_reverse(SortedList list);
 
 Status sli_copy(SortedList list, SortedList *result);
 
-Status sli_to_array(SortedList list, void ***result, index_t *length);
+Status sli_to_array(SortedList list, void ***result, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// LINKING ///
 
 Status sli_merge(SortedList list1, SortedList list2);
 
-Status sli_unlink(SortedList list, SortedList *result, index_t position);
+Status sli_unlink(SortedList list, SortedList *result, integer_t position);
 
-Status sli_sublist(SortedList list, SortedList *result, index_t start,
-        index_t end);
+Status sli_sublist(SortedList list, SortedList *result, integer_t start,
+        integer_t end);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
@@ -251,7 +251,7 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_set_limit().
     ///
     /// Wrapper for sli_set_limit().
-    Status(*set_limit)(index_t);
+    Status(*set_limit)(integer_t);
 
     /// \brief Wrapper for sli_set_order().
     ///
@@ -261,12 +261,12 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_length().
     ///
     /// Wrapper for sli_length().
-    index_t(*length)(void);
+    integer_t(*length)(void);
 
     /// \brief Wrapper for sli_limit().
     ///
     /// Wrapper for sli_limit().
-    index_t(*limit)(void);
+    integer_t(*limit)(void);
 
     /// \brief Wrapper for sli_order().
     ///
@@ -276,7 +276,7 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_get().
     ///
     /// Wrapper for sli_get().
-    Status(*get_copy)(void**,index_t);
+    Status(*get_copy)(void**,integer_t);
 
     /// \brief Wrapper for sli_insert().
     ///
@@ -286,12 +286,12 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_insert_all().
     ///
     /// Wrapper for sli_insert_all().
-    Status(*insert_all)(void**,index_t);
+    Status(*insert_all)(void**,integer_t);
 
     /// \brief Wrapper for sli_remove().
     ///
     /// Wrapper for sli_remove().
-    Status(*remove)(void**,index_t);
+    Status(*remove)(void**,integer_t);
 
     /// \brief Wrapper for sli_remove_max().
     ///
@@ -326,12 +326,12 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_index_first().
     ///
     /// Wrapper for sli_index_first().
-    index_t(*index_first)(void*);
+    integer_t(*index_first)(void*);
 
     /// \brief Wrapper for sli_index_last().
     ///
     /// Wrapper for sli_index_last().
-    index_t(*index_last)(void*);
+    integer_t(*index_last)(void*);
 
     /// \brief Wrapper for sli_contains().
     ///
@@ -351,7 +351,7 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_to_array().
     ///
     /// Wrapper for sli_to_array().
-    Status(*to_array)(void***,index_t*);
+    Status(*to_array)(void***,integer_t*);
 
     /// \brief Wrapper for sli_merge().
     ///
@@ -361,12 +361,12 @@ struct SortedListWrapper_s
     /// \brief Wrapper for sli_unlink().
     ///
     /// Wrapper for sli_unlink().
-    Status(*unlink)(SortedList*,index_t);
+    Status(*unlink)(SortedList*,integer_t);
 
     /// \brief Wrapper for sli_sublist().
     ///
     /// Wrapper for sli_sublist().
-    Status(*sublist)(SortedList*,index_t,index_t);
+    Status(*sublist)(SortedList*,integer_t,integer_t);
 
     /// \brief Wrapper for sli_display().
     ///

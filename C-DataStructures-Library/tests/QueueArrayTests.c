@@ -31,7 +31,7 @@ Status qua_test_linear_insertion(UnitTest ut)
     }
 
     // size after all insertions
-    index_t size = queue->size;
+    integer_t size = queue->size;
 
     int j, sum = 0;
     while (!qua_empty(queue))
@@ -45,8 +45,8 @@ Status qua_test_linear_insertion(UnitTest ut)
     }
 
     ut_equals_int(ut, sum, 500500, __func__);
-    ut_equals_index_t(ut, queue->front, queue->rear, __func__);
-    ut_equals_index_t(ut, size, queue->rear, __func__);
+    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
+    ut_equals_integer_t(ut, size, queue->rear, __func__);
 
     qua_delete(&queue);
 
@@ -76,7 +76,7 @@ Status qua_test_locked(UnitTest ut)
     }
 
     Status saved_st = st;
-    index_t size = queue->size;
+    integer_t size = queue->size;
 
     int j, sum = 0;
     while (!qua_empty(queue))
@@ -91,7 +91,7 @@ Status qua_test_locked(UnitTest ut)
 
     ut_equals_int(ut, sum, 120, __func__);
     ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, size, 16, __func__);
+    ut_equals_integer_t(ut, size, 16, __func__);
 
     qua_delete(&queue);
 
@@ -142,7 +142,7 @@ Status qua_test_intensive(UnitTest ut)
     }
 
     ut_equals_int(ut, sum, 50005000, __func__);
-    ut_equals_index_t(ut, queue->front, queue->rear, __func__);
+    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
 
     qua_delete(&queue);
 
@@ -172,7 +172,7 @@ Status qua_test_growth(UnitTest ut)
     }
 
     // 60 * (250 / 100)
-    ut_equals_index_t(ut, queue->capacity, 150, __func__);
+    ut_equals_integer_t(ut, queue->capacity, 150, __func__);
 
     qua_delete(&queue);
 

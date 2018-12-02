@@ -24,19 +24,19 @@ Status bst_make_node(BinarySearchTreeNode *node, int value);
 
 Status bst_delete_recursive(BinarySearchTreeNode *node);
 
-index_t bst_node_height(BinarySearchTreeNode node);
+integer_t bst_node_height(BinarySearchTreeNode node);
 
-index_t bst_node_depth(BinarySearchTreeNode node);
+integer_t bst_node_depth(BinarySearchTreeNode node);
 
 BinarySearchTreeNode bst_node_find(BinarySearchTreeNode root, int value);
 
-Status bst_display_raw(BinarySearchTreeNode node, index_t spaces);
+Status bst_display_raw(BinarySearchTreeNode node, integer_t spaces);
 
-Status bst_display_interactive(BinarySearchTreeNode node, index_t spaces);
+Status bst_display_interactive(BinarySearchTreeNode node, integer_t spaces);
 
-Status bst_display_clean(BinarySearchTreeNode node, index_t spaces);
+Status bst_display_clean(BinarySearchTreeNode node, integer_t spaces);
 
-Status bst_display_quantity(BinarySearchTreeNode node, index_t spaces);
+Status bst_display_quantity(BinarySearchTreeNode node, integer_t spaces);
 
 Status bst_traversal_preorder(BinarySearchTreeNode node);
 
@@ -480,14 +480,14 @@ Status bst_display(BinarySearchTree bst, int display)
     return DS_OK;
 }
 
-Status bst_display_raw(BinarySearchTreeNode node, index_t spaces)
+Status bst_display_raw(BinarySearchTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     bst_display_raw(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces * 6; i++)
+    for (integer_t i = 0; i < spaces * 6; i++)
         printf(" ");
 
     printf("%d\n", node->key);
@@ -497,14 +497,14 @@ Status bst_display_raw(BinarySearchTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status bst_display_interactive(BinarySearchTreeNode node, index_t spaces)
+Status bst_display_interactive(BinarySearchTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     bst_display_interactive(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|-------");
 
     printf("<%d(%d)[D-%llu|H-%llu]\n", (node->parent) ? node->parent->key : 0,
@@ -515,14 +515,14 @@ Status bst_display_interactive(BinarySearchTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status bst_display_clean(BinarySearchTreeNode node, index_t spaces)
+Status bst_display_clean(BinarySearchTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     bst_display_clean(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|       ");
 
     printf("< %d ( %d )\n", (node->parent) ? node->parent->key : 0, node->key);
@@ -532,14 +532,14 @@ Status bst_display_clean(BinarySearchTreeNode node, index_t spaces)
     return DS_OK;
 }
 
-Status bst_display_quantity(BinarySearchTreeNode node, index_t spaces)
+Status bst_display_quantity(BinarySearchTreeNode node, integer_t spaces)
 {
     if (node == NULL)
         return DS_OK;
 
     bst_display_quantity(node->right, spaces + 1);
 
-    for (index_t i = 0; i < spaces; i++)
+    for (integer_t i = 0; i < spaces; i++)
         printf("|_______");
 
     printf("<%d(%d)[%d]\n", (node->parent) ? node->parent->key : 0,
@@ -656,7 +656,7 @@ int bst_peek(BinarySearchTree bst)
     return bst->root->key;
 }
 
-index_t bst_height(BinarySearchTree bst)
+integer_t bst_height(BinarySearchTree bst)
 {
     if (bst == NULL)
         return -1;
@@ -736,26 +736,26 @@ Status bst_make_node(BinarySearchTreeNode *node, int value)
     return DS_OK;
 }
 
-index_t bst_node_height(BinarySearchTreeNode node)
+integer_t bst_node_height(BinarySearchTreeNode node)
 {
     if (node == NULL)
         return 0;
 
-    index_t r_height = bst_node_height(node->right);
+    integer_t r_height = bst_node_height(node->right);
 
-    index_t l_height = bst_node_height(node->left);
+    integer_t l_height = bst_node_height(node->left);
 
     return (l_height > r_height) ? l_height + 1 : r_height + 1;
 }
 
-index_t bst_node_depth(BinarySearchTreeNode node)
+integer_t bst_node_depth(BinarySearchTreeNode node)
 {
     if (node == NULL)
         return 0;
 
     BinarySearchTreeNode scan = node;
 
-    index_t depth = 0;
+    integer_t depth = 0;
 
     while (scan->parent != NULL)
     {

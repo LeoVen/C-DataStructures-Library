@@ -59,9 +59,9 @@ typedef void(*arr_free_f)(void *);
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status arr_init(Array *array, index_t length);
+Status arr_init(Array *array, integer_t length);
 
-Status arr_create(Array *array, index_t length, arr_compare_f compare_f,
+Status arr_create(Array *array, integer_t length, arr_compare_f compare_f,
         arr_copy_f copy_f, arr_display_f display_f, arr_free_f free_f);
 
 Status arr_free(Array *array);
@@ -82,29 +82,29 @@ Status arr_set_func_free(Array array, arr_free_f function);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t arr_length(Array array);
+integer_t arr_length(Array array);
 
-index_t arr_count(Array array);
+integer_t arr_count(Array array);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-index_t arr_set_next(Array array, void *element);
+integer_t arr_set_next(Array array, void *element);
 
-Status arr_set(Array array, index_t index, void *element);
+Status arr_set(Array array, integer_t index, void *element);
 
-index_t arr_set_last(Array array, void *element);
+integer_t arr_set_last(Array array, void *element);
 
-void *arr_get_next(Array array, index_t *index);
+void *arr_get_next(Array array, integer_t *index);
 
-void *arr_get(Array array, index_t index);
+void *arr_get(Array array, integer_t index);
 
-void *arr_get_last(Array array, index_t *index);
+void *arr_get_last(Array array, integer_t *index);
 
-void *arr_pop_next(Array array, index_t *index);
+void *arr_pop_next(Array array, integer_t *index);
 
-void *arr_pop(Array array, index_t index);
+void *arr_pop(Array array, integer_t index);
 
-void *arr_pop_last(Array array, index_t *index);
+void *arr_pop_last(Array array, integer_t *index);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
@@ -118,19 +118,19 @@ void *arr_max(Array array);
 
 void *arr_min(Array array);
 
-index_t arr_index_first(Array array, void *key);
+integer_t arr_index_first(Array array, void *key);
 
-index_t arr_index_last(Array array, void *key);
+integer_t arr_index_last(Array array, void *key);
 
 bool arr_contains(Array array, void *key);
 
-Status arr_switch(Array array, index_t pos1, index_t pos2);
+Status arr_switch(Array array, integer_t pos1, integer_t pos2);
 
 Status arr_reverse(Array array);
 
 Status arr_copy(Array array, Array *result);
 
-Status arr_to_array(Array array, void ***result, index_t *length);
+Status arr_to_array(Array array, void ***result, integer_t *length);
 
 Status arr_sort(Array array);
 

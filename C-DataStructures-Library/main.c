@@ -25,7 +25,7 @@ int main()
     SinglyLinkedList sll0;
 
     int j;
-    index_t l;
+    integer_t l;
     void *result, *element;
 
     if (sll_init(&sll0) == DS_OK)
@@ -106,7 +106,7 @@ int main()
             que_display_array(que1);
 
             l = que_length(que1);
-            for (index_t i = 0; i < l; i++)
+            for (integer_t i = 0; i < l; i++)
             {
                 que_dequeue(que0, &result);
 
@@ -166,7 +166,7 @@ int main()
         {
             l = deq_length(deq0);
 
-            for (index_t i = 0; i < l; i++)
+            for (integer_t i = 0; i < l; i++)
             {
                 deq_dequeue_front(deq0, &result);
 
@@ -388,7 +388,7 @@ int main()
 
             printf("\n");
 
-            for (index_t k = 0; k < qua0->capacity; k++)
+            for (integer_t k = 0; k < qua0->capacity; k++)
             {
                 printf("%d ", qua0->buffer[k]);
             }
@@ -834,14 +834,14 @@ int main()
     printf("\n\nsli_to_array:\n");
     if (sli_to_array(slist, &result_array, &l) == DS_OK)
     {
-        for (index_t i = 0; i < l; i++)
+        for (integer_t i = 0; i < l; i++)
         {
             display_int(result_array[i]);
 
             printf(" ");
         }
 
-        for (index_t i = 0; i < l; i++)
+        for (integer_t i = 0; i < l; i++)
             free(result_array[i]);
 
         free(result_array);
@@ -900,7 +900,7 @@ int main()
     {
         for (int i = 0; i < arr_length(array); i++)
         {
-            if (arr_set(array, (index_t)i, new_int(i)) != DS_OK)
+            if (arr_set(array, (integer_t)i, new_int(i)) != DS_OK)
                 break;
         }
 
@@ -913,7 +913,7 @@ int main()
     {
         for (int i = 0; i < arr_length(array); i++)
         {
-            if (arr_set(array, (index_t)i, new_int(rand())) != DS_OK)
+            if (arr_set(array, (integer_t)i, new_int(rand())) != DS_OK)
                 break;
         }
 

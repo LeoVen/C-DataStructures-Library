@@ -80,13 +80,13 @@ Status deq_set_func_display(Deque deque, deq_display_f function);
 
 Status deq_set_func_free(Deque deque, deq_free_f function);
 
-Status deq_set_limit(Deque deque, index_t limit);
+Status deq_set_limit(Deque deque, integer_t limit);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t deq_length(Deque deque);
+integer_t deq_length(Deque deque);
 
-index_t deq_limit(Deque deque);
+integer_t deq_limit(Deque deque);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -118,7 +118,7 @@ Status deq_append(Deque deque1, Deque deque2);
 
 Status deq_prepend(Deque deque1, Deque deque2);
 
-Status deq_to_array(Deque deque,  void ***result, index_t *length);
+Status deq_to_array(Deque deque,  void ***result, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

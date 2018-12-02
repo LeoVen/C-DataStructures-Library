@@ -39,7 +39,7 @@ Status cll_test_limit(UnitTest ut)
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, cll_length(list), cll_limit(list), __func__);
+    ut_equals_integer_t(ut, cll_length(list), cll_limit(list), __func__);
     ut_equals_int(ut, cll_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     int *t = new_int(1);
@@ -48,7 +48,7 @@ Status cll_test_limit(UnitTest ut)
 
     // Removes the limit
     ut_equals_int(ut, cll_set_limit(list, 0), DS_OK, __func__);
-    ut_equals_index_t(ut, cll_limit(list), 0, __func__);
+    ut_equals_integer_t(ut, cll_limit(list), 0, __func__);
     ut_equals_int(ut, cll_insert_before(list, t), DS_OK, __func__);
 
     cll_free(&list);

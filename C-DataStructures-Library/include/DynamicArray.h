@@ -61,8 +61,8 @@ typedef void(*dar_free_f)(void *);
 
 Status dar_init(DynamicArray *d_array);
 
-Status dar_create(DynamicArray *d_array, index_t initial_capacity,
-        index_t growth_rate, dar_compare_f compare_f, dar_copy_f copy_f,
+Status dar_create(DynamicArray *d_array, integer_t initial_capacity,
+        integer_t growth_rate, dar_compare_f compare_f, dar_copy_f copy_f,
         dar_display_f display_f, dar_free_f free_f);
 
 Status dar_free(DynamicArray *d_array);
@@ -87,45 +87,45 @@ Status dar_capacity_unlock(DynamicArray d_array);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t dar_capacity(DynamicArray d_array);
+integer_t dar_capacity(DynamicArray d_array);
 
-index_t dar_size(DynamicArray d_array);
+integer_t dar_size(DynamicArray d_array);
 
-index_t dar_growth_rate(DynamicArray d_array);
+integer_t dar_growth_rate(DynamicArray d_array);
 
 bool dar_is_locked(DynamicArray d_array);
 
-void *dar_get(DynamicArray d_array, index_t index);
+void *dar_get(DynamicArray d_array, integer_t index);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status dar_insert(DynamicArray d_array, void **array, index_t array_size,
-        index_t index);
+Status dar_insert(DynamicArray d_array, void **array, integer_t array_size,
+        integer_t index);
 
 Status dar_insert_front(DynamicArray d_array, void *element);
 
-Status dar_insert_at(DynamicArray d_array, void *element, index_t index);
+Status dar_insert_at(DynamicArray d_array, void *element, integer_t index);
 
 Status dar_insert_back(DynamicArray d_array, void *element);
 
-Status dar_remove(DynamicArray d_array, index_t from, index_t to,
-        void ***result, index_t *size);
+Status dar_remove(DynamicArray d_array, integer_t from, integer_t to,
+        void ***result, integer_t *size);
 
 Status dar_remove_front(DynamicArray d_array, void **result);
 
-Status dar_remove_at(DynamicArray d_array, void **result, index_t index);
+Status dar_remove_at(DynamicArray d_array, void **result, integer_t index);
 
 Status dar_remove_back(DynamicArray d_array, void **result);
 
-Status dar_delete(DynamicArray d_array, index_t from, index_t to);
+Status dar_delete(DynamicArray d_array, integer_t from, integer_t to);
 
 Status dar_prepend(DynamicArray d_array1, DynamicArray d_array2);
 
-Status dar_add(DynamicArray d_array1, DynamicArray d_array2, index_t index);
+Status dar_add(DynamicArray d_array1, DynamicArray d_array2, integer_t index);
 
 Status dar_append(DynamicArray d_array1, DynamicArray d_array2);
 
-Status dar_replace(DynamicArray d_array, void *element, index_t index);
+Status dar_replace(DynamicArray d_array, void *element, integer_t index);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
@@ -133,7 +133,7 @@ bool dar_empty(DynamicArray d_array);
 
 bool dar_full(DynamicArray d_array);
 
-bool dar_fits(DynamicArray d_array, index_t size);
+bool dar_fits(DynamicArray d_array, integer_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
@@ -141,19 +141,19 @@ void *dar_max(DynamicArray d_array);
 
 void *dar_min(DynamicArray d_array);
 
-index_t dar_index_first(DynamicArray d_array, void *key);
+integer_t dar_index_first(DynamicArray d_array, void *key);
 
-index_t dar_index_last(DynamicArray d_array, void *key);
+integer_t dar_index_last(DynamicArray d_array, void *key);
 
 bool dar_contains(DynamicArray d_array, void *element);
 
-Status dar_switch(DynamicArray d_array, index_t pos1, index_t pos2);
+Status dar_switch(DynamicArray d_array, integer_t pos1, integer_t pos2);
 
 Status dar_reverse(DynamicArray d_array);
 
 Status dar_copy(DynamicArray d_array, DynamicArray *result);
 
-Status dar_to_array(DynamicArray d_array, void ***result, index_t *length);
+Status dar_to_array(DynamicArray d_array, void ***result, integer_t *length);
 
 Status dar_sort(DynamicArray d_array);
 

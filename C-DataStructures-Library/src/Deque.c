@@ -36,7 +36,7 @@ struct Deque_s
     ///
     /// Deque current amount of nodes linked between the \c front and \c rear
     /// pointers.
-    index_t length;
+    integer_t length;
 
     /// \brief Deque length limit.
     ///
@@ -46,7 +46,7 @@ struct Deque_s
     /// to its length, that is, \c limit equals 0. The user won't be able to
     /// limit the deque length if it already has more elements than the
     /// specified limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief Points to the first Node on the deque.
     ///
@@ -90,7 +90,7 @@ struct Deque_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 /// \brief A Deque_s node.
@@ -418,7 +418,7 @@ Status deq_set_func_free(Deque deque, deq_free_f function)
 /// current length.
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_limit(Deque deque, index_t limit)
+Status deq_set_limit(Deque deque, integer_t limit)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -432,7 +432,7 @@ Status deq_set_limit(Deque deque, index_t limit)
     return DS_OK;
 }
 
-index_t deq_length(Deque deque)
+integer_t deq_length(Deque deque)
 {
     if (deque == NULL)
         return -1;
@@ -440,7 +440,7 @@ index_t deq_length(Deque deque)
     return deque->length;
 }
 
-index_t deq_limit(Deque deque)
+integer_t deq_limit(Deque deque)
 {
     if (deque == NULL)
         return -1;
@@ -710,7 +710,7 @@ Status deq_prepend(Deque deque1, Deque deque2)
     return DS_ERR_INVALID_OPERATION;
 }
 
-Status deq_to_array(Deque deque,  void ***result, index_t *length)
+Status deq_to_array(Deque deque,  void ***result, integer_t *length)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;

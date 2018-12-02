@@ -19,10 +19,13 @@ extern "C" {
 double rrandom();
 
 /// Generates an integer between min and max with both included.
-int rand_int(index_t min, index_t max);
+int rand_int(int min, int max);
 
 /// Generates a long integer between min and max with both included.
-long long rand_long(index_t min, index_t max);
+long rand_long(long min, long max);
+
+/// Generates a defined integer between min and max with both included.
+integer_t rand_integer(integer_t min, integer_t max);
 
 /// Generates a double between min and max.
 double rand_double(double min, double max);

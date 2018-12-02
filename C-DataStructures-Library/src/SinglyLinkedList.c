@@ -20,7 +20,7 @@ Status sll_make_node(SinglyLinkedNode *node, int element);
 
 Status sll_delete_node(SinglyLinkedNode *node);
 
-Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, index_t position);
+Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, integer_t position);
 
 // END OF NOT EXPOSED API
 
@@ -74,7 +74,7 @@ Status sll_insert_head(SinglyLinkedList sll, int element)
     return DS_OK;
 }
 
-Status sll_insert_at(SinglyLinkedList sll, int element, index_t position)
+Status sll_insert_at(SinglyLinkedList sll, int element, integer_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -197,7 +197,7 @@ Status sll_remove_head(SinglyLinkedList sll, int *result)
     return DS_OK;
 }
 
-Status sll_remove_at(SinglyLinkedList sll, int *result, index_t position)
+Status sll_remove_at(SinglyLinkedList sll, int *result, integer_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -306,7 +306,7 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result)
     return DS_OK;
 }
 
-Status sll_update(SinglyLinkedList sll, int element, index_t position)
+Status sll_update(SinglyLinkedList sll, int element, integer_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -332,7 +332,7 @@ Status sll_update(SinglyLinkedList sll, int element, index_t position)
     return DS_OK;
 }
 
-Status sll_get(SinglyLinkedList sll, int *result, index_t position)
+Status sll_get(SinglyLinkedList sll, int *result, integer_t position)
 {
     *result = 0;
 
@@ -519,7 +519,7 @@ bool sll_empty(SinglyLinkedList sll)
     return sll->length == 0;
 }
 
-index_t sll_length(SinglyLinkedList sll)
+integer_t sll_length(SinglyLinkedList sll)
 {
     if (sll == NULL)
         return -1;
@@ -527,7 +527,7 @@ index_t sll_length(SinglyLinkedList sll)
     return sll->length;
 }
 
-Status sll_limit(SinglyLinkedList sll, index_t limit)
+Status sll_limit(SinglyLinkedList sll, integer_t limit)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -586,7 +586,7 @@ int sll_min(SinglyLinkedList sll)
     return result;
 }
 
-index_t sll_index_first(SinglyLinkedList sll, int key)
+integer_t sll_index_first(SinglyLinkedList sll, int key)
 {
     if (sll == NULL)
         return -1;
@@ -596,7 +596,7 @@ index_t sll_index_first(SinglyLinkedList sll, int key)
 
     SinglyLinkedNode scan = sll->head;
 
-    index_t index = 0;
+    integer_t index = 0;
 
     while (scan != NULL)
     {
@@ -611,7 +611,7 @@ index_t sll_index_first(SinglyLinkedList sll, int key)
     return -1;
 }
 
-index_t sll_index_last(SinglyLinkedList sll, int key)
+integer_t sll_index_last(SinglyLinkedList sll, int key)
 {
     if (sll == NULL)
         return -1;
@@ -621,7 +621,7 @@ index_t sll_index_last(SinglyLinkedList sll, int key)
 
     SinglyLinkedNode scan = sll->head;
 
-    index_t result = -1, index = 0;
+    integer_t result = -1, index = 0;
 
     while (scan != NULL)
     {
@@ -667,7 +667,7 @@ Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
     return DS_OK;
 }
 
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t position)
+Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, integer_t position)
 {
     if (sll1 == NULL || sll2 == NULL)
         return DS_ERR_NULL_POINTER;
@@ -709,7 +709,7 @@ Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t positio
     return DS_OK;
 }
 
-Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t position)
+Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, integer_t position)
 {
     if (sll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -720,7 +720,7 @@ Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t positio
     if (position >= sll->length)
         return DS_ERR_OUT_OF_RANGE;
 
-    index_t len = sll_length(sll);
+    integer_t len = sll_length(sll);
 
     if (position == 0)
     {
@@ -756,7 +756,7 @@ Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t positio
     return DS_OK;
 }
 
-//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, index_t position1, index_t position2);
+//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, integer_t position1, integer_t position2);
 
 Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result)
 {
@@ -847,7 +847,7 @@ Status sll_delete_node(SinglyLinkedNode *node)
     return DS_OK;
 }
 
-Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, index_t position)
+Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, integer_t position)
 {
     *result = NULL;
 
@@ -865,7 +865,7 @@ Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result, index_t p
 
     (*result) = sll->head;
 
-    for (index_t i = 0; i < position; i++)
+    for (integer_t i = 0; i < position; i++)
     {
         if ((*result) == NULL)
             return DS_ERR_ITER;

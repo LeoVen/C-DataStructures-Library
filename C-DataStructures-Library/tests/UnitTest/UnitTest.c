@@ -58,7 +58,7 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     ut->total++;
 }
 
-void ut_equals_index_t(UnitTest ut, index_t param1, index_t param2, const char *test_name)
+void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2, const char *test_name)
 {
     if (param1 == param2)
     {

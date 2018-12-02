@@ -17,7 +17,7 @@ extern "C" {
 
 typedef struct UnitTest_s
 {
-    index_t passed, total;
+    integer_t passed, total;
 } UnitTest_t, *UnitTest;
 
 Status ut_init(UnitTest *ut);
@@ -28,7 +28,7 @@ void ut_report(UnitTest ut, const char *struct_name);
 
 void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name);
 
-void ut_equals_index_t(UnitTest ut, index_t param1, index_t param2, const char *test_name);
+void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2, const char *test_name);
 
 #ifdef __cplusplus
 }

@@ -40,7 +40,7 @@ Status stk_test_limit(UnitTest ut)
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, stk_height(stack), stk_limit(stack), __func__);
+    ut_equals_integer_t(ut, stk_height(stack), stk_limit(stack), __func__);
     ut_equals_int(ut, stk_set_limit(stack, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     // This gets freed later
@@ -51,7 +51,7 @@ Status stk_test_limit(UnitTest ut)
 
     // Removes the limit
     ut_equals_int(ut, stk_set_limit(stack, 0), DS_OK, __func__);
-    ut_equals_index_t(ut, stk_limit(stack), 0, __func__);
+    ut_equals_integer_t(ut, stk_limit(stack), 0, __func__);
     ut_equals_int(ut, stk_insert(stack, t), DS_OK, __func__);
 
     stk_free(&stack);

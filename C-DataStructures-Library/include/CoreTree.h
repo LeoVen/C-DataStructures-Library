@@ -9,6 +9,7 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_CORETREE_H
 #define C_DATASTRUCTURES_LIBRARY_CORETREE_H
 
+/// Defines tree order traversal (preorder, inorder, postorder and leaves).
 typedef enum TreeOrder
 {
     PREORDER  = -1,

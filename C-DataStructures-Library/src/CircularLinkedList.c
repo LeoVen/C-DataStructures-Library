@@ -61,7 +61,7 @@ struct CircularLinkedList_s
     /// \brief List length.
     ///
     /// List current amount of elements.
-    index_t length;
+    integer_t length;
 
     /// \brief List length limit.
     ///
@@ -71,7 +71,7 @@ struct CircularLinkedList_s
     /// its length, that is, \c limit equals 0. The user won't be able to limit
     /// the list length if it already has more elements than the specified
     /// limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief Pointer to current node.
     ///
@@ -110,7 +110,7 @@ struct CircularLinkedList_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 /// \brief A CircularLinkedList_s node.
@@ -230,7 +230,7 @@ Status cll_free(CircularLinkedList *list)
 
     CircularLinkedNode prev = (*list)->cursor;
 
-    for (index_t i = 0; i < (*list)->length; i++)
+    for (integer_t i = 0; i < (*list)->length; i++)
     {
         (*list)->cursor = (*list)->cursor->next;
 
@@ -271,7 +271,7 @@ Status cll_free_shallow(CircularLinkedList *list)
 
     CircularLinkedNode prev = (*list)->cursor;
 
-    for (index_t i = 0; i < (*list)->length; i++)
+    for (integer_t i = 0; i < (*list)->length; i++)
     {
         (*list)->cursor = (*list)->cursor->next;
 
@@ -397,7 +397,7 @@ Status cll_set_func_free(CircularLinkedList list, cll_free_f function)
     return DS_OK;
 }
 
-Status cll_set_limit(CircularLinkedList list, index_t limit)
+Status cll_set_limit(CircularLinkedList list, integer_t limit)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -410,7 +410,7 @@ Status cll_set_limit(CircularLinkedList list, index_t limit)
     return DS_OK;
 }
 
-index_t cll_length(CircularLinkedList list)
+integer_t cll_length(CircularLinkedList list)
 {
     if (list == NULL)
         return -1;
@@ -418,7 +418,7 @@ index_t cll_length(CircularLinkedList list)
     return list->length;
 }
 
-index_t cll_limit(CircularLinkedList list)
+integer_t cll_limit(CircularLinkedList list)
 {
     if (list == NULL)
         return -1;
@@ -707,7 +707,7 @@ void *cll_max(CircularLinkedList cll)
 
     result = scan->data;
 
-    for (index_t i = 0; i < cll->length; i++)
+    for (integer_t i = 0; i < cll->length; i++)
     {
         if (cll->d_compare(scan->data, result) > 0)
             result = scan->data;
@@ -735,7 +735,7 @@ void *cll_min(CircularLinkedList cll)
 
     result = scan->data;
 
-    for (index_t i = 0; i < cll->length; i++)
+    for (integer_t i = 0; i < cll->length; i++)
     {
         if (cll->d_compare(scan->data, result) < 0)
             result = scan->data;
@@ -750,7 +750,7 @@ bool cll_contains(CircularLinkedList cll, void *key)
 {
     CircularLinkedNode scan = cll->cursor;
 
-    for (index_t i = 0; i < cll->length; i++)
+    for (integer_t i = 0; i < cll->length; i++)
     {
         if (cll->d_compare(scan->data, key) == 0)
             return true;
@@ -817,7 +817,7 @@ Status cll_copy(CircularLinkedList list, CircularLinkedList *result)
 
     void *elem;
 
-    for (index_t i = 0; i < list->length; i++)
+    for (integer_t i = 0; i < list->length; i++)
     {
         elem = list->d_copy(scan->data);
 
@@ -845,7 +845,7 @@ Status cll_copy(CircularLinkedList list, CircularLinkedList *result)
 /// \return DS_ERR_NEGATIVE_VALUE if \c positions is a negative value.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status cll_iter_next(CircularLinkedList cll, index_t positions)
+Status cll_iter_next(CircularLinkedList cll, integer_t positions)
 {
     if (cll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -856,7 +856,7 @@ Status cll_iter_next(CircularLinkedList cll, index_t positions)
     if (positions < 0)
         return DS_ERR_NEGATIVE_VALUE;
 
-    for (index_t i = 0; i < positions; i++)
+    for (integer_t i = 0; i < positions; i++)
         cll->cursor = cll->cursor->next;
 
     return DS_OK;
@@ -872,7 +872,7 @@ Status cll_iter_next(CircularLinkedList cll, index_t positions)
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status cll_iter(CircularLinkedList cll, index_t positions)
+Status cll_iter(CircularLinkedList cll, integer_t positions)
 {
     if (cll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -899,7 +899,7 @@ Status cll_iter(CircularLinkedList cll, index_t positions)
 /// \return DS_ERR_NEGATIVE_VALUE if \c positions is a negative value.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status cll_iter_prev(CircularLinkedList cll, index_t positions)
+Status cll_iter_prev(CircularLinkedList cll, integer_t positions)
 {
     if (cll == NULL)
         return DS_ERR_NULL_POINTER;
@@ -910,7 +910,7 @@ Status cll_iter_prev(CircularLinkedList cll, index_t positions)
     if (positions < 0)
         return DS_ERR_NEGATIVE_VALUE;
 
-    for (index_t i = 0; i < positions; i++)
+    for (integer_t i = 0; i < positions; i++)
         cll->cursor = cll->cursor->prev;
 
     return DS_OK;
@@ -942,7 +942,7 @@ Status cll_display(CircularLinkedList list)
 
     printf("\nCircular Linked List\n <-> ");
 
-    for (index_t i = 0; i < list->length; i++)
+    for (integer_t i = 0; i < list->length; i++)
     {
         list->d_display(scan->data);
 
@@ -983,7 +983,7 @@ Status cll_display_array(CircularLinkedList list)
 
     printf("\n[ ");
 
-    for (index_t i = 0; i < list->length - 1; i++)
+    for (integer_t i = 0; i < list->length - 1; i++)
     {
         list->d_display(scan->data);
 
@@ -1019,7 +1019,7 @@ Status cll_display_raw(CircularLinkedList list)
 
     printf("\n");
 
-    for (index_t i = 0; i < list->length; i++)
+    for (integer_t i = 0; i < list->length; i++)
     {
         list->d_display(scan->data);
 

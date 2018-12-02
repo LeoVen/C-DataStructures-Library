@@ -28,7 +28,7 @@ Status sta_test_locked(UnitTest ut)
     }
 
     Status saved_st = st;
-    index_t size = stack->height;
+    integer_t size = stack->height;
 
     int j, sum = 0;
     while (!sta_empty(stack))
@@ -43,7 +43,7 @@ Status sta_test_locked(UnitTest ut)
 
     ut_equals_int(ut, sum, 120, __func__);
     ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
-    ut_equals_index_t(ut, size, 16, __func__);
+    ut_equals_integer_t(ut, size, 16, __func__);
 
     sta_delete(&stack);
 
@@ -73,7 +73,7 @@ Status sta_test_growth(UnitTest ut)
     }
 
     // 60 * (250 / 100)
-    ut_equals_index_t(ut, stack->capacity, 150, __func__);
+    ut_equals_integer_t(ut, stack->capacity, 150, __func__);
 
     sta_delete(&stack);
 

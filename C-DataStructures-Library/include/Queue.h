@@ -80,13 +80,13 @@ Status que_set_func_display(Queue queue, que_display_f function);
 
 Status que_set_func_free(Queue queue, que_free_f function);
 
-Status que_set_limit(Queue queue, index_t limit);
+Status que_set_limit(Queue queue, integer_t limit);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-index_t que_length(Queue queue);
+integer_t que_length(Queue queue);
 
-index_t que_limit(Queue queue);
+integer_t que_limit(Queue queue);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -112,7 +112,7 @@ Status que_copy(Queue queue, Queue *result);
 
 Status que_append(Queue queue, Queue queue2);
 
-Status que_to_array(Queue queue,  void ***result, index_t *length);
+Status que_to_array(Queue queue,  void ***result, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

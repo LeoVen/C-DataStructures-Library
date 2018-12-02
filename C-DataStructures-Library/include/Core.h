@@ -79,7 +79,7 @@ typedef enum Status Status;
 
 /// Signed value used to represent sizes and indexes. Its negative portion is
 /// only used to represent errors when the function doesn't return a Status.
-typedef long long int index_t;
+typedef long long int integer_t;
 
 /// Prime numbers used for hashing
 /// https://planetmath.org/goodhashtableprimes

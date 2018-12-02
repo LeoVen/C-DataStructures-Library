@@ -41,30 +41,30 @@ struct DequeArray_s
     /// \brief Front of the deque.
     ///
     /// An index that represents the front of the deque.
-    index_t front;
+    integer_t front;
 
     /// \brief Back of the deque.
     ///
     /// An index that represents the back of the deque.
-    index_t rear;
+    integer_t rear;
 
     /// \brief Current amount of elements in the \c QueueArray.
     ///
     /// Current amount of elements in the \c QueueArray.
-    index_t size;
+    integer_t size;
 
     /// \brief \c QueueArray buffer maximum capacity.
     ///
     /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
     /// reallocated and increases according to \c growth_rate.
-    index_t capacity;
+    integer_t capacity;
 
     /// \brief Buffer growth rate.
     ///
     /// Buffer growth rate. The new buffer capacity is calculated as:
     ///
     /// <code> capacity *= (growth_rate / 100.0) </code>
-    index_t growth_rate;
+    integer_t growth_rate;
 
     /// \brief Flag for locked capacity.
     ///
@@ -112,7 +112,7 @@ Status dqa_init(DequeArray *dqa);
 /// growth_rate is less than or equal to 100.
 ///
 /// \see dqa_init
-Status dqa_create(DequeArray *dqa, index_t initial_capacity, index_t growth_rate);
+Status dqa_create(DequeArray *dqa, integer_t initial_capacity, integer_t growth_rate);
 
 /// Inserts an element to the front of the specified deque.
 ///
@@ -206,15 +206,15 @@ int dqa_peek_front(DequeArray dqa);
 
 int dqa_peek_rear(DequeArray dqa);
 
-index_t dqa_size(DequeArray dqa);
+integer_t dqa_size(DequeArray dqa);
 
-index_t dqa_capacity(DequeArray dqa);
+integer_t dqa_capacity(DequeArray dqa);
 
 bool dqa_empty(DequeArray dqa);
 
 bool dqa_full(DequeArray dqa);
 
-bool dqa_fits(DequeArray dqa, index_t size);
+bool dqa_fits(DequeArray dqa, integer_t size);
 
 Status dqa_copy(DequeArray dqa, DequeArray *result);
 

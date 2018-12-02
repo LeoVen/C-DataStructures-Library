@@ -62,7 +62,7 @@ struct Stack_s
     /// \brief Current amount of elements in the Stack_s.
     ///
     /// Current amount of elements in the Stack_s.
-    index_t height;
+    integer_t height;
 
     /// \brief Stack height limit.
     ///
@@ -72,7 +72,7 @@ struct Stack_s
     /// to its length, that is, \c limit equals 0. The user won't be able to
     /// limit the stack height if it already has more elements than the
     /// specified limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief The element at the top of the \c Stack.
     ///
@@ -112,7 +112,7 @@ struct Stack_s
     /// modified. The iterator can only function if its version_id is the same
     /// as the structure's version id, that is, there have been no structural
     /// modifications (except for those done by the iterator itself).
-    index_t version_id;
+    integer_t version_id;
 };
 
 /// \brief A Stack_s node.
@@ -426,7 +426,7 @@ Status stk_set_func_free(Stack stack, stk_free_f function)
 /// current length.
 /// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status stk_set_limit(Stack stack, index_t limit)
+Status stk_set_limit(Stack stack, integer_t limit)
 {
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
@@ -449,7 +449,7 @@ Status stk_set_limit(Stack stack, index_t limit)
 ///
 /// \return -1 if the stack reference is \c NULL.
 /// \return The stack's height.
-index_t stk_height(Stack stack)
+integer_t stk_height(Stack stack)
 {
     if (stack == NULL)
         return -1;
@@ -465,7 +465,7 @@ index_t stk_height(Stack stack)
 ///
 /// \return -1 if the stack reference is \c NULL.
 /// \return The stack's limit.
-index_t stk_limit(Stack stack)
+integer_t stk_limit(Stack stack)
 {
     if (stack == NULL)
         return -1;
@@ -846,7 +846,7 @@ Status stk_stack(Stack stack1, Stack stack2)
     return DS_OK;
 }
 
-Status stk_to_array(Stack stack,  void ***result, index_t *length)
+Status stk_to_array(Stack stack,  void ***result, integer_t *length)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;
@@ -1054,7 +1054,7 @@ struct StackIterator_s
     /// structure. This is kept to prevent iteration on the target structure
     /// that may have been modified and thus causing undefined behaviours or
     /// run-time crashes.
-    index_t target_id;
+    integer_t target_id;
 };
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///

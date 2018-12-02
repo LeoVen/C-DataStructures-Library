@@ -42,7 +42,7 @@ Status dar_test_locked(UnitTest ut)
 
     free(t);
 
-    index_t size = dar_size(array);
+    integer_t size = dar_size(array);
 
     int sum = 0;
     void *R;
@@ -57,7 +57,7 @@ Status dar_test_locked(UnitTest ut)
     }
 
     ut_equals_int(ut, sum, 120, __func__);
-    ut_equals_index_t(ut, size, 16, __func__);
+    ut_equals_integer_t(ut, size, 16, __func__);
 
     dar_free(&array);
 
@@ -73,7 +73,7 @@ Status dar_test_growth(UnitTest ut)
 {
     DynamicArray array;
 
-    Status st = dar_create(&array, 16, 200,
+    Status st = dar_create(&array, 60, 250,
                            compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
@@ -95,7 +95,7 @@ Status dar_test_growth(UnitTest ut)
     }
 
     // 60 * (250 / 100)
-    ut_equals_index_t(ut, dar_capacity(array), 150, __func__);
+    ut_equals_integer_t(ut, dar_capacity(array), 150, __func__);
 
     dar_free(&array);
 

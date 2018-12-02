@@ -24,7 +24,13 @@ Status dqa_init(DequeArray *dqa)
     (*dqa)->buffer = malloc(sizeof(int) * 32);
 
     if (!((*dqa)->buffer))
+    {
+        free(*dqa);
+
+        *dqa = NULL;
+
         return DS_ERR_ALLOC;
+    }
 
     (*dqa)->capacity = 32;
     (*dqa)->growth_rate = 200;
@@ -39,7 +45,7 @@ Status dqa_init(DequeArray *dqa)
     return DS_OK;
 }
 
-Status dqa_create(DequeArray *dqa, index_t initial_capacity, index_t growth_rate)
+Status dqa_create(DequeArray *dqa, integer_t initial_capacity, integer_t growth_rate)
 {
     if (initial_capacity < 8 || growth_rate <= 100)
         return DS_ERR_INVALID_ARGUMENT;
@@ -52,7 +58,13 @@ Status dqa_create(DequeArray *dqa, index_t initial_capacity, index_t growth_rate
     (*dqa)->buffer = malloc(sizeof(int) * initial_capacity);
 
     if (!((*dqa)->buffer))
+    {
+        free(*dqa);
+
+        *dqa = NULL;
+
         return DS_ERR_ALLOC;
+    }
 
     (*dqa)->capacity = initial_capacity;
     (*dqa)->growth_rate = growth_rate;
@@ -163,7 +175,7 @@ Status dqa_display(DequeArray dqa)
 
     printf("\nDequeArray\nfront <->");
 
-    for (index_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
+    for (integer_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
         printf(" %d <->", dqa->buffer[i]);
 
     printf(" rear\n");
@@ -185,7 +197,7 @@ Status dqa_display_array(DequeArray dqa)
 
     printf("\nDequeArray\n[ ");
 
-    for (index_t i = dqa->front, j = 0; j < dqa->size - 1; i = (i + 1) % dqa->capacity, j++)
+    for (integer_t i = dqa->front, j = 0; j < dqa->size - 1; i = (i + 1) % dqa->capacity, j++)
         printf("%d, ", dqa->buffer[i]);
 
     printf("%d ]\n", dqa->buffer[(dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1]);
@@ -203,7 +215,7 @@ Status dqa_display_raw(DequeArray dqa)
     if (dqa_empty(dqa))
         return DS_OK;
 
-    for (index_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
+    for (integer_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
         printf("%d ", dqa->buffer[i]);
 
     printf("\n");
@@ -265,7 +277,7 @@ int dqa_peek_rear(DequeArray dqa)
     return dqa->buffer[(dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1];
 }
 
-index_t dqa_size(DequeArray dqa)
+integer_t dqa_size(DequeArray dqa)
 {
     if (dqa == NULL)
         return -1;
@@ -273,7 +285,7 @@ index_t dqa_size(DequeArray dqa)
     return dqa->size;
 }
 
-index_t dqa_capacity(DequeArray dqa)
+integer_t dqa_capacity(DequeArray dqa)
 {
     if (dqa == NULL)
         return -1;
@@ -291,7 +303,7 @@ bool dqa_full(DequeArray dqa)
     return dqa->size == dqa->capacity;
 }
 
-bool dqa_fits(DequeArray dqa, index_t size)
+bool dqa_fits(DequeArray dqa, integer_t size)
 {
     return (dqa->size + size) <= dqa->capacity;
 }
@@ -309,7 +321,7 @@ Status dqa_copy(DequeArray dqa, DequeArray *result)
     if (dqa_empty(dqa))
         return DS_OK;
 
-    for (index_t i = 0; i < dqa->capacity; i++)
+    for (integer_t i = 0; i < dqa->capacity; i++)
         (*result)->buffer[i] = dqa->buffer[i];
 
     (*result)->front = dqa->front;
@@ -352,10 +364,10 @@ Status dqa_grow(DequeArray dqa)
     if (dqa->locked)
         return DS_ERR_FULL;
 
-    index_t old_capacity = dqa->capacity;
+    integer_t old_capacity = dqa->capacity;
 
     // capacity = capacity * (growth_rate / 100)
-    dqa->capacity = (index_t) ((double) (dqa->capacity) * ((double) (dqa->growth_rate) / 100.0));
+    dqa->capacity = (integer_t) ((double) (dqa->capacity) * ((double) (dqa->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (dqa->capacity - old_capacity < 4)
@@ -372,7 +384,7 @@ Status dqa_grow(DequeArray dqa)
 
     dqa->buffer = new_buffer;
 
-    index_t real_rear = (dqa->rear == 0) ? old_capacity - 1 : dqa->rear - 1;
+    integer_t real_rear = (dqa->rear == 0) ? old_capacity - 1 : dqa->rear - 1;
 
     // Shift elements if the rear index or the front index wrapped around the
     // buffer.
@@ -386,9 +398,9 @@ Status dqa_grow(DequeArray dqa)
         // portion to the right portion.
         if (old_capacity - dqa->front < dqa->rear)
         {
-            index_t distance = old_capacity - dqa->front;
+            integer_t distance = old_capacity - dqa->front;
 
-            for (index_t i = old_capacity - 1, j = dqa->capacity - 1; i >= dqa->front; i--, j--)
+            for (integer_t i = old_capacity - 1, j = dqa->capacity - 1; i >= dqa->front; i--, j--)
             {
                 dqa->buffer[j] = dqa->buffer[i];
             }
@@ -398,7 +410,7 @@ Status dqa_grow(DequeArray dqa)
         // If the growth rate is less than 150 the rear index might wrap around the buffer again
         else
         {
-            for (index_t i = 0, j = old_capacity; i < dqa->rear; i++, j = (j + 1) % dqa->capacity)
+            for (integer_t i = 0, j = old_capacity; i < dqa->rear; i++, j = (j + 1) % dqa->capacity)
             {
                 dqa->buffer[j] = dqa->buffer[i];
             }

@@ -50,7 +50,7 @@ struct SinglyLinkedList_s
     ///
     /// List current amount of elements linked between the \c head and \c tail
     /// pointers.
-    index_t length;
+    integer_t length;
 
     /// \brief List length limit.
     ///
@@ -59,7 +59,7 @@ struct SinglyLinkedList_s
     /// list is always initialized with no restrictions to its length, that is,
     /// \c limit equals 0. The user won't be able to limit the list length if
     /// it already has more elements than the specified limit.
-    index_t limit;
+    integer_t limit;
 
     /// \brief Points to the first Node on the list.
     ///
@@ -123,7 +123,7 @@ Status sll_insert_head(SinglyLinkedList sll, int element);
 /// list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_insert_at(SinglyLinkedList sll, int element, index_t position);
+Status sll_insert_at(SinglyLinkedList sll, int element, integer_t position);
 
 /// Inserts a new element at the end of the list. If the list is empty and this
 /// is the first element being added, c\ head will also be pointing to it; in
@@ -165,7 +165,7 @@ Status sll_remove_head(SinglyLinkedList sll, int *result);
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_remove_at(SinglyLinkedList sll, int *result, index_t position);
+Status sll_remove_at(SinglyLinkedList sll, int *result, integer_t position);
 
 /// Removes and retrieves the last element in the list located at the \c tail
 /// pointer.
@@ -191,7 +191,7 @@ Status sll_remove_tail(SinglyLinkedList sll, int *result);
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_update(SinglyLinkedList sll, int element, index_t position);
+Status sll_update(SinglyLinkedList sll, int element, integer_t position);
 
 /// Retrieves an element at a given position without removing it. This function
 /// simulates an index access like in arrays.
@@ -206,7 +206,7 @@ Status sll_update(SinglyLinkedList sll, int element, index_t position);
 /// equal to the list \c length.
 /// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status sll_get(SinglyLinkedList sll, int *result, index_t position);
+Status sll_get(SinglyLinkedList sll, int *result, integer_t position);
 
 /// Displays a \c SinglyLinkedList in the console.
 ///
@@ -261,25 +261,25 @@ bool sll_full(SinglyLinkedList sll);
 
 bool sll_empty(SinglyLinkedList sll);
 
-index_t sll_length(SinglyLinkedList sll);
+integer_t sll_length(SinglyLinkedList sll);
 
-Status sll_limit(SinglyLinkedList sll, index_t limit);
+Status sll_limit(SinglyLinkedList sll, integer_t limit);
 
 int sll_max(SinglyLinkedList sll);
 
 int sll_min(SinglyLinkedList sll);
 
-index_t sll_index_first(SinglyLinkedList sll, int key);
+integer_t sll_index_first(SinglyLinkedList sll, int key);
 
-index_t sll_index_last(SinglyLinkedList sll, int key);
+integer_t sll_index_last(SinglyLinkedList sll, int key);
 
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, index_t position);
+Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, integer_t position);
 
-Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, index_t position);
+Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, integer_t position);
 
-//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, index_t position1, index_t position2);
+//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, integer_t position1, integer_t position2);
 
 Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result);
 
