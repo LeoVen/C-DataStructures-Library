@@ -73,13 +73,13 @@ Status dar_erase(DynamicArray *d_array);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status dar_set_func_compare(DynamicArray d_array, dar_compare_f function);
+Status dar_set_v_compare(DynamicArray d_array, dar_compare_f function);
 
-Status dar_set_func_copy(DynamicArray d_array, dar_copy_f function);
+Status dar_set_v_copy(DynamicArray d_array, dar_copy_f function);
 
-Status dar_set_func_display(DynamicArray d_array, dar_display_f function);
+Status dar_set_v_display(DynamicArray d_array, dar_display_f function);
 
-Status dar_set_func_free(DynamicArray d_array, dar_free_f function);
+Status dar_set_v_free(DynamicArray d_array, dar_free_f function);
 
 Status dar_capacity_lock(DynamicArray d_array);
 

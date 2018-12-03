@@ -71,13 +71,13 @@ Status cll_erase(CircularLinkedList *cll);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status cll_set_func_compare(CircularLinkedList list, cll_compare_f function);
+Status cll_set_v_compare(CircularLinkedList list, cll_compare_f function);
 
-Status cll_set_func_copy(CircularLinkedList list, cll_copy_f function);
+Status cll_set_v_copy(CircularLinkedList list, cll_copy_f function);
 
-Status cll_set_func_display(CircularLinkedList list, cll_display_f function);
+Status cll_set_v_display(CircularLinkedList list, cll_display_f function);
 
-Status cll_set_func_free(CircularLinkedList list, cll_free_f function);
+Status cll_set_v_free(CircularLinkedList list, cll_free_f function);
 
 Status cll_set_limit(CircularLinkedList list, integer_t limit);
 

@@ -72,13 +72,13 @@ Status que_erase(Queue *queue);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status que_set_func_compare(Queue queue, que_compare_f function);
+Status que_set_v_compare(Queue queue, que_compare_f function);
 
-Status que_set_func_copy(Queue queue, que_copy_f function);
+Status que_set_v_copy(Queue queue, que_copy_f function);
 
-Status que_set_func_display(Queue queue, que_display_f function);
+Status que_set_v_display(Queue queue, que_display_f function);
 
-Status que_set_func_free(Queue queue, que_free_f function);
+Status que_set_v_free(Queue queue, que_free_f function);
 
 Status que_set_limit(Queue queue, integer_t limit);
 

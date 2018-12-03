@@ -66,23 +66,23 @@ struct Deque_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    deq_compare_f d_compare;
+    deq_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    deq_copy_f d_copy;
+    deq_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    deq_display_f d_display;
+    deq_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    deq_free_f d_free;
+    deq_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -161,10 +161,10 @@ Status deq_init(Deque *deque)
     (*deque)->front = NULL;
     (*deque)->rear = NULL;
 
-    (*deque)->d_compare = NULL;
-    (*deque)->d_copy = NULL;
-    (*deque)->d_display = NULL;
-    (*deque)->d_free = NULL;
+    (*deque)->v_compare = NULL;
+    (*deque)->v_copy = NULL;
+    (*deque)->v_display = NULL;
+    (*deque)->v_free = NULL;
 
     return DS_OK;
 }
@@ -197,10 +197,10 @@ Status deq_create(Deque *deque, deq_compare_f compare_f, deq_copy_f copy_f,
     (*deque)->front = NULL;
     (*deque)->rear = NULL;
 
-    (*deque)->d_compare = compare_f;
-    (*deque)->d_copy = copy_f;
-    (*deque)->d_display = display_f;
-    (*deque)->d_free = free_f;
+    (*deque)->v_compare = compare_f;
+    (*deque)->v_copy = copy_f;
+    (*deque)->v_display = display_f;
+    (*deque)->v_free = free_f;
 
     return DS_OK;
 }
@@ -221,7 +221,7 @@ Status deq_free(Deque *deque)
     if ((*deque) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*deque)->d_free == NULL)
+    if ((*deque)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     DequeNode prev = (*deque)->front;
@@ -232,7 +232,7 @@ Status deq_free(Deque *deque)
     {
         (*deque)->front = (*deque)->front->prev;
 
-        st = deq_free_node(&prev, (*deque)->d_free);
+        st = deq_free_node(&prev, (*deque)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -304,8 +304,8 @@ Status deq_erase(Deque *deque)
 
     Deque new_deque;
 
-    Status st = deq_create(&new_deque, (*deque)->d_compare, (*deque)->d_copy,
-            (*deque)->d_display, (*deque)->d_free);
+    Status st = deq_create(&new_deque, (*deque)->v_compare, (*deque)->v_copy,
+            (*deque)->v_display, (*deque)->v_free);
 
     if (st !=  DS_OK)
         return st;
@@ -335,12 +335,12 @@ Status deq_erase(Deque *deque)
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_func_compare(Deque deque, deq_compare_f function)
+Status deq_set_v_compare(Deque deque, deq_compare_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    deque->d_compare = function;
+    deque->v_compare = function;
 
     return DS_OK;
 }
@@ -355,12 +355,12 @@ Status deq_set_func_compare(Deque deque, deq_compare_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_func_copy(Deque deque, deq_copy_f function)
+Status deq_set_v_copy(Deque deque, deq_copy_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    deque->d_copy = function;
+    deque->v_copy = function;
 
     return DS_OK;
 }
@@ -375,12 +375,12 @@ Status deq_set_func_copy(Deque deque, deq_copy_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_func_display(Deque deque, deq_display_f function)
+Status deq_set_v_display(Deque deque, deq_display_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    deque->d_display = function;
+    deque->v_display = function;
 
     return DS_OK;
 }
@@ -395,12 +395,12 @@ Status deq_set_func_display(Deque deque, deq_display_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_func_free(Deque deque, deq_free_f function)
+Status deq_set_v_free(Deque deque, deq_free_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    deque->d_free = function;
+    deque->v_free = function;
 
     return DS_OK;
 }
@@ -661,11 +661,11 @@ Status deq_copy(Deque deque, Deque *result)
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deque->d_copy == NULL || deque->d_free == NULL)
+    if (deque->v_copy == NULL || deque->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = deq_create(result, deque->d_compare, deque->d_copy,
-                           deque->d_display, deque->d_free);
+    Status st = deq_create(result, deque->v_compare, deque->v_copy,
+                           deque->v_display, deque->v_free);
 
     if (st != DS_OK)
         return st;
@@ -681,13 +681,13 @@ Status deq_copy(Deque deque, Deque *result)
 
     while (scan != NULL)
     {
-        elem = deque->d_copy(scan->data);
+        elem = deque->v_copy(scan->data);
 
         st = deq_enqueue_rear(*result, elem);
 
         if (st != DS_OK)
         {
-            deque->d_free(elem);
+            deque->v_free(elem);
 
             return st;
         }
@@ -730,7 +730,7 @@ Status deq_display(Deque deque)
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deque->d_display == NULL)
+    if (deque->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (deq_empty(deque))
@@ -746,7 +746,7 @@ Status deq_display(Deque deque)
 
     while (scan != NULL)
     {
-        deque->d_display(scan->data);
+        deque->v_display(scan->data);
 
         printf(" <-> ");
 
@@ -773,7 +773,7 @@ Status deq_display_array(Deque deque)
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deque->d_display == NULL)
+    if (deque->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (deq_empty(deque))
@@ -789,14 +789,14 @@ Status deq_display_array(Deque deque)
 
     while (scan->prev != NULL)
     {
-        deque->d_display(scan->data);
+        deque->v_display(scan->data);
 
         printf(", ");
 
         scan = scan->prev;
     }
 
-    deque->d_display(scan->data);
+    deque->v_display(scan->data);
 
     printf(" ]\n");
 
@@ -818,7 +818,7 @@ Status deq_display_raw(Deque deque)
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deque->d_display == NULL)
+    if (deque->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
@@ -830,7 +830,7 @@ Status deq_display_raw(Deque deque)
 
     while (scan != NULL)
     {
-        deque->d_display(scan->data);
+        deque->v_display(scan->data);
 
         printf(" ");
 

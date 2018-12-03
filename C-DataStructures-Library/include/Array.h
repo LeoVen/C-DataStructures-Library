@@ -72,13 +72,13 @@ Status arr_erase(Array *array);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status arr_set_func_compare(Array array, arr_compare_f function);
+Status arr_set_v_compare(Array array, arr_compare_f function);
 
-Status arr_set_func_copy(Array array, arr_copy_f function);
+Status arr_set_v_copy(Array array, arr_copy_f function);
 
-Status arr_set_func_display(Array array, arr_display_f function);
+Status arr_set_v_display(Array array, arr_display_f function);
 
-Status arr_set_func_free(Array array, arr_free_f function);
+Status arr_set_v_free(Array array, arr_free_f function);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 

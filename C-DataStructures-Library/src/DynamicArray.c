@@ -58,23 +58,23 @@ struct DynamicArray_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    dar_compare_f d_compare;
+    dar_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    dar_copy_f d_copy;
+    dar_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    dar_display_f d_display;
+    dar_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    dar_free_f d_free;
+    dar_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -130,10 +130,10 @@ Status dar_init(DynamicArray *d_array)
 
     (*d_array)->version_id = 0;
 
-    (*d_array)->d_compare = NULL;
-    (*d_array)->d_copy = NULL;
-    (*d_array)->d_display = NULL;
-    (*d_array)->d_free = NULL;
+    (*d_array)->v_compare = NULL;
+    (*d_array)->v_copy = NULL;
+    (*d_array)->v_display = NULL;
+    (*d_array)->v_free = NULL;
 
     return DS_OK;
 }
@@ -194,10 +194,10 @@ Status dar_create(DynamicArray *d_array, integer_t initial_capacity,
 
     (*d_array)->version_id = 0;
 
-    (*d_array)->d_compare = compare_f;
-    (*d_array)->d_copy = copy_f;
-    (*d_array)->d_display = display_f;
-    (*d_array)->d_free = free_f;
+    (*d_array)->v_compare = compare_f;
+    (*d_array)->v_copy = copy_f;
+    (*d_array)->v_display = display_f;
+    (*d_array)->v_free = free_f;
 
     return DS_OK;
 }
@@ -207,11 +207,11 @@ Status dar_free(DynamicArray *d_array)
     if (*d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*d_array)->d_free == NULL)
+    if ((*d_array)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     for (integer_t i = 0; i < (*d_array)->size; i++)
-        (*d_array)->d_free((*d_array)->buffer[i]);
+        (*d_array)->v_free((*d_array)->buffer[i]);
 
     free((*d_array)->buffer);
     free(*d_array);
@@ -244,8 +244,8 @@ Status dar_erase(DynamicArray *d_array)
     Status st;
 
     st = dar_create(&new_array, (*d_array)->capacity, (*d_array)->growth_rate,
-            (*d_array)->d_compare, (*d_array)->d_copy, (*d_array)->d_display,
-            (*d_array)->d_free);
+            (*d_array)->v_compare, (*d_array)->v_copy, (*d_array)->v_display,
+            (*d_array)->v_free);
 
     if (st != DS_OK)
         return st;
@@ -262,42 +262,42 @@ Status dar_erase(DynamicArray *d_array)
     return DS_OK;
 }
 
-Status dar_set_func_compare(DynamicArray d_array, dar_compare_f function)
+Status dar_set_v_compare(DynamicArray d_array, dar_compare_f function)
 {
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    d_array->d_compare = function;
+    d_array->v_compare = function;
 
     return DS_OK;
 }
 
-Status dar_set_func_copy(DynamicArray d_array, dar_copy_f function)
+Status dar_set_v_copy(DynamicArray d_array, dar_copy_f function)
 {
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    d_array->d_copy = function;
+    d_array->v_copy = function;
 
     return DS_OK;
 }
 
-Status dar_set_func_display(DynamicArray d_array, dar_display_f function)
+Status dar_set_v_display(DynamicArray d_array, dar_display_f function)
 {
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    d_array->d_display = function;
+    d_array->v_display = function;
 
     return DS_OK;
 }
 
-Status dar_set_func_free(DynamicArray d_array, dar_free_f function)
+Status dar_set_v_free(DynamicArray d_array, dar_free_f function)
 {
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    d_array->d_free = function;
+    d_array->v_free = function;
 
     return DS_OK;
 }
@@ -365,10 +365,10 @@ void *dar_get(DynamicArray d_array, integer_t index)
     if (index < 0)
         return NULL;
 
-    if (d_array->d_copy == NULL)
+    if (d_array->v_copy == NULL)
         return NULL;
 
-    return d_array->d_copy(d_array->buffer[index]);
+    return d_array->v_copy(d_array->buffer[index]);
 }
 
 Status dar_insert(DynamicArray d_array, void **array, integer_t array_size,
@@ -690,7 +690,7 @@ Status dar_delete(DynamicArray d_array, integer_t from, integer_t to)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_free == NULL)
+    if (d_array->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     void **buffer;
@@ -703,7 +703,7 @@ Status dar_delete(DynamicArray d_array, integer_t from, integer_t to)
 
     for (integer_t i = 0; i < size; i++)
     {
-        d_array->d_free(buffer[i]);
+        d_array->v_free(buffer[i]);
     }
 
     free(buffer);
@@ -881,10 +881,10 @@ Status dar_replace(DynamicArray d_array, void *element, integer_t index)
     if (index < 0)
         return DS_ERR_NEGATIVE_VALUE;
 
-    if (d_array->d_free == NULL)
+    if (d_array->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    d_array->d_free(d_array->buffer[index]);
+    d_array->v_free(d_array->buffer[index]);
 
     d_array->buffer[index] = element;
 
@@ -920,7 +920,7 @@ void *dar_max(DynamicArray d_array)
 
     for (integer_t i = 0; i < d_array->size; i++)
     {
-        if (d_array->d_compare(d_array->buffer[i], result) > 0)
+        if (d_array->v_compare(d_array->buffer[i], result) > 0)
             result = d_array->buffer[i];
     }
 
@@ -939,7 +939,7 @@ void *dar_min(DynamicArray d_array)
 
     for (integer_t i = 0; i < d_array->size; i++)
     {
-        if (d_array->d_compare(d_array->buffer[i], result) < 0)
+        if (d_array->v_compare(d_array->buffer[i], result) < 0)
             result = d_array->buffer[i];
     }
 
@@ -951,12 +951,12 @@ integer_t dar_index_first(DynamicArray d_array, void *key)
     if (d_array == NULL)
         return -3;
 
-    if (d_array->d_compare == NULL)
+    if (d_array->v_compare == NULL)
         return -2;
 
     for (integer_t index = 0; index < d_array->size; index++)
     {
-        if (d_array->d_compare(d_array->buffer[index], key) == 0)
+        if (d_array->v_compare(d_array->buffer[index], key) == 0)
             return index;
     }
 
@@ -969,12 +969,12 @@ integer_t dar_index_last(DynamicArray d_array, void *key)
     if (d_array == NULL)
         return -3;
 
-    if (d_array->d_compare == NULL)
+    if (d_array->v_compare == NULL)
         return -2;
 
     for (integer_t index = d_array->size - 1; index >= 0; index--)
     {
-        if (d_array->d_compare(d_array->buffer[index], key) == 0)
+        if (d_array->v_compare(d_array->buffer[index], key) == 0)
             return index;
     }
 
@@ -986,7 +986,7 @@ bool dar_contains(DynamicArray d_array, void *element)
 {
     for (integer_t i = 0; i < d_array->size; i++)
     {
-        if (d_array->d_compare(d_array->buffer[i], element) == 0)
+        if (d_array->v_compare(d_array->buffer[i], element) == 0)
             return true;
     }
 
@@ -1036,12 +1036,12 @@ Status dar_copy(DynamicArray d_array, DynamicArray *result)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_copy == NULL)
+    if (d_array->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     Status st = dar_create(result, d_array->capacity, d_array->growth_rate,
-                           d_array->d_compare, d_array->d_copy,
-                           d_array->d_display, d_array->d_free);
+                           d_array->v_compare, d_array->v_copy,
+                           d_array->v_display, d_array->v_free);
 
     if (st != DS_OK)
         return st;
@@ -1051,7 +1051,7 @@ Status dar_copy(DynamicArray d_array, DynamicArray *result)
 
     for (integer_t i = 0; i < d_array->size; i++)
     {
-        (*result)->buffer[i] = d_array->d_copy(d_array->buffer[i]);
+        (*result)->buffer[i] = d_array->v_copy(d_array->buffer[i]);
     }
 
     (*result)->size = d_array->size;
@@ -1069,7 +1069,7 @@ Status dar_to_array(DynamicArray d_array, void ***result, integer_t *length)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_copy == NULL)
+    if (d_array->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     *length = d_array->size;
@@ -1081,7 +1081,7 @@ Status dar_to_array(DynamicArray d_array, void ***result, integer_t *length)
 
     for (integer_t i = 0; i < *length; i++)
     {
-        (*result)[i] = d_array->d_copy(d_array->buffer[i]);
+        (*result)[i] = d_array->v_copy(d_array->buffer[i]);
     }
 
     return DS_OK;
@@ -1092,7 +1092,7 @@ Status dar_sort(DynamicArray d_array)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_compare == NULL)
+    if (d_array->v_compare == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     dar_quicksort(d_array, d_array->buffer, d_array->size);
@@ -1107,7 +1107,7 @@ Status dar_display(DynamicArray d_array)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_display == NULL)
+    if (d_array->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (dar_empty(d_array))
@@ -1121,12 +1121,12 @@ Status dar_display(DynamicArray d_array)
 
     for (integer_t i = 0; i < d_array->size - 1; i++)
     {
-        d_array->d_display(d_array->buffer[i]);
+        d_array->v_display(d_array->buffer[i]);
 
         printf(", ");
     }
 
-    d_array->d_display(d_array->buffer[d_array->size - 1]);
+    d_array->v_display(d_array->buffer[d_array->size - 1]);
 
     printf(" ]\n");
 
@@ -1138,7 +1138,7 @@ Status dar_display_array(DynamicArray d_array)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_display == NULL)
+    if (d_array->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (dar_empty(d_array))
@@ -1152,12 +1152,12 @@ Status dar_display_array(DynamicArray d_array)
 
     for (integer_t i = 0; i < d_array->size - 1; i++)
     {
-        d_array->d_display(d_array->buffer[i]);
+        d_array->v_display(d_array->buffer[i]);
 
         printf(", ");
     }
 
-    d_array->d_display(d_array->buffer[d_array->size - 1]);
+    d_array->v_display(d_array->buffer[d_array->size - 1]);
 
     printf(" ]\n");
 
@@ -1169,7 +1169,7 @@ Status dar_display_raw(DynamicArray d_array)
     if (d_array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (d_array->d_display == NULL)
+    if (d_array->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
@@ -1179,7 +1179,7 @@ Status dar_display_raw(DynamicArray d_array)
 
     for (integer_t i = 0; i < d_array->size; i++)
     {
-        d_array->d_display(d_array->buffer[i]);
+        d_array->v_display(d_array->buffer[i]);
 
         printf(" ");
     }
@@ -1234,10 +1234,10 @@ static void dar_quicksort(DynamicArray d_array, void **buffer, integer_t size)
     integer_t i, j;
     for (i = 0, j = size - 1; ; i++, j--)
     {
-        while (d_array->d_compare(buffer[i], pivot) < 0)
+        while (d_array->v_compare(buffer[i], pivot) < 0)
             i++;
 
-        while (d_array->d_compare(buffer[j], pivot) > 0)
+        while (d_array->v_compare(buffer[j], pivot) > 0)
             j--;
 
         if (i >= j)
@@ -1422,11 +1422,11 @@ Status dar_iter_set(DynamicArrayIterator iter, void *element)
     if (dar_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_free == NULL)
+    if (iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        iter->target->d_free(iter->target->buffer[iter->cursor]);
+        iter->target->v_free(iter->target->buffer[iter->cursor]);
 
     iter->target->buffer[iter->cursor] = element;
 
@@ -1447,11 +1447,11 @@ Status dar_iter_get(DynamicArrayIterator iter, void **result)
     if (dar_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_copy == NULL)
+    if (iter->target->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+        *result = iter->target->v_copy(iter->target->buffer[iter->cursor]);
     else
         *result = NULL;
 

@@ -72,13 +72,13 @@ Status sli_erase(SortedList *list);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status sli_set_func_compare(SortedList list, sli_compare_f function);
+Status sli_set_v_compare(SortedList list, sli_compare_f function);
 
-Status sli_set_func_copy(SortedList list, sli_copy_f function);
+Status sli_set_v_copy(SortedList list, sli_copy_f function);
 
-Status sli_set_func_display(SortedList list, sli_display_f function);
+Status sli_set_v_display(SortedList list, sli_display_f function);
 
-Status sli_set_func_free(SortedList list, sli_free_f function);
+Status sli_set_v_free(SortedList list, sli_free_f function);
 
 Status sli_set_limit(SortedList list, integer_t limit);
 
@@ -228,24 +228,24 @@ void *sli_iter_peek_prev(SortedListIterator iter);
 /// manner.
 struct SortedListWrapper_s
 {
-    /// \brief Wrapper for sli_set_func_compare().
+    /// \brief Wrapper for sli_set_v_compare().
     ///
-    /// Wrapper for sli_set_func_compare().
+    /// Wrapper for sli_set_v_compare().
     Status(*set_compare)(sli_compare_f);
 
-    /// \brief Wrapper for sli_set_func_copy().
+    /// \brief Wrapper for sli_set_v_copy().
     ///
-    /// Wrapper for sli_set_func_copy().
+    /// Wrapper for sli_set_v_copy().
     Status(*set_copy)(sli_copy_f);
 
-    /// \brief Wrapper for sli_set_func_display().
+    /// \brief Wrapper for sli_set_v_display().
     ///
-    /// Wrapper for sli_set_func_display().
+    /// Wrapper for sli_set_v_display().
     Status(*set_display)(sli_display_f);
 
-    /// \brief Wrapper for sli_set_func_free()
+    /// \brief Wrapper for sli_set_v_free()
     ///
-    /// Wrapper for sli_set_func_free().
+    /// Wrapper for sli_set_v_free().
     Status(*set_free)(sli_free_f);
 
     /// \brief Wrapper for sli_set_limit().

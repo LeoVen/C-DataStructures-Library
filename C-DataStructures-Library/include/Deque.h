@@ -72,13 +72,13 @@ Status deq_erase(Deque *deque);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status deq_set_func_compare(Deque deque, deq_compare_f function);
+Status deq_set_v_compare(Deque deque, deq_compare_f function);
 
-Status deq_set_func_copy(Deque deque, deq_copy_f function);
+Status deq_set_v_copy(Deque deque, deq_copy_f function);
 
-Status deq_set_func_display(Deque deque, deq_display_f function);
+Status deq_set_v_display(Deque deque, deq_display_f function);
 
-Status deq_set_func_free(Deque deque, deq_free_f function);
+Status deq_set_v_free(Deque deque, deq_free_f function);
 
 Status deq_set_limit(Deque deque, integer_t limit);
 

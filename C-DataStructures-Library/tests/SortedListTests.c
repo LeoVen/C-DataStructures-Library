@@ -140,11 +140,11 @@ Status sli_test_incomplete(UnitTest ut)
 
     // This function (sli_to_array) require that we have at least one element
     // in the list:
-    sli_set_func_compare(list, compare_int);
+    sli_set_v_compare(list, compare_int);
     sli_insert(list, new_int(1)); // Adding it
 
     // Little hack...
-    sli_set_func_compare(list, NULL); // Like we have never set a comparator...
+    sli_set_v_compare(list, NULL); // Like we have never set a comparator...
 
     // Testing
     ut_equals_int(ut, sli_to_array(list, &RL, &t), DS_ERR_INCOMPLETE_TYPE, __func__);

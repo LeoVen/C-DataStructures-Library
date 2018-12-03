@@ -48,10 +48,10 @@
 /// - sli_free()
 /// - sli_free_shallow()
 /// - sli_erase()
-/// - sli_set_func_compare()
-/// - sli_set_func_copy()
-/// - sli_set_func_display()
-/// - sli_set_func_free()
+/// - sli_set_v_compare()
+/// - sli_set_v_copy()
+/// - sli_set_v_display()
+/// - sli_set_v_free()
 /// - sli_set_limit()
 /// - sli_set_order()
 /// - sli_length()
@@ -120,23 +120,23 @@ struct SortedList_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    sli_compare_f d_compare;
+    sli_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    sli_copy_f d_copy;
+    sli_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    sli_display_f d_display;
+    sli_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    sli_free_f d_free;
+    sli_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -222,10 +222,10 @@ Status sli_init(SortedList *list)
     (*list)->head = NULL;
     (*list)->tail = NULL;
 
-    (*list)->d_compare = NULL;
-    (*list)->d_copy = NULL;
-    (*list)->d_display = NULL;
-    (*list)->d_free = NULL;
+    (*list)->v_compare = NULL;
+    (*list)->v_copy = NULL;
+    (*list)->v_display = NULL;
+    (*list)->v_free = NULL;
 
     return DS_OK;
 }
@@ -261,10 +261,10 @@ Status sli_create(SortedList *list, SortOrder order, sli_compare_f compare_f,
     (*list)->head = NULL;
     (*list)->tail = NULL;
 
-    (*list)->d_compare = compare_f;
-    (*list)->d_copy = copy_f;
-    (*list)->d_display = display_f;
-    (*list)->d_free = free_f;
+    (*list)->v_compare = compare_f;
+    (*list)->v_copy = copy_f;
+    (*list)->v_display = display_f;
+    (*list)->v_free = free_f;
 
     return DS_OK;
 }
@@ -285,7 +285,7 @@ Status sli_free(SortedList *list)
     if (*list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*list)->d_free == NULL)
+    if ((*list)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     SortedListNode prev = (*list)->head;
@@ -296,7 +296,7 @@ Status sli_free(SortedList *list)
     {
         (*list)->head = (*list)->head->next;
 
-        st = sli_free_node(&prev, (*list)->d_free);
+        st = sli_free_node(&prev, (*list)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -368,8 +368,8 @@ Status sli_erase(SortedList *list)
 
     SortedList new_list;
 
-    Status st = sli_create(&new_list, (*list)->order, (*list)->d_compare,
-            (*list)->d_copy, (*list)->d_display, (*list)->d_free);
+    Status st = sli_create(&new_list, (*list)->order, (*list)->v_compare,
+            (*list)->v_copy, (*list)->v_display, (*list)->v_free);
 
     if (st !=  DS_OK)
         return st;
@@ -402,7 +402,7 @@ Status sli_erase(SortedList *list)
 /// \return DS_ERR_INVALID_OPERATION if the list is not empty.
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_set_func_compare(SortedList list, sli_compare_f function)
+Status sli_set_v_compare(SortedList list, sli_compare_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -413,7 +413,7 @@ Status sli_set_func_compare(SortedList list, sli_compare_f function)
     if (!sli_empty(list))
         return DS_ERR_INVALID_OPERATION;
 
-    list->d_compare = function;
+    list->v_compare = function;
 
     return DS_OK;
 }
@@ -428,12 +428,12 @@ Status sli_set_func_compare(SortedList list, sli_compare_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_set_func_copy(SortedList list, sli_copy_f function)
+Status sli_set_v_copy(SortedList list, sli_copy_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_copy = function;
+    list->v_copy = function;
 
     return DS_OK;
 }
@@ -448,12 +448,12 @@ Status sli_set_func_copy(SortedList list, sli_copy_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_set_func_display(SortedList list, sli_display_f function)
+Status sli_set_v_display(SortedList list, sli_display_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_display = function;
+    list->v_display = function;
 
     return DS_OK;
 }
@@ -468,12 +468,12 @@ Status sli_set_func_display(SortedList list, sli_display_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status sli_set_func_free(SortedList list, sli_free_f function)
+Status sli_set_v_free(SortedList list, sli_free_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_free = function;
+    list->v_free = function;
 
     return DS_OK;
 }
@@ -610,7 +610,7 @@ Status sli_get(SortedList list, void **result, integer_t index)
     if (index >= list->length)
         return DS_ERR_OUT_OF_RANGE;
 
-    if (list->d_copy == NULL)
+    if (list->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     SortedListNode node;
@@ -620,7 +620,7 @@ Status sli_get(SortedList list, void **result, integer_t index)
     if (st != DS_OK)
         return st;
 
-    *result = list->d_copy(node->data);
+    *result = list->v_copy(node->data);
 
     return DS_OK;
 }
@@ -644,7 +644,7 @@ Status sli_insert(SortedList list, void *element)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_compare == NULL)
+    if (list->v_compare == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (sli_full(list))
@@ -672,7 +672,7 @@ Status sli_insert(SortedList list, void *element)
         if (list->order == ASCENDING)
         {
             // Insert 'head'. Change list->head.
-            if (list->d_compare(node->data, list->head->data) <= 0)
+            if (list->v_compare(node->data, list->head->data) <= 0)
             {
                 // The new element will be the new smallest element.
                 node->next = list->head;
@@ -684,7 +684,7 @@ Status sli_insert(SortedList list, void *element)
             else
             {
                 while (scan != NULL &&
-                       list->d_compare(node->data, scan->data) > 0)
+                       list->v_compare(node->data, scan->data) > 0)
                 {
                     before = scan;
 
@@ -716,7 +716,7 @@ Status sli_insert(SortedList list, void *element)
         else
         {
             // Insert 'head'. Change list->head.
-            if (list->d_compare(node->data, list->head->data) >= 0)
+            if (list->v_compare(node->data, list->head->data) >= 0)
             {
                 // The new element will be the new biggest element.
                 node->next = list->head;
@@ -728,7 +728,7 @@ Status sli_insert(SortedList list, void *element)
             else
             {
                 while (scan != NULL &&
-                       list->d_compare(node->data, scan->data) < 0)
+                       list->v_compare(node->data, scan->data) < 0)
                 {
                     before = scan;
 
@@ -1124,7 +1124,7 @@ integer_t sli_index_first(SortedList list, void *key)
     if (list == NULL)
         return -3;
 
-    if (list->d_compare == NULL)
+    if (list->v_compare == NULL)
         return -2;
 
     SortedListNode scan = list->head;
@@ -1133,7 +1133,7 @@ integer_t sli_index_first(SortedList list, void *key)
 
     while (scan != NULL)
     {
-        if (list->d_compare(scan->data, key) == 0)
+        if (list->v_compare(scan->data, key) == 0)
             return index;
 
         index++;
@@ -1161,7 +1161,7 @@ integer_t sli_index_last(SortedList list, void *key)
     if (list == NULL)
         return -3;
 
-    if (list->d_compare == NULL)
+    if (list->v_compare == NULL)
         return -2;
 
     SortedListNode scan = list->tail;
@@ -1170,7 +1170,7 @@ integer_t sli_index_last(SortedList list, void *key)
 
     while (scan != NULL)
     {
-        if (list->d_compare(scan->data, key) == 0)
+        if (list->v_compare(scan->data, key) == 0)
             return list->length - 1 - index;
 
         index++;
@@ -1199,7 +1199,7 @@ bool sli_contains(SortedList list, void *key)
 
     while (scan != NULL)
     {
-        if (list->d_compare(scan->data, key) == 0)
+        if (list->v_compare(scan->data, key) == 0)
             return true;
 
         scan = scan->next;
@@ -1276,11 +1276,11 @@ Status sli_copy(SortedList list, SortedList *result)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_copy == NULL || list->d_free == NULL)
+    if (list->v_copy == NULL || list->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
-            list->d_display, list->d_free);
+    Status st = sli_create(result, list->order, list->v_compare, list->v_copy,
+            list->v_display, list->v_free);
 
     if (st != DS_OK)
         return st;
@@ -1293,13 +1293,13 @@ Status sli_copy(SortedList list, SortedList *result)
 
     while (scan != NULL)
     {
-        elem = list->d_copy(scan->data);
+        elem = list->v_copy(scan->data);
 
         st = sli_insert_tail(*result, elem);
 
         if (st != DS_OK)
         {
-            list->d_free(elem);
+            list->v_free(elem);
 
             return st;
         }
@@ -1336,7 +1336,7 @@ Status sli_to_array(SortedList list, void ***result, integer_t *length)
     if (sli_empty(list))
         return DS_ERR_INVALID_OPERATION;
 
-    if (list->d_copy == NULL)
+    if (list->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     *length = list->length;
@@ -1350,7 +1350,7 @@ Status sli_to_array(SortedList list, void ***result, integer_t *length)
 
     for (integer_t i = 0; i < *length; i++)
     {
-        (*result)[i] = list->d_copy(scan->data);
+        (*result)[i] = list->v_copy(scan->data);
 
         scan = scan->next;
     }
@@ -1423,8 +1423,8 @@ Status sli_unlink(SortedList list, SortedList *result, integer_t position)
     if (position >= list->length)
         return DS_ERR_OUT_OF_RANGE;
 
-    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
-            list->d_display, list->d_free);
+    Status st = sli_create(result, list->order, list->v_compare, list->v_copy,
+            list->v_display, list->v_free);
 
     if (st != DS_OK)
         return st;
@@ -1517,8 +1517,8 @@ Status sli_sublist(SortedList list, SortedList *result, integer_t start,
     if (end >= list->length)
         return DS_ERR_OUT_OF_RANGE;
 
-    Status st = sli_create(result, list->order, list->d_compare, list->d_copy,
-            list->d_display, list->d_free);
+    Status st = sli_create(result, list->order, list->v_compare, list->v_copy,
+            list->v_display, list->v_free);
 
     if (st != DS_OK)
         return st;
@@ -1644,7 +1644,7 @@ Status sli_display(SortedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (sli_empty(list))
@@ -1660,7 +1660,7 @@ Status sli_display(SortedList list)
 
     while (scan != NULL)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(" <-> ");
 
@@ -1687,7 +1687,7 @@ Status sli_display_array(SortedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (sli_empty(list))
@@ -1703,14 +1703,14 @@ Status sli_display_array(SortedList list)
 
     while (scan->next != NULL)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(", ");
 
         scan = scan->next;
     }
 
-    list->d_display(scan->data);
+    list->v_display(scan->data);
 
     printf(" ]\n");
 
@@ -1732,7 +1732,7 @@ Status sli_display_raw(SortedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (sli_empty(list))
@@ -1748,14 +1748,14 @@ Status sli_display_raw(SortedList list)
 
     while (scan->next != NULL)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(" ");
 
         scan = scan->next;
     }
 
-    list->d_display(scan->data);
+    list->v_display(scan->data);
 
     printf("\n");
 
@@ -2283,11 +2283,11 @@ Status sli_iter_get(SortedListIterator iter, void **result)
     if (sli_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_copy == NULL)
+    if (iter->target->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     // Makes a copy of the element to preserve the list integrity.
-    *result = iter->target->d_copy(iter->cursor->data);
+    *result = iter->target->v_copy(iter->cursor->data);
 
     return DS_OK;
 }
@@ -2798,7 +2798,7 @@ static Status sli_wrap_set_compare(sli_compare_f function)
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
 
-    return sli_set_func_compare(GlobalSortedList, function);
+    return sli_set_v_compare(GlobalSortedList, function);
 }
 
 static Status sli_wrap_set_copy(sli_copy_f function)
@@ -2806,7 +2806,7 @@ static Status sli_wrap_set_copy(sli_copy_f function)
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
 
-    return sli_set_func_copy(GlobalSortedList, function);
+    return sli_set_v_copy(GlobalSortedList, function);
 }
 
 static Status sli_wrap_set_display(sli_display_f function)
@@ -2814,7 +2814,7 @@ static Status sli_wrap_set_display(sli_display_f function)
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
 
-    return sli_set_func_display(GlobalSortedList, function);
+    return sli_set_v_display(GlobalSortedList, function);
 }
 
 static Status sli_wrap_set_free(sli_free_f function)
@@ -2822,7 +2822,7 @@ static Status sli_wrap_set_free(sli_free_f function)
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
 
-    return sli_set_func_free(GlobalSortedList, function);
+    return sli_set_v_free(GlobalSortedList, function);
 }
 
 static Status sli_wrap_set_limit(integer_t limit)

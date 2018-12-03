@@ -83,14 +83,15 @@ typedef long long int integer_t;
 
 /// Prime numbers used for hashing
 /// https://planetmath.org/goodhashtableprimes
-static const unsigned int hash_primes[] = {
+static const integer_t ds_hash_primes[] = {
     53, 97, 193, 389, 769, 1543, 3079, 6151, 12289, 24593, 49157, 98317,
     196613, 393241, 786433, 1572869, 3145739, 6291469, 12582917, 25165843,
     50331653, 100663319, 201326611, 402653189, 805306457, 1610612741
 };
 
-/// Size of hash_primes
-static const unsigned hash_primes_size = 26;
+/// Size of ds_hash_primes
+static const unsigned ds_hash_primes_size =
+        sizeof(ds_hash_primes) / sizeof(ds_hash_primes[0]);
 
 #ifdef __cplusplus
 }

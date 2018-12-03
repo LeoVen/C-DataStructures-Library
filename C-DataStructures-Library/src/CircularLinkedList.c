@@ -86,23 +86,23 @@ struct CircularLinkedList_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    cll_compare_f d_compare;
+    cll_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    cll_copy_f d_copy;
+    cll_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    cll_display_f d_display;
+    cll_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    cll_free_f d_free;
+    cll_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -178,10 +178,10 @@ Status cll_init(CircularLinkedList *list)
 
     (*list)->cursor = NULL;
 
-    (*list)->d_compare = NULL;
-    (*list)->d_copy = NULL;
-    (*list)->d_display = NULL;
-    (*list)->d_free = NULL;
+    (*list)->v_compare = NULL;
+    (*list)->v_copy = NULL;
+    (*list)->v_display = NULL;
+    (*list)->v_free = NULL;
 
     return DS_OK;
 }
@@ -199,10 +199,10 @@ Status cll_create(CircularLinkedList *list, cll_compare_f compare_f,
 
     (*list)->cursor = NULL;
 
-    (*list)->d_compare = compare_f;
-    (*list)->d_copy = copy_f;
-    (*list)->d_display = display_f;
-    (*list)->d_free = free_f;
+    (*list)->v_compare = compare_f;
+    (*list)->v_copy = copy_f;
+    (*list)->v_display = display_f;
+    (*list)->v_free = free_f;
 
     return DS_OK;
 }
@@ -223,7 +223,7 @@ Status cll_free(CircularLinkedList *list)
     if ((*list) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*list)->d_free == NULL)
+    if ((*list)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     Status st;
@@ -234,7 +234,7 @@ Status cll_free(CircularLinkedList *list)
     {
         (*list)->cursor = (*list)->cursor->next;
 
-        st = cll_free_node(&prev, (*list)->d_free);
+        st = cll_free_node(&prev, (*list)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -264,7 +264,7 @@ Status cll_free_shallow(CircularLinkedList *list)
     if ((*list) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*list)->d_free == NULL)
+    if ((*list)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     Status st;
@@ -327,12 +327,12 @@ Status cll_erase(CircularLinkedList *cll)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status cll_set_func_compare(CircularLinkedList list, cll_compare_f function)
+Status cll_set_v_compare(CircularLinkedList list, cll_compare_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_compare = function;
+    list->v_compare = function;
 
     return DS_OK;
 }
@@ -347,12 +347,12 @@ Status cll_set_func_compare(CircularLinkedList list, cll_compare_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status cll_set_func_copy(CircularLinkedList list, cll_copy_f function)
+Status cll_set_v_copy(CircularLinkedList list, cll_copy_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_copy = function;
+    list->v_copy = function;
 
     return DS_OK;
 }
@@ -367,12 +367,12 @@ Status cll_set_func_copy(CircularLinkedList list, cll_copy_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status cll_set_func_display(CircularLinkedList list, cll_display_f function)
+Status cll_set_v_display(CircularLinkedList list, cll_display_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_display = function;
+    list->v_display = function;
 
     return DS_OK;
 }
@@ -387,12 +387,12 @@ Status cll_set_func_display(CircularLinkedList list, cll_display_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the list references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status cll_set_func_free(CircularLinkedList list, cll_free_f function)
+Status cll_set_v_free(CircularLinkedList list, cll_free_f function)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    list->d_free = function;
+    list->v_free = function;
 
     return DS_OK;
 }
@@ -700,7 +700,7 @@ void *cll_max(CircularLinkedList cll)
     if (cll_empty(cll))
         return NULL;
 
-    if (cll->d_compare == NULL)
+    if (cll->v_compare == NULL)
         return NULL;
 
     CircularLinkedNode scan = cll->cursor;
@@ -709,7 +709,7 @@ void *cll_max(CircularLinkedList cll)
 
     for (integer_t i = 0; i < cll->length; i++)
     {
-        if (cll->d_compare(scan->data, result) > 0)
+        if (cll->v_compare(scan->data, result) > 0)
             result = scan->data;
 
         scan = scan->next;
@@ -728,7 +728,7 @@ void *cll_min(CircularLinkedList cll)
     if (cll_empty(cll))
         return NULL;
 
-    if (cll->d_compare == NULL)
+    if (cll->v_compare == NULL)
         return NULL;
 
     CircularLinkedNode scan = cll->cursor;
@@ -737,7 +737,7 @@ void *cll_min(CircularLinkedList cll)
 
     for (integer_t i = 0; i < cll->length; i++)
     {
-        if (cll->d_compare(scan->data, result) < 0)
+        if (cll->v_compare(scan->data, result) < 0)
             result = scan->data;
 
         scan = scan->next;
@@ -752,7 +752,7 @@ bool cll_contains(CircularLinkedList cll, void *key)
 
     for (integer_t i = 0; i < cll->length; i++)
     {
-        if (cll->d_compare(scan->data, key) == 0)
+        if (cll->v_compare(scan->data, key) == 0)
             return true;
 
         scan = scan->next;
@@ -801,11 +801,11 @@ Status cll_copy(CircularLinkedList list, CircularLinkedList *result)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_copy == NULL || list->d_free == NULL)
+    if (list->v_copy == NULL || list->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = cll_create(result, list->d_compare, list->d_copy,
-            list->d_display, list->d_free);
+    Status st = cll_create(result, list->v_compare, list->v_copy,
+            list->v_display, list->v_free);
 
     if (st != DS_OK)
         return st;
@@ -819,13 +819,13 @@ Status cll_copy(CircularLinkedList list, CircularLinkedList *result)
 
     for (integer_t i = 0; i < list->length; i++)
     {
-        elem = list->d_copy(scan->data);
+        elem = list->v_copy(scan->data);
 
         st = cll_insert_before(*result, elem);
 
         if (st != DS_OK)
         {
-            list->d_free(elem);
+            list->v_free(elem);
 
             return st;
         }
@@ -928,7 +928,7 @@ Status cll_display(CircularLinkedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (cll_empty(list))
@@ -944,7 +944,7 @@ Status cll_display(CircularLinkedList list)
 
     for (integer_t i = 0; i < list->length; i++)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(" <-> ");
 
@@ -969,7 +969,7 @@ Status cll_display_array(CircularLinkedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (cll_empty(list))
@@ -985,14 +985,14 @@ Status cll_display_array(CircularLinkedList list)
 
     for (integer_t i = 0; i < list->length - 1; i++)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(", ");
 
         scan = scan->next;
     }
 
-    list->d_display(scan->data);
+    list->v_display(scan->data);
 
     printf(" ]\n");
 
@@ -1012,7 +1012,7 @@ Status cll_display_raw(CircularLinkedList list)
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (list->d_display == NULL)
+    if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     CircularLinkedNode scan = list->cursor;
@@ -1021,7 +1021,7 @@ Status cll_display_raw(CircularLinkedList list)
 
     for (integer_t i = 0; i < list->length; i++)
     {
-        list->d_display(scan->data);
+        list->v_display(scan->data);
 
         printf(" ");
 

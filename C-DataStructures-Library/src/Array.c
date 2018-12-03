@@ -74,23 +74,23 @@ struct Array_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    arr_compare_f d_compare;
+    arr_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    arr_copy_f d_copy;
+    arr_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    arr_display_f d_display;
+    arr_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    arr_free_f d_free;
+    arr_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -128,10 +128,10 @@ Status arr_init(Array *array, integer_t length)
         return DS_ERR_ALLOC;
     }
 
-    (*array)->d_compare = NULL;
-    (*array)->d_copy = NULL;
-    (*array)->d_display = NULL;
-    (*array)->d_free = NULL;
+    (*array)->v_compare = NULL;
+    (*array)->v_copy = NULL;
+    (*array)->v_display = NULL;
+    (*array)->v_free = NULL;
 
     for (integer_t i = 0; i < length; i++)
         (*array)->buffer[i] = NULL;
@@ -165,10 +165,10 @@ Status arr_create(Array *array, integer_t length, arr_compare_f compare_f,
         return DS_ERR_ALLOC;
     }
 
-    (*array)->d_compare = compare_f;
-    (*array)->d_copy = copy_f;
-    (*array)->d_display = display_f;
-    (*array)->d_free = free_f;
+    (*array)->v_compare = compare_f;
+    (*array)->v_copy = copy_f;
+    (*array)->v_display = display_f;
+    (*array)->v_free = free_f;
 
     for (integer_t i = 0; i < length; i++)
         (*array)->buffer[i] = NULL;
@@ -185,12 +185,12 @@ Status arr_free(Array *array)
     if (*array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*array)->d_free == NULL)
+    if ((*array)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     for (integer_t i = 0; i < (*array)->length; i++)
     {
-        (*array)->d_free((*array)->buffer[i]);
+        (*array)->v_free((*array)->buffer[i]);
     }
 
     free((*array)->buffer);
@@ -221,8 +221,8 @@ Status arr_erase(Array *array)
 
     Array new_array;
 
-    Status st = arr_create(&new_array, (*array)->length, (*array)->d_compare,
-            (*array)->d_copy, (*array)->d_display, (*array)->d_free);
+    Status st = arr_create(&new_array, (*array)->length, (*array)->v_compare,
+            (*array)->v_copy, (*array)->v_display, (*array)->v_free);
 
     if (st != DS_OK)
         return st;
@@ -243,42 +243,42 @@ Status arr_erase(Array *array)
     return DS_OK;
 }
 
-Status arr_set_func_compare(Array array, arr_compare_f function)
+Status arr_set_v_compare(Array array, arr_compare_f function)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    array->d_compare = function;
+    array->v_compare = function;
 
     return DS_OK;
 }
 
-Status arr_set_func_copy(Array array, arr_copy_f function)
+Status arr_set_v_copy(Array array, arr_copy_f function)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    array->d_copy = function;
+    array->v_copy = function;
 
     return DS_OK;
 }
 
-Status arr_set_func_display(Array array, arr_display_f function)
+Status arr_set_v_display(Array array, arr_display_f function)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    array->d_display = function;
+    array->v_display = function;
 
     return DS_OK;
 }
 
-Status arr_set_func_free(Array array, arr_free_f function)
+Status arr_set_v_free(Array array, arr_free_f function)
 {
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    array->d_free = function;
+    array->v_free = function;
 
     return DS_OK;
 }
@@ -522,7 +522,7 @@ void *arr_max(Array array)
     if (array == NULL)
         return NULL;
 
-    if (array->d_compare == NULL)
+    if (array->v_compare == NULL)
         return NULL;
 
     void *result = NULL;
@@ -534,7 +534,7 @@ void *arr_max(Array array)
         {
             if (result == NULL)
                 result = array->buffer[i];
-            else if (array->d_compare(array->buffer[i], result) > 0)
+            else if (array->v_compare(array->buffer[i], result) > 0)
             {
                 result = array->buffer[i];
             }
@@ -550,7 +550,7 @@ void *arr_min(Array array)
     if (array == NULL)
         return NULL;
 
-    if (array->d_compare == NULL)
+    if (array->v_compare == NULL)
         return NULL;
 
     void *result = NULL;
@@ -562,7 +562,7 @@ void *arr_min(Array array)
         {
             if (result == NULL)
                 result = array->buffer[i];
-            else if (array->d_compare(array->buffer[i], result) < 0)
+            else if (array->v_compare(array->buffer[i], result) < 0)
             {
                 result = array->buffer[i];
             }
@@ -578,13 +578,13 @@ integer_t arr_index_first(Array array, void *key)
     if (array == NULL)
         return -3;
 
-    if (array->d_compare == NULL)
+    if (array->v_compare == NULL)
         return -2;
 
     for (integer_t index = 0; index < array->length; index++)
     {
         if (array->buffer[index] != NULL)
-            if (array->d_compare(array->buffer[index], key) == 0)
+            if (array->v_compare(array->buffer[index], key) == 0)
                 return index;
     }
 
@@ -597,13 +597,13 @@ integer_t arr_index_last(Array array, void *key)
     if (array == NULL)
         return -3;
 
-    if (array->d_compare == NULL)
+    if (array->v_compare == NULL)
         return -2;
 
     for (integer_t index = array->length - 1; index >= 0; index--)
     {
         if (array->buffer[index] != NULL)
-            if (array->d_compare(array->buffer[index], key) == 0)
+            if (array->v_compare(array->buffer[index], key) == 0)
                 return index;
     }
 
@@ -616,7 +616,7 @@ bool arr_contains(Array array, void *key)
     for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
-            if (array->d_compare(array->buffer[i], key) == 0)
+            if (array->v_compare(array->buffer[i], key) == 0)
                 return true;
     }
 
@@ -666,18 +666,18 @@ Status arr_copy(Array array, Array *result)
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (array->d_copy == NULL)
+    if (array->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = arr_create(result, array->length, array->d_compare,
-                           array->d_copy, array->d_display, array->d_free);
+    Status st = arr_create(result, array->length, array->v_compare,
+                           array->v_copy, array->v_display, array->v_free);
 
     if (st != DS_OK)
         return st;
 
     for (integer_t i = 0; i < array->length; i++)
         (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
-                               array->d_copy(array->buffer[i]);
+                               array->v_copy(array->buffer[i]);
 
     return DS_OK;
 }
@@ -687,7 +687,7 @@ Status arr_sort(Array array)
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (array->d_compare == NULL)
+    if (array->v_compare == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     arr_quicksort(array, array->buffer, array->length);
@@ -706,7 +706,7 @@ Status arr_to_array(Array array, void ***result, integer_t *length)
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (array->d_copy == NULL)
+    if (array->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     *length = array->length;
@@ -720,7 +720,7 @@ Status arr_to_array(Array array, void ***result, integer_t *length)
     {
         (*result)[i] = (array->buffer[i] == NULL) ?
                 NULL :
-                array->d_copy(array->buffer[i]);
+                array->v_copy(array->buffer[i]);
     }
 
     return DS_OK;
@@ -731,7 +731,7 @@ Status arr_display(Array array)
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (array->d_display == NULL)
+    if (array->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (arr_empty(array))
@@ -745,12 +745,12 @@ Status arr_display(Array array)
 
     for (integer_t i = 0; i < array->length - 1; i++)
     {
-        array->d_display(array->buffer[i]);
+        array->v_display(array->buffer[i]);
 
         printf(", ");
     }
 
-    array->d_display(array->buffer[array->length - 1]);
+    array->v_display(array->buffer[array->length - 1]);
 
     printf(" ]\n");
 
@@ -762,14 +762,14 @@ Status arr_display_raw(Array array)
     if (array == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (array->d_display == NULL)
+    if (array->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
 
     for (integer_t i = 0; i < array->length - 1; i++)
     {
-        array->d_display(array->buffer[i]);
+        array->v_display(array->buffer[i]);
 
         printf(" ");
     }
@@ -791,10 +791,10 @@ static void arr_quicksort(Array array, void **buffer, integer_t length)
     integer_t i, j;
     for (i = 0, j = length - 1; ; i++, j--)
     {
-        while (array->d_compare(buffer[i], pivot) < 0)
+        while (array->v_compare(buffer[i], pivot) < 0)
             i++;
 
-        while (array->d_compare(buffer[j], pivot) > 0)
+        while (array->v_compare(buffer[j], pivot) > 0)
             j--;
 
         if (i >= j)
@@ -979,11 +979,11 @@ Status arr_iter_set(ArrayIterator iter, void *element)
     if (arr_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_free == NULL)
+    if (iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        iter->target->d_free(iter->target->buffer[iter->cursor]);
+        iter->target->v_free(iter->target->buffer[iter->cursor]);
 
     iter->target->buffer[iter->cursor] = element;
 
@@ -1004,11 +1004,11 @@ Status arr_iter_get(ArrayIterator iter, void **result)
     if (arr_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_copy == NULL)
+    if (iter->target->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        *result = iter->target->d_copy(iter->target->buffer[iter->cursor]);
+        *result = iter->target->v_copy(iter->target->buffer[iter->cursor]);
     else
         *result = NULL;
 

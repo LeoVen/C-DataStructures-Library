@@ -96,23 +96,23 @@ struct Queue_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    que_compare_f d_compare;
+    que_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    que_copy_f d_copy;
+    que_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    que_display_f d_display;
+    que_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    que_free_f d_free;
+    que_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -187,10 +187,10 @@ Status que_init(Queue *queue)
     (*queue)->front = NULL;
     (*queue)->rear = NULL;
 
-    (*queue)->d_compare = NULL;
-    (*queue)->d_copy = NULL;
-    (*queue)->d_display = NULL;
-    (*queue)->d_free = NULL;
+    (*queue)->v_compare = NULL;
+    (*queue)->v_copy = NULL;
+    (*queue)->v_display = NULL;
+    (*queue)->v_free = NULL;
 
     return DS_OK;
 }
@@ -223,10 +223,10 @@ Status que_create(Queue *queue, que_compare_f compare_f, que_copy_f copy_f,
     (*queue)->front = NULL;
     (*queue)->rear = NULL;
 
-    (*queue)->d_compare = compare_f;
-    (*queue)->d_copy = copy_f;
-    (*queue)->d_display = display_f;
-    (*queue)->d_free = free_f;
+    (*queue)->v_compare = compare_f;
+    (*queue)->v_copy = copy_f;
+    (*queue)->v_display = display_f;
+    (*queue)->v_free = free_f;
 
     return DS_OK;
 }
@@ -247,7 +247,7 @@ Status que_free(Queue *queue)
     if ((*queue) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*queue)->d_free == NULL)
+    if ((*queue)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     QueueNode prev = (*queue)->front;
@@ -258,7 +258,7 @@ Status que_free(Queue *queue)
     {
         (*queue)->front = (*queue)->front->prev;
 
-        st = que_free_node(&prev, (*queue)->d_free);
+        st = que_free_node(&prev, (*queue)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -288,7 +288,7 @@ Status que_free_shallow(Queue *queue)
     if ((*queue) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if ((*queue)->d_free == NULL)
+    if ((*queue)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     QueueNode prev = (*queue)->front;
@@ -333,8 +333,8 @@ Status que_erase(Queue *queue)
 
     Queue new_queue;
 
-    Status st = que_create(&new_queue, (*queue)->d_compare, (*queue)->d_copy,
-            (*queue)->d_display, (*queue)->d_free);
+    Status st = que_create(&new_queue, (*queue)->v_compare, (*queue)->v_copy,
+            (*queue)->v_display, (*queue)->v_free);
 
     if (st !=  DS_OK)
         return st;
@@ -364,12 +364,12 @@ Status que_erase(Queue *queue)
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status que_set_func_compare(Queue queue, que_compare_f function)
+Status que_set_v_compare(Queue queue, que_compare_f function)
 {
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    queue->d_compare = function;
+    queue->v_compare = function;
 
     return DS_OK;
 }
@@ -384,12 +384,12 @@ Status que_set_func_compare(Queue queue, que_compare_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status que_set_func_copy(Queue queue, que_copy_f function)
+Status que_set_v_copy(Queue queue, que_copy_f function)
 {
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    queue->d_copy = function;
+    queue->v_copy = function;
 
     return DS_OK;
 }
@@ -404,12 +404,12 @@ Status que_set_func_copy(Queue queue, que_copy_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status que_set_func_display(Queue queue, que_display_f function)
+Status que_set_v_display(Queue queue, que_display_f function)
 {
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    queue->d_display = function;
+    queue->v_display = function;
 
     return DS_OK;
 }
@@ -424,12 +424,12 @@ Status que_set_func_display(Queue queue, que_display_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status que_set_func_free(Queue queue, que_free_f function)
+Status que_set_v_free(Queue queue, que_free_f function)
 {
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    queue->d_free = function;
+    queue->v_free = function;
 
     return DS_OK;
 }
@@ -607,11 +607,11 @@ Status que_copy(Queue queue, Queue *result)
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (queue->d_copy == NULL || queue->d_free == NULL)
+    if (queue->v_copy == NULL || queue->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = que_create(result, queue->d_compare, queue->d_copy,
-                           queue->d_display, queue->d_free);
+    Status st = que_create(result, queue->v_compare, queue->v_copy,
+                           queue->v_display, queue->v_free);
 
     if (st != DS_OK)
         return st;
@@ -627,13 +627,13 @@ Status que_copy(Queue queue, Queue *result)
 
     while (scan != NULL)
     {
-        elem = queue->d_copy(scan->data);
+        elem = queue->v_copy(scan->data);
 
         st = que_enqueue(*result, elem);
 
         if (st != DS_OK)
         {
-            queue->d_free(elem);
+            queue->v_free(elem);
 
             return st;
         }
@@ -670,7 +670,7 @@ Status que_display(Queue queue)
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (queue->d_display == NULL)
+    if (queue->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (que_empty(queue))
@@ -686,7 +686,7 @@ Status que_display(Queue queue)
 
     while (scan != NULL)
     {
-        queue->d_display(scan->data);
+        queue->v_display(scan->data);
 
         printf(" <- ");
 
@@ -713,7 +713,7 @@ Status que_display_array(Queue queue)
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (queue->d_display == NULL)
+    if (queue->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (que_empty(queue))
@@ -729,14 +729,14 @@ Status que_display_array(Queue queue)
 
     while (scan->prev != NULL)
     {
-        queue->d_display(scan->data);
+        queue->v_display(scan->data);
 
         printf(", ");
 
         scan = scan->prev;
     }
 
-    queue->d_display(scan->data);
+    queue->v_display(scan->data);
 
     printf(" ]\n");
 
@@ -758,7 +758,7 @@ Status que_display_raw(Queue queue)
     if (queue == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (queue->d_display == NULL)
+    if (queue->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
@@ -770,7 +770,7 @@ Status que_display_raw(Queue queue)
 
     while (scan != NULL)
     {
-        queue->d_display(scan->data);
+        queue->v_display(scan->data);
 
         printf(" ");
 
@@ -978,10 +978,10 @@ Status que_iter_get(QueueIterator iter, void **result)
     if (que_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_copy == NULL || iter->target->d_free == NULL)
+    if (iter->target->v_copy == NULL || iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    *result = iter->target->d_copy(iter->cursor->data);
+    *result = iter->target->v_copy(iter->cursor->data);
 
     return DS_OK;
 }
@@ -997,10 +997,10 @@ Status que_iter_set(QueueIterator iter, void *element)
     if (que_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_free == NULL)
+    if (iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    iter->target->d_free(iter->cursor->data);
+    iter->target->v_free(iter->cursor->data);
 
     iter->cursor->data = element;
 

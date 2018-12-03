@@ -72,13 +72,13 @@ Status stk_erase(Stack *stack);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status stk_set_func_compare(Stack stack, stk_compare_f function);
+Status stk_set_v_compare(Stack stack, stk_compare_f function);
 
-Status stk_set_func_copy(Stack stack, stk_copy_f function);
+Status stk_set_v_copy(Stack stack, stk_copy_f function);
 
-Status stk_set_func_display(Stack stack, stk_display_f function);
+Status stk_set_v_display(Stack stack, stk_display_f function);
 
-Status stk_set_func_free(Stack stack, stk_free_f function);
+Status stk_set_v_free(Stack stack, stk_free_f function);
 
 Status stk_set_limit(Stack stack, integer_t limit);
 

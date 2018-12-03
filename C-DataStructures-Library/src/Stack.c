@@ -88,23 +88,23 @@ struct Stack_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    stk_compare_f d_compare;
+    stk_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    stk_copy_f d_copy;
+    stk_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    stk_display_f d_display;
+    stk_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    stk_free_f d_free;
+    stk_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -174,10 +174,10 @@ Status stk_init(Stack *stack)
     (*stack)->limit = 0;
     (*stack)->version_id = 0;
 
-    (*stack)->d_compare = NULL;
-    (*stack)->d_copy = NULL;
-    (*stack)->d_display = NULL;
-    (*stack)->d_free = NULL;
+    (*stack)->v_compare = NULL;
+    (*stack)->v_copy = NULL;
+    (*stack)->v_display = NULL;
+    (*stack)->v_free = NULL;
 
     return DS_OK;
 }
@@ -207,10 +207,10 @@ Status stk_create(Stack *stack, stk_compare_f compare_f, stk_copy_f copy_f,
     (*stack)->limit = 0;
     (*stack)->version_id = 0;
 
-    (*stack)->d_compare = compare_f;
-    (*stack)->d_copy = copy_f;
-    (*stack)->d_display = display_f;
-    (*stack)->d_free = free_f;
+    (*stack)->v_compare = compare_f;
+    (*stack)->v_copy = copy_f;
+    (*stack)->v_display = display_f;
+    (*stack)->v_free = free_f;
 
     return DS_OK;
 }
@@ -231,7 +231,7 @@ Status stk_free(Stack *stack)
     if ((*stack) == NULL)
         return DS_ERR_INVALID_OPERATION;
 
-    if ((*stack)->d_free == NULL)
+    if ((*stack)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     StackNode prev = (*stack)->top;
@@ -242,7 +242,7 @@ Status stk_free(Stack *stack)
     {
         (*stack)->top = (*stack)->top->below;
 
-        st = stk_free_node(&prev, (*stack)->d_free);
+        st = stk_free_node(&prev, (*stack)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -313,8 +313,8 @@ Status stk_erase(Stack *stack)
 
     Stack new_stack;
 
-    Status st = stk_create(&new_stack, (*stack)->d_compare, (*stack)->d_copy,
-                           (*stack)->d_display, (*stack)->d_free);
+    Status st = stk_create(&new_stack, (*stack)->v_compare, (*stack)->v_copy,
+                           (*stack)->v_display, (*stack)->v_free);
 
     if (st != DS_OK)
         return st;
@@ -343,12 +343,12 @@ Status stk_erase(Stack *stack)
 ///
 /// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status stk_set_func_compare(Stack stack, stk_compare_f function)
+Status stk_set_v_compare(Stack stack, stk_compare_f function)
 {
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    stack->d_compare = function;
+    stack->v_compare = function;
 
     return DS_OK;
 }
@@ -363,12 +363,12 @@ Status stk_set_func_compare(Stack stack, stk_compare_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status stk_set_func_copy(Stack stack, stk_copy_f function)
+Status stk_set_v_copy(Stack stack, stk_copy_f function)
 {
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    stack->d_copy = function;
+    stack->v_copy = function;
 
     return DS_OK;
 }
@@ -383,12 +383,12 @@ Status stk_set_func_copy(Stack stack, stk_copy_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status stk_set_func_display(Stack stack, stk_display_f function)
+Status stk_set_v_display(Stack stack, stk_display_f function)
 {
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    stack->d_display = function;
+    stack->v_display = function;
 
     return DS_OK;
 }
@@ -403,12 +403,12 @@ Status stk_set_func_display(Stack stack, stk_display_f function)
 ///
 /// \return DS_ERR_NULL_POINTER if the stack references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status stk_set_func_free(Stack stack, stk_free_f function)
+Status stk_set_v_free(Stack stack, stk_free_f function)
 {
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    stack->d_free = function;
+    stack->v_free = function;
 
     return DS_OK;
 }
@@ -620,14 +620,14 @@ Status stk_slice(Stack stack)
     if (stk_empty(stack))
         return DS_ERR_INVALID_OPERATION;
 
-    if (stack->d_free == NULL)
+    if (stack->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     StackNode box = stack->top;
 
     stack->top = stack->top->below;
 
-    Status st = stk_free_node(&box, stack->d_free);
+    Status st = stk_free_node(&box, stack->v_free);
 
     if (st != DS_OK)
         return st;
@@ -713,7 +713,7 @@ bool stk_contains(Stack stack, void *key)
 
     while (scan != NULL)
     {
-        if (stack->d_compare(scan->data, key) == 0)
+        if (stack->v_compare(scan->data, key) == 0)
             return true;
 
         scan = scan->below;
@@ -742,11 +742,11 @@ Status stk_copy(Stack stack, Stack *result)
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stack->d_copy == NULL || stack->d_free == NULL)
+    if (stack->v_copy == NULL || stack->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = stk_create(result, stack->d_compare, stack->d_copy,
-            stack->d_display, stack->d_free);
+    Status st = stk_create(result, stack->v_compare, stack->v_copy,
+            stack->v_display, stack->v_free);
 
     if (st != DS_OK)
         return st;
@@ -759,13 +759,13 @@ Status stk_copy(Stack stack, Stack *result)
 
     while (scan != NULL)
     {
-        elem = stack->d_copy(scan->data);
+        elem = stack->v_copy(scan->data);
 
         st = stk_make_node(&copy, elem);
 
         if (st != DS_OK)
         {
-            stk_free_node(&copy, stack->d_free);
+            stk_free_node(&copy, stack->v_free);
 
             return st;
         }
@@ -867,7 +867,7 @@ Status stk_display(Stack stack)
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stack->d_display == NULL)
+    if (stack->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (stk_empty(stack))
@@ -885,7 +885,7 @@ Status stk_display(Stack stack)
     {
         printf("| ");
 
-        stack->d_display(scan->data);
+        stack->v_display(scan->data);
 
         printf(" |\n");
 
@@ -913,7 +913,7 @@ Status stk_display_array(Stack stack)
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stack->d_display == NULL)
+    if (stack->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     if (stk_empty(stack))
@@ -929,14 +929,14 @@ Status stk_display_array(Stack stack)
 
     while (scan->below != NULL)
     {
-        stack->d_display(scan->data);
+        stack->v_display(scan->data);
 
         printf(", ");
 
         scan = scan->below;
     }
 
-    stack->d_display(scan->data);
+    stack->v_display(scan->data);
 
     printf(" ]\n");
 
@@ -957,7 +957,7 @@ Status stk_display_raw(Stack stack)
     if (stack == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (stack->d_display == NULL)
+    if (stack->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
     printf("\n");
@@ -969,7 +969,7 @@ Status stk_display_raw(Stack stack)
 
     while (scan != NULL)
     {
-        stack->d_display(scan->data);
+        stack->v_display(scan->data);
 
         printf(" ");
 
@@ -1160,10 +1160,10 @@ Status stk_iter_get(StackIterator iter, void **result)
     if (stk_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_copy == NULL || iter->target->d_free == NULL)
+    if (iter->target->v_copy == NULL || iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    *result = iter->target->d_copy(iter->cursor->data);
+    *result = iter->target->v_copy(iter->cursor->data);
 
     return DS_OK;
 }
@@ -1179,10 +1179,10 @@ Status stk_iter_set(StackIterator iter, void *element)
     if (stk_iter_target_modified(iter))
         return DS_ERR_ITER_MODIFICATION;
 
-    if (iter->target->d_free == NULL)
+    if (iter->target->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    iter->target->d_free(iter->cursor->data);
+    iter->target->v_free(iter->cursor->data);
 
     iter->cursor->data = element;
 
