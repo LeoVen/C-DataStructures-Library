@@ -1,3 +1,4 @@
+#include <ctype.h>
 #include "Util.h"
 #include "Tests.h"
 #include "SinglyLinkedList.h"
@@ -1016,6 +1017,15 @@ int main()
     SortedListTests();
     StackArrayTests();
     StackTests();
+
+    char c;
+    while ((c = rand_alpha()) != '0')
+        printf("%c ", c);
+
+    printf("\n");
+
+    while ((c = rand_alpha()) != 'Z')
+        printf("%c ", c);
 
     return 0;
 }

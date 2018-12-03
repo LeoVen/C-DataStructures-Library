@@ -2619,13 +2619,13 @@ static SortedList GlobalSortedList = NULL;
 
 // All these functions are part of the SortedListWrapper.
 
-static Status sli_wrap_set_compare(sli_compare_f function);
+static Status sli_wrap_v_compare(sli_compare_f function);
 
-static Status sli_wrap_set_copy(sli_copy_f function);
+static Status sli_wrap_v_copy(sli_copy_f function);
 
-static Status sli_wrap_set_display(sli_display_f function);
+static Status sli_wrap_v_display(sli_display_f function);
 
-static Status sli_wrap_set_free(sli_free_f function);
+static Status sli_wrap_v_free(sli_free_f function);
 
 static Status sli_wrap_set_limit(integer_t limit);
 
@@ -2706,10 +2706,10 @@ Status sli_wrap_init(SortedListWrapper *wrapper, SortedList target)
     GlobalSortedList = target;
 
     // Setting all wrapper functions
-    (*wrapper)->set_compare = sli_wrap_set_compare;
-    (*wrapper)->set_copy = sli_wrap_set_copy;
-    (*wrapper)->set_display = sli_wrap_set_display;
-    (*wrapper)->set_free = sli_wrap_set_free;
+    (*wrapper)->set_compare = sli_wrap_v_compare;
+    (*wrapper)->set_copy = sli_wrap_v_copy;
+    (*wrapper)->set_display = sli_wrap_v_display;
+    (*wrapper)->set_free = sli_wrap_v_free;
     (*wrapper)->set_limit = sli_wrap_set_limit;
     (*wrapper)->set_order = sli_wrap_set_order;
 
@@ -2793,7 +2793,7 @@ Status sli_wrap_free(SortedListWrapper *wrapper)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status sli_wrap_set_compare(sli_compare_f function)
+static Status sli_wrap_v_compare(sli_compare_f function)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2801,7 +2801,7 @@ static Status sli_wrap_set_compare(sli_compare_f function)
     return sli_set_v_compare(GlobalSortedList, function);
 }
 
-static Status sli_wrap_set_copy(sli_copy_f function)
+static Status sli_wrap_v_copy(sli_copy_f function)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2809,7 +2809,7 @@ static Status sli_wrap_set_copy(sli_copy_f function)
     return sli_set_v_copy(GlobalSortedList, function);
 }
 
-static Status sli_wrap_set_display(sli_display_f function)
+static Status sli_wrap_v_display(sli_display_f function)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;
@@ -2817,7 +2817,7 @@ static Status sli_wrap_set_display(sli_display_f function)
     return sli_set_v_display(GlobalSortedList, function);
 }
 
-static Status sli_wrap_set_free(sli_free_f function)
+static Status sli_wrap_v_free(sli_free_f function)
 {
     if (GlobalSortedList == NULL)
         return DS_ERR_WRAPPER;

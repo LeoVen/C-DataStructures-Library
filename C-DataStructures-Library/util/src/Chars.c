@@ -50,7 +50,10 @@ void *copy_char(void *element)
     return new_char(*e);
 }
 
-void *copy_string(void *element);
+void *copy_string(void *element)
+{
+    return strdup(element);
+}
 
 void *new_char(char element)
 {
