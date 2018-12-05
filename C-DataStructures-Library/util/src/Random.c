@@ -10,7 +10,7 @@
 
 double rrandom()
 {
-    return (double)rand() / (double)RAND_MAX;
+    return (double)rand() / (double)(RAND_MAX + 1);
 }
 
 int rand_int(int min, int max)

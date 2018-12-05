@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include "Util.h"
 #include "Tests.h"
 #include "SinglyLinkedList.h"

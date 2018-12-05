@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 project(C_DataStructures_Library)
 
+set(CMAKE_STATIC_LIBRARY_PREFIX "DSLib_")
+set(CMAKE_STATIC_LIBRARY_SUFFIX "_x64")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextr -std=c11")
 set(CMAKE_CXX_STANDARD 11)
 
@@ -9,6 +12,39 @@ set(UNIT_TEST ./tests/UnitTest)
 set(UTIL ./util/include)
 include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL})
 
-add_executable(C_DataStructures_Library tests/main.c include/Core.h src/SinglyLinkedList.c include/SinglyLinkedList.h src/DoublyLinkedList.c include/DoublyLinkedList.h src/Stack.c include/Stack.h src/Queue.c include/Queue.h src/Deque.c include/Deque.h src/PriorityQueue.c include/PriorityQueue.h src/DynamicArray.c include/DynamicArray.h src/StackArray.c include/StackArray.h src/QueueArray.c include/QueueArray.h src/Array.c include/Array.h src/CircularLinkedList.c include/CircularLinkedList.h tests/QueueArrayTests.c tests/UnitTest/UnitTest.c tests/UnitTest/UnitTest.h include/Tests.h tests/SinglyLinkedListTests.c tests/DoublyLinkedListTests.c tests/StackArrayTests.c tests/DequeTests.c tests/QueueTests.c tests/CircularLinkedListTests.c tests/DynamicArrayTests.c tests/StackTests.c src/DequeArray.c include/DequeArray.h tests/DequeArrayTests.c src/BinarySearchTree.c include/BinarySearchTree.h util/src/Integers.c util/include/Integers.h util/include/Util.h util/src/Floats.c util/include/Floats.h util/src/Chars.c util/include/Chars.h src/AVLTree.c include/AVLTree.h util/src/Random.c util/include/Random.h src/SortedList.c include/SortedList.h include/CoreSort.h include/CoreTree.h util/src/Status.c util/include/Status.h tests/SortedListTests.c)
+set(INCLUDE_FILES include/Core.h include/Tests.h include/CoreSort.h include/CoreTree.h)
+set(TEST_FILES tests/QueueArrayTests.c tests/SinglyLinkedListTests.c tests/DoublyLinkedListTests.c tests/StackArrayTests.c tests/DequeTests.c tests/QueueTests.c tests/CircularLinkedListTests.c tests/DynamicArrayTests.c tests/StackTests.c tests/DequeArrayTests.c tests/SortedListTests.c)
 
-target_link_libraries(C_DataStructures_Library m)
+add_executable(C_DataStructures_Library tests/main.c ${INCLUDE_FILES} ${TEST_FILES})
+
+add_library(Array include/Array.h src/Array.c)
+add_library(AVLTree include/AVLTree.h src/AVLTree.c)
+add_library(BinarySearchTree include/BinarySearchTree.h src/BinarySearchTree.c)
+add_library(CircularLinkedList include/CircularLinkedList.h src/CircularLinkedList.c)
+add_library(Deque include/Deque.h src/Deque.c)
+add_library(DequeArray include/DequeArray.h src/DequeArray.c)
+add_library(DoublyLinkedList include/DoublyLinkedList.h src/DoublyLinkedList.c)
+add_library(DynamicArray include/DynamicArray.h src/DynamicArray.c)
+add_library(PriorityQueue include/PriorityQueue.h src/PriorityQueue.c)
+add_library(Queue include/Queue.h src/Queue.c)
+add_library(QueueArray include/QueueArray.h src/QueueArray.c)
+add_library(SinglyLinkedList include/SinglyLinkedList.h src/SinglyLinkedList.c)
+add_library(SortedList include/SortedList.h src/SortedList.c)
+add_library(Stack include/Stack.h src/Stack.c)
+add_library(StackArray include/StackArray.h src/StackArray.c)
+
+add_library(UnitTest tests/UnitTest/UnitTest.h tests/UnitTest/UnitTest.c)
+add_library(CString util/include/CString.h util/src/CString.c)
+add_library(Chars util/include/Chars.h util/src/Chars.c)
+add_library(Floats util/include/Floats.h util/src/Floats.c)
+add_library(Integers util/include/Integers.h util/src/Integers.c)
+add_library(Random util/include/Random.h util/src/Random.c)
+add_library(Status util/include/Status.h util/src/Status.c)
+
+set(LIBS Array AVLTree BinarySearchTree CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray SinglyLinkedList SortedList Stack StackArray)
+
+set(UTIL Chars Floats Integers Random Status)
+
+add_dependencies(C_DataStructures_Library ${LIBS} UnitTest ${UTIL} CString)
+
+target_link_libraries(C_DataStructures_Library m ${LIBS} UnitTest ${UTIL} CString)

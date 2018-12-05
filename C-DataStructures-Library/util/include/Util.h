@@ -9,9 +9,9 @@
 #ifndef C_DATASTRUCTURES_LIBRARY_UTIL_H
 #define C_DATASTRUCTURES_LIBRARY_UTIL_H
 
-#include "Integers.h"
-#include "Floats.h"
 #include "Chars.h"
+#include "Floats.h"
+#include "Integers.h"
 #include "Random.h"
 #include "Status.h"
 
