@@ -16,6 +16,7 @@ extern "C" {
 #endif
 
 // Includes all test functions
+Status BitArrayTests(void);
 
 Status DequeArrayTests(void);
 

@@ -15,6 +15,7 @@
 #include "BinarySearchTree.h"
 #include "AVLTree.h"
 #include "SortedList.h"
+#include "BitArray.h"
 
 int main()
 {
@@ -1003,8 +1004,24 @@ int main()
         sli_free(&slist);
     }
 
+    BitArray bits;
+
+    if (bit_init(&bits) == DS_OK)
+    {
+        for (integer_t i = 0; i < bit_nbits(bits); i++)
+        {
+            if (i % 2 == 0)
+                bit_set(bits, i);
+        }
+
+        bit_display(bits);
+
+        bit_free(&bits);
+    }
+
     printf("\n\n\n");
 
+    BitArrayTests();
     DequeArrayTests();
     DequeTests();
     DoublyLinkedListTests();
@@ -1016,15 +1033,6 @@ int main()
     SortedListTests();
     StackArrayTests();
     StackTests();
-
-    char c;
-    while ((c = rand_alpha()) != '0')
-        printf("%c ", c);
-
-    printf("\n");
-
-    while ((c = rand_alpha()) != 'Z')
-        printf("%c ", c);
 
     return 0;
 }

@@ -13,13 +13,26 @@ set(UTIL ./util/include)
 include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL})
 
 set(INCLUDE_FILES include/Core.h include/Tests.h include/CoreSort.h include/CoreTree.h)
-set(TEST_FILES tests/QueueArrayTests.c tests/SinglyLinkedListTests.c tests/DoublyLinkedListTests.c tests/StackArrayTests.c tests/DequeTests.c tests/QueueTests.c tests/CircularLinkedListTests.c tests/DynamicArrayTests.c tests/StackTests.c tests/DequeArrayTests.c tests/SortedListTests.c)
+set(TEST_FILES
+        tests/BitArrayTests.c
+        tests/CircularLinkedListTests.c
+        tests/DequeArrayTests.c
+        tests/DequeTests.c
+        tests/DoublyLinkedListTests.c
+        tests/DynamicArrayTests.c
+        tests/QueueArrayTests.c
+        tests/QueueTests.c
+        tests/SinglyLinkedListTests.c
+        tests/SortedListTests.c
+        tests/StackArrayTests.c
+        tests/StackTests.c)
 
 add_executable(C_DataStructures_Library tests/main.c ${INCLUDE_FILES} ${TEST_FILES})
 
 add_library(Array include/Array.h src/Array.c)
 add_library(AVLTree include/AVLTree.h src/AVLTree.c)
 add_library(BinarySearchTree include/BinarySearchTree.h src/BinarySearchTree.c)
+add_library(BitArray include/BitArray.h src/BitArray.c)
 add_library(CircularLinkedList include/CircularLinkedList.h src/CircularLinkedList.c)
 add_library(Deque include/Deque.h src/Deque.c)
 add_library(DequeArray include/DequeArray.h src/DequeArray.c)
@@ -41,7 +54,7 @@ add_library(Integers util/include/Integers.h util/src/Integers.c)
 add_library(Random util/include/Random.h util/src/Random.c)
 add_library(Status util/include/Status.h util/src/Status.c)
 
-set(LIBS Array AVLTree BinarySearchTree CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray SinglyLinkedList SortedList Stack StackArray)
+set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray SinglyLinkedList SortedList Stack StackArray)
 
 set(UTIL Chars Floats Integers Random Status)
 

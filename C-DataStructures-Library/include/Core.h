@@ -11,6 +11,7 @@
 
 #include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,7 +80,7 @@ typedef enum Status Status;
 
 /// Signed value used to represent sizes and indexes. Its negative portion is
 /// only used to represent errors when the function doesn't return a Status.
-typedef long long int integer_t;
+typedef int64_t integer_t;
 
 /// Prime numbers used for hashing
 /// https://planetmath.org/goodhashtableprimes

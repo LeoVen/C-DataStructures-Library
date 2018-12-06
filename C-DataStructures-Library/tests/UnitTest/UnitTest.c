@@ -35,12 +35,27 @@ Status ut_delete(UnitTest *ut)
 
 void ut_report(UnitTest ut, const char *struct_name)
 {
-    printf("\n+--------------------------------------------------+");
-    printf("\n|                  UnitTest Report                 |");
-    printf("\n+--------------------------------------------------+");
-    printf("\n  Name   : %s", struct_name);
-    printf("\n  Total  : %lld", ut->total);
-    printf("\n  Passed : %lld\n", ut->passed);
+    printf("+--------------------------------------------------+\n");
+    printf("|                  UnitTest Report                 |\n");
+    printf("+--------------------------------------------------+\n");
+    printf("  Name   : %s\n", struct_name);
+    printf("  Total  : %lld\n", ut->total);
+    printf("  Passed : %lld\n\n", ut->passed);
+}
+
+void ut_equals_bool(UnitTest ut, bool param1, bool param2, const char *test_name)
+{
+    if (param1 == param2)
+    {
+        ut->passed++;
+        printf("%-30s %s", test_name, "PASSED\n");
+    }
+    else
+    {
+        printf("%-30s %s", test_name, "FAILED\n");
+    }
+
+    ut->total++;
 }
 
 void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
@@ -48,11 +63,11 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     if (param1 == param2)
     {
         ut->passed++;
-        printf("\n%-30s %s", test_name, "PASSED");
+        printf("%-30s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("\n%-30s %s", test_name, "FAILED");
+        printf("%-30s %s", test_name, "FAILED\n");
     }
 
     ut->total++;
@@ -63,11 +78,11 @@ void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2, const 
     if (param1 == param2)
     {
         ut->passed++;
-        printf("\n%-30s %s", test_name, "PASSED");
+        printf("%-30s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("\n%-30s %s", test_name, "FAILED");
+        printf("%-30s %s", test_name, "FAILED\n");
     }
 
     ut->total++;

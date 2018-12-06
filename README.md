@@ -9,7 +9,7 @@
 | [AVLTree][avl]             | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[#_________]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [BitArray][bit]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [BitArray][bit]            | `[######____]` | `[__________]` | `[__________]` | `[###_______]` | `[####______]` |
 | [BTree][btr]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [CircularLinkedList][cll]  | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#####_____]` |
 | [CircularQueueList][cql]   | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -155,7 +155,26 @@ Not implemented yet.
 
 ### BitArray
 
-Not implemented yet.
+A bit array (bit set, bit map, bit string or bit vector) is a compacted array of bits represented by the bits in a word where you can individually set or clear each bit. It is very useful at implementing a Set of elements where:
+
+* Union represented by the OR operator ( bit_OR() );
+* Intersection represented by the AND operator ( bit_AND() );
+* Symmetric difference represented by the XOR operator ( bit_XOR() ).
+
+```
+    A true value represented as a boolean
+    ┌───────────────┐
+    │       1       |
+    └───────────────┘
+    (8 bits used for one value)
+    
+    In a bit array we can represent 8 boolean values by mapping them for each bit
+    ┌─┬─┬─┬─┬─┬─┬─┬─┐
+    │1│1│0│1│0│1│0│1|
+    └─┴─┴─┴─┴─┴─┴─┴─┘
+    (8 bits used for 8 values)
+    We effectively have the equivalent of an array of booleans but much more compressed    
+```
 
 ### BTree
 

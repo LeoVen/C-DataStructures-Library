@@ -26,6 +26,8 @@ Status ut_delete(UnitTest *ut);
 
 void ut_report(UnitTest ut, const char *struct_name);
 
+void ut_equals_bool(UnitTest ut, bool param1, bool param2, const char *test_name);
+
 void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name);
 
 void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2, const char *test_name);
