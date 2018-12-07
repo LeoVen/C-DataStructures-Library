@@ -188,7 +188,7 @@ Status bit_set_range(BitArray bits, integer_t from_index, integer_t to_index)
     integer_t end_index = bit_buffer_index(to_index);
 
     // Expand to end_index
-    // TODO
+    /// \todo bit_set_range
 
     return DS_OK;
 }
@@ -232,7 +232,7 @@ Status bit_clear_range(BitArray bits, integer_t from_index, integer_t to_index)
     if (to_index < from_index)
         return DS_ERR_INVALID_ARGUMENT;
 
-    // TODO
+    /// \todo bit_clear_range
 
     return DS_OK;
 }
@@ -276,7 +276,7 @@ Status bit_flip_range(BitArray bits, integer_t from_index, integer_t to_index)
     if (to_index < from_index)
         return DS_ERR_INVALID_ARGUMENT;
 
-    // TODO
+    /// \todo bit_flip_range
 
     return DS_OK;
 }
@@ -329,7 +329,7 @@ Status bit_put_range(BitArray bits, bool state, integer_t from_index, integer_t 
     if (to_index < from_index)
         return DS_ERR_INVALID_ARGUMENT;
 
-    // TODO
+    /// \todo bit_put_range
 
     return DS_OK;
 }
@@ -501,7 +501,7 @@ Status bit_to_array(BitArray bits, bool **result)
 /// \return
 integer_t bit_next_set(BitArray bits, integer_t bit_index)
 {
-    // TODO
+    /// \todo bit_next_set
     return -1;
 }
 
@@ -518,7 +518,7 @@ integer_t bit_next_set(BitArray bits, integer_t bit_index)
 /// \return
 integer_t bit_next_clear(BitArray bits, integer_t bit_index)
 {
-    // TODO
+    /// \todo bit_next_clear
     return -1;
 }
 
@@ -535,7 +535,7 @@ integer_t bit_next_clear(BitArray bits, integer_t bit_index)
 /// \return
 integer_t bit_prev_set(BitArray bits, integer_t bit_index)
 {
-    // TODO
+    /// \todo bit_prev_set
     return -1;
 }
 
@@ -552,7 +552,7 @@ integer_t bit_prev_set(BitArray bits, integer_t bit_index)
 /// \return
 integer_t bit_prev_clear(BitArray bits, integer_t bit_index)
 {
-    // TODO
+    /// \todo bit_prev_clear
     return -1;
 }
 
@@ -841,7 +841,7 @@ static Status bit_grow(BitArray bits, integer_t words)
     // This needs to be checked
     memset(bits->buffer + bits->size - 1, 0, new_size - bits->size - 1);
 
-    // TODO
+    /// \todo bit_grow
 
     return DS_OK;
 }

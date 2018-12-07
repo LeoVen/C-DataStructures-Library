@@ -304,7 +304,7 @@ Status sli_free(SortedList *list)
         prev = (*list)->head;
     }
 
-    free((*list));
+    free(*list);
 
     (*list) = NULL;
 
@@ -342,7 +342,7 @@ Status sli_free_shallow(SortedList *list)
         prev = (*list)->head;
     }
 
-    free((*list));
+    free(*list);
 
     (*list) = NULL;
 
@@ -351,7 +351,7 @@ Status sli_free_shallow(SortedList *list)
 
 /// \brief Erases a SortedList_s.
 ///
-/// This function is equivalent to freeing a list and the creating it again.
+/// This function is equivalent to freeing a list and then creating it again.
 /// This will reset the list to its initial state with no elements, but will
 /// keep all of its default functions and the order of elements.
 ///
@@ -1092,7 +1092,7 @@ void *sli_max(SortedList list)
 /// \param[in] list SortedList_s reference.
 ///
 /// \return NULL if the list references to \c NULL or if the list is empty.
-/// \return The highest element in the list.
+/// \return The smallest element in the list.
 void *sli_min(SortedList list)
 {
     if (list == NULL)
@@ -1110,22 +1110,23 @@ void *sli_min(SortedList list)
 /// \brief Returns the index of the first element that matches a key.
 ///
 /// Returns the index of the first element that matches a given key or -1 if it
-/// could not be found.
+/// could not be found. It also returns -1 if the list reference is \c NULL or
+/// if a default compare function is not set.
 ///
 /// \param[in] list SortedList_s reference.
 /// \param[in] key Key to be searched in the list.
 ///
-/// \return -3 if the list references to \c NULL.
-/// \return -2 if there is no default compare function.
+/// \return -3 if there is no default compare function.
+/// \return -2 if the list references to \c NULL.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
 integer_t sli_index_first(SortedList list, void *key)
 {
     if (list == NULL)
-        return -3;
+        return -2;
 
     if (list->v_compare == NULL)
-        return -2;
+        return -3;
 
     SortedListNode scan = list->head;
 
@@ -1146,23 +1147,24 @@ integer_t sli_index_first(SortedList list, void *key)
 
 /// \brief Returns the index of the last element that matches a key.
 ///
-/// Returns the index of the first element that matches a given key or -1 if it
-/// could not be found.
+/// Returns the index of the last element that matches a given key or -1 if it
+/// could not be found. It will return -2 if the list references \c NULL and -3
+/// if a default compare function is not set.
 ///
 /// \param[in] list SortedList_s reference.
 /// \param[in] key Key to be searched in the list.
 ///
-/// \return -3 if the list references to \c NULL.
-/// \return -2 if there is no default compare function.
+/// \return -3 if there is no default compare function.
+/// \return -2 if the list references to \c NULL.
 /// \return -1 if the element was not found.
 /// \return The index of the matched element.
 integer_t sli_index_last(SortedList list, void *key)
 {
     if (list == NULL)
-        return -3;
+        return -2;
 
     if (list->v_compare == NULL)
-        return -2;
+        return -3;
 
     SortedListNode scan = list->tail;
 
@@ -1216,7 +1218,7 @@ bool sli_contains(SortedList list, void *key)
 ///
 /// \param[in] list SortedList_s reference to be reversed.
 ///
-/// \return DS_ERR_NULL_POINTER if node references to \c NULL.
+/// \return DS_ERR_NULL_POINTER if list references to \c NULL.
 /// \return DS_OK if all operations are successful.
 Status sli_reverse(SortedList list)
 {
@@ -1260,7 +1262,8 @@ Status sli_reverse(SortedList list)
 
 /// \brief Makes a copy of the specified SortedList_s.
 ///
-/// Makes an exact copy of a list.
+/// Makes an exact copy of a list, copying each element using the default copy
+/// function.
 ///
 /// \param[in] list SortedList_s to be copied.
 /// \param[out] result Resulting copy.
@@ -1339,12 +1342,12 @@ Status sli_to_array(SortedList list, void ***result, integer_t *length)
     if (list->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    *length = list->length;
-
     *result = malloc(sizeof(void*) * (*length));
 
     if (!(*result))
         return DS_ERR_ALLOC;
+
+    *length = list->length;
 
     SortedListNode scan = list->head;
 
@@ -1735,18 +1738,14 @@ Status sli_display_raw(SortedList list)
     if (list->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    if (sli_empty(list))
-    {
-        printf("\n");
+    printf("\n");
 
+    if (sli_empty(list))
         return DS_OK;
-    }
 
     SortedListNode scan = list->head;
 
-    printf("\n");
-
-    while (scan->next != NULL)
+    while (scan != NULL)
     {
         list->v_display(scan->data);
 
@@ -1754,8 +1753,6 @@ Status sli_display_raw(SortedList list)
 
         scan = scan->next;
     }
-
-    list->v_display(scan->data);
 
     printf("\n");
 
