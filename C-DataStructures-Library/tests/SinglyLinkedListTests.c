@@ -8,40 +8,48 @@
 
 #include "SinglyLinkedList.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests insertions and removals at the middle of the list
 Status sll_test_middle(UnitTest ut)
 {
     SinglyLinkedList list;
 
-    Status st = sll_init(&list);
+    Status st = sll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
+    void *elem;
     for (int i = 0; i < 10; i++)
     {
-        st = sll_insert_tail(list, i);
+        elem = new_int(i);
+        st = sll_insert_tail(list, elem);
 
         if (st != DS_OK)
+        {
+            free(elem);
             goto error;
+        }
     }
 
-    int j;
-    st += sll_insert_at(list, 99, 5);
+    elem = new_int(99);
+    void *j;
+    st += sll_insert_at(list, elem, 5);
     st += sll_remove_at(list, &j, 5);
 
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 99, __func__);
+    ut_equals_int(ut, *(int*)j, 99, __func__);
 
-    sll_delete(&list);
+    sll_free(&list);
 
     return DS_OK;
 
     error:
-    sll_delete(&list);
+    printf("Error %s at %s\n", status_string(st), __func__);
+    sll_free(&list);
     return st;
 }
 
@@ -50,40 +58,50 @@ Status sll_test_limit(UnitTest ut)
 {
     SinglyLinkedList list;
 
-    Status st = sll_init(&list);
+    Status st = sll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
-    st = sll_limit(list, 10);
+    st = sll_set_limit(list, 10);
 
     if (st != DS_OK)
         goto error;
 
+    void *elem;
     for (int i = 0; i < 20; i++)
     {
-        st = sll_insert_tail(list, i);
+        elem = new_int(i);
+
+        st = sll_insert_tail(list, elem);
+
+        if (st == DS_ERR_FULL)
+        {
+            free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, list->length, list->limit, __func__);
-    ut_equals_int(ut, sll_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_integer_t(ut, sll_length(list), sll_limit(list), __func__);
+    ut_equals_int(ut, sll_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    ut_equals_int(ut, sll_insert_head(list, 1), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, sll_insert_at(list, 1, 1), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, sll_insert_tail(list, 1), DS_ERR_FULL, __func__);
+    int *t = new_int(1);
+    ut_equals_int(ut, sll_insert_head(list, t), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, sll_insert_at(list, t, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, sll_insert_tail(list, t), DS_ERR_FULL, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, sll_limit(list, 0), DS_OK, __func__);
-    ut_equals_integer_t(ut, list->limit, 0, __func__);
-    ut_equals_int(ut, sll_insert_tail(list, 10), DS_OK, __func__);
+    ut_equals_int(ut, sll_set_limit(list, 0), DS_OK, __func__);
+    ut_equals_integer_t(ut, sll_limit(list), 0, __func__);
+    ut_equals_int(ut, sll_insert_tail(list, t), DS_OK, __func__);
 
-    sll_delete(&list);
+    sll_free(&list);
 
     return DS_OK;
 
     error:
-    sll_delete(&list);
+    printf("Error %s at %s\n", status_string(st), __func__);
+    sll_free(&list);
     return st;
 }
 
@@ -92,62 +110,86 @@ Status sll_test_indexof(UnitTest ut)
 {
     SinglyLinkedList list;
 
-    Status st = sll_init(&list);
+    Status st = sll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
+    void *elem;
+
     // 0, 1, 2, 0, 1, 2, 0, 1, 2
     for (int i = 0; i < 9; i++)
     {
-        st = sll_insert_tail(list, i % 3);
+        elem = new_int(i % 3);
+
+        st = sll_insert_tail(list, elem);
 
         if (st != DS_OK)
+        {
+            free(elem);
             goto error;
+        }
     }
 
-    int r0, r1, r2;
-    int d0, d1, d2;
+    void *r0, *r1, *r2;
+    void *d0, *d1, *d2;
     integer_t f1, f2;
 
+    void *n0 = new_int(0), *n1 = new_int(1), *n2 = new_int(2);
+
     st += sll_get(list, &r0, 0);
-    st += sll_get(list, &d0, sll_index_first(list, 0));
+    st += sll_get(list, &d0, sll_index_first(list, n0));
     st += sll_get(list, &r1, 1);
-    st += sll_get(list, &d1, sll_index_first(list, 1));
+    st += sll_get(list, &d1, sll_index_first(list, n1));
     st += sll_get(list, &r2, 2);
-    st += sll_get(list, &d2, sll_index_first(list, 2));
+    st += sll_get(list, &d2, sll_index_first(list, n2));
 
     if (st != DS_OK)
-        goto error;
+        goto free_all;
 
-    ut_equals_int(ut, r0, d0, __func__);
-    ut_equals_int(ut, r1, d1, __func__);
-    ut_equals_int(ut, r2, d2, __func__);
+    ut_equals_int(ut, *(int*)r0, *(int*)d0, __func__);
+    ut_equals_int(ut, *(int*)r1, *(int*)d1, __func__);
+    ut_equals_int(ut, *(int*)r2, *(int*)d2, __func__);
 
-    st += sll_get(list, &r0, list->length - 3);
-    st += sll_get(list, &d0, sll_index_last(list, 0));
-    st += sll_get(list, &r1, list->length - 2);
-    st += sll_get(list, &d1, sll_index_last(list, 1));
-    st += sll_get(list, &r2, list->length - 1);
-    st += sll_get(list, &d2, sll_index_last(list, 2));
+    st += sll_get(list, &r0, sll_length(list) - 3);
+    st += sll_get(list, &d0, sll_index_last(list, n0));
+    st += sll_get(list, &r1, sll_length(list) - 2);
+    st += sll_get(list, &d1, sll_index_last(list, n1));
+    st += sll_get(list, &r2, sll_length(list) - 1);
+    st += sll_get(list, &d2, sll_index_last(list, n2));
 
     if (st != DS_OK)
-        goto error;
+        goto free_all;
 
-    ut_equals_int(ut, r0, d0, __func__);
-    ut_equals_int(ut, r1, d1, __func__);
-    ut_equals_int(ut, r2, d2, __func__);
+    ut_equals_int(ut, *(int*)r0, *(int*)d0, __func__);
+    ut_equals_int(ut, *(int*)r1, *(int*)d1, __func__);
+    ut_equals_int(ut, *(int*)r2, *(int*)d2, __func__);
 
-    f1 = sll_index_first(list, 3);
-    f2 = sll_index_last(list, 3);
+    void *n3 = new_int(3);
+
+    f1 = sll_index_first(list, n3);
+    f2 = sll_index_last(list, n3);
 
     ut_equals_integer_t(ut, f1, -1, __func__);
     ut_equals_integer_t(ut, f2, -1, __func__);
 
-    sll_delete(&list);
+    free(r0);free(r1);free(r2);
+    free(d0);free(d1);free(d2);
+    free(n0);free(n1);free(n2);free(n3);
+
+    sll_free(&list);
+
+    return DS_OK;
+
+    free_all:
+    free(r0);free(r1);free(r2);
+    free(d0);free(d1);free(d2);
+    free(n0);free(n1);free(n2);
+    goto error;
 
     error:
-    sll_delete(&list);
+    printf("Error %s at %s\n", status_string(st), __func__);
+    sll_free(&list);
     return st;
 }
 
@@ -175,6 +217,7 @@ Status SinglyLinkedListTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "SinglyLinkedList");
     ut_delete(&ut);
     return st;

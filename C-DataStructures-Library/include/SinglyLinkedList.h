@@ -15,275 +15,150 @@
 extern "C" {
 #endif
 
-/// A SinglyLinkedList is a linear structure where its elements are not stored
-/// in contiguous memory allowing constant insertion and removal at both ends
-/// of the list. Insertion and removal at the middle of the list are at most
-/// O(n - 1). There are no buffer reallocation nor shifting of elements since
-/// the data is 'linked' by nodes and at any time these links can be removed;
-/// this makes it trivial to remove elements at the middle without having to
-/// shift elements.
-///
-/// In this implementation, the structure is composed of two pointers, one to
-/// the first \c SinglyLinkedNode and another to the last one. This way
-/// insertions at both ends are simplified. Also this structure holds a length
-/// variable that keeps track of the structure's length, allowing for checking
-/// empty lists or position parameters that are higher than the total structure
-/// length.
-///
-/// \b Advantages over \c Array
-/// - Dynamic size
-/// - Easy insertion/removal
-///
-/// \b Drawbacks
-/// - No random access
-/// - Extra memory for a pointer on each element
-///
-/// \b Functions
-///
-/// Located in file SinglyLinkedList.c
-///
-/// \b TODO
-/// - Add Link and Unlink functions
-struct SinglyLinkedList_s
-{
-    /// \brief List length.
-    ///
-    /// List current amount of elements linked between the \c head and \c tail
-    /// pointers.
-    integer_t length;
+// A singly-linked list. See the source file for the full documentation.
+struct SinglyLinkedList_s;
 
-    /// \brief List length limit.
-    ///
-    /// If it is set to 0 then the list has no limit to its length. Otherwise
-    /// it won't be able to have more elements than the specified value. The
-    /// list is always initialized with no restrictions to its length, that is,
-    /// \c limit equals 0. The user won't be able to limit the list length if
-    /// it already has more elements than the specified limit.
-    integer_t limit;
-
-    /// \brief Points to the first Node on the list.
-    ///
-    /// Points to the first Node on the list or \c NULL if the list is empty.
-    struct SinglyLinkedNode_s *head;
-
-    /// \brief Points to the last Node on the list.
-    ///
-    /// Points to the first Node on the list or \c NULL if the list is empty.
-    struct SinglyLinkedNode_s *tail;
-};
-
-/// Defines a type for <code> struct SinglyLinkedList_s </code>.
+/// \brief A type for a singly-linked list.
 ///
-/// Every list is initialized by \c malloc with \c sizeof(SinglyLinkedList_t).
+/// A type for a <code> struct SinglyLinkedList_s </code> so you don't have to
+/// always write the full name of it.
 typedef struct SinglyLinkedList_s SinglyLinkedList_t;
 
-/// Defines a type of pointer to <code> struct SinglyLinkedList_s </code>.
+/// \brief A pointer type for a singly-linked list.
 ///
-/// This typedef is used to avoid having to declare every list as a pointer
-/// type since they all must be dynamically allocated.
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
 typedef struct SinglyLinkedList_s *SinglyLinkedList;
 
-/// Initializes a new \c SinglyLinkedList with initial length and limit as 0
-/// and its pointer members pointing to \c NULL.
+/// \brief Comparator function type.
 ///
-/// \param[in,out] sll The list to be initialized.
-///
-/// \return DS_ERR_ALLOC if list allocation failed.
-/// \return DS_OK if all operations were successful.
-Status sll_init(SinglyLinkedList *sll);
+/// A type for a function that compares two elements, returning:
+/// - [ > 0] when the first element is greater than the second;
+/// - [ < 0] when the first element is less than the second;
+/// - 0 when both elements are equal.
+typedef int(*sll_compare_f)(void *, void *);
 
-/// Inserts a new element at the beginning of the list. If the list is empty
-/// and this is the first element being added, c\ tail will also be pointing
-/// to it; in any case the \c head pointer will be pointing to this newly
-/// inserted element.
+/// \brief A Copy function type.
 ///
-/// \param[in] sll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_insert_head(SinglyLinkedList sll, int element);
+/// A type for a function that takes an input (first parameter) and returns an
+/// exact copy of that element.
+typedef void *(*sll_copy_f)(void *);
 
-/// Inserts a new element at the middle of the list. If the chosen position
-/// equals 0 \c sll_insert_head() is called; if the position equals the list
-/// length \c sll_insert_tail() is called.
+/// \brief Display function type.
 ///
-/// \param[in] sll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
-/// \param[in] position Where the new element is to be inserted.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than the
-/// list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_insert_at(SinglyLinkedList sll, int element, integer_t position);
+/// A type for a function that displays an element in the console. Please do
+/// not print a newline character.
+typedef void(*sll_display_f)(void *);
 
-/// Inserts a new element at the end of the list. If the list is empty and this
-/// is the first element being added, c\ head will also be pointing to it; in
-/// in any case the \c tail pointer will be pointing to this newly inserted
-/// element.
+/// \brief A Free function type.
 ///
-/// \param[in] sll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_insert_tail(SinglyLinkedList sll, int element);
+/// A type for a function responsible for completely freeing an element from
+/// memory.
+typedef void(*sll_free_f)(void *);
 
-/// Removes and retrieves the first element in the list located at the \c head
-/// pointer.
-///
-/// \param[in] sll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_remove_head(SinglyLinkedList sll, int *result);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Removes an element at the middle of the list. If the chosen position equals
-/// 0 \c sll_remove_head() is called; if the position equals the list length
-/// minus 1 \c sll_remove_tail() is called.
-///
-/// \param[in] sll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-/// \param[in] position Where the element is to be removed from.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_remove_at(SinglyLinkedList sll, int *result, integer_t position);
+Status sll_init(SinglyLinkedList *list);
 
-/// Removes and retrieves the last element in the list located at the \c tail
-/// pointer.
-///
-/// \param[in] sll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_remove_tail(SinglyLinkedList sll, int *result);
+Status sll_create(SinglyLinkedList *list, sll_compare_f compare_f,
+        sll_copy_f copy_f, sll_display_f display_f, sll_free_f free_f);
 
-/// Updates an element at a given position. This function is 0 based, that is,
-/// the element 0 is the first element.
-///
-/// \param[in] sll The list where the element is to be update.
-/// \param[in] element The new element value.
-/// \param[in] position The position of the element to be updated.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_update(SinglyLinkedList sll, int element, integer_t position);
+Status sll_free(SinglyLinkedList *list);
 
-/// Retrieves an element at a given position without removing it. This function
-/// simulates an index access like in arrays.
-///
-/// \param[in] sll The list to retrieve the element from.
-/// \param[out] result The resulting element.
-/// \param[in] position The position of the element to be retrieved.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_get(SinglyLinkedList sll, int *result, integer_t position);
+Status sll_free_shallow(SinglyLinkedList *list);
 
-/// Displays a \c SinglyLinkedList in the console.
-///
-/// \param sll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_display(SinglyLinkedList sll);
+Status sll_erase(SinglyLinkedList *list);
 
-/// Displays a \c SinglyLinkedList in the console like an array with its
-/// elements separated by commas, delimited with brackets.
-///
-/// \param sll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_display_array(SinglyLinkedList sll);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-/// Displays a \c SinglyLinkedList in the console with its values separated by
-/// spaces.
-///
-/// \param sll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_display_raw(SinglyLinkedList sll);
+Status sll_set_v_compare(SinglyLinkedList list, sll_compare_f function);
 
-/// Iterates through every node of the list and frees them from memory along
-/// with its data. Then the SinglyLinkedList structure is deallocated and set
-/// to \c NULL.
-///
-/// \param sll The list to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_delete(SinglyLinkedList *sll);
+Status sll_set_v_copy(SinglyLinkedList list, sll_copy_f function);
 
-/// This function sets the list to its initial state, erasing all of its data
-/// and re-initializing the structure. It is equivalent to calling sll_delete()
-/// and then sll_init().
-///
-/// \param sll The list to be erased.
-///
-/// \return DS_ERR_ALLOC if list allocation failed.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status sll_erase(SinglyLinkedList *sll);
+Status sll_set_v_display(SinglyLinkedList list, sll_display_f function);
 
-bool sll_contains(SinglyLinkedList sll, int key);
+Status sll_set_v_free(SinglyLinkedList list, sll_free_f function);
 
-bool sll_full(SinglyLinkedList sll);
+Status sll_set_limit(SinglyLinkedList list, integer_t limit);
 
-bool sll_empty(SinglyLinkedList sll);
+Status sll_set(SinglyLinkedList list, void *element, integer_t position);
 
-integer_t sll_length(SinglyLinkedList sll);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-Status sll_limit(SinglyLinkedList sll, integer_t limit);
+integer_t sll_length(SinglyLinkedList list);
 
-int sll_max(SinglyLinkedList sll);
+integer_t sll_limit(SinglyLinkedList list);
 
-int sll_min(SinglyLinkedList sll);
+Status sll_get(SinglyLinkedList list, void **result, integer_t position);
 
-integer_t sll_index_first(SinglyLinkedList sll, int key);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-integer_t sll_index_last(SinglyLinkedList sll, int key);
+Status sll_insert_head(SinglyLinkedList list, void *element);
+
+Status sll_insert_at(SinglyLinkedList list, void *element, integer_t position);
+
+Status sll_insert_tail(SinglyLinkedList list, void *element);
+
+Status sll_remove_head(SinglyLinkedList list, void **result);
+
+Status sll_remove_at(SinglyLinkedList list, void **result, integer_t position);
+
+Status sll_remove_tail(SinglyLinkedList list, void **result);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+bool sll_full(SinglyLinkedList list);
+
+bool sll_empty(SinglyLinkedList list);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *sll_max(SinglyLinkedList list);
+
+void *sll_min(SinglyLinkedList list);
+
+integer_t sll_index_first(SinglyLinkedList list, void *key);
+
+integer_t sll_index_last(SinglyLinkedList list, void *key);
+
+bool sll_contains(SinglyLinkedList list, void *key);
+
+Status sll_reverse(SinglyLinkedList list);
+
+Status sll_copy(SinglyLinkedList list, SinglyLinkedList *result);
+
+Status sll_to_array(SinglyLinkedList list, void ***result, integer_t *length);
+
+/////////////////////////////////////////////////////////////////// LINKING ///
 
 Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
 
 Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, integer_t position);
 
-Status sll_unlink(SinglyLinkedList sll, SinglyLinkedList result, integer_t position);
+Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result, integer_t position);
 
-//Status sll_unlink_at(SinglyLinkedList sll, SinglyLinkedList result, integer_t position1, integer_t position2);
+Status sll_unlink_at(SinglyLinkedList list, SinglyLinkedList result,
+                     integer_t position1, integer_t position2);
 
-Status sll_copy(SinglyLinkedList sll, SinglyLinkedList *result);
+/////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status sll_reverse(SinglyLinkedList sll);
+Status sll_display(SinglyLinkedList sll);
+
+Status sll_display_array(SinglyLinkedList sll);
+
+Status sll_display_raw(SinglyLinkedList sll);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo SinglyLinkedListIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo SinglyLinkedListWrapper
 
 #ifdef __cplusplus
 }

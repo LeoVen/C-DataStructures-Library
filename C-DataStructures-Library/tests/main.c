@@ -23,50 +23,9 @@ int main()
 
     Status st;
 
-    SinglyLinkedList sll0;
-
     int j;
     integer_t l;
     void *result, *element;
-
-    if (sll_init(&sll0) == DS_OK)
-    {
-        for (int i = 0; i < 100; i++)
-            if (sll_insert_tail(sll0, i) != DS_OK)
-                break;
-
-        for (int i = 0; i < 40; i++)
-        {
-            if (sll_remove_head(sll0, &j) != DS_OK)
-                break;
-            if (sll_remove_tail(sll0, &j) != DS_OK)
-                break;
-        }
-
-        if (sll_reverse(sll0) == DS_OK)
-        {
-            sll_display_array(sll0);
-
-            printf("\nLength: %lld\n", sll_length(sll0));
-        }
-    }
-
-    SinglyLinkedList sll1;
-
-    if (sll_copy(sll0, &sll1) == DS_OK)
-    {
-        if (sll_reverse(sll0) == DS_OK)
-        {
-            if (sll_link(sll0, sll1) == DS_OK)
-            {
-                sll_display_array(sll0);
-                sll_display_array(sll1);
-            }
-        }
-    }
-
-    sll_delete(&sll0);
-    sll_delete(&sll1);
 
     DoublyLinkedList dll;
 
