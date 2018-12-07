@@ -15,21 +15,26 @@ Status dll_test_get(UnitTest ut)
 {
     DoublyLinkedList list;
 
-    Status st = dll_init(&list);
+    Status st = dll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
+    void *elem;
     for (int i = 0; i < 10; i++)
     {
-        st = dll_insert_tail(list, i);
+        elem = new_int(i);
+        st = dll_insert_tail(list, elem);
 
         if (st != DS_OK)
+        {
+            free(elem);
             goto error;
+        }
     }
 
     // Tests all edge cases
-    int j, k, l, m;
+    void *j, *k, *l, *m;
     st += dll_get(list, &j, 9);
     st += dll_get(list, &k, 5);
     st += dll_get(list, &l, 4);
@@ -38,27 +43,28 @@ Status dll_test_get(UnitTest ut)
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 9, __func__);
-    ut_equals_int(ut, k, 5, __func__);
-    ut_equals_int(ut, l, 4, __func__);
-    ut_equals_int(ut, m, 0, __func__);
+    ut_equals_int(ut, *(int*)j, 9, __func__);
+    ut_equals_int(ut, *(int*)k, 5, __func__);
+    ut_equals_int(ut, *(int*)l, 4, __func__);
+    ut_equals_int(ut, *(int*)m, 0, __func__);
 
     // Tests on odd list size
-    st += dll_insert_tail(list, 11);
+    void *t = new_int(11);
+    st += dll_insert_tail(list, t);
     st += dll_get(list, &j, 5);
 
     if (st != DS_OK)
         goto error;
 
-    ut_equals_int(ut, j, 5, __func__);
+    ut_equals_int(ut, *(int*)j, 5, __func__);
 
-    dll_delete(&list);
+    dll_free(&list);
 
     return DS_OK;
 
     error:
     printf("Error %s at %s\n", status_string(st), __func__);
-    dll_delete(&list);
+    dll_free(&list);
     return st;
 }
 
@@ -67,41 +73,50 @@ Status dll_test_limit(UnitTest ut)
 {
     DoublyLinkedList list;
 
-    Status st = dll_init(&list);
+    Status st = dll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
-    st = dll_limit(list, 10);
+    st = dll_set_limit(list, 10);
 
     if (st != DS_OK)
         goto error;
 
+    void *elem;
     for (int i = 0; i < 20; i++)
     {
-        st = dll_insert_tail(list, i);
+        elem = new_int(i);
+
+        st = dll_insert_tail(list, elem);
+
+        if (st == DS_ERR_FULL)
+        {
+            free(elem);
+        }
     }
 
     ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, list->length, list->limit, __func__);
-    ut_equals_int(ut, dll_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_integer_t(ut, dll_length(list), dll_limit(list), __func__);
+    ut_equals_int(ut, dll_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    ut_equals_int(ut, dll_insert_head(list, 1), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, dll_insert_at(list, 1, 1), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, dll_insert_tail(list, 1), DS_ERR_FULL, __func__);
+    int *t = new_int(1);
+    ut_equals_int(ut, dll_insert_head(list, t), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, dll_insert_at(list, t, 1), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, dll_insert_tail(list, t), DS_ERR_FULL, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, dll_limit(list, 0), DS_OK, __func__);
-    ut_equals_integer_t(ut, list->limit, 0, __func__);
-    ut_equals_int(ut, dll_insert_tail(list, 10), DS_OK, __func__);
+    ut_equals_int(ut, dll_set_limit(list, 0), DS_OK, __func__);
+    ut_equals_integer_t(ut, dll_limit(list), 0, __func__);
+    ut_equals_int(ut, dll_insert_tail(list, t), DS_OK, __func__);
 
-    dll_delete(&list);
+    dll_free(&list);
 
     return DS_OK;
 
     error:
     printf("Error %s at %s\n", status_string(st), __func__);
-    dll_delete(&list);
+    dll_free(&list);
     return st;
 }
 
@@ -110,65 +125,86 @@ Status dll_test_indexof(UnitTest ut)
 {
     DoublyLinkedList list;
 
-    Status st = dll_init(&list);
+    Status st = dll_create(&list, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
 
+    void *elem;
+
     // 0, 1, 2, 0, 1, 2, 0, 1, 2
     for (int i = 0; i < 9; i++)
     {
-        st = dll_insert_tail(list, i % 3);
+        elem = new_int(i % 3);
+
+        st = dll_insert_tail(list, elem);
 
         if (st != DS_OK)
+        {
+            free(elem);
             goto error;
+        }
     }
 
-    int r0, r1, r2;
-    int d0, d1, d2;
+    void *r0, *r1, *r2;
+    void *d0, *d1, *d2;
     integer_t f1, f2;
 
+    void *n0 = new_int(0), *n1 = new_int(1), *n2 = new_int(2);
+
     st += dll_get(list, &r0, 0);
-    st += dll_get(list, &d0, dll_index_first(list, 0));
+    st += dll_get(list, &d0, dll_index_first(list, n0));
     st += dll_get(list, &r1, 1);
-    st += dll_get(list, &d1, dll_index_first(list, 1));
+    st += dll_get(list, &d1, dll_index_first(list, n1));
     st += dll_get(list, &r2, 2);
-    st += dll_get(list, &d2, dll_index_first(list, 2));
+    st += dll_get(list, &d2, dll_index_first(list, n2));
 
     if (st != DS_OK)
-        goto error;
+        goto free_all;
 
-    ut_equals_int(ut, r0, d0, __func__);
-    ut_equals_int(ut, r1, d1, __func__);
-    ut_equals_int(ut, r2, d2, __func__);
+    ut_equals_int(ut, *(int*)r0, *(int*)d0, __func__);
+    ut_equals_int(ut, *(int*)r1, *(int*)d1, __func__);
+    ut_equals_int(ut, *(int*)r2, *(int*)d2, __func__);
 
-    st += dll_get(list, &r0, list->length - 3);
-    st += dll_get(list, &d0, dll_index_last(list, 0));
-    st += dll_get(list, &r1, list->length - 2);
-    st += dll_get(list, &d1, dll_index_last(list, 1));
-    st += dll_get(list, &r2, list->length - 1);
-    st += dll_get(list, &d2, dll_index_last(list, 2));
+    st += dll_get(list, &r0, dll_length(list) - 3);
+    st += dll_get(list, &d0, dll_index_last(list, n0));
+    st += dll_get(list, &r1, dll_length(list) - 2);
+    st += dll_get(list, &d1, dll_index_last(list, n1));
+    st += dll_get(list, &r2, dll_length(list) - 1);
+    st += dll_get(list, &d2, dll_index_last(list, n2));
 
     if (st != DS_OK)
-        goto error;
+        goto free_all;
 
-    ut_equals_int(ut, r0, d0, __func__);
-    ut_equals_int(ut, r1, d1, __func__);
-    ut_equals_int(ut, r2, d2, __func__);
+    ut_equals_int(ut, *(int*)r0, *(int*)d0, __func__);
+    ut_equals_int(ut, *(int*)r1, *(int*)d1, __func__);
+    ut_equals_int(ut, *(int*)r2, *(int*)d2, __func__);
 
-    f1 = dll_index_first(list, 3);
-    f2 = dll_index_last(list, 3);
+    void *n3 = new_int(3);
+
+    f1 = dll_index_first(list, n3);
+    f2 = dll_index_last(list, n3);
 
     ut_equals_integer_t(ut, f1, -1, __func__);
     ut_equals_integer_t(ut, f2, -1, __func__);
 
-    dll_delete(&list);
+    free(r0);free(r1);free(r2);
+    free(d0);free(d1);free(d2);
+    free(n0);free(n1);free(n2);free(n3);
+
+    dll_free(&list);
 
     return DS_OK;
 
+    free_all:
+    free(r0);free(r1);free(r2);
+    free(d0);free(d1);free(d2);
+    free(n0);free(n1);free(n2);
+    goto error;
+
     error:
     printf("Error %s at %s\n", status_string(st), __func__);
-    dll_delete(&list);
+    dll_free(&list);
     return st;
 }
 

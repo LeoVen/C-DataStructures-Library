@@ -15,276 +15,152 @@
 extern "C" {
 #endif
 
-/// A DoublyLinkedList is a linear structure like a SinglyLinkedList where each
-/// node have two pointers. One to the previous node and another to the next
-/// node. This allows a quicker access to elements; insertion and removal are
-/// also improved being at most O(n / 2) since we can be looking for a node
-/// either at the start or the end of the list.
-///
-/// In this implementation, the structure is composed of two pointers, one to
-/// the first \c DoublyLinkedNode and another to the last one. This way
-/// insertions at both ends are simplified. Also this structure holds a length
-/// variable that keeps track of the structure's length, allowing for checking
-/// empty lists or position parameters that are higher than the total structure
-/// length.
-///
-/// \b Advantages over \c SinglyLinkedList
-/// - Inserting, removing and accessing nodes takes half the time on average
-///
-/// \b Drawbacks
-/// - Extra memory for yet another pointer on each element
-///
-/// \b Functions
-///
-/// Located in file DoublyLinkedList.c
-///
-/// \b TODO
-/// - Add Link and Unlink functions
-/// - Add support to negative index searches
-struct DoublyLinkedList_s
-{
-    /// \brief List length.
-    ///
-    /// List current amount of elements linked between the \c head and \c tail
-    /// pointers.
-    integer_t length;
+// A doubly-linked list. See the source file for the full documentation.
+struct DoublyLinkedList_s;
 
-    /// \brief List length limit.
-    ///
-    /// If it is set to 0 or a negative value then the list has no limit to its
-    /// length. Otherwise it won't be able to have more elements than the
-    /// specified value. The list is always initialized with no restrictions to
-    /// its length, that is, \c limit equals 0. The user won't be able to limit
-    /// the list length if it already has more elements than the specified
-    /// limit.
-    integer_t limit;
-
-    /// \brief Points to the first Node on the list.
-    ///
-    /// Points to the first Node on the list or \c NULL if the list is empty.
-    struct DoublyLinkedNode_s *head;
-
-    /// \brief Points to the last Node on the list.
-    ///
-    /// Points to the first Node on the list or \c NULL if the list is empty.
-    struct DoublyLinkedNode_s *tail;
-};
-
-/// Defines a type for <code> struct DoublyLinkedList_s </code>.
+/// \brief A type for a doubly-linked list.
 ///
-/// Every list is initialized by \c malloc with \c sizeof(DoublyLinkedList_t).
+/// A type for a <code> struct DoublyLinkedList_s </code> so you don't have to
+/// always write the full name of it.
 typedef struct DoublyLinkedList_s DoublyLinkedList_t;
 
-/// Defines a type of pointer to <code> struct DoublyLinkedList_s </code>.
+/// \brief A pointer type for a doubly-linked list.
 ///
-/// This typedef is used to avoid having to declare every list as a pointer
-/// type since they all must be dynamically allocated.
+/// Useful for not having to declare every variable as pointer type. This
+/// typedef does that for you.
 typedef struct DoublyLinkedList_s *DoublyLinkedList;
 
-/// Initializes a new \c DoublyLinkedList with initial length and limit as 0
-/// and its pointer members pointing to \c NULL.
+/// \brief Comparator function type.
 ///
-/// \param[in,out] dll The list to be initialized.
+/// A type for a function that compares two elements, returning:
+/// - [ > 0] when the first element is greater than the second;
+/// - [ < 0] when the first element is less than the second;
+/// - 0 when both elements are equal.
+typedef int(*dll_compare_f)(void *, void *);
+
+/// \brief A Copy function type.
 ///
-/// \return DS_ERR_ALLOC if list allocation failed.
-/// \return DS_OK if all operations were successful.
-Status dll_init(DoublyLinkedList *dll);
+/// A type for a function that takes an input (first parameter) and returns an
+/// exact copy of that element.
+typedef void *(*dll_copy_f)(void *);
 
-/// Inserts a new element at the beginning of the list. If the list is empty
-/// and this is the first element being added, c\ tail will also be pointing
-/// to it; in any case the \c head pointer will be pointing to this newly
-/// inserted element.
+/// \brief Display function type.
 ///
-/// \param[in] dll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
+/// A type for a function that displays an element in the console. Please do
+/// not print a newline character.
+typedef void(*dll_display_f)(void *);
+
+/// \brief A Free function type.
 ///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_insert_head(DoublyLinkedList dll, int element);
+/// A type for a function responsible for completely freeing an element from
+/// memory.
+typedef void(*dll_free_f)(void *);
 
-/// Inserts a new element at the middle of the list. If the chosen position
-/// equals 0 \c dll_insert_head() is called; if the position equals the list
-/// length \c dll_insert_tail() is called.
-///
-/// \param[in] dll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
-/// \param[in] position Where the new element is to be inserted.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than the
-/// list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_insert_at(DoublyLinkedList dll, int element, integer_t position);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Inserts a new element at the end of the list. If the list is empty and this
-/// is the first element being added, c\ head will also be pointing to it; in
-/// in any case the \c tail pointer will be pointing to this newly inserted
-/// element.
-///
-/// \param[in] dll The list where the element is to be inserted.
-/// \param[in] element The element to be inserted in the list.
-///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (greater than 0) and the list
-/// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_insert_tail(DoublyLinkedList dll, int element);
+Status dll_init(DoublyLinkedList *list);
 
-/// Removes and retrieves the first element in the list located at the \c head
-/// pointer.
-///
-/// \param[in] dll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_remove_head(DoublyLinkedList dll, int *result);
+Status dll_create(DoublyLinkedList *list, dll_compare_f compare_f,
+        dll_copy_f copy_f, dll_display_f display_f, dll_free_f free_f);
 
-/// Removes an element at the middle of the list. If the chosen position equals
-/// 0 \c dll_remove_head() is called; if the position equals the list length -
-/// 1 \c dll_remove_tail() is called.
-///
-/// \param[in] dll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-/// \param[in] position Where the element is to be removed from.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_remove_at(DoublyLinkedList dll, int *result, integer_t position);
+Status dll_free(DoublyLinkedList *list);
 
-/// Removes and retrieves the last element in the list located at the \c tail
-/// pointer.
-///
-/// \param[in] dll The list where the element is to be removed from.
-/// \param[out] result The resulting element.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_remove_tail(DoublyLinkedList dll, int *result);
+Status dll_free_shallow(DoublyLinkedList *list);
 
-/// Updates an element at a given position. This function is 0 based, that is,
-/// the element 0 is the first element.
-///
-/// \param[in] dll The list where the element is to be update.
-/// \param[in] element The new element value.
-/// \param[in] position The position of the element to be updated.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_update(DoublyLinkedList dll, int element, integer_t position);
+Status dll_erase(DoublyLinkedList *list);
 
-/// Retrieves an element at a given position without removing it. This function
-/// simulates an index access like in arrays. If the position parameter is
-/// greater than half the size of the list, the iteration will start at the end
-/// of the list. This is important because it allows at maximum O(n / 2) time
-/// for accessing, inserting and removing elements at the middle of the list.
-///
-/// \param[in] dll The list to retrieve the element from.
-/// \param[out] result The resulting element.
-/// \param[in] position The position of the element to be retrieved.
-///
-/// \return DS_ERR_INVALID_OPERATION if the list is empty.
-/// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
-/// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
-/// equal to the list \c length.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_get(DoublyLinkedList dll, int *result, integer_t position);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-/// Displays a \c DoublyLinkedList in the console.
-///
-/// \param dll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_display(DoublyLinkedList dll);
+Status dll_set_v_compare(DoublyLinkedList list, dll_compare_f function);
 
-/// Displays a \c DoublyLinkedList in the console like an array with its
-/// elements separated by commas, delimited with brackets.
-///
-/// \param dll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_display_array(DoublyLinkedList dll);
+Status dll_set_v_copy(DoublyLinkedList list, dll_copy_f function);
 
-/// Displays a \c DoublyLinkedList in the console with its elements separated
-/// by spaces.
-///
-/// \param dll The list to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_display_raw(DoublyLinkedList dll);
+Status dll_set_v_display(DoublyLinkedList list, dll_display_f function);
 
-/// Iterates through every node of the list and frees them from memory along
-/// with its data. Then the DoublyLinkedList structure is deallocated and set
-/// to \c NULL.
-///
-/// \param dll The list to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_delete(DoublyLinkedList *dll);
+Status dll_set_v_free(DoublyLinkedList list, dll_free_f function);
 
-/// This function sets the list to its initial state, erasing all of its data
-/// and re-initializing the structure. It is equivalent to calling dll_delete()
-/// and then dll_init().
-///
-/// \param dll The list to be erased.
-///
-/// \return DS_ERR_ALLOC if list allocation failed.
-/// \return DS_ERR_NULL_POINTER if the list reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dll_erase(DoublyLinkedList *dll);
+Status dll_set_limit(DoublyLinkedList list, integer_t limit);
 
-bool dll_contains(DoublyLinkedList dll, int key);
+Status dll_set(DoublyLinkedList list, void *element, integer_t position);
 
-bool dll_full(DoublyLinkedList dll);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-bool dll_empty(DoublyLinkedList dll);
+integer_t dll_length(DoublyLinkedList list);
 
-integer_t dll_length(DoublyLinkedList dll);
+integer_t dll_limit(DoublyLinkedList list);
 
-Status dll_limit(DoublyLinkedList dll, integer_t limit);
+Status dll_get(DoublyLinkedList list, void **result, integer_t position);
 
-int dll_max(DoublyLinkedList dll);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-int dll_min(DoublyLinkedList dll);
+Status dll_insert_head(DoublyLinkedList list, void *element);
 
-integer_t dll_index_first(DoublyLinkedList dll, int key);
+Status dll_insert_at(DoublyLinkedList list, void *element, integer_t position);
 
-integer_t dll_index_last(DoublyLinkedList dll, int key);
+Status dll_insert_tail(DoublyLinkedList list, void *element);
 
-//Status dll_link(DoublyLinkedList dll1, DoublyLinkedList dll2);
+Status dll_remove_head(DoublyLinkedList list, void **result);
 
-//Status dll_link_at(DoublyLinkedList dll1, DoublyLinkedList dll2, integer_t position);
+Status dll_remove_at(DoublyLinkedList list, void **result, integer_t position);
 
-//Status dll_unlink(DoublyLinkedList dll, DoublyLinkedList result, integer_t position);
+Status dll_remove_tail(DoublyLinkedList list, void **result);
 
-//Status dll_unlink_at(DoublyLinkedList dll, DoublyLinkedList result, integer_t position1, integer_t position2);
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-Status dll_copy(DoublyLinkedList dll, DoublyLinkedList *result);
+bool dll_full(DoublyLinkedList list);
 
-Status dll_reverse(DoublyLinkedList dll);
+bool dll_empty(DoublyLinkedList list);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+void *dll_max(DoublyLinkedList list);
+
+void *dll_min(DoublyLinkedList list);
+
+integer_t dll_index_first(DoublyLinkedList list, void *key);
+
+integer_t dll_index_last(DoublyLinkedList list, void *key);
+
+bool dll_contains(DoublyLinkedList list, void *key);
+
+Status dll_reverse(DoublyLinkedList list);
+
+Status dll_copy(DoublyLinkedList list, DoublyLinkedList *result);
+
+Status dll_to_array(DoublyLinkedList list, void ***result, integer_t *length);
+
+/////////////////////////////////////////////////////////////////// LINKING ///
+
+Status dll_link(DoublyLinkedList list1, DoublyLinkedList list2);
+
+Status dll_link_at(DoublyLinkedList list1, DoublyLinkedList list2,
+                   integer_t position);
+
+Status dll_unlink(DoublyLinkedList list, DoublyLinkedList result,
+                  integer_t position);
+
+Status dll_unlink_at(DoublyLinkedList list, DoublyLinkedList result,
+                     integer_t position1, integer_t position2);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+Status dll_display(DoublyLinkedList list);
+
+Status dll_display_array(DoublyLinkedList list);
+
+Status dll_display_raw(DoublyLinkedList list);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DoublyLinkedListIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DoublyLinkedListWrapper
 
 #ifdef __cplusplus
 }

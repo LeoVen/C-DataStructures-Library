@@ -27,29 +27,6 @@ int main()
     integer_t l;
     void *result, *element;
 
-    DoublyLinkedList dll;
-
-    if (dll_init(&dll) == DS_OK)
-    {
-        for (int i = 0; i < 200; i++)
-            if (dll_insert_tail(dll, i) != DS_OK)
-                break;
-
-        for (int i = 0; i < 90; i++)
-        {
-            if (dll_remove_head(dll, &j) != DS_OK)
-                break;
-            if (dll_remove_tail(dll, &j) != DS_OK)
-                break;
-        }
-
-        dll_display_array(dll);
-
-        printf("\nLength: %lld\n", dll_length(dll));
-    }
-
-    dll_delete(&dll);
-
     Queue que0, que1;
 
     if (que_create(&que0, compare_int, copy_int, display_int, free) == DS_OK)
