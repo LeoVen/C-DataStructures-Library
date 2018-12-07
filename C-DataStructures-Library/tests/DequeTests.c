@@ -56,6 +56,7 @@ Status deq_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     deq_free(&deque);
     return st;
 }
@@ -82,6 +83,7 @@ Status DequeTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "Deque");
     ut_delete(&ut);
     return st;

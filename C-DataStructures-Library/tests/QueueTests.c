@@ -56,6 +56,7 @@ Status que_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     que_free(&queue);
     return st;
 }
@@ -82,6 +83,7 @@ Status QueueTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "Queue");
     ut_delete(&ut);
     return st;

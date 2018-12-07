@@ -8,6 +8,7 @@
 
 #include "QueueArray.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests qua_grow() in linear insertions
 // Tests while (!empty) loop
@@ -53,6 +54,7 @@ Status qua_test_linear_insertion(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     qua_delete(&queue);
     return st;
 }
@@ -98,6 +100,7 @@ Status qua_test_locked(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     qua_delete(&queue);
     return st;
 }
@@ -149,6 +152,7 @@ Status qua_test_intensive(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     qua_delete(&queue);
     return st;
 }
@@ -179,6 +183,7 @@ Status qua_test_growth(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     qua_delete(&queue);
     return st;
 }
@@ -208,6 +213,7 @@ Status QueueArrayTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "QueueArray");
     ut_delete(&ut);
     return st;

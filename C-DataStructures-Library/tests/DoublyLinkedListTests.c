@@ -8,6 +8,7 @@
 
 #include "DoublyLinkedList.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests dll_get
 Status dll_test_get(UnitTest ut)
@@ -56,6 +57,7 @@ Status dll_test_get(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     dll_delete(&list);
     return st;
 }
@@ -98,6 +100,7 @@ Status dll_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     dll_delete(&list);
     return st;
 }
@@ -161,7 +164,10 @@ Status dll_test_indexof(UnitTest ut)
 
     dll_delete(&list);
 
+    return DS_OK;
+
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     dll_delete(&list);
     return st;
 }
@@ -190,6 +196,7 @@ Status DoublyLinkedListTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "DoublyLinkedList");
     ut_delete(&ut);
     return st;

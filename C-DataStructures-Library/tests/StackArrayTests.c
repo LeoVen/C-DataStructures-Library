@@ -8,6 +8,7 @@
 
 #include "StackArray.h"
 #include "UnitTest.h"
+#include "Util.h"
 
 // Tests locked capacity
 Status sta_test_locked(UnitTest ut)
@@ -50,6 +51,7 @@ Status sta_test_locked(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     sta_delete(&stack);
     return st;
 }
@@ -80,6 +82,7 @@ Status sta_test_growth(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     sta_delete(&stack);
     return st;
 }
@@ -107,6 +110,7 @@ Status StackArrayTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "StackArray");
     ut_delete(&ut);
     return st;

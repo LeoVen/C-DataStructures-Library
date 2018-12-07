@@ -106,6 +106,7 @@ Status sli_test_insertion(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     for (int i = 0; i < 6; i++) {
         sli_free(&(lists[i]));
     }
@@ -123,7 +124,7 @@ Status sli_test_incomplete(UnitTest ut)
     if (st != DS_OK)
         return st;
 
-    void *R, *E = new_int(1);
+    void *E = new_int(1);
     void *EL[2] = {new_int(1), new_int(2)};
     void **RL;
 
@@ -135,8 +136,8 @@ Status sli_test_incomplete(UnitTest ut)
     ut_equals_int(ut, sli_display(list), DS_ERR_INCOMPLETE_TYPE, __func__);
     ut_equals_int(ut, sli_display_array(list), DS_ERR_INCOMPLETE_TYPE, __func__);
     ut_equals_int(ut, sli_display_raw(list), DS_ERR_INCOMPLETE_TYPE, __func__);
-    ut_equals_integer_t(ut, sli_index_first(list, E), -2, __func__);
-    ut_equals_integer_t(ut, sli_index_last(list, E), -2, __func__);
+    ut_equals_integer_t(ut, sli_index_first(list, E), -3, __func__);
+    ut_equals_integer_t(ut, sli_index_last(list, E), -3, __func__);
 
     // This function (sli_to_array) require that we have at least one element
     // in the list:
@@ -183,7 +184,7 @@ Status sli_test_limit(UnitTest ut)
 
         st = sli_insert(list, elem);
 
-        if (st ==  DS_ERR_FULL)
+        if (st == DS_ERR_FULL)
         {
             free(elem);
         }
@@ -207,6 +208,7 @@ Status sli_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     sli_free(&list);
     return st;
 }
@@ -288,6 +290,8 @@ Status sli_test_indexof(UnitTest ut)
 
     sli_free(&list);
 
+    return DS_OK;
+
     free_all:
     free(r0);free(r1);free(r2);
     free(d0);free(d1);free(d2);
@@ -295,6 +299,7 @@ Status sli_test_indexof(UnitTest ut)
     goto error;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     sli_free(&list);
     return st;
 }
@@ -324,6 +329,7 @@ Status SortedListTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "SortedList");
     ut_delete(&ut);
     status_print(st);

@@ -59,6 +59,7 @@ Status stk_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     stk_free(&stack);
     return st;
 }
@@ -85,6 +86,7 @@ Status StackTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "Stack");
     ut_delete(&ut);
     return st;

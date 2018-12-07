@@ -64,6 +64,7 @@ Status dar_test_locked(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     dar_free(&array);
     return st;
 }
@@ -102,6 +103,7 @@ Status dar_test_growth(UnitTest ut)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     dar_free(&array);
     return st;
 }
@@ -129,6 +131,7 @@ Status DynamicArrayTests(void)
     return DS_OK;
 
     error:
+    printf("Error %s at %s\n", status_string(st), __func__);
     ut_report(ut, "DynamicArray");
     ut_delete(&ut);
     return st;

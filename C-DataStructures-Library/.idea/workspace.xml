@@ -372,10 +372,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="1735" />
-    <option name="y" value="-149" />
-    <option name="width" value="1121" />
+  <component name="ProjectFrameBounds">
+    <option name="x" value="1359" />
+    <option name="y" value="-130" />
+    <option name="width" value="974" />
     <option name="height" value="1087" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
