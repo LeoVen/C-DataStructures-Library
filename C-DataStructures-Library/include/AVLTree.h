@@ -31,7 +31,7 @@ extern "C"
 ///
 /// \b Functions
 ///
-/// Located in file AVLTree.c
+/// Located in the file AVLTree.c
 struct AVLTree_s
 {
     size_t size;			  /*!< Total \c AVLTree elements */

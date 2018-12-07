@@ -31,7 +31,7 @@ extern "C" {
 ///
 /// \b Functions
 ///
-/// Located in file StackArray.c
+/// Located in the file StackArray.c
 struct StackArray_s
 {
     /// \brief Data buffer.

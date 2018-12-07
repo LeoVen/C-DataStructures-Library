@@ -182,7 +182,7 @@ typedef struct SortedListNode_s *SortedListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status sli_make_node(SortedListNode *node, void *data);
+static Status sli_make_node(SortedListNode *node, void *element);
 
 static Status sli_free_node(SortedListNode *node, sli_free_f free_f);
 
@@ -1767,18 +1767,18 @@ Status sli_display_raw(SortedList list)
 /// SortedListNode_s.
 ///
 /// \param[in,out] node SortedListNode_s to be allocated.
-/// \param[in] data Node's data member.
+/// \param[in] element Node's data member.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_OK if all operations are successful.
-static Status sli_make_node(SortedListNode *node, void *data)
+static Status sli_make_node(SortedListNode *node, void *element)
 {
     *node = malloc(sizeof(SortedListNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
 
-    (*node)->data = data;
+    (*node)->data = element;
 
     (*node)->next = NULL;
     (*node)->prev = NULL;

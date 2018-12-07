@@ -29,7 +29,7 @@
 ///
 /// \b Functions
 ///
-/// Located in file Deque.c
+/// Located in the file Deque.c
 struct Deque_s
 {
     /// \brief Current amount of elements in the \c Deque.

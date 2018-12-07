@@ -57,7 +57,7 @@
 ///
 /// \b Functions
 ///
-/// Located in file Queue.c
+/// Located in the file Queue.c
 struct Queue_s
 {
     /// \brief Current amount of elements in the \c Queue.

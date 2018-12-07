@@ -35,12 +35,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4173a36-278b-405f-b725-6032ef47d9e1" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/include/DoublyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/DoublyLinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/SinglyLinkedList.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/SinglyLinkedList.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CircularLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/CircularLinkedList.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DoublyLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/DoublyLinkedList.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SinglyLinkedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SinglyLinkedList.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/SortedList.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/SortedList.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/DoublyLinkedListTests.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/DoublyLinkedListTests.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/tests/main.c" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <ignored path="$PROJECT_DIR$/Queue/cmake-build-debug/" />
@@ -70,22 +69,10 @@
         <state>
           <leaf>
             <file pinned="false" current-in-tab="true">
-              <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
-                <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="328">
-                    <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
-                    <folding>
-                      <element signature="e#264#276#0" expanded="true" />
-                    </folding>
-                  </state>
-                </provider>
-              </entry>
-            </file>
-            <file pinned="false" current-in-tab="false">
               <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
                 <provider selected="true" editor-type-id="text-editor">
-                  <state relative-caret-position="207">
-                    <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
+                  <state relative-caret-position="736">
+                    <caret line="32" column="19" selection-start-line="32" selection-start-column="19" selection-end-line="32" selection-end-column="19" />
                   </state>
                 </provider>
               </entry>
@@ -159,9 +146,9 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="C_DataStructures_Library (disassembly)" value="19" />
-          <entry key="c" value="652" />
+          <entry key="c" value="653" />
           <entry key="c#" value="1" />
-          <entry key="h" value="624" />
+          <entry key="h" value="625" />
           <entry key="md" value="12" />
           <entry key="txt" value="25" />
         </counts>
@@ -171,14 +158,14 @@
           <entry key="CMakeLists.txt" value="25" />
           <entry key="Disassembly" value="19" />
           <entry key="Markdown" value="12" />
-          <entry key="ObjectiveC" value="1277" />
+          <entry key="ObjectiveC" value="1279" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="GDB" value="31" />
-          <entry key="c" value="151935" />
-          <entry key="h" value="49109" />
+          <entry key="c" value="152388" />
+          <entry key="h" value="49111" />
           <entry key="md" value="14131" />
           <entry key="txt" value="2045" />
         </counts>
@@ -186,10 +173,10 @@
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CMakeLists.txt" value="2045" />
-          <entry key="Doxygen file" value="1636" />
+          <entry key="Doxygen file" value="1669" />
           <entry key="GDBCommands" value="31" />
           <entry key="Markdown" value="14131" />
-          <entry key="ObjectiveC" value="199408" />
+          <entry key="ObjectiveC" value="199830" />
         </counts>
       </usages-collector>
     </session>
@@ -233,35 +220,29 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/DoublyLinkedList.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="520">
-              <caret line="892" lean-forward="true" selection-start-line="892" selection-end-line="892" />
+            <state relative-caret-position="644">
+              <caret line="28" column="19" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="19" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/CircularLinkedList.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="690">
+              <caret line="57" column="32" selection-start-line="57" selection-start-column="32" selection-end-line="57" selection-end-column="32" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/DoublyLinkedListTests.c">
+        <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="298">
-              <caret line="219" lean-forward="true" selection-start-line="219" selection-end-line="219" />
-              <folding>
-                <element signature="e#127#156#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/main.c">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="529">
-              <caret line="23" column="14" lean-forward="true" selection-start-line="23" selection-start-column="14" selection-end-line="23" selection-end-column="14" />
-              <folding>
-                <element signature="e#0#17#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="482">
+              <caret line="137" lean-forward="true" selection-start-line="137" selection-end-line="137" />
             </state>
           </provider>
         </entry>
@@ -270,7 +251,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>deque</find>
       <find>sli_cre</find>
       <find>integer</find>
       <find>index_t</find>
@@ -300,6 +280,7 @@
       <find>dll_delete</find>
       <find>sll_</find>
       <find>\bdll\b</find>
+      <find>Located in file</find>
     </findStrings>
     <replaceStrings>
       <replace>que</replace>
@@ -343,7 +324,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/include/Queue.h" />
         <option value="$PROJECT_DIR$/include/Stack.h" />
         <option value="$PROJECT_DIR$/src/Deque.c" />
         <option value="$PROJECT_DIR$/src/DynamicArray.c" />
@@ -387,13 +367,14 @@
         <option value="$PROJECT_DIR$/tests/QueueTests.c" />
         <option value="$PROJECT_DIR$/tests/StackArrayTests.c" />
         <option value="$PROJECT_DIR$/tests/StackTests.c" />
-        <option value="$PROJECT_DIR$/include/SinglyLinkedList.h" />
         <option value="$PROJECT_DIR$/include/DoublyLinkedList.h" />
-        <option value="$PROJECT_DIR$/src/SinglyLinkedList.c" />
         <option value="$PROJECT_DIR$/src/SortedList.c" />
         <option value="$PROJECT_DIR$/tests/DoublyLinkedListTests.c" />
         <option value="$PROJECT_DIR$/tests/main.c" />
+        <option value="$PROJECT_DIR$/include/SinglyLinkedList.h" />
         <option value="$PROJECT_DIR$/src/DoublyLinkedList.c" />
+        <option value="$PROJECT_DIR$/src/SinglyLinkedList.c" />
+        <option value="$PROJECT_DIR$/src/CircularLinkedList.c" />
       </list>
     </option>
   </component>
@@ -803,12 +784,12 @@
       <workItem from="1544064752230" duration="2831000" />
       <workItem from="1544106376272" duration="10181000" />
       <workItem from="1544150774381" duration="786000" />
-      <workItem from="1544188891810" duration="13481000" />
+      <workItem from="1544188891810" duration="14295000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="759578000" />
+    <option name="totallyTimeSpent" value="760392000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -823,7 +804,7 @@
     <frame x="1359" y="-130" width="1147" height="1087" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.23919043" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49842766" visible="true" weight="0.23919043" />
       <window_info id="Structure" order="1" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info id="Favorites" order="2" sideWeight="0.5015723" side_tool="true" weight="0.2647504" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -972,13 +953,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="501">
           <caret line="112" column="7" selection-start-line="112" selection-start-column="7" selection-end-line="112" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/CircularLinkedList.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="161">
-          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
         </state>
       </provider>
     </entry>
@@ -1198,13 +1172,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="712">
-          <caret line="129" column="78" lean-forward="true" selection-start-line="129" selection-start-column="78" selection-end-line="129" selection-end-column="78" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/SortedList.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="291">
@@ -1219,13 +1186,6 @@
           <folding>
             <element signature="e#127#156#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="9" lean-forward="true" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
@@ -1251,18 +1211,39 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/include/DoublyLinkedList.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="16" lean-forward="true" selection-start-line="16" selection-end-line="16" />
+        <state relative-caret-position="236">
+          <caret line="12" lean-forward="true" selection-start-line="12" selection-end-line="12" />
           <folding>
             <element signature="e#264#276#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/include/SinglyLinkedList.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="482">
+          <caret line="137" lean-forward="true" selection-start-line="137" selection-end-line="137" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/SinglyLinkedList.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="736">
+          <caret line="32" column="19" selection-start-line="32" selection-start-column="19" selection-end-line="32" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/DoublyLinkedList.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="520">
-          <caret line="892" lean-forward="true" selection-start-line="892" selection-end-line="892" />
+        <state relative-caret-position="644">
+          <caret line="28" column="19" selection-start-line="28" selection-start-column="19" selection-end-line="28" selection-end-column="19" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CircularLinkedList.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="690">
+          <caret line="57" column="32" selection-start-line="57" selection-start-column="32" selection-end-line="57" selection-end-column="32" />
         </state>
       </provider>
     </entry>

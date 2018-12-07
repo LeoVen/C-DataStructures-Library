@@ -55,7 +55,7 @@
 ///
 /// \b Functions
 ///
-/// Located in file DoublyLinkedList.c
+/// Located in the file CircularLinkedList.c
 struct CircularLinkedList_s
 {
     /// \brief List length.

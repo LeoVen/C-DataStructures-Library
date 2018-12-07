@@ -131,22 +131,24 @@ Status sll_to_array(SinglyLinkedList list, void ***result, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// LINKING ///
 
-Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2);
+Status sll_link(SinglyLinkedList list1, SinglyLinkedList list2);
 
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, integer_t position);
+Status sll_link_at(SinglyLinkedList list1, SinglyLinkedList list2,
+        integer_t position);
 
-Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result, integer_t position);
+Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result,
+        integer_t position);
 
 Status sll_unlink_at(SinglyLinkedList list, SinglyLinkedList result,
                      integer_t position1, integer_t position2);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status sll_display(SinglyLinkedList sll);
+Status sll_display(SinglyLinkedList list);
 
-Status sll_display_array(SinglyLinkedList sll);
+Status sll_display_array(SinglyLinkedList list);
 
-Status sll_display_raw(SinglyLinkedList sll);
+Status sll_display_raw(SinglyLinkedList list);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

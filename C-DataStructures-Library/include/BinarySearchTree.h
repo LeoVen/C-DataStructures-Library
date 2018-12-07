@@ -33,7 +33,7 @@ extern "C" {
 ///
 /// \b Functions
 ///
-/// Located in file BinarySearchTree.c
+/// Located in the file BinarySearchTree.c
 struct BinarySearchTree_s
 {
     /// \brief Total elements int the tree.

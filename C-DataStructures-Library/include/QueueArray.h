@@ -35,7 +35,7 @@ extern "C" {
 ///
 /// \b Functions
 ///
-/// Located in file QueueArray.c
+/// Located in the file QueueArray.c
 struct QueueArray_s
 {
     /// \brief Data buffer.

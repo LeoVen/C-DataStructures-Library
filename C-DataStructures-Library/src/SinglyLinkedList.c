@@ -10,22 +10,17 @@
 
 /// \brief A generic singly-linked list.
 ///
-/// A SinglyLinkedList is a linear structure where its elements are not stored
-/// in contiguous memory allowing constant insertion and removal at both ends
-/// of the list. Insertion and removal at the middle of the list are at most
-/// O(n - 1). There are no buffer reallocation nor shifting of elements since
-/// the data is 'linked' by nodes and at any time these links can be removed;
-/// this makes it trivial to remove elements at the middle without having to
-/// shift elements.
+/// A SinglyLinkedList_s is a linear structure where its elements are not
+/// stored in contiguous memory allowing constant insertion and removal at both
+/// ends of the list. Insertion and removal at the middle of the list are at
+/// most O(n - 1). There are no buffer reallocation nor shifting of elements
+/// since the data is 'linked' by nodes and at any time these links can be
+/// removed; this makes it trivial to remove elements at the middle without
+/// having to shift elements.
 ///
-/// In this implementation, the structure is composed of two pointers, one to
-/// the first \c SinglyLinkedNode and another to the last one. This way
-/// insertions at both ends are simplified. Also this structure holds a length
-/// variable that keeps track of the structure's length, allowing for checking
-/// empty lists or position parameters that are higher than the total structure
-/// length.
+/// \todo Add more description on how the SinglyLinkedList_s works.
 ///
-/// \b Advantages over \c Array
+/// \b Advantages over \c DynamicArray_s
 /// - Dynamic size
 /// - Easy insertion/removal
 ///
@@ -35,7 +30,7 @@
 ///
 /// \b Functions
 ///
-/// Located in file SinglyLinkedList.c
+/// Located in the file SinglyLinkedList.c
 struct SinglyLinkedList_s
 {
     /// \brief List length.
@@ -134,7 +129,7 @@ static Status sll_free_node(SinglyLinkedNode *node, sll_free_f free_f);
 
 static Status sll_free_node_shallow(SinglyLinkedNode *node);
 
-static Status sll_get_node_at(SinglyLinkedList sll, SinglyLinkedNode *result,
+static Status sll_get_node_at(SinglyLinkedList list, SinglyLinkedNode *result,
         integer_t position);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
@@ -292,7 +287,7 @@ Status sll_free_shallow(SinglyLinkedList *list)
 ///
 /// This function is equivalent to freeing a list and then creating it again.
 /// This will reset the list to its initial state with no elements, but will
-/// keep all of its default functions and the order of elements.
+/// keep all of its default functions.
 ///
 /// \param[in,out] list SinglyLinkedList_s to be erased.
 ///
@@ -516,18 +511,15 @@ integer_t sll_limit(SinglyLinkedList list)
     return list->limit;
 }
 
-/// \brief Retrieves a copy of an element at a given position.
+/// \brief Retrieves an element at a given position.
 ///
-/// Retrieves a copy of an element at a given position without removing it.
-/// This function simulates an index access like in arrays with exception that
-/// the result is a copy of the element. For this function to work you must
-/// have set a default copy function.
+/// Retrieves an element at a given position without removing it. This function
+/// simulates an index access like in arrays.
 ///
 /// \param[in] list The SinglyLinkedList_s to retrieve the element from.
 /// \param[out] result The resulting element.
 /// \param[in] position The position of the element to be retrieved.
 ///
-/// \return DS_ERR_INCOMPLETE_TYPE if a default copy function is not set.
 /// \return DS_ERR_INVALID_OPERATION if the list is empty.
 /// \return DS_ERR_NEGATIVE_VALUE if \c position parameter is a negative value.
 /// \return DS_ERR_OUT_OF_RANGE if \c position parameter is greater than or
@@ -536,7 +528,7 @@ integer_t sll_limit(SinglyLinkedList list)
 /// \return DS_OK if all operations were successful.
 Status sll_get(SinglyLinkedList list, void **result, integer_t position)
 {
-    *result = 0;
+    *result = NULL;
 
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -557,7 +549,7 @@ Status sll_get(SinglyLinkedList list, void **result, integer_t position)
     if (st != DS_OK)
         return st;
 
-    *result = list->v_copy(node->data);
+    *result = node->data;
 
     return DS_OK;
 }
@@ -697,7 +689,7 @@ Status sll_insert_at(SinglyLinkedList list, void *element, integer_t position)
 ///
 /// Inserts a new element at the end of the list. If the list is empty and this
 /// is the first element being added, c\ head will also be pointing to it; in
-/// in any case the \c tail pointer will be pointing to this newly inserted
+/// any case the \c tail pointer will be pointing to this newly inserted
 /// element.
 ///
 /// \param[in] list The list where the element is to be inserted.
@@ -957,10 +949,8 @@ bool sll_empty(SinglyLinkedList list)
 
 /// \brief Returns the highest element from the specified SinglyLinkedList_s.
 ///
-/// Returns a reference to the highest element in the list or NULL if the list
-/// is empty. Use this as a read-only. If you make any changes to this element
-/// the internal structure of the list will change and may cause undefined
-/// behaviour.
+/// Returns a reference to the highest element in the list or \c NULL if the
+/// list is empty.
 ///
 /// \param[in] list SinglyLinkedList_s reference.
 ///
@@ -995,10 +985,8 @@ void *sll_max(SinglyLinkedList list)
 
 /// \brief Returns the smallest element from the specified SinglyLinkedList_s.
 ///
-/// Returns a reference to the smallest element in the list or NULL if the list
-/// is empty. Use this as a read-only. If you make any changes to this element
-/// the internal structure of the list will change and may cause undefined
-/// behaviour.
+/// Returns a reference to the smallest element in the list or \c NULL if the
+/// list is empty.
 ///
 /// \param[in] list SinglyLinkedList_s reference.
 ///
@@ -1047,10 +1035,10 @@ void *sll_min(SinglyLinkedList list)
 integer_t sll_index_first(SinglyLinkedList list, void *key)
 {
     if (list == NULL)
-        return -3;
+        return -2;
 
     if (list->v_compare == NULL)
-        return -2;
+        return -3;
 
     SinglyLinkedNode scan = list->head;
 
@@ -1085,13 +1073,10 @@ integer_t sll_index_first(SinglyLinkedList list, void *key)
 integer_t sll_index_last(SinglyLinkedList list, void *key)
 {
     if (list == NULL)
-        return -1;
-
-    if (sll_empty(list))
-        return -1;
+        return -2;
 
     if (list->v_compare == NULL)
-        return -1;
+        return -3;
 
     SinglyLinkedNode scan = list->head;
 
@@ -1281,83 +1266,108 @@ Status sll_to_array(SinglyLinkedList list, void ***result, integer_t *length)
     return DS_OK;
 }
 
+/// \brief Appends list2 at the end of list1.
+///
+/// \param list1
+/// \param list2
+///
+/// \return
+///
 /// \todo revise sll_link
-Status sll_link(SinglyLinkedList sll1, SinglyLinkedList sll2)
+Status sll_link(SinglyLinkedList list1, SinglyLinkedList list2)
 {
-    if (sll1 == NULL || sll2 == NULL)
+    if (list1 == NULL || list2 == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (sll_empty(sll2))
+    if (sll_empty(list2))
         return DS_ERR_INVALID_OPERATION;
 
-    if (sll_empty(sll1))
+    if (sll_empty(list1))
     {
-        sll1->head = sll2->head;
-        sll1->tail = sll2->tail;
+        list1->head = list2->head;
+        list1->tail = list2->tail;
 
-        sll1->length = sll2->length;
+        list1->length = list2->length;
     }
     else
     {
-        sll1->tail->next = sll2->head;
-        sll1->tail = sll2->tail;
+        list1->tail->next = list2->head;
+        list1->tail = list2->tail;
 
-        sll1->length += sll2->length;
+        list2->length += list2->length;
     }
 
-    sll2->head = NULL;
-    sll2->tail = NULL;
+    list2->head = NULL;
+    list2->tail = NULL;
 
-    sll2->length = 0;
+    list2->length = 0;
 
     return DS_OK;
 }
 
+/// \brief Links list2 at the specified position of list1.
+///
+/// \param list1
+/// \param list2
+/// \param position
+///
+/// \return
+///
 /// \todo revise sll_link_at
-Status sll_link_at(SinglyLinkedList sll1, SinglyLinkedList sll2, integer_t position)
+Status sll_link_at(SinglyLinkedList list1, SinglyLinkedList list2,
+        integer_t position)
 {
-    if (sll1 == NULL || sll2 == NULL)
+    if (list1 == NULL || list2 == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (position > sll1->length)
+    if (position > list1->length)
         return DS_ERR_OUT_OF_RANGE;
 
-    if (sll_empty(sll1) || sll_empty(sll2))
+    if (sll_empty(list1) || sll_empty(list2))
         return DS_ERR_INVALID_OPERATION;
 
     if (position == 0)
     {
-        sll2->tail->next = sll1->head;
+        list2->tail->next = list1->head;
 
-        sll1->head = sll2->head;
+        list1->head = list2->head;
     }
-    else if (position == sll1->length)
+    else if (position == list1->length)
     {
-        sll1->tail->next = sll2->head;
-        sll1->tail = sll2->tail;
+        list1->tail->next = list2->head;
+        list1->tail = list2->tail;
     }
     else
     {
         SinglyLinkedNode prev;
 
-        sll_get_node_at(sll1, &prev, position - 1);
+        sll_get_node_at(list1, &prev, position - 1);
 
-        sll2->tail->next = prev->next;
+        list2->tail->next = prev->next;
 
-        prev->next = sll2->head;
+        prev->next = list2->head;
     }
 
-    sll2->head = NULL;
-    sll2->tail = NULL;
+    list2->head = NULL;
+    list2->tail = NULL;
 
-    sll1->length += sll2->length;
-    sll2->length = 0;
+    list1->length += list2->length;
+    list2->length = 0;
 
     return DS_OK;
 }
 
-/// \todo revise sll_link, make the result a new list
-Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result, integer_t position)
+/// \brief Unlinks elements from the specified position to the end.
+///
+/// \param list
+/// \param result
+/// \param position
+///
+/// \return
+///
+/// \todo revise sll_unlink
+Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result,
+        integer_t position)
 {
     if (list == NULL)
         return DS_ERR_NULL_POINTER;
@@ -1404,7 +1414,14 @@ Status sll_unlink(SinglyLinkedList list, SinglyLinkedList result, integer_t posi
     return DS_OK;
 }
 
-/// \todo make the result a new list [out], rename to sublist
+/// \brief Unlinks elements from a given position to another.
+///
+/// \param list
+/// \param result
+/// \param position1
+/// \param position2
+///
+/// \return
 Status sll_unlink_at(SinglyLinkedList list, SinglyLinkedList result,
         integer_t position1, integer_t position2)
 {
@@ -1547,7 +1564,7 @@ Status sll_display_raw(SinglyLinkedList list)
 /// SinglyLinkedNode_s.
 ///
 /// \param[in,out] node SinglyLinkedNode_s to be allocated.
-/// \param[in] data Node's data member.
+/// \param[in] element Node's data member.
 ///
 /// \return DS_ERR_ALLOC if node allocation failed.
 /// \return DS_OK if all operations are successful.

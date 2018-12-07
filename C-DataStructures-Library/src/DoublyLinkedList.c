@@ -26,7 +26,7 @@
 ///
 /// \b Functions
 ///
-/// Located in file DoublyLinkedList.c
+/// Located in the file DoublyLinkedList.c
 ///
 /// \todo Add Link and Unlink functions
 /// \todo Add support to negative index searches
@@ -1268,28 +1268,56 @@ Status dll_to_array(DoublyLinkedList list, void ***result, integer_t *length)
     return DS_OK;
 }
 
+/// \brief Appends list2 at the end of list1.
+///
+/// \param list1
+/// \param list2
+///
+/// \return
 Status dll_link(DoublyLinkedList list1, DoublyLinkedList list2)
 {
     /// \todo dll_link
     return DS_OK;
 }
 
+/// \brief Links list2 at the specified position of list1.
+///
+/// \param list1
+/// \param list2
+/// \param position
+///
+/// \return
 Status dll_link_at(DoublyLinkedList list1, DoublyLinkedList list2,
-                   integer_t position)
+        integer_t position)
 {
     /// \todo dll_link_at
     return DS_OK;
 }
 
+/// \brief Unlinks elements from the specified position to the end.
+///
+/// \param list
+/// \param result
+/// \param position
+///
+/// \return
 Status dll_unlink(DoublyLinkedList list, DoublyLinkedList result,
-                  integer_t position)
+        integer_t position)
 {
     /// \todo dll_unlink
     return DS_OK;
 }
 
+/// \brief Unlinks elements from a given position to another.
+///
+/// \param list
+/// \param result
+/// \param position1
+/// \param position2
+///
+/// \return
 Status dll_unlink_at(DoublyLinkedList list, DoublyLinkedList result,
-                     integer_t position1, integer_t position2)
+        integer_t position1, integer_t position2)
 {
     /// \todo dll_unlink_at
     return DS_OK;

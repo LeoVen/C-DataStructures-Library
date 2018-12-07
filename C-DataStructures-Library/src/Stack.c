@@ -56,7 +56,7 @@
 /// - More memory usage as in every node there is a pointer to the next node
 ///
 /// \b Functions
-/// Located in file Stack.c
+/// Located in the file Stack.c
 struct Stack_s
 {
     /// \brief Current amount of elements in the Stack_s.
