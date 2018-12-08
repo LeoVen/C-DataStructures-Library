@@ -1,0 +1,10 @@
+language: c
+
+compiler: gcc
+
+script:
+  - cd ./C-DataStructures-Library
+  - cmake .
+  - cd ./cmake-build-debug
+  - make
+  - ./C_DataStructures_Library
