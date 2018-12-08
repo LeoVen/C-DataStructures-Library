@@ -21,6 +21,6 @@ script:
   # Execution commands
   - cd ./C-DataStructures-Library
   - cmake .
-  - cd ./cmake-build-debug
+  - ls
   - make
   - ./C_DataStructures_Library
