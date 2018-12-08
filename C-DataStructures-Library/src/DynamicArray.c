@@ -498,9 +498,8 @@ Status dar_insert_at(DynamicArray d_array, void *element, integer_t index)
         d_array->buffer[index] = element;
 
         d_array->size++;
+        d_array->version_id++;
     }
-
-    d_array->version_id++;
 
     return DS_OK;
 }
@@ -1208,7 +1207,7 @@ Status dar_grow(DynamicArray d_array)
     if (d_array->capacity - old_capacity < 4)
         d_array->capacity = old_capacity + 4;
 
-    void **new_buffer = realloc(d_array->buffer, sizeof(int) * d_array->capacity);
+    void **new_buffer = realloc(d_array->buffer, sizeof(void*) * d_array->capacity);
 
     if (!new_buffer)
     {
