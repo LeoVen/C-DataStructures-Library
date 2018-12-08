@@ -15,7 +15,7 @@ Status deq_test_limit(UnitTest ut)
 {
     Deque deque;
 
-    Status st = deq_init(&deque);
+    Status st = deq_create(&deque, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;

@@ -60,4 +60,5 @@ set(UTIL Chars Floats Integers Random Status)
 
 add_dependencies(C_DataStructures_Library ${LIBS} UnitTest ${UTIL} CString)
 
-target_link_libraries(C_DataStructures_Library m ${LIBS} UnitTest ${UTIL} CString)
+target_link_libraries(Random m)
+target_link_libraries(C_DataStructures_Library ${LIBS} UnitTest ${UTIL} CString)

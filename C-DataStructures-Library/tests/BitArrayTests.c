@@ -547,6 +547,8 @@ Status bit_test_cardinality(UnitTest ut)
 
     ut_equals_integer_t(ut, 32, bit_cardinality(bits), __func__);
 
+    bit_free(&bits);
+
     return DS_OK;
 
     error:
@@ -580,6 +582,8 @@ Status bit_test_fill_empty(UnitTest ut)
         goto error;
 
     ut_equals_bool(ut, true, bit_all_clear(bits), __func__);
+
+    bit_free(&bits);
 
     return DS_OK;
 

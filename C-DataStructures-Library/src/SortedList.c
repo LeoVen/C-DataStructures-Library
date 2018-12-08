@@ -1342,12 +1342,12 @@ Status sli_to_array(SortedList list, void ***result, integer_t *length)
     if (list->v_copy == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
+    *length = list->length;
+
     *result = malloc(sizeof(void*) * (*length));
 
     if (!(*result))
         return DS_ERR_ALLOC;
-
-    *length = list->length;
 
     SortedListNode scan = list->head;
 

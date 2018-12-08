@@ -188,8 +188,6 @@ Status dll_test_indexof(UnitTest ut)
     ut_equals_integer_t(ut, f1, -1, __func__);
     ut_equals_integer_t(ut, f2, -1, __func__);
 
-    free(r0);free(r1);free(r2);
-    free(d0);free(d1);free(d2);
     free(n0);free(n1);free(n2);free(n3);
 
     dll_free(&list);
@@ -197,8 +195,6 @@ Status dll_test_indexof(UnitTest ut)
     return DS_OK;
 
     free_all:
-    free(r0);free(r1);free(r2);
-    free(d0);free(d1);free(d2);
     free(n0);free(n1);free(n2);
     goto error;
 

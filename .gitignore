@@ -1,6 +1,9 @@
 # Very annoying file
 C-DataStructures-Library/.idea/workspace.xml
 
+# build folder
+C-DataStructures-Library/build
+
 # Prerequisites
 *.d
 

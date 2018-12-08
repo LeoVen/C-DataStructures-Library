@@ -44,6 +44,7 @@ Status sll_test_middle(UnitTest ut)
     ut_equals_int(ut, *(int*)j, 99, __func__);
 
     sll_free(&list);
+    free(j);
 
     return DS_OK;
 
@@ -173,8 +174,6 @@ Status sll_test_indexof(UnitTest ut)
     ut_equals_integer_t(ut, f1, -1, __func__);
     ut_equals_integer_t(ut, f2, -1, __func__);
 
-    free(r0);free(r1);free(r2);
-    free(d0);free(d1);free(d2);
     free(n0);free(n1);free(n2);free(n3);
 
     sll_free(&list);
@@ -182,8 +181,6 @@ Status sll_test_indexof(UnitTest ut)
     return DS_OK;
 
     free_all:
-    free(r0);free(r1);free(r2);
-    free(d0);free(d1);free(d2);
     free(n0);free(n1);free(n2);
     goto error;
 

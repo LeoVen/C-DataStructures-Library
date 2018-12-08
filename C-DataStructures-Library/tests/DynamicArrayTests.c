@@ -16,8 +16,7 @@ Status dar_test_locked(UnitTest ut)
     DynamicArray array;
 
     // in case I ever change the default initial capacity
-    Status st = dar_create(&array, 16, 200,
-                           compare_int, copy_int, display_int, free);
+    Status st = dar_create(&array, 16, 200, compare_int, copy_int, display_int, free);
 
     if (st != DS_OK)
         return st;
@@ -31,7 +30,7 @@ Status dar_test_locked(UnitTest ut)
 
         st = dar_insert_back(array, elem);
 
-        if (st != DS_OK)
+        if (st == DS_ERR_FULL)
             free(elem);
     }
 

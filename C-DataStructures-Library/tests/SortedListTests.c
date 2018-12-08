@@ -17,7 +17,7 @@ Status sli_test_insertion(UnitTest ut)
 
     int arr[7] = {2, 1, 0, 3, 6, 5, 4};
 
-    Status st;
+    Status st = DS_OK;
 
     st += sli_create(&(lists[0]), ASCENDING, compare_int, copy_int, display_int, free);
     st += sli_create(&(lists[1]), ASCENDING, compare_int, copy_int, display_int, free);
@@ -26,9 +26,8 @@ Status sli_test_insertion(UnitTest ut)
     st += sli_create(&(lists[4]), DESCENDING, compare_int, copy_int, display_int, free);
     st += sli_create(&(lists[5]), DESCENDING, compare_int, copy_int, display_int, free);
 
-    // Might cause memory leaks in exchange for not causing a run-time error
     if (st != DS_OK)
-        return st;
+        goto error;
 
     for (int i = 0; i < 7; i++)
     {
@@ -156,6 +155,7 @@ Status sli_test_incomplete(UnitTest ut)
     free(EL[0]);
     free(EL[1]);
 
+    sli_set_v_free(list, free);
     sli_free(&list);
 
     return DS_OK;
