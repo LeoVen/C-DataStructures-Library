@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.9.2)
 project(C_DataStructures_Library)
 
 set(CMAKE_STATIC_LIBRARY_PREFIX "DSLib_")

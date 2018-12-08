@@ -1,5 +1,6 @@
 dist: trusty
 sudo: require
+os: linux
 language:
   - c
 compiler:
@@ -7,13 +8,19 @@ compiler:
 addons:
   apt:
     sources:
-      - kalakris-cmake
+      - ubuntu-toolchain-r-test
     packages:
+      - gcc-7
       - cmake
 script:
+  - sudo ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
+  - export CC=gcc-7
   - cd ./C-DataStructures-Library
   - mkdir build
   - cd build
+  - cmake --version
   - cmake ..
   - make
   - ./C_DataStructures_Library
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
