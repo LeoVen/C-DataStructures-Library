@@ -8,24 +8,24 @@
 
 #include "Chars.h"
 
-void display_char(void *element)
+void display_char(const void *element)
 {
-    char *e = (char*)element;
+    const char *e = (const char*)element;
 
     printf("%c", *e);
 }
 
-void display_string(void *element)
+void display_string(const void *element)
 {
-    char *e = (char*)element;
+    const char *e = (const char*)element;
 
     printf("%s", e);
 }
 
-int compare_char(void *element1, void *element2)
+int compare_char(const void *element1, const void *element2)
 {
-    char *e1 = (char*)element1;
-    char *e2 = (char*)element2;
+    const char *e1 = (const char*)element1;
+    const char *e2 = (const char*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -35,7 +35,7 @@ int compare_char(void *element1, void *element2)
     return 0;
 }
 
-int compare_string(void *element1, void *element2)
+int compare_string(const void *element1, const void *element2)
 {
     const char *e1 = (const char*)element1;
     const char *e2 = (const char*)element2;
@@ -43,14 +43,14 @@ int compare_string(void *element1, void *element2)
     return strcmp(e1, e2);
 }
 
-void *copy_char(void *element)
+void *copy_char(const void *element)
 {
-    char *e = (char*)element;
+    const char *e = (const char*)element;
 
     return new_char(*e);
 }
 
-void *copy_string(void *element)
+void *copy_string(const void *element)
 {
     return strdup(element);
 }

@@ -43,7 +43,8 @@ void ut_report(UnitTest ut, const char *struct_name)
     printf("  Passed : %lld\n\n", ut->passed);
 }
 
-void ut_equals_bool(UnitTest ut, bool param1, bool param2, const char *test_name)
+void ut_equals_bool(UnitTest ut, bool param1, bool param2,
+        const char *test_name)
 {
     if (param1 == param2)
     {
@@ -73,7 +74,24 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     ut->total++;
 }
 
-void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2, const char *test_name)
+void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2,
+        const char *test_name)
+{
+    if (param1 == param2)
+    {
+        ut->passed++;
+        printf("%-30s %s", test_name, "PASSED\n");
+    }
+    else
+    {
+        printf("%-30s %s", test_name, "FAILED\n");
+    }
+
+    ut->total++;
+}
+
+void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
+        const char *test_name)
 {
     if (param1 == param2)
     {

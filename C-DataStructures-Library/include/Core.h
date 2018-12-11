@@ -78,9 +78,9 @@ enum Status
 /// Defines a type to an <code> enum Status </code>
 typedef enum Status Status;
 
-/// Signed value used to represent sizes and indexes. Its negative portion is
-/// only used to represent errors when the function doesn't return a Status.
-typedef int64_t integer_t;
+typedef intmax_t integer_t;
+
+typedef uintmax_t unsigned_t;
 
 /// Prime numbers used for hashing
 /// https://planetmath.org/goodhashtableprimes

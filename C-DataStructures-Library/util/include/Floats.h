@@ -15,17 +15,17 @@
 extern "C" {
 #endif
 
-void display_float(void *element);
-void display_double(void *element);
-void display_long_double(void *element);
+void display_float(const void *element);
+void display_double(const void *element);
+void display_long_double(const void *element);
 
-int compare_float(void *element1, void *element2);
-int compare_double(void *element1, void *element2);
-int compare_long_double(void *element1, void *element2);
+int compare_float(const void *element1, const void *element2);
+int compare_double(const void *element1, const void *element2);
+int compare_long_double(const void *element1, const void *element2);
 
-void *copy_float(void *element);
-void *copy_double(void *element);
-void *copy_long_double(void *element);
+void *copy_float(const void *element);
+void *copy_double(const void *element);
+void *copy_long_double(const void *element);
 
 void *new_float(float element);
 void *new_double(double element);

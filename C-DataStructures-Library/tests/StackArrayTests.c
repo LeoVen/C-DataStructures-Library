@@ -11,80 +11,120 @@
 #include "Util.h"
 
 // Tests locked capacity
-Status sta_test_locked(UnitTest ut)
+void sta_test_locked(UnitTest ut)
 {
-    StackArray stack;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int, free);
+
+    if (!int_interface)
+        goto error;
 
     // in case I ever change the default initial capacity
-    Status st = sta_create(&stack, 16, 200);
+    StackArray stack = sta_create(16, 200, int_interface);
 
-    if (st != DS_OK)
-        return st;
+    if (!stack)
+        goto error;
 
-    sta_cap_lock(stack);
+    sta_capacity_lock(stack);
 
+    bool success = false;
+
+    void *element;
     for (int i = 0; i < 17; i++)
     {
-        st = sta_push(stack, i);
+        element = new_int(i);
+
+        success = sta_push(stack, element);
+
+        if (!success) /* Reached the stack maximum size */
+            free(element);
     }
 
-    Status saved_st = st;
-    integer_t size = stack->height;
+    unsigned_t size = sta_size(stack);
 
-    int j, sum = 0;
+    ut_equals_bool(ut, success, false, __func__);
+    ut_equals_unsigned_t(ut, size, 16, __func__);
+
+    sta_capacity_unlock(stack);
+
+    element = new_int(1);
+    success = sta_push(stack, element);
+    if (!success)
+    {
+        free(element);
+        goto error;
+    }
+
+    ut_equals_unsigned_t(ut, sta_size(stack), 17, __func__);
+
+    success = sta_pop(stack, &element);
+
+    if (success)
+        free(element);
+    else
+        goto error;
+
+    int sum = 0;
     while (!sta_empty(stack))
     {
-        st = sta_pop(stack, &j);
+        sta_pop(stack, &element);
 
-        if (st != DS_OK)
-            goto error;
+        sum += *(int*)element; /* sum from 0 to 15 */
 
-        sum += j; // sum from 0 to 15
+        free(element);
     }
 
     ut_equals_int(ut, sum, 120, __func__);
-    ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, size, 16, __func__);
 
-    sta_delete(&stack);
+    sta_free(stack);
 
-    return DS_OK;
+    return;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    sta_delete(&stack);
-    return st;
+    printf("Error at %s\n", __func__);
+    sta_free(stack);
+    interface_free(int_interface);
 }
 
 // Tests capacity multiplication
-Status sta_test_growth(UnitTest ut)
+void sta_test_growth(UnitTest ut)
 {
-    StackArray stack;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int, free);
 
-    Status st = sta_create(&stack, 60, 250);
+    if (!int_interface)
+        goto error;
 
-    if (st != DS_OK)
-        return st;;
+    StackArray stack = sta_create(60, 250, int_interface);
 
+    if (!stack)
+        goto error;
+
+    bool success = false;
+
+    void *element;
     for (int i = 0; i < 100; i++)
     {
-        st = sta_insert(stack, i);
+        element = new_int(i);
 
-        if (st != DS_OK)
+        success = sta_push(stack, element);
+
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
     }
 
     // 60 * (250 / 100)
-    ut_equals_integer_t(ut, stack->capacity, 150, __func__);
+    ut_equals_integer_t(ut, sta_capacity(stack), 150, __func__);
 
-    sta_delete(&stack);
+    sta_free(stack);
 
-    return DS_OK;
+    return;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    sta_delete(&stack);
-    return st;
+    printf("Error at %s\n", __func__);
+    sta_free(stack);
+    interface_free(int_interface);
 }
 
 // Runs all StackArray tests
@@ -97,11 +137,8 @@ Status StackArrayTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += sta_test_locked(ut);
-    st += sta_test_growth(ut);
-
-    if (st != DS_OK)
-        goto error;
+    sta_test_locked(ut);
+    sta_test_growth(ut);
 
     ut_report(ut, "StackArray");
 

@@ -8,31 +8,31 @@
 
 #include "Floats.h"
 
-void display_float(void *element)
+void display_float(const void *element)
 {
-    float *e = (float*)element;
+    const float *e = (const float*)element;
 
     printf("%f", *e);
 }
 
-void display_double(void *element)
+void display_double(const void *element)
 {
-    double *e = (double*)element;
+    const double *e = (const double*)element;
 
     printf("%lf", *e);
 }
 
-void display_long_double(void *element)
+void display_long_double(const void *element)
 {
-    long double *e = (long double*)element;
+    const long double *e = (const long double*)element;
 
     printf("%Lf", *e);
 }
 
-int compare_float(void *element1, void *element2)
+int compare_float(const void *element1, const void *element2)
 {
-    float *e1 = (float*)element1;
-    float *e2 = (float*)element2;
+    const float *e1 = (const float*)element1;
+    const float *e2 = (const float*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -42,10 +42,10 @@ int compare_float(void *element1, void *element2)
     return 0;
 }
 
-int compare_double(void *element1, void *element2)
+int compare_double(const void *element1, const void *element2)
 {
-    double *e1 = (double*)element1;
-    double *e2 = (double*)element2;
+    const double *e1 = (const double*)element1;
+    const double *e2 = (const double*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -55,10 +55,10 @@ int compare_double(void *element1, void *element2)
     return 0;
 }
 
-int compare_long_double(void *element1, void *element2)
+int compare_long_double(const void *element1, const void *element2)
 {
-    long double *e1 = (long double*)element1;
-    long double *e2 = (long double*)element2;
+    const long double *e1 = (const long double*)element1;
+    const long double *e2 = (const long double*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -68,28 +68,28 @@ int compare_long_double(void *element1, void *element2)
     return 0;
 }
 
-void *copy_float(void *element)
+void *copy_float(const void *element)
 {
-    float *e = (float*)element;
+    const float *e = (const float*)element;
 
     return new_float(*e);
 }
 
-void *copy_double(void *element)
+void *copy_double(const void *element)
 {
-    double *e = (double*)element;
+    const double *e = (const double*)element;
 
     return new_double(*e);
 }
 
-void *copy_long_double(void *element)
+void *copy_long_double(const void *element)
 {
-    long double *e = (long double*)element;
+    const long double *e = (const long double*)element;
 
     return new_long_double(*e);
 }
 
-void *new_float(float element)
+void *new_float(const float element)
 {
     float *e = malloc(sizeof(float));
 

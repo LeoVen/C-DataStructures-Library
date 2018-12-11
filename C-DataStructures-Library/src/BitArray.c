@@ -11,7 +11,7 @@
 /// \brief An array of bits to represent 0 and 1 values.
 ///
 /// A bit array (bit set, bit map, bit string or bit vector) is a compacted
-/// array of bits represented by the bits in a word (in this case an int64_t)
+/// array of bits represented by the bits in a word (in this case an integer_t)
 /// where you can individually set or clear each bit. It is very useful at
 /// implementing a Set of elements where:
 /// - Union represented by the OR operator ( bit_OR() )
@@ -22,11 +22,22 @@
 struct BitArray_s
 {
     /// \brief Buffer of bytes.
-    int64_t *buffer;
+    integer_t *buffer;
 
     /// \brief Buffer size.
     integer_t size;
 };
+
+// Finding how many shifts are needed for the highest integer type to be mapped
+// as a buffer index. Used in bit_buffer_index().
+static const integer_t bit_shifts =
+          ((sizeof(integer_t) * 8) >> 6) > 0
+        ? 6
+        : ((sizeof(integer_t) * 8) >> 5) > 0
+        ? 5
+        : ((sizeof(integer_t) * 8) >> 4) > 0
+        ? 4
+        : 3; // One byte
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
@@ -36,7 +47,7 @@ static bool bit_receive(BitArray bits, integer_t bit_index);
 
 static Status bit_grow(BitArray bits, integer_t words);
 
-static int64_t bit_count(int64_t i);
+static integer_t bit_count(integer_t i);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -52,7 +63,7 @@ Status bit_init(BitArray *bits)
     if (!(*bits))
         return DS_ERR_ALLOC;
 
-    (*bits)->buffer = calloc(1, sizeof(int64_t));
+    (*bits)->buffer = calloc(1, sizeof(integer_t));
 
     if (!((*bits)->buffer))
     {
@@ -91,7 +102,7 @@ Status bit_create(BitArray *bits, integer_t required_bits)
 
     integer_t buffer_size = bit_buffer_index(required_bits - 1) + 1;
 
-    (*bits)->buffer = calloc(buffer_size, sizeof(int64_t));
+    (*bits)->buffer = calloc(buffer_size, sizeof(integer_t));
 
     if (!((*bits)->buffer))
     {
@@ -161,7 +172,7 @@ Status bit_set(BitArray bits, integer_t bit_index)
 
     integer_t index = bit_buffer_index(bit_index);
 
-    bits->buffer[index] |= ((int64_t)1 << bit_index);
+    bits->buffer[index] |= ((integer_t)1 << bit_index);
 
     return DS_OK;
 }
@@ -209,7 +220,7 @@ Status bit_clear(BitArray bits, integer_t bit_index)
 
     integer_t index = bit_buffer_index(bit_index);
 
-    bits->buffer[index] &= ~((int64_t)1 << bit_index);
+    bits->buffer[index] &= ~((integer_t)1 << bit_index);
 
     return DS_OK;
 }
@@ -253,7 +264,7 @@ Status bit_flip(BitArray bits, integer_t bit_index)
 
     integer_t index = bit_buffer_index(bit_index);
 
-    bits->buffer[index] ^= ((int64_t)1 << bit_index);
+    bits->buffer[index] ^= ((integer_t)1 << bit_index);
 
     return DS_OK;
 }
@@ -300,11 +311,11 @@ Status bit_put(BitArray bits, bool state, integer_t bit_index)
 
     if (state)
     {
-        bits->buffer[index] |= ((int64_t)1 << bit_index);
+        bits->buffer[index] |= ((integer_t)1 << bit_index);
     }
     else
     {
-        bits->buffer[index] &= ~((int64_t)1 << bit_index);
+        bits->buffer[index] &= ~((integer_t)1 << bit_index);
     }
 
     return DS_OK;
@@ -389,7 +400,7 @@ Status bit_get(BitArray bits, integer_t bit_index, bool *result)
 
     integer_t index = bit_buffer_index(bit_index);
 
-    int64_t value = bits->buffer[index] & ((int64_t)1 << bit_index);
+    integer_t value = bits->buffer[index] & ((integer_t)1 << bit_index);
 
     *result = (value) ? true : false;
 
@@ -812,14 +823,15 @@ Status bit_display_array(BitArray bits)
 
 static integer_t bit_buffer_index(integer_t bit_index)
 {
-    return bit_index >> 6;
+    // bit_shifts defined in header file
+    return bit_index >> bit_shifts;
 }
 
 static bool bit_receive(BitArray bits, integer_t bit_index)
 {
     integer_t index = bit_buffer_index(bit_index);
 
-    int64_t value = bits->buffer[index] & ((int64_t)1 << bit_index);
+    integer_t value = bits->buffer[index] & ((integer_t)1 << bit_index);
 
     return (value) ? true : false;
 }
@@ -832,7 +844,7 @@ static Status bit_grow(BitArray bits, integer_t words)
     // Either double in size or allocate to fit enough words
     integer_t new_size = (words > bits->size * 2) ? words : bits->size * 2;
 
-    int64_t *new_buffer = realloc(bits->buffer, sizeof(int64_t) * new_size);
+    integer_t *new_buffer = realloc(bits->buffer, sizeof(integer_t) * new_size);
 
     // Reallocation failed
     if (!new_buffer)
@@ -846,9 +858,9 @@ static Status bit_grow(BitArray bits, integer_t words)
     return DS_OK;
 }
 
-// Counts the number of set bits in an int64_t using the "bit population count"
-// as it is called
-static int64_t bit_count(int64_t i)
+// Counts the number of set bits in an integer_t using the
+// "bit population count"
+static integer_t bit_count(integer_t i)
 {
     i = i - ((i >> 1) & 0x5555555555555555L);
     i = (i & 0x3333333333333333L) + ((i >> 2) & 0x3333333333333333L);
@@ -856,7 +868,7 @@ static int64_t bit_count(int64_t i)
     i = i + (i >> 8);
     i = i + (i >> 16);
     i = i + (i >> 32);
-    return (int)i & 0x7f;
+    return (integer_t)i & 0x7f;
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///

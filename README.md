@@ -9,12 +9,12 @@ The purpose of this library is to provide an easy to use, easy to understand and
 
 Used method (powershell):
 ```
-Get-ChildItem . -Include @("*.c", "*.h") -Recurse -Name | foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
+Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-64-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-25291-%232196f3.svg)
-![average](https://img.shields.io/badge/average-395-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-66-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-25669-%232196f3.svg)
+![average](https://img.shields.io/badge/average-389-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-18-%23f44336.svg)
 

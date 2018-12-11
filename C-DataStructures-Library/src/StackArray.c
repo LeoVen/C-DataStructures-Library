@@ -8,330 +8,511 @@
 
 #include "StackArray.h"
 
-// NOT EXPOSED API
-
-Status sta_grow(StackArray sta);
-
-// END OF NOT EXPOSED API
-
-Status sta_init(StackArray *sta)
+/// A StackArray_s is a buffered Stack with FILO (First-in Last-out) or LIFO
+/// (Last-in First-out) operations, so the first item added is the last one to
+/// be removed. The stack is implemented as a normal buffer that only grows on
+/// one side. This simplifies the structure as no indexes will ever need to
+/// wrap around the buffer. The size of the stack, or the amount of elements
+/// in the stack can be used as an index for push and pop operations. The
+/// buffer can also expand according to the \c growth_rate.
+///
+/// \par Advantages over Stack_s
+/// - No need of pointers, only the data is allocated in memory
+///
+/// \par Drawbacks
+/// - When the \c StackArray is full the buffer needs to be reallocated
+///
+/// \par Functions
+///
+/// Located in the file StackArray.c
+struct StackArray_s
 {
-    (*sta) = malloc(sizeof(StackArray_t));
+    /// \brief Data buffer.
+    ///
+    /// Buffer where elements are stored in.
+    void **buffer;
 
-    if (!(*sta))
-        return DS_ERR_ALLOC;
+    /// \brief Current amount of elements in the StackArray_s.
+    ///
+    /// Current amount of elements in the StackArray_S.
+    unsigned_t size;
 
-    (*sta)->buffer = malloc(sizeof(int) * 32);
+    /// \brief StackArray_s buffer maximum capacity.
+    ///
+    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer
+    /// is reallocated and increases according to \c growth_rate.
+    unsigned_t capacity;
 
-    if (!((*sta)->buffer))
+    /// \brief Buffer growth rate.
+    ///
+    /// Buffer growth rate. The new buffer capacity is calculated as:
+    ///
+    /// <code> capacity *= (growth_rate / 100.0) </code>
+    unsigned_t growth_rate;
+
+    /// \brief Flag for locked capacity.
+    ///
+    /// If \c locked is set to true the buffer will not grow and if any
+    /// elements are inserted with a full buffer \c DS_ERR_FULL will be
+    /// returned.
+    bool locked;
+
+    /// \brief StackArray_s interface.
+    ///
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
+
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    integer_t version_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+bool
+static sta_grow(StackArray stack);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+/// Initializes a StackArray_s with an initial capacity of 32 and a growth rate
+/// of 200, that is, twice the size after each growth.
+///
+/// \param[in] interface The interface for your StackArray_s.
+///
+/// \return A new StackArray_s or NULL if allocation failed.
+StackArray_t *
+sta_new(Interface_t *interface)
+{
+    StackArray stack = malloc(sizeof(StackArray_t));
+
+    if (!stack)
+        return NULL;
+
+    stack->buffer = malloc(sizeof(void*) * 32);
+
+    if (!(stack->buffer))
     {
-        free(*sta);
+        free(stack);
 
-        *sta = NULL;
-
-        return DS_ERR_ALLOC;
+        return NULL;
     }
 
-    (*sta)->capacity = 32;
-    (*sta)->growth_rate = 200;
+    stack->capacity = 32;
+    stack->growth_rate = 200;
+    stack->size = 0;
+    stack->version_id = 0;
+    stack->locked = false;
 
-    (*sta)->height = 0;
+    stack->interface = interface;
 
-    (*sta)->locked = false;
-
-    return DS_OK;
+    return stack;
 }
 
-Status sta_create(StackArray *sta, integer_t initial_capacity, integer_t growth_rate)
+/// Initializes a \c StackArray with a user defined \c initial_capacity and \c
+/// growth_rate. This function only accepts an \c initial_capacity greater than
+/// 8 and a \c growth_rate greater than 100; but keep in mind that in some
+/// cases if the \c initial_capacity is too small and the \c growth_rate is too
+/// close to 100 there won't be an increase in capacity and the minimum growth
+/// will be triggered.
+///
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
+/// \param[in] interface An interface defining all necessary functions for the
+/// stack to operate.
+///
+/// \return NULL if the growth rate is less than 101, if the initial capacity
+/// is 0 or if allocation failed.
+/// \return A new StackArray_s dynamically allocated.
+StackArray_t *
+sta_create(unsigned_t initial_capacity, unsigned_t growth_rate,
+           Interface_t *interface)
 {
-    if (initial_capacity < 8 || growth_rate <= 100)
-        return DS_ERR_INVALID_ARGUMENT;
+    if (growth_rate <= 100 || initial_capacity == 0)
+        return NULL;
 
-    (*sta) = malloc(sizeof(StackArray_t));
+    StackArray stack = malloc(sizeof(StackArray_t));
 
-    if (!(*sta))
-        return DS_ERR_ALLOC;
+    if (!stack)
+        return NULL;
 
-    (*sta)->buffer = malloc(sizeof(int) * initial_capacity);
+    stack->buffer = malloc(sizeof(void*) * initial_capacity);
 
-    if (!((*sta)->buffer))
+    if (!(stack->buffer))
     {
-        free(*sta);
+        free(stack);
 
-        *sta = NULL;
-
-        return DS_ERR_ALLOC;
+        return NULL;
     }
 
-    (*sta)->capacity = initial_capacity;
-    (*sta)->growth_rate = growth_rate;
+    stack->capacity = initial_capacity;
+    stack->growth_rate = growth_rate;
+    stack->size = 0;
+    stack->version_id = 0;
+    stack->locked = false;
 
-    (*sta)->height = 0;
+    stack->interface = interface;
 
-    (*sta)->locked = false;
-
-    return DS_OK;
+    return stack;
 }
 
-Status sta_push(StackArray sta, int element)
+/// Frees each element at the stack using its interface's @c v_free and then
+/// frees the stack struct.
+///
+/// \param stack The stack to be freed from memory.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+void sta_free(StackArray_t *stack)
 {
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
+    for (integer_t i = 0; i < stack->size; i++)
+        stack->interface->free(stack->buffer[i]);
 
-    if (sta_full(sta))
+    free(stack->buffer);
+
+    free(stack);
+}
+
+void sta_free_shallow(StackArray_t *stack)
+{
+    free(stack->buffer);
+
+    free(stack);
+}
+
+/// This function will free all the elements of the specified StackArray_s and
+/// will keep the structure intact.
+///
+/// \param[in] stack The stack to be erased.
+///
+/// \return DS_ERR_ALLOC if stack allocation failed.
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+bool
+sta_erase(StackArray_t *stack)
+{
+    for (integer_t i = 0; i < stack->size; i++)
     {
-        Status st = sta_grow(sta);
+        stack->interface->free(stack->buffer[i]);
 
-        if (st != DS_OK)
-            return st;
+        stack->buffer[i] = NULL;
     }
 
-    sta->buffer[sta->height] = element;
+    return true;
+}
 
-    (sta->height)++;
+/// Sets a new interface for the specified StackArray_s.
+///
+/// \param[in] stack StackArray_s to change the interface.
+/// \param[in] new_interface New interface for the specified structure.
+void
+sta_config(StackArray_t *stack, Interface_t *new_interface)
+{
+    stack->interface = new_interface;
+}
+
+unsigned_t
+sta_size(StackArray_t *stack)
+{
+    return stack->size;
+}
+
+unsigned_t
+sta_capacity(StackArray_t *stack)
+{
+    return stack->capacity;
+}
+
+unsigned_t
+sta_growth(StackArray_t *stack)
+{
+    return stack->growth_rate;
+}
+
+bool
+sta_set_growth(StackArray_t *stack, unsigned_t growth_rate)
+{
+    if (growth_rate <= 100)
+        return false;
+
+    stack->growth_rate = growth_rate;
+
+    return true;
+}
+
+/// Inserts an element at the top of the specified stack.
+///
+/// \param[in] stack The StackArray_s where the element is to be inserted.
+/// \param[in] element The element to be inserted in the stack.
+///
+/// \return true if the operation was successful, otherwise false if the buffer
+/// reallocation failed.
+bool
+sta_push(StackArray_t *stack, void *element)
+{
+    if (sta_full(stack))
+    {
+        if (!sta_grow(stack))
+            return false;
+    }
+
+    stack->buffer[stack->size] = element;
+
+    stack->size++;
+    stack->version_id++;
+
+    return true;
+}
+
+/// Removes an element from the top of the specified stack.
+///
+/// \param[in] stack The stack where the element is to be removed from.
+/// \param[out] result The resulting element removed from the stack.
+///
+/// \return DS_ERR_INVALID_OPERATION if the stack is empty.
+/// \return DS_ERR_NULL_POINTER if stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+bool
+sta_pop(StackArray_t *stack, void **result)
+{
+    *result = NULL;
+
+    if (sta_empty(stack))
+        return false;
+
+    *result = stack->buffer[stack->size - 1];
+
+    stack->buffer[stack->size - 1] = NULL;
+
+    stack->size--;
+    stack->version_id++;
 
     return DS_OK;
 }
 
-Status sta_pop(StackArray sta, int *result)
+void *
+sta_peek(StackArray_t *stack)
 {
-    *result = 0;
+    if (sta_empty(stack))
+        return NULL;
 
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (sta_empty(sta))
-        return DS_ERR_INVALID_OPERATION;
-
-    *result = sta->buffer[sta->height - 1];
-
-    (sta->height)--;
-
-    return DS_OK;
+    return stack->buffer[stack->size - 1];
 }
 
-Status sta_insert(StackArray sta, int element)
+bool
+sta_empty(StackArray_t *stack)
 {
-    return sta_push(sta, element);
+    return stack->size == 0;
 }
 
-Status sta_remove(StackArray sta, int *result)
+bool
+sta_full(StackArray_t *stack)
 {
-    return sta_pop(sta, result);
+    return stack->size == stack->capacity;
 }
 
-Status sta_display(StackArray sta)
+bool
+sta_fits(StackArray_t *stack, unsigned_t size)
 {
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
+    return (stack->size + size) <= stack->capacity;
+}
 
-    if (sta_empty(sta))
+void
+sta_capacity_lock(StackArray stack)
+{
+    stack->locked = true;
+}
+
+void
+sta_capacity_unlock(StackArray stack)
+{
+    stack->locked = false;
+}
+
+/// Returns a copy of the specified StackArray_s.
+///
+/// \param stack The stack to be copied.
+///
+/// \return \c NULL if allocation failed or a copy of the specified stack.
+StackArray_t *
+sta_copy(StackArray_t *stack)
+{
+    StackArray_t *new_stack = sta_create(stack->capacity, stack->growth_rate,
+            stack->interface);
+
+    if (!new_stack)
+        return NULL;
+
+    for (integer_t i = 0; i < stack->size; i++)
+    {
+        new_stack->buffer[i] = stack->interface->copy(stack->buffer[i]);
+    }
+
+    new_stack->size = stack->size;
+
+    new_stack->locked = stack->locked;
+
+    return new_stack;
+}
+
+/// Compares two stacks.
+///
+/// \param stack1
+/// \param stack2
+///
+/// \return
+int
+sta_compare(StackArray_t *stack1, StackArray_t *stack2)
+{
+    unsigned_t max_size = stack1->size < stack2->size
+            ? stack1->size
+            : stack2->size;
+
+    int comparison = 0;
+    for (unsigned_t i = 0; i < max_size; i++)
+    {
+        comparison = stack1->interface->compare(stack1->buffer[i],
+                stack2->buffer[i]);
+        if (comparison > 0)
+            return 1;
+        else if (comparison < 0)
+            return -1;
+    }
+
+    // So far all elements were the same
+    if (stack1->size > stack2->size)
+        return 1;
+    else if (stack1->size < stack2->size)
+        return -1;
+
+    return 0;
+}
+
+/// Displays a \c StackArray in the console.
+///
+/// \param stack The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+void sta_display(StackArray_t *stack)
+{
+    if (sta_empty(stack))
     {
         printf("\nStack\n[ empty]\n");
-
-        return DS_OK;
+        return;
     }
 
     printf("\nStack");
 
-    for (integer_t i = 0; i < sta->height; i++)
+    for (integer_t i = 0; i < stack->size; i++)
     {
-        printf("\n|%10d |", sta->buffer[i]);
+        stack->interface->display(stack->buffer[i]);
+        printf("\n");
     }
 
     printf("\n");
-
-    return DS_OK;
 }
 
-Status sta_display_array(StackArray sta)
+/// Displays a \c StackArray in the console like an array with its values
+/// separated by commas, delimited with brackets.
+///
+/// \param stack The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+void sta_display_array(StackArray_t *stack)
 {
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (sta_empty(sta))
+    if (sta_empty(stack))
     {
         printf("\n[ empty ] \n");
-
-        return DS_OK;
+        return;
     }
 
     printf("\n[ ");
 
-    for (integer_t i = 0; i < sta->height - 1; i++)
+    for (integer_t i = 0; i < stack->size - 1; i++)
     {
-        printf("%d, ", sta->buffer[i]);
+        stack->interface->display(stack->buffer[i]);
+        printf(", ");
     }
 
-    printf("%d ]\n", sta->buffer[sta->height - 1]);
+    stack->interface->display(stack->buffer[stack->size - 1]);
 
-    return DS_OK;
+    printf(" ]\n");
 }
 
-Status sta_display_raw(StackArray sta)
+/// Displays a \c StackArray in the console with its values separated by
+/// spaces.
+///
+/// \par Requirements
+/// - An interface with a display function.
+///
+/// \param stack The stack to be displayed in the console.
+///
+/// \return DS_ERR_NULL_POINTER if the stack reference is \c NULL.
+/// \return DS_OK if all operations were successful.
+void sta_display_raw(StackArray_t *stack)
 {
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
     printf("\n");
 
-    if (sta_empty(sta))
-        return DS_OK;
+    if (sta_empty(stack))
+        return;
 
-    for (integer_t i = 0; i < sta->height; i++)
-        printf("%d ", sta->buffer[i]);
-
-    printf("\n");
-
-    return DS_OK;
-}
-
-Status sta_delete(StackArray *sta)
-{
-    if ((*sta) == NULL)
-        return DS_ERR_INVALID_OPERATION;
-
-    free((*sta)->buffer);
-
-    free(*sta);
-
-    *sta = NULL;
-
-    return DS_OK;
-}
-
-Status sta_erase(StackArray *sta)
-{
-    if ((*sta) == NULL)
-        return DS_ERR_INVALID_OPERATION;
-
-    Status st = sta_delete(sta);
-
-    if (st != DS_OK)
-        return st;
-
-    st = sta_init(sta);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-int sta_peek(StackArray sta)
-{
-    return sta->buffer[sta->height - 1];
-}
-
-integer_t sta_height(StackArray sta)
-{
-    if (sta == NULL)
-        return -1;
-
-    return sta->height;
-}
-
-integer_t sta_capacity(StackArray sta)
-{
-    if (sta == NULL)
-        return -1;
-
-    return sta->capacity;
-}
-
-bool sta_empty(StackArray sta)
-{
-    return (sta->height == 0);
-}
-
-bool sta_full(StackArray sta)
-{
-    return (sta->height == sta->capacity);
-}
-
-bool sta_fits(StackArray sta, integer_t size)
-{
-    return (sta->height + size) <= sta->capacity;
-}
-
-Status sta_copy(StackArray sta, StackArray *result)
-{
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = sta_create(result, sta->capacity, sta->growth_rate);
-
-    if (st != DS_OK)
-        return st;
-
-    if (sta_empty(sta))
-        return DS_OK;
-
-    for (integer_t i = 0; i < sta->height; i++)
+    for (integer_t i = 0; i < stack->size; i++)
     {
-        (*result)->buffer[i] = sta->buffer[i];
+        stack->interface->display(stack->buffer[i]);
+        printf(" ");
     }
 
-    (*result)->height = sta->height;
-
-    (*result)->locked = sta->locked;
-
-    return DS_OK;
+    printf("\n");
 }
 
-Status sta_cap_lock(StackArray sta)
-{
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    sta->locked = true;
-
-    return DS_OK;
-}
-
-Status sta_cap_unlock(StackArray sta)
-{
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    sta->locked = false;
-
-    return DS_OK;
-}
-
-// NOT EXPOSED API
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 // This function reallocates the data buffer increasing its capacity
-Status sta_grow(StackArray sta)
+bool
+static sta_grow(StackArray stack)
 {
-    if (sta == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (stack->locked)
+        return false;
 
-    if (sta->locked)
-        return DS_ERR_FULL;
-
-    integer_t old_capacity = sta->capacity;
+    unsigned_t old_capacity = stack->capacity;
 
     // capacity = capacity * (growth_rate / 100)
-    sta->capacity = (integer_t) ((double) (sta->capacity) * ((double) (sta->growth_rate) / 100.0));
+    stack->capacity = (unsigned_t) ((double) (stack->capacity) *
+            ((double) (stack->growth_rate) / 100.0));
 
     // 4 is the minimum growth
-    if (sta->capacity - old_capacity < 4)
-        sta->capacity = old_capacity + 4;
+    if (stack->capacity - old_capacity < 4)
+        stack->capacity = old_capacity + 4;
 
-    int *new_buffer = realloc(sta->buffer, sizeof(int) * sta->capacity);
+    void **new_buffer = realloc(stack->buffer,sizeof(void*) * stack->capacity);
 
     // Reallocation failed
     if (!new_buffer)
     {
-        sta->capacity = old_capacity;
+        stack->capacity = old_capacity;
 
-        return DS_ERR_ALLOC;
+        return false;
     }
 
-    sta->buffer = new_buffer;
+    stack->buffer = new_buffer;
 
-    return DS_OK;
+    return true;
 }
 
-// END OF NOT EXPOSED API
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo StackArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo StackArrayWrapper

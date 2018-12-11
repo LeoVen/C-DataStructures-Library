@@ -8,53 +8,53 @@
 
 #include "Integers.h"
 
-void display_int(void *element)
+void display_int(const void *element)
 {
-    int *e = (int*)element;
+    const int *e = (const int*)element;
 
     printf("%d", *e);
 }
 
-void display_long(void *element)
+void display_long(const void *element)
 {
-    long *e = (long*)element;
+    const long *e = (const long*)element;
 
     printf("%ld", *e);
 }
 
-void display_long_long(void *element)
+void display_long_long(const void *element)
 {
-    long long *e = (long long*)(element);
+    const long long *e = (const long long*)(element);
 
     printf("%lld", *e);
 }
 
-void display_unsigned(void *element)
+void display_unsigned(const void *element)
 {
-    unsigned *e = (unsigned*)element;
+    const unsigned *e = (const unsigned*)element;
 
     printf("%u", *e);
 }
 
 
-void display_unsigned_long(void *element)
+void display_unsigned_long(const void *element)
 {
-    unsigned long *e = (unsigned long*)element;
+    const unsigned long *e = (const unsigned long*)element;
 
     printf("%lu", *e);
 }
 
-void display_unsigned_long_long(void *element)
+void display_unsigned_long_long(const void *element)
 {
-    unsigned long long *e = (unsigned long long*)element;
+    const unsigned long long *e = (const unsigned long long*)element;
 
     printf("%llu", *e);
 }
 
-int compare_int(void *element1, void *element2)
+int compare_int(const void *element1,const  void *element2)
 {
-    int *e1 = (int*)element1;
-    int *e2 = (int*)element2;
+    const int *e1 = (int*)element1;
+    const int *e2 = (int*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -64,10 +64,10 @@ int compare_int(void *element1, void *element2)
     return 0;
 }
 
-int compare_long(void *element1, void *element2)
+int compare_long(const void *element1, const void *element2)
 {
-    long *e1 = (long*)element1;
-    long *e2 = (long*)element2;
+    const long *e1 = (const long*)element1;
+    const long *e2 = (const long*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -77,10 +77,10 @@ int compare_long(void *element1, void *element2)
     return 0;
 }
 
-int compare_long_long(void *element1, void *element2)
+int compare_long_long(const void *element1, const void *element2)
 {
-    long long *e1 = (long long*)element1;
-    long long *e2 = (long long*)element2;
+    const long long *e1 = (const long long*)element1;
+    const long long *e2 = (const long long*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -90,10 +90,10 @@ int compare_long_long(void *element1, void *element2)
     return 0;
 }
 
-int compare_unsigned(void *element1, void *element2)
+int compare_unsigned(const void *element1, const void *element2)
 {
-    unsigned *e1 = (unsigned*)element1;
-    unsigned *e2 = (unsigned*)element2;
+    const unsigned *e1 = (const unsigned*)element1;
+    const unsigned *e2 = (const unsigned*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -103,10 +103,10 @@ int compare_unsigned(void *element1, void *element2)
     return 0;
 }
 
-int compare_unsigned_long(void *element1, void *element2)
+int compare_unsigned_long(const void *element1, const void *element2)
 {
-    unsigned long *e1 = (unsigned long*)element1;
-    unsigned long *e2 = (unsigned long*)element2;
+    const unsigned long *e1 = (const unsigned long*)element1;
+    const unsigned long *e2 = (const unsigned long*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -116,10 +116,10 @@ int compare_unsigned_long(void *element1, void *element2)
     return 0;
 }
 
-int compare_unsigned_long_long(void *element1, void *element2)
+int compare_unsigned_long_long(const void *element1, const void *element2)
 {
-    unsigned long long *e1 = (unsigned long long*)element1;
-    unsigned long long *e2 = (unsigned long long*)element2;
+    const unsigned long long *e1 = (const unsigned long long*)element1;
+    const unsigned long long *e2 = (const unsigned long long*)element2;
 
     if (*e1 > *e2)
         return 1;
@@ -129,44 +129,44 @@ int compare_unsigned_long_long(void *element1, void *element2)
     return 0;
 }
 
-void *copy_int(void *element)
+void *copy_int(const void *element)
 {
-    int *e = (int*)element;
+    const int *e = (const int*)element;
 
     return new_int(*e);
 }
 
-void *copy_long(void *element)
+void *copy_long(const void *element)
 {
-    long *e = (long*)element;
+    const long *e = (const long*)element;
 
     return new_long(*e);
 }
 
-void *copy_long_long(void *element)
+void *copy_long_long(const void *element)
 {
-    long long *e = (long long*)element;
+    const long long *e = (const long long*)element;
 
     return new_long_long(*e);
 }
 
-void *copy_unsigned(void *element)
+void *copy_unsigned(const void *element)
 {
-    unsigned *e = (unsigned*)element;
+    const unsigned *e = (const unsigned*)element;
 
     return new_unsigned(*e);
 }
 
-void *copy_unsigned_long(void *element)
+void *copy_unsigned_long(const void *element)
 {
-    unsigned long *e = (unsigned long*)element;
+    const unsigned long *e = (const unsigned long*)element;
 
     return new_unsigned_long(*e);
 }
 
-void *copy_unsigned_long_long(void *element)
+void *copy_unsigned_long_long(const void *element)
 {
-    unsigned long long *e = (unsigned long long*)element;
+    const unsigned long long *e = (const unsigned long long*)element;
 
     return new_unsigned_long_long(*e);
 }

@@ -19,7 +19,7 @@
 
 int main()
 {
-    srand(time(NULL));
+    srand((unsigned)time(NULL));
 
     BitArrayTests();
     DequeArrayTests();
