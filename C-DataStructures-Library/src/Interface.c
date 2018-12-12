@@ -12,14 +12,17 @@
 /// is responsible to. For the configurations you don't want to set or that are
 /// not necessary for your needs pass in the parameter as NULL.
 ///
-/// \param compare Value compare function.
-/// \param copy Value copy function.
-/// \param display Value display function.
-/// \param free Value free function.
+/// \param compare A compare function.
+/// \param copy A copy function.
+/// \param display A display function.
+/// \param free A free function.
+/// \param hash A hash function.
+/// \param priority A priority function.
 ///
 /// \return A new interface or NULL if allocation failed.
 Interface_t *
-interface_new(compare_f compare, copy_f copy, display_f display, free_f free)
+interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
+        hash_f hash, priority_f priority)
 {
     Interface interface = malloc(sizeof(Interface_t));
 
@@ -30,6 +33,8 @@ interface_new(compare_f compare, copy_f copy, display_f display, free_f free)
     interface->copy = copy;
     interface->display = display;
     interface->free = free;
+    interface->hash = hash;
+    interface->priority = priority;
 
     return interface;
 }
@@ -38,13 +43,16 @@ interface_new(compare_f compare, copy_f copy, display_f display, free_f free)
 /// and the previous configuration is kept.
 ///
 /// \param interface An interface to be changed.
-/// \param compare Value compare function.
-/// \param copy Value copy function.
-/// \param display Value display function.
-/// \param free Value free function.
+/// \param compare A compare function.
+/// \param copy A copy function.
+/// \param display A display function.
+/// \param free A free function.
+/// \param hash A hash function.
+/// \param priority A priority function.
 void
 interface_config(Interface_t *interface,
-        compare_f compare, copy_f copy, display_f display, free_f free)
+        compare_f compare, copy_f copy, display_f display, free_f free,
+        hash_f hash, priority_f priority)
 {
     if (compare)
         interface->compare = compare;
@@ -54,6 +62,10 @@ interface_config(Interface_t *interface,
         interface->display = display;
     if (free)
         interface->free = free;
+    if (hash)
+        interface->hash = hash;
+    if (priority)
+        interface->priority = priority;
 }
 
 /// Frees from memory the specified interface.

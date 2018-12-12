@@ -23,15 +23,6 @@ extern "C" {
 /// - <code>[ > 0 ]</code> if first element is greater than the second;
 /// - <code>[ < 0 ]</code> if second element is greater than the first;
 /// - <code>[ 0 ]</code> if elements are equal.
-///
-/// This function is also used when comparing the priority of two elements. The
-/// rules are the following:
-///
-/// - <code>[ > 0 ]</code> if first element has a higher priority than the
-/// second element;
-/// - <code>[ < 0 ]</code> if second element has a higher priority than the
-/// first element;
-/// - <code>[ 0 ]</code> if elements have the same priority.
 typedef int(*compare_f)(const void *, const void *);
 
 /// \brief Copy function.
@@ -50,6 +41,23 @@ typedef void(*display_f)(const void *);
 /// A function that completely frees an element from memory.
 typedef void(*free_f)(void *);
 
+/// \brief A function that returns a hash number for a given element.
+///
+/// A function that returns a hash number for a given element.
+typedef unsigned_t(*hash_f)(void *);
+
+/// \brief A function that compares the priority of two elements.
+///
+/// This function is used when comparing the priority of two elements. The
+/// rules are the following:
+///
+/// - <code>[ > 0 ]</code> if first element has a higher priority than the
+/// second element;
+/// - <code>[ < 0 ]</code> if second element has a higher priority than the
+/// first element;
+/// - <code>[ 0 ]</code> if elements have the same priority.
+typedef int(*priority_f)(void *, void *);
+
 /// \brief An interface used by all data structures that stores functions for
 /// comparing, copying, displaying and freeing keys or values.
 ///
@@ -66,7 +74,12 @@ struct Interface_s
     display_f display;
 
     free_f free;
+
+    hash_f hash;
+
+    priority_f priority;
 };
+
 
 typedef struct Interface_s Interface_t;
 
@@ -75,13 +88,15 @@ typedef struct Interface_s *Interface;
 /// \ref interface_new
 /// \brief Creates a new interface.
 Interface_t *
-interface_new(compare_f compare, copy_f copy, display_f display, free_f free);
+interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
+              hash_f hash, priority_f priority);
 
 /// \ref interface_config
 /// \brief Changes the configuration of an interface.
 void
 interface_config(Interface_t *interface,
-        compare_f compare, copy_f copy, display_f display, free_f free);
+        compare_f compare, copy_f copy, display_f display, free_f free,
+        hash_f hash, priority_f priority);
 
 /// \ref interface_free
 /// \brief Frees from memory an Interface_s.

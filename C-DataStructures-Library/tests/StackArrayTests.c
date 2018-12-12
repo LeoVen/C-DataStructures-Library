@@ -13,7 +13,8 @@
 // Tests locked capacity
 void sta_test_locked(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int, free);
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+            free, NULL, NULL);
 
     if (!int_interface)
         goto error;
@@ -39,10 +40,10 @@ void sta_test_locked(UnitTest ut)
             free(element);
     }
 
-    unsigned_t size = sta_size(stack);
+    integer_t size = sta_size(stack);
 
     ut_equals_bool(ut, success, false, __func__);
-    ut_equals_unsigned_t(ut, size, 16, __func__);
+    ut_equals_integer_t(ut, size, 16, __func__);
 
     sta_capacity_unlock(stack);
 
@@ -54,7 +55,7 @@ void sta_test_locked(UnitTest ut)
         goto error;
     }
 
-    ut_equals_unsigned_t(ut, sta_size(stack), 17, __func__);
+    ut_equals_integer_t(ut, sta_size(stack), 17, __func__);
 
     success = sta_pop(stack, &element);
 
@@ -88,7 +89,8 @@ void sta_test_locked(UnitTest ut)
 // Tests capacity multiplication
 void sta_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int, free);
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+            free, NULL, NULL);
 
     if (!int_interface)
         goto error;

@@ -8,353 +8,576 @@
 
 #include "QueueArray.h"
 
-// NOT EXPOSED API
-
-Status qua_grow(QueueArray qua);
-
-// END OF NOT EXPOSED API
-
-Status qua_init(QueueArray *qua)
+/// A QueueArray is a buffered Queue with FIFO (First-in First-out) or LILO
+/// (Last-in Last-out) operations, so the first item added is the first one to
+/// be removed. The queue is implemented as a circular buffer. Its indexes can
+/// wrap around the buffer if they reach the end. The buffer can also expand.
+/// The grow function will first check if there are any items that wrapped
+/// around the buffer. If so, it will calculate which portion (left or right)
+/// has the least amount of elements. If left is chosen, it will append its
+/// contents to the right of the right portion; otherwise it will shift the
+/// right portion to the end of the buffer. This effectively decreases the
+/// amount of shifts needed.
+///
+/// \par Advantages over Queue
+/// - No need of pointers, only the data is allocated in memory
+///
+/// \par Drawbacks
+/// - When the \c QueueArray is full the buffer needs to be reallocated
+/// - When the buffer is reallocated some items might need to be shifted
+///
+/// \par Functions
+///
+/// Located in the file QueueArray.c
+struct QueueArray_s
 {
-    (*qua) = malloc(sizeof(QueueArray_t));
+    /// \brief Data buffer.
+    ///
+    /// Buffer where elements are stored in.
+    void **buffer;
 
-    if (!(*qua))
-        return DS_ERR_ALLOC;
+    /// \brief Front of the queue.
+    ///
+    /// An index that represents the front of the queue. The \c qua_dequeue
+    /// operates relative to this index. This is where the next element to be
+    /// removed is located. This index represents the exact position of an the
+    /// front element (unlike the \c rear index).
+    integer_t front;
 
-    (*qua)->buffer = malloc(sizeof(int) * 32);
+    /// \brief Back of the queue.
+    ///
+    /// An index that represents the back of the queue. The \c qua_enqueue
+    /// operates relative to this index. This is where the last element was
+    /// added. It does not represents the exact position of an element; it is
+    /// always one position ahead (circularly) of the last inserted element.
+    /// This might cause confusion; when this index is 0 the real rear element
+    /// is at <code> capacity - 1 </code>.
+    integer_t rear;
 
-    if (!((*qua)->buffer))
+    /// \brief Current amount of elements in the \c QueueArray.
+    ///
+    /// Current amount of elements in the \c QueueArray.
+    integer_t size;
+
+    /// \brief \c QueueArray buffer maximum capacity.
+    ///
+    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
+    /// reallocated and increases according to \c growth_rate.
+    integer_t capacity;
+
+    /// \brief Buffer growth rate.
+    ///
+    /// Buffer growth rate. The new buffer capacity is calculated as:
+    ///
+    /// <code> capacity *= (growth_rate / 100.0) </code>
+    integer_t growth_rate;
+
+    /// \brief Flag for locked capacity.
+    ///
+    /// If \c locked is set to true the buffer will not grow and insertions
+    /// won't be successful once the buffer gets filled up.
+    bool locked;
+
+    /// \brief QueueArray_s interface.
+    ///
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
+
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    integer_t version_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+bool
+static qua_grow(QueueArray_t *queue);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+/// Initializes a QueueArray_s with an initial capacity of 32 and a growth rate
+/// of 200, that is, twice the size after each growth.
+///
+/// \param[in] interface The interface for your QueueArray_s.
+///
+/// \return A new QueueArray_s or NULL if allocation failed.
+QueueArray_t *
+qua_new(Interface_t *interface)
+{
+    QueueArray_t *queue = malloc(sizeof(QueueArray_t));
+
+    if (!queue)
+        return NULL;
+
+    queue->buffer = malloc(sizeof(int) * 32);
+
+    if (!(queue->buffer))
     {
-        free(*qua);
-
-        *qua = NULL;
-
-        return DS_ERR_ALLOC;
+        free(queue);
+        return NULL;
     }
 
-    (*qua)->capacity = 32;
-    (*qua)->growth_rate = 200;
+    queue->capacity = 32;
+    queue->growth_rate = 200;
+    queue->size = 0;
+    queue->front = 0;
+    queue->rear = 0;
+    queue->locked = false;
 
-    (*qua)->size = 0;
+    queue->interface = interface;
 
-    (*qua)->front = 0;
-    (*qua)->rear = 0;
-
-    (*qua)->locked = false;
-
-    return DS_OK;
+    return queue;
 }
 
-Status qua_create(QueueArray *qua, integer_t initial_capacity, integer_t growth_rate)
+/// Initializes a QueueArray_s with a user defined \c initial_capacity and \c
+/// growth_rate. This function only accepts an \c initial_capacity greater than
+/// 0 and a \c growth_rate greater than 100; but keep in mind that in some
+/// cases if the \c initial_capacity is too small and the \c growth_rate is too
+/// close to 100 there won't be an increase in capacity and the minimum growth
+/// will be triggered.
+///
+/// \param[in] initial_capacity
+/// \param[in] growth_rate
+/// \param[in] interface
+///
+/// \return
+QueueArray_t *
+qua_create(integer_t initial_capacity, integer_t growth_rate,
+           Interface_t *interface)
 {
-    if (initial_capacity < 8 || growth_rate <= 100)
-        return DS_ERR_INVALID_ARGUMENT;
+    if (growth_rate <= 100 || initial_capacity == 0)
+        return NULL;
 
-    (*qua) = malloc(sizeof(QueueArray_t));
+    QueueArray_t *queue = malloc(sizeof(QueueArray_t));
 
-    if (!(*qua))
-        return DS_ERR_ALLOC;
+    if (!queue)
+        return NULL;
 
-    (*qua)->buffer = malloc(sizeof(int) * initial_capacity);
+    queue->buffer = malloc(sizeof(int) * initial_capacity);
 
-    if (!((*qua)->buffer))
+    if (!(queue->buffer))
     {
-        free(*qua);
-
-        *qua = NULL;
-
-        return DS_ERR_ALLOC;
+        free(queue);
+        return NULL;
     }
 
-    (*qua)->capacity = initial_capacity;
-    (*qua)->growth_rate = growth_rate;
+    queue->capacity = initial_capacity;
+    queue->growth_rate = growth_rate;
+    queue->size = 0;
+    queue->front = 0;
+    queue->rear = 0;
+    queue->locked = false;
 
-    (*qua)->size = 0;
+    queue->interface = interface;
 
-    (*qua)->front = 0;
-    (*qua)->rear = 0;
-
-    (*qua)->locked = false;
-
-    return DS_OK;
+    return queue;
 }
 
-Status qua_enqueue(QueueArray qua, int element)
+/// Frees each element at the queue using its interface's \c free and then
+/// frees the queue struct.
+///
+/// \param[in] queue The queue to be freed from memory.
+void
+qua_free(QueueArray_t *queue)
 {
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qua_full(qua))
+    for (integer_t i = queue->front, j = 0;
+            j < queue->size - 1;
+            i = (i + 1) % queue->capacity, j++)
     {
-        Status st = qua_grow(qua);
-
-        if (st != DS_OK)
-            return st;
+        queue->interface->free(queue->buffer[i]);
     }
 
-    qua->buffer[qua->rear] = element;
+    free(queue->buffer);
 
-    qua->rear = (qua->rear == qua->capacity - 1) ? 0 : qua->rear + 1;
-
-    (qua->size)++;
-
-    return DS_OK;
+    free(queue);
 }
 
-Status qua_dequeue(QueueArray qua, int *result)
+void
+qua_free_shallow(QueueArray_t *queue)
 {
-    *result = 0;
+    free(queue->buffer);
 
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qua_empty(qua))
-        return DS_ERR_INVALID_OPERATION;
-
-    *result = qua->buffer[qua->front];
-
-    qua->front = (qua->front == qua->capacity - 1) ? 0 : qua->front + 1;
-
-    (qua->size)--;
-
-    return DS_OK;
+    free(queue);
 }
 
-Status qua_display(QueueArray qua)
+/// This function will free all the elements of the specified QueueArray_s and
+/// will keep the structure intact.
+///
+/// \param[in] queue queue queue to be erased.
+///
+/// \return True if all operations were successful.
+bool
+qua_erase(QueueArray_t *queue)
 {
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
+    for (integer_t i = queue->front, j = 0;
+         j < queue->size - 1;
+         i = (i + 1) % queue->capacity, j++)
+    {
+        queue->interface->free(queue->buffer[i]);
 
-    if (qua_empty(qua))
+        queue->buffer[i] = NULL;
+    }
+
+    return true;
+}
+
+void
+qua_config(QueueArray_t *queue, Interface_t *new_interface)
+{
+    queue->interface = new_interface;
+}
+
+integer_t
+qua_size(QueueArray_t *queue)
+{
+    return queue->size;
+}
+
+integer_t
+qua_capacity(QueueArray_t *queue)
+{
+    return queue->capacity;
+}
+
+integer_t
+qua_growth(QueueArray_t *queue)
+{
+    return queue->growth_rate;
+}
+
+bool
+qua_set_growth(QueueArray_t *queue, integer_t growth_rate)
+{
+    if (growth_rate <= 100)
+        return false;
+
+    queue->growth_rate = growth_rate;
+
+    return true;
+}
+
+/// Inserts an element into the specified queue. The element is added at the
+/// \c rear index.
+///
+/// \param[in] queue The queue where the element is to be inserted.
+/// \param[in] element The element to be inserted in the queue.
+///
+/// \return True if the element was successfully added to the queue or false if
+/// the buffer reallocation failed or the queue buffer capacity is locked.
+bool
+qua_enqueue(QueueArray_t *queue, void *element)
+{
+    if (qua_full(queue))
+    {
+        if (!qua_grow(queue))
+            return false;
+    }
+
+    queue->buffer[queue->rear] = element;
+
+    queue->rear = (queue->rear == queue->capacity - 1) ? 0 : queue->rear + 1;
+
+    queue->size++;
+    queue->version_id++;
+
+    return true;
+}
+
+/// Removes an element from the specified queue. The element is removed from
+/// the \c front index.
+///
+/// \param[in] queue The queue where the element is to be removed from.
+/// \param[out] result The resulting element removed from the queue.
+///
+/// \return True if an element was removed from the queue or false if the queue
+/// is empty.
+bool
+qua_dequeue(QueueArray_t *queue, void **result)
+{
+    *result = NULL;
+
+    if (qua_empty(queue))
+        return false;
+
+    *result = queue->buffer[queue->front];
+
+    queue->buffer[queue->front] = NULL;
+
+    queue->front = (queue->front == queue->capacity - 1) ? 0 : queue->front +1;
+
+    queue->size--;
+    queue->version_id++;
+
+    return true;
+}
+
+void *
+qua_peek_front(QueueArray_t *queue)
+{
+    if (qua_empty(queue))
+        return NULL;
+
+    return queue->buffer[queue->front];
+}
+
+void *
+qua_peek_rear(QueueArray_t *queue)
+{
+    if (qua_empty(queue))
+        return NULL;
+
+    integer_t i = (queue->rear == 0) ? queue->capacity - 1 : queue->rear - 1;
+
+    return queue->buffer[i];
+}
+
+bool
+qua_empty(QueueArray_t *queue)
+{
+    return queue->size == 0;
+}
+
+bool
+qua_full(QueueArray_t *queue)
+{
+    return queue->size == queue->capacity;
+}
+
+bool
+qua_fits(QueueArray_t *queue, unsigned_t size)
+{
+    return (queue->size + size) <= queue->capacity;
+}
+
+void
+qua_capacity_lock(QueueArray_t *queue)
+{
+    queue->locked = true;
+}
+
+void
+qua_capacity_unlock(QueueArray_t *queue)
+{
+    queue->locked = false;
+}
+
+/// Returns a copy of the specified QueueArray_s with the same interface. All
+/// elements are copied using the queue's interface's copy function.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param queue The queue to be copied.
+///
+/// \return \c NULL if allocation failed or a copy of the specified queue.
+QueueArray_t *
+qua_copy(QueueArray_t *queue)
+{
+    QueueArray_t *new_queue = qua_create(queue->capacity, queue->growth_rate,
+                                         queue->interface);
+
+    if (!new_queue)
+        return NULL;
+
+    for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+            i = (i + 1) % queue->capacity, j++)
+    {
+        new_queue->buffer[i] = queue->interface->copy(queue->buffer[i]);
+    }
+
+    new_queue->front = queue->front;
+    new_queue->rear = queue->rear;
+    new_queue->size = queue->size;
+    new_queue->locked = queue->locked;
+
+    return new_queue;
+}
+
+/// Creates a shallow copy of all elements in the queue, that is, only the
+/// pointers addresses are copied to the new queue.
+/// \par Interface Requirements
+/// - None
+///
+/// \param queue The queue to be copied.
+///
+/// \return \c NULL if allocation failed or a shallow copy of the specified
+/// queue.
+QueueArray_t *
+qua_copy_shallow(QueueArray_t *queue)
+{
+    QueueArray_t *new_queue = qua_create(queue->capacity, queue->growth_rate,
+                                         queue->interface);
+
+    if (!new_queue)
+        return NULL;
+
+    for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+         i = (i + 1) % queue->capacity, j++)
+    {
+        new_queue->buffer[i] = queue->buffer[i];
+    }
+
+    new_queue->front = queue->front;
+    new_queue->rear = queue->rear;
+    new_queue->size = queue->size;
+    new_queue->locked = queue->locked;
+
+    return new_queue;
+}
+
+/// Compares two queues.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param queue1
+/// \param queue2
+///
+/// \return
+int
+qua_compare(QueueArray_t *queue1, QueueArray_t *queue2)
+{
+    integer_t max_size = queue1->size < queue2->size
+                         ? queue1->size
+                         : queue2->size;
+
+    int comparison = 0;
+    for (integer_t i = 0; i < max_size; i++)
+    {
+        // Since its a circular buffer we need to calculate where the ith
+        // element of each queue is.
+        comparison = queue1->interface->compare(
+                queue1->buffer[(i + queue1->front) % queue1->capacity],
+                queue2->buffer[(i + queue2->front) % queue2->capacity]);
+        if (comparison > 0)
+            return 1;
+        else if (comparison < 0)
+            return -1;
+    }
+
+    // So far all elements were the same
+    if (queue1->size > queue2->size)
+        return 1;
+    else if (queue1->size < queue2->size)
+        return -1;
+
+    return 0;
+}
+
+void **
+qua_to_array(QueueArray_t *queue, integer_t *size)
+{
+    /// \todo qua_to_array
+    return NULL;
+}
+
+/// Displays a QueueArray_s in the console. There are currently four modes:
+/// - -1 Displays each element separated by newline;
+/// -  0 Displays each element like a linked list;
+/// -  1 Displays each element separated by a space;
+/// - Any other number defaults to the array representation.
+///
+/// \param queue The queue to be displayed in the console.
+/// \param display_mode The way the queue is to be displayed in the console.
+void
+qua_display(QueueArray_t *queue, int display_mode)
+{
+    if (qua_empty(queue))
     {
         printf("\nQueueArray\n[ empty ]\n");
-
-        return DS_OK;
+        return;
     }
 
-    printf("\nQueueArray\nfront <-");
-
-    for (integer_t i = qua->front; i < qua->rear; i++)
-        printf(" %d <-", qua->buffer[i]);
-
-    printf(" rear\n");
-
-    return DS_OK;
-}
-
-Status qua_display_array(QueueArray qua)
-{
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qua_empty(qua))
+    switch (display_mode)
     {
-        printf("\n[ empty ] \n");
-
-        return DS_OK;
+        case -1:
+            printf("\nStackArray\n");
+            for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+                 i = (i + 1) % queue->capacity, j++)
+            {
+                queue->interface->display(queue->buffer[i]);
+                printf("\n");
+            }
+            break;
+        case 0:
+            printf("\nStackArray\nFront -> ");
+            for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+                 i = (i + 1) % queue->capacity, j++)
+            {
+                queue->interface->display(queue->buffer[i]);
+                printf(" -> ");
+            }
+            queue->interface->display(queue->buffer[
+                    (queue->rear == 0) ? queue->capacity - 1 : queue->rear - 1
+                    ]);
+            printf(" -> Rear\n");
+            break;
+        case 1:
+            printf("\nStackArray\n");
+            for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+                 i = (i + 1) % queue->capacity, j++)
+            {
+                queue->interface->display(queue->buffer[i]);
+                printf(" ");
+            }
+            printf("\n");
+            break;
+        default:
+            printf("\nStackArray\n[ ");
+            for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+                 i = (i + 1) % queue->capacity, j++)
+            {
+                queue->interface->display(queue->buffer[i]);
+                printf(", ");
+            }
+            queue->interface->display(queue->buffer[
+                    (queue->rear == 0) ? queue->capacity - 1 : queue->rear - 1
+                    ]);
+            printf(" ]\n");
+            break;
     }
-
-    printf("\n[ ");
-
-    for (integer_t i = qua->front, j = 0; j < qua->size - 1; i = (i + 1) % qua->capacity, j++)
-    {
-        printf("%d, ", qua->buffer[i]);
-    }
-
-    integer_t real_rear = (qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1;
-
-    printf("%d ]\n", qua->buffer[real_rear]);
-
-    return DS_OK;
 }
 
-Status qua_display_raw(QueueArray qua)
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+// This function reallocates the data buffer effectively increasing its
+// capacity
+bool
+static qua_grow(QueueArray_t *queue)
 {
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (queue->locked)
+        return false;
 
-    printf("\n");
-
-    if (qua_empty(qua))
-        return DS_OK;
-
-    for (integer_t i = qua->front; i < qua->rear; i++)
-        printf("%d ", qua->buffer[i]);
-
-    printf("\n");
-
-    return DS_OK;
-}
-
-Status qua_delete(QueueArray *qua)
-{
-    if ((*qua) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free((*qua)->buffer);
-
-    free(*qua);
-
-    *qua = NULL;
-
-    return DS_OK;
-}
-
-Status qua_erase(QueueArray *qua)
-{
-    if ((*qua) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = qua_delete(qua);
-
-    if (st != DS_OK)
-        return st;
-
-    st = qua_init(qua);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-int qua_peek_front(QueueArray qua)
-{
-    if (qua == NULL)
-        return 0;
-
-    if (qua_empty(qua))
-        return 0;
-
-    return qua->buffer[qua->front];
-}
-
-int qua_peek_rear(QueueArray qua)
-{
-    if (qua == NULL)
-        return 0;
-
-    if (qua_empty(qua))
-        return 0;
-
-    return qua->buffer[(qua->rear == 0) ? qua->capacity - 1 : qua->rear - 1];
-}
-
-integer_t qua_size(QueueArray qua)
-{
-    if (qua == NULL)
-        return -1;
-
-    return qua->size;
-}
-
-integer_t qua_capacity(QueueArray qua)
-{
-    if (qua == NULL)
-        return -1;
-
-    return qua->capacity;
-}
-
-bool qua_empty(QueueArray qua)
-{
-    return qua->size == 0;
-}
-
-bool qua_full(QueueArray qua)
-{
-    return qua->size == qua->capacity;
-}
-
-bool qua_fits(QueueArray qua, integer_t size)
-{
-    return (qua->size + size) <= qua->capacity;
-}
-
-Status qua_copy(QueueArray qua, QueueArray *result)
-{
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = qua_create(result, qua->capacity, qua->growth_rate);
-
-    if (st != DS_OK)
-        return st;
-
-    if (qua_empty(qua))
-        return DS_OK;
-
-    for (integer_t i = 0; i < qua->capacity; i++)
-    {
-        (*result)->buffer[i] = qua->buffer[i];
-    }
-
-    (*result)->front = qua->front;
-    (*result)->rear = qua->rear;
-
-    (*result)->size = qua->size;
-
-    (*result)->locked = qua->locked;
-
-    return DS_OK;
-}
-
-Status qua_cap_lock(QueueArray qua)
-{
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    qua->locked = true;
-
-    return DS_OK;
-}
-
-Status qua_cap_unlock(QueueArray qua)
-{
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    qua->locked = false;
-
-    return DS_OK;
-}
-
-// NOT EXPOSED API
-
-// This function reallocates the data buffer effectively increasing its capacity
-Status qua_grow(QueueArray qua)
-{
-    if (qua == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qua->locked)
-        return DS_ERR_FULL;
-
-    integer_t old_capacity = qua->capacity;
+    integer_t old_capacity = queue->capacity;
 
     // capacity = capacity * (growth_rate / 100)
-    qua->capacity = (integer_t) ((double) (qua->capacity) * ((double) (qua->growth_rate) / 100.0));
+    queue->capacity = (integer_t) ((double) (queue->capacity) *
+            ((double) (queue->growth_rate) / 100.0));
 
     // 4 is the minimum growth
-    if (qua->capacity - old_capacity < 4)
-        qua->capacity = old_capacity + 4;
+    if (queue->capacity - old_capacity < 4)
+        queue->capacity = old_capacity + 4;
 
-    int *new_buffer = realloc(qua->buffer, sizeof(int) * qua->capacity);
+    void **new_buffer = realloc(queue->buffer,sizeof(void*) * queue->capacity);
 
     // Reallocation failed
     if (!new_buffer)
     {
-        qua->capacity = old_capacity;
-
-        return DS_ERR_ALLOC;
+        queue->capacity = old_capacity;
+        return false;
     }
 
-    qua->buffer = new_buffer;
+    queue->buffer = new_buffer;
 
-    integer_t real_rear = (qua->rear == 0) ? old_capacity - 1 : qua->rear - 1;
+    integer_t real_rear = (queue->rear == 0)
+            ? old_capacity - 1
+            : queue->rear - 1;
 
     // Shift elements if the rear index wrapped around the buffer
-    if (real_rear < qua->front)
+    if (real_rear < queue->front)
     {
         // When the buffer is full the rear index equals the front index. In
         // order to shift elements effectively this calculates which portion of
@@ -362,42 +585,57 @@ Status qua_grow(QueueArray qua)
         // Shift the right portion to the end of the buffer if the total
         // elements are less than the left portion; otherwise append the left
         // portion to the right portion.
-        if (old_capacity - qua->front < qua->rear)
+        if (old_capacity - queue->front < queue->rear)
         {
-            integer_t distance = old_capacity - qua->front;
+            integer_t distance = old_capacity - queue->front;
 
-            for (integer_t i = old_capacity - 1, j = qua->capacity - 1; i >= qua->front; i--, j--)
+            for (integer_t i = old_capacity - 1, j = queue->capacity - 1;
+                    i >= queue->front; i--, j--)
             {
-                qua->buffer[j] = qua->buffer[i];
+                queue->buffer[j] = queue->buffer[i];
             }
 
-            qua->front = qua->capacity - distance;
+            queue->front = queue->capacity - distance;
         }
-        // If the growth rate is less than 150 the rear index might wrap around the buffer again
+        // If the growth rate is less than 150 the rear index might wrap around
+        // the buffer again
         else
         {
-            for (integer_t i = 0, j = old_capacity; i < qua->rear; i++, j = (j + 1) % qua->capacity)
+            for (integer_t i = 0, j = old_capacity; i < queue->rear;
+                    i++, j = (j + 1) % queue->capacity)
             {
-                qua->buffer[j] = qua->buffer[i];
+                queue->buffer[j] = queue->buffer[i];
             }
 
-            qua->rear = (old_capacity + qua->rear) % qua->capacity;
+            queue->rear = (old_capacity + queue->rear) % queue->capacity;
         }
     }
     // This case only happens when qua->front == 0 and qua->rear == 0
     // The rear index has wrapped around but the buffer increased in size
     // allowing the rear index to keep increasing instead of wrapping around.
     // This can be achieved by enqueueing elements without ever dequeueing any.
-    else if (qua->rear == 0)
+    else if (queue->rear == 0)
     {
-        qua->rear = old_capacity;
+        queue->rear = old_capacity;
     }
     // This should never happen. This function should never be called when the
     // buffer is not full (front == rear and size == capacity).
     else
-        return DS_ERR_UNEXPECTED_RESULT;
+        return false;
 
-    return DS_OK;
+    return true;
 }
 
-// END OF NOT EXPOSED API
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo StackArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo StackArrayWrapper

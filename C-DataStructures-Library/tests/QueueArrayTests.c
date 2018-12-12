@@ -12,180 +12,256 @@
 
 // Tests qua_grow() in linear insertions
 // Tests while (!empty) loop
-// Tests front == rear on empty queue
 // Sum of dequeued contents should equal to the known result (500500)
 Status qua_test_linear_insertion(UnitTest ut)
 {
-    QueueArray queue;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+            free, NULL, NULL);
 
-    Status st = qua_init(&queue);
+    if (!int_interface)
+        goto error;
 
-    if (st != DS_OK)
-        return st;
+    // in case I ever change the default initial capacity
+    QueueArray queue = qua_create(16, 200, int_interface);
 
+    if (!queue)
+        goto error;
+
+    bool success = false;
+
+    void *element;
     for (int i = 1; i <= 1000; i++)
     {
-        st = qua_enqueue(queue, i);
+        element = new_int(i);
 
-        if (st != DS_OK)
+        success = qua_enqueue(queue, element);
+
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
     }
 
     // size after all insertions
-    integer_t size = queue->size;
+    integer_t size = qua_size(queue);
 
-    int j, sum = 0;
+    int sum = 0;
     while (!qua_empty(queue))
     {
-        st = qua_dequeue(queue, &j);
+        success = qua_dequeue(queue, &element);
 
-        if (st != DS_OK)
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
 
-        sum += j;
+        sum += *(int*)element;
+        free(element);
     }
 
+    // see if all elements are preserved
     ut_equals_int(ut, sum, 500500, __func__);
-    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
-    ut_equals_integer_t(ut, size, queue->rear, __func__);
 
-    qua_delete(&queue);
+    qua_free(queue);
 
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    qua_delete(&queue);
-    return st;
+    printf("Error at %s\n", __func__);
+    qua_free(queue);
+    interface_free(int_interface);
 }
 
 // Tests locked capacity
-Status qua_test_locked(UnitTest ut)
+void qua_test_locked(UnitTest ut)
 {
-    QueueArray queue;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+                                            free, NULL, NULL);
+
+    if (!int_interface)
+        goto error;
 
     // in case I ever change the default initial capacity
-    Status st = qua_create(&queue, 16, 200);
+    QueueArray queue = qua_create(16, 200, int_interface);
 
-    if (st != DS_OK)
-        return st;
+    if (!queue)
+        goto error;
 
-    qua_cap_lock(queue);
+    qua_capacity_lock(queue);
 
-    for (int i = 0; i < 17; i++)
+    bool success = false;
+
+    void *element;
+    for (int i = 1; i < 18; i++)
     {
-        st = qua_enqueue(queue, i);
+        element = new_int(i);
+
+        success = qua_enqueue(queue, element);
+
+        if (!success) /* Reached the stack maximum size */
+            free(element);
     }
 
-    Status saved_st = st;
-    integer_t size = queue->size;
+    integer_t size = qua_size(queue);
 
-    int j, sum = 0;
-    while (!qua_empty(queue))
-    {
-        st = qua_dequeue(queue, &j);
-
-        if (st != DS_OK)
-            goto error;
-
-        sum += j; // sum from 0 to 15
-    }
-
-    ut_equals_int(ut, sum, 120, __func__);
-    ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
+    ut_equals_bool(ut, success, false, __func__);
     ut_equals_integer_t(ut, size, 16, __func__);
 
-    qua_delete(&queue);
+    qua_capacity_unlock(queue);
 
-    return DS_OK;
+    element = new_int(17);
+    success = qua_enqueue(queue, element);
+    if (!success)
+    {
+        free(element);
+        goto error;
+    }
+
+    ut_equals_integer_t(ut, qua_size(queue), 17, __func__);
+
+    success = qua_dequeue(queue, &element);
+
+    if (success)
+        free(element);
+    else
+        goto error;
+
+    int sum = 0;
+    while (!qua_empty(queue))
+    {
+        qua_dequeue(queue, &element);
+
+        sum += *(int*)element; /* sum from 2 to 17  -> 152 */
+
+        free(element);
+    }
+
+    ut_equals_int(ut, sum, 152, __func__);
+
+    qua_free(queue);
+
+    return;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    qua_delete(&queue);
-    return st;
+    printf("Error at %s\n", __func__);
+    qua_free(queue);
+    interface_free(int_interface);
 }
 
 // Intensive test. Checks if all elements are preserved.
 Status qua_test_intensive(UnitTest ut)
 {
-    QueueArray queue;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+                                            free, NULL, NULL);
 
-    Status st = qua_init(&queue);
+    if (!int_interface)
+        goto error;
 
-    if (st != DS_OK)
-        return st;
+    // in case I ever change the default initial capacity
+    QueueArray queue = qua_create(16, 200, int_interface);
 
-    int j, sum = 0, numbers = 0;
+    if (!queue)
+        goto error;
+
+    bool success = false;
+    void *element = NULL;
+    int sum = 0, numbers = 0;
 
     // The total sum must be from 1 to 10000 that result in 50005000
     for (int i = 0; numbers < 10000; i = rand())
     {
         if (i % 2 == 0 || qua_empty(queue))
-            st = qua_enqueue(queue, ++numbers);
+        {
+            element = new_int(++numbers);
+            success = qua_enqueue(queue, element);
+
+            if (!success)
+            {
+                free(element);
+                goto error;
+            }
+        }
         else
         {
-            st = qua_dequeue(queue, &j);
+            success = qua_dequeue(queue, &element);
 
-            sum += j;
+            if (!success)
+                goto error;
+
+            sum += *(int*)element;
+
+            free(element);
         }
-
-        if (st != DS_OK)
-            goto error;
     }
 
     // Emptying the queue
     while (!qua_empty(queue))
     {
-        st = qua_dequeue(queue, &j);
+        success = qua_dequeue(queue, &element);
 
-        if (st != DS_OK)
+        if (!success)
             goto error;
 
-        sum += j;
+        sum += *(int*)element;
+
+        free(element);
     }
 
     ut_equals_int(ut, sum, 50005000, __func__);
-    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
 
-    qua_delete(&queue);
+    qua_free(queue);
 
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    qua_delete(&queue);
-    return st;
+    printf("Error at %s\n", __func__);
+    qua_free(queue);
+    interface_free(int_interface);
 }
 
 // Tests capacity multiplication
-Status qua_test_growth(UnitTest ut)
+void qua_test_growth(UnitTest ut)
 {
-    QueueArray queue;
+    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+                                            free, NULL, NULL);
 
-    Status st = qua_create(&queue, 60, 250);
+    if (!int_interface)
+        goto error;
 
-    if (st != DS_OK)
-        return st;;
+    QueueArray queue = qua_create(60, 250, int_interface);
 
+    if (!queue)
+        goto error;
+
+    bool success = false;
+
+    void *element;
     for (int i = 0; i < 100; i++)
     {
-        st = qua_enqueue(queue, i);
+        element = new_int(i);
 
-        if (st != DS_OK)
+        success = qua_enqueue(queue, element);
+
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
     }
 
     // 60 * (250 / 100)
-    ut_equals_integer_t(ut, queue->capacity, 150, __func__);
+    ut_equals_integer_t(ut, qua_capacity(queue), 150, __func__);
 
-    qua_delete(&queue);
+    qua_free(queue);
 
-    return DS_OK;
+    return;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
-    qua_delete(&queue);
-    return st;
+    printf("Error at %s\n", __func__);
+    qua_free(queue);
+    interface_free(int_interface);
 }
 
 // Runs all QueueArray tests
@@ -198,13 +274,10 @@ Status QueueArrayTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += qua_test_linear_insertion(ut);
-    st += qua_test_locked(ut);
-    st += qua_test_intensive(ut);
-    st += qua_test_growth(ut);
-
-    if (st != DS_OK)
-        goto error;
+    qua_test_linear_insertion(ut);
+    qua_test_locked(ut);
+    qua_test_intensive(ut);
+    qua_test_growth(ut);
 
     ut_report(ut, "QueueArray");
 

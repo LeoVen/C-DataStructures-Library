@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-/// \ref StackArray_s
+/// \struct StackArray_s
 /// \brief An array-based generic stack.
 struct StackArray_s;
 
@@ -44,8 +44,8 @@ sta_new(Interface_t *interface);
 /// \ref sta_create
 /// \brief Initializes a new StackArray_s with custom parameters.
 StackArray_t *
-sta_create(unsigned_t initial_capacity, unsigned_t growth_rate,
-        Interface_t *interface);
+sta_create(integer_t initial_capacity, integer_t growth_rate,
+           Interface_t *interface);
 
 /// \ref sta_free
 /// \brief Frees from memory a StackArray_s and its elements.
@@ -73,17 +73,17 @@ sta_config(StackArray_t *stack, Interface_t *new_interface);
 
 /// \ref sta_size
 /// \brief Returns the amount of elements in the specified stack.
-unsigned_t
+integer_t
 sta_size(StackArray_t *stack);
 
 /// \ref sta_capacity
 /// \brief Returns the total buffer capacity of the specified stack.
-unsigned_t
+integer_t
 sta_capacity(StackArray_t *stack);
 
 /// \ref sta_growth
 /// \brief Returns the growth rate of the specified stack.
-unsigned_t
+integer_t
 sta_growth(StackArray_t *stack);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
@@ -91,7 +91,7 @@ sta_growth(StackArray_t *stack);
 /// \ref sta_set_growth
 /// \brief Sets a new growth rate for the stack's buffer.
 bool
-sta_set_growth(StackArray_t *stack, unsigned_t growth_rate);
+sta_set_growth(StackArray_t *stack, integer_t growth_rate);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -145,27 +145,27 @@ sta_capacity_unlock(StackArray stack);
 StackArray_t *
 sta_copy(StackArray_t *stack);
 
+/// \ref sta_copy_shallow
+/// \brief Creates a shallow copy of the specified stack.
+StackArray_t *
+sta_copy_shallow(StackArray_t *stack);
+
 /// \ref sta_compare
 /// \brief Compares two stacks returning an int according to compare_f.
 int
 sta_compare(StackArray_t *stack1, StackArray_t *stack2);
 
+/// \ref qua_to_array
+/// \brief Makes a copy of the queue as a C array.
+void **
+sta_to_array(StackArray_t *stack, integer_t *size);
+
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
 /// \ref sta_display
-/// \brief Displays a StackArray_s in the console with newline separators.
+/// \brief Displays a StackArray_s in the console.
 void
-sta_display(StackArray_t *stack);
-
-/// \ref sta_display
-/// \brief Displays a StackArray_s in the console like an array.
-void
-sta_display_array(StackArray_t *stack);
-
-/// \ref sta_display
-/// \brief Displays a StackArray_s in the console with space separators.
-void
-sta_display_raw(StackArray_t *stack);
+sta_display(StackArray_t *stack, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

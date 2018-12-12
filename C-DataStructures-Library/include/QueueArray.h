@@ -10,211 +10,167 @@
 #define C_DATASTRUCTURES_LIBRARY_QUEUEARRAY_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// A QueueArray is a buffered Queue with FIFO (First-in First-out) or LILO
-/// (Last-in Last-out) operations, so the first item added is the first one to
-/// be removed. The queue is implemented as a circular buffer. Its indexes can
-/// wrap around the buffer if they reach the end. The buffer can also expand.
-/// The grow function will first check if there are any items that wrapped
-/// around the buffer. If so, it will calculate which portion (left or right)
-/// has the least amount of elements. If left is chosen, it will append its
-/// contents to the right of the right portion; otherwise it will shift the
-/// right portion to the end of the buffer. This effectively decreases the
-/// amount of shifts needed.
+/// \struct QueueArray_s
+/// \brief An array-based generic queue.
+struct QueueArray_s;
+
+/// \ref QueueArray_t
+/// \brief A type for a queue array.
 ///
-/// \b Advantages over \c Queue
-/// - No need of pointers, only the data is allocated in memory
-///
-/// \b Drawbacks
-/// - When the \c QueueArray is full the buffer needs to be reallocated
-/// - When the buffer is reallocated some items might need to be shifted
-///
-/// \b Functions
-///
-/// Located in the file QueueArray.c
-struct QueueArray_s
-{
-    /// \brief Data buffer.
-    ///
-    /// Buffer where elements are stored in.
-    int *buffer;
-
-    /// \brief Front of the queue.
-    ///
-    /// An index that represents the front of the queue. The \c qua_dequeue
-    /// operates relative to this index. This is where the next element to be
-    /// removed is located. This index represents the exact position of an the
-    /// front element (unlike the \c rear index).
-    integer_t front;
-
-    /// \brief Back of the queue.
-    ///
-    /// An index that represents the back of the queue. The \c qua_enqueue
-    /// operates relative to this index. This is where the last element was
-    /// added. It does not represents the exact position of an element; it is
-    /// always one position ahead (circularly) of the last inserted element.
-    /// This might cause confusion; when this index is 0 the real rear element
-    /// is at <code> capacity - 1 </code>.
-    integer_t rear;
-
-    /// \brief Current amount of elements in the \c QueueArray.
-    ///
-    /// Current amount of elements in the \c QueueArray.
-    integer_t size;
-
-    /// \brief \c QueueArray buffer maximum capacity.
-    ///
-    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
-    /// reallocated and increases according to \c growth_rate.
-    integer_t capacity;
-
-    /// \brief Buffer growth rate.
-    ///
-    /// Buffer growth rate. The new buffer capacity is calculated as:
-    ///
-    /// <code> capacity *= (growth_rate / 100.0) </code>
-    integer_t growth_rate;
-
-    /// \brief Flag for locked capacity.
-    ///
-    /// If \c locked is set to true the buffer will not grow and if any
-    /// elements are inserted with a full buffer \c DS_ERR_FULL will be
-    /// returned.
-    bool locked;
-};
-
-/// Defines a type for <code> struct QueueArray_s </code>.
-///
-/// Every queue is initialized by \c malloc with \c sizeof(QueueArray_t).
+/// A type for a <code> struct QueueArray_s </code> so you don't have to always
+/// write the full name of it.
 typedef struct QueueArray_s QueueArray_t;
 
-/// Defines a type of pointer to <code> struct QueueArray_s </code>.
+/// \ref QueueArray
+/// \brief Defines a type of pointer to <code> struct QueueArray_s </code>.
 ///
 /// This typedef is used to avoid having to declare every queue as a pointer
 /// type since they all must be dynamically allocated.
 typedef struct QueueArray_s *QueueArray;
 
-/// Initializes a \c QueueArray with an initial capacity of 32 and a growth
-/// rate of 200, that is, twice the size after each growth.
-///
-/// \param[in,out] qua The queue to be initialized.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_OK if all operations were successful.
-///
-/// \see qua_create
-Status qua_init(QueueArray *qua);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Initializes a \c QueueArray with a user defined \c initial_capacity and \c
-/// growth_rate. This function only accepts an \c initial_capacity greater than
-/// 8 and a \c growth_rate greater than 100; but keep in mind that in some
-/// cases if the \c initial_capacity is too small and the \c growth_rate is too
-/// close to 100 there won't be an increase in capacity and the minimum growth
-/// will be triggered.
-///
-/// \param[in,out] qua The queue to be initialized.
-/// \param[in] initial_capacity Buffer initial capacity.
-/// \param[in] growth_rate Buffer growth rate.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
-/// growth_rate is less than or equal to 100.
-///
-/// \see qua_init
-Status qua_create(QueueArray *qua, integer_t initial_capacity, integer_t growth_rate);
+/// \ref qua_new
+/// \brief Initializes a new QueueArray_s.
+QueueArray_t *
+qua_new(Interface_t *interface);
 
-/// Inserts an element into the specified queue. The element is added at the
-/// \c rear index.
-///
-/// \param[in] qua The queue where the element is to be inserted.
-/// \param[in] element The element to be inserted in the queue.
-///
-/// \return DS_ERR_ALLOC if the buffer reallocation failed.
-/// \return DS_ERR_FULL if the buffer capacity is locked and the queue is full.
-/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_enqueue(QueueArray qua, int element);
+/// \ref qua_create
+/// \brief Initializes a new QueueArray_s with custom parameters.
+QueueArray_t *
+qua_create(integer_t initial_capacity, integer_t growth_rate,
+           Interface_t *interface);
 
-/// Removes an element from the specified queue. The element is removed from
-/// the \c front index.
-///
-/// \param[in] qua The queue where the element is to be removed from.
-/// \param[out] result The resulting element removed from the queue.
-///
-/// \return DS_ERR_INVALID_OPERATION if the queue is empty.
-/// \return DS_ERR_NULL_POINTER if queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_dequeue(QueueArray qua, int *result);
+/// \ref qua_free
+/// \brief Frees from memory a QueueArray_s and its elements.
+void
+qua_free(QueueArray_t *queue);
 
-/// Displays a \c QueueArray in the console.
-///
-/// \param qua The queue to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_display(QueueArray qua);
+/// \ref qua_free_shallow
+/// \brief Frees from memory a QueueArray_s leaving its elements intact.
+void
+qua_free_shallow(QueueArray_t *queue);
 
-/// Displays a \c QueueArray in the console like an array with its values
-/// separated by commas, delimited with brackets.
-///
-/// \param qua The queue to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_display_array(QueueArray qua);
+/// \ref qua_erase
+/// \brief Frees from memory all elements of a QueueArray_s.
+bool
+qua_erase(QueueArray_t *queue);
 
-/// Displays a \c QueueArray in the console with its values separated by
-/// spaces.
-///
-/// \param qua The queue to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_display_raw(QueueArray qua);
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-/// Frees the queue buffer and the QueueArray structure; the variable then is
-/// set no \c NULL;
-///
-/// \param qua The queue to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_delete(QueueArray *qua);
+/// \ref qua_config
+/// \brief Sets a new interface for a target queue.
+void
+qua_config(QueueArray_t *queue, Interface_t *new_interface);
 
-/// This function sets the queue to its initial state, erasing all of its data
-/// and re-initializing the structure. It is equivalent to calling qua_delete()
-/// and then qua_init().
-///
-/// \param qua The queue to be erased.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_ERR_NULL_POINTER if the queue reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qua_erase(QueueArray *qua);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-int qua_peek_front(QueueArray qua);
+/// \ref qua_size
+/// \brief Returns the amount of elements in the specified queue.
+integer_t
+qua_size(QueueArray_t *queue);
 
-int qua_peek_rear(QueueArray qua);
+/// \ref qua_capacity
+/// \brief Returns the total buffer capacity of the specified queue.
+integer_t
+qua_capacity(QueueArray_t *queue);
 
-integer_t qua_size(QueueArray qua);
+/// \ref qua_growth
+/// \brief Returns the growth rate of the specified queue.
+integer_t
+qua_growth(QueueArray_t *queue);
 
-integer_t qua_capacity(QueueArray qua);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-bool qua_empty(QueueArray qua);
+/// \ref qua_set_growth
+/// \brief Sets a new growth rate for the queue's buffer.
+bool
+qua_set_growth(QueueArray_t *queue, integer_t growth_rate);
 
-bool qua_full(QueueArray qua);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-bool qua_fits(QueueArray qua, integer_t size);
+/// \ref qua_enqueue
+/// \brief Adds an element to the specified queue.
+bool
+qua_enqueue(QueueArray_t *queue, void *element);
 
-Status qua_copy(QueueArray qua, QueueArray *result);
+/// \ref qua_dequeue
+/// \brief Removes and element from the specified queue.
+bool
+qua_dequeue(QueueArray_t *queue, void **result);
 
-Status qua_cap_lock(QueueArray qua);
+/// \ref qua_peek_front
+/// \brief Returns oldest element in the specified queue.
+void *
+qua_peek_front(QueueArray_t *queue);
 
-Status qua_cap_unlock(QueueArray qua);
+/// \ref qua_peek_rear
+/// \brief Returns the last item added in the queue.
+void *
+qua_peek_rear(QueueArray_t *queue);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+/// \ref qua_empty
+/// \brief Returns true if the queue is empty, false otherwise.
+bool
+qua_empty(QueueArray_t *queue);
+
+/// \ref qua_full
+/// \brief Returns true if the queue is full, false otherwise.
+bool
+qua_full(QueueArray_t *queue);
+
+/// \ref qua_fits
+/// \brief Returns true if a given size fits inside the queue without
+/// reallocating the buffer.
+bool
+qua_fits(QueueArray_t *queue, unsigned_t size);
+
+/// \ref qua_capacity_lock
+/// \brief Locks the growth for the specified queue.
+void
+qua_capacity_lock(QueueArray_t *queue);
+
+/// \ref qua_capacity_unlock
+/// \brief Unlocks the growth for the specified queue.
+void
+qua_capacity_unlock(QueueArray_t *queue);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref qua_copy
+/// \brief Returns a copy of the specified queue.
+QueueArray_t *
+qua_copy(QueueArray_t *queue);
+
+/// \ref qua_copy_shallow
+/// \brief Creates a shallow copy of the specified queue.
+QueueArray_t *
+qua_copy_shallow(QueueArray_t *queue);
+
+/// \ref qua_compare
+/// \brief Compares two queues returning an int according to compare_f.
+int
+qua_compare(QueueArray_t *queue1, QueueArray_t *queue2);
+
+/// \ref qua_to_array
+/// \brief Makes a copy of the queue as a C array.
+void **
+qua_to_array(QueueArray_t *queue, integer_t *size);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+/// \ref qua_display
+/// \brief Displays a QueueArray_s in the console.
+void
+qua_display(QueueArray_t *queue, int display_mode);
 
 #ifdef __cplusplus
 }
