@@ -114,7 +114,7 @@ qua_new(Interface_t *interface)
     if (!queue)
         return NULL;
 
-    queue->buffer = malloc(sizeof(int) * 32);
+    queue->buffer = malloc(sizeof(void*) * 32);
 
     if (!(queue->buffer))
     {
@@ -158,7 +158,7 @@ qua_create(integer_t initial_capacity, integer_t growth_rate,
     if (!queue)
         return NULL;
 
-    queue->buffer = malloc(sizeof(int) * initial_capacity);
+    queue->buffer = malloc(sizeof(void*) * initial_capacity);
 
     if (!(queue->buffer))
     {
