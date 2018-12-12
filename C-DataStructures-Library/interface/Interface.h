@@ -58,12 +58,26 @@ typedef unsigned_t(*hash_f)(void *);
 /// - <code>[ 0 ]</code> if elements have the same priority.
 typedef int(*priority_f)(void *, void *);
 
-/// \brief An interface used by all data structures that stores functions for
-/// comparing, copying, displaying and freeing keys or values.
+/// \brief An interface used by all data structures that stores functions for a
+/// user defined data type.
 ///
-/// \todo Description.
+/// An interface contains functions that manipulate a user defined data type.
+/// These functions are necessary for some data structures to operate or used
+/// in specific functions. The functions are:
+/// - compare - Compares two elements according to the specification of
+/// \ref compare_f;
+/// - copy - Makes a copy of an element according to the specification of
+/// \ref copy_f;
+/// - display - Displays an element in the console according to the
+/// specification of \ref display_f;
+/// - free - Frees an element from allocated memory according to the
+/// specifications of \ref free_f;
+/// - hash - Creates a hash number from a single element according to the
+/// specification of \ref hash_f;
+/// - priority - A function that compares the priority of two elements
+/// according to the specification of \ref priority_f.
 ///
-/// \c Functions
+/// \par Functions
 /// Located in file Interface.c
 struct Interface_s
 {
@@ -79,7 +93,6 @@ struct Interface_s
 
     priority_f priority;
 };
-
 
 typedef struct Interface_s Interface_t;
 

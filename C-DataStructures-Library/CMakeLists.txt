@@ -10,7 +10,8 @@ set(CMAKE_CXX_STANDARD 11)
 set(INCLUDE ./include)
 set(UNIT_TEST ./tests/UnitTest)
 set(UTIL ./util/include)
-include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL})
+set(INTERFACE ./interface)
+include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL} ${INTERFACE})
 
 set(INCLUDE_FILES include/Core.h include/Tests.h include/CoreSort.h include/CoreTree.h)
 set(TEST_FILES
@@ -48,7 +49,7 @@ add_library(StackArray         include/StackArray.h         src/StackArray.c)
 
 add_library(UnitTest tests/UnitTest/UnitTest.h tests/UnitTest/UnitTest.c)
 
-add_library(Interface include/Interface.h src/Interface.c)
+add_library(Interface interface/Interface.h interface/Interface.c)
 
 add_library(CString  util/include/CString.h  util/src/CString.c)
 add_library(Chars    util/include/Chars.h    util/src/Chars.c)
