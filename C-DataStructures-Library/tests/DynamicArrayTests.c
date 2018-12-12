@@ -53,6 +53,7 @@ Status dar_test_locked(UnitTest ut)
             goto error;
 
         sum += *(int*)R; // sum from 0 to 15
+        free(R);
     }
 
     ut_equals_int(ut, sum, 120, __func__);

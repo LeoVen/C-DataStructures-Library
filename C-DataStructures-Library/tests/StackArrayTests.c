@@ -77,6 +77,7 @@ void sta_test_locked(UnitTest ut)
     ut_equals_int(ut, sum, 120, __func__);
 
     sta_free(stack);
+    interface_free(int_interface);
 
     return;
 
@@ -120,6 +121,7 @@ void sta_test_growth(UnitTest ut)
     ut_equals_integer_t(ut, sta_capacity(stack), 150, __func__);
 
     sta_free(stack);
+    interface_free(int_interface);
 
     return;
 

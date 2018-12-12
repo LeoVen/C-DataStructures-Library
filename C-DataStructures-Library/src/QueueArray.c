@@ -186,7 +186,7 @@ void
 qua_free(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
-            j < queue->size - 1;
+            j < queue->size;
             i = (i + 1) % queue->capacity, j++)
     {
         queue->interface->free(queue->buffer[i]);

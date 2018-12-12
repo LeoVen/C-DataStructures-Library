@@ -65,6 +65,7 @@ Status qua_test_linear_insertion(UnitTest ut)
     ut_equals_int(ut, sum, 500500, __func__);
 
     qua_free(queue);
+    interface_free(int_interface);
 
     return DS_OK;
 
@@ -141,6 +142,7 @@ void qua_test_locked(UnitTest ut)
     ut_equals_int(ut, sum, 152, __func__);
 
     qua_free(queue);
+    interface_free(int_interface);
 
     return;
 
@@ -212,6 +214,7 @@ Status qua_test_intensive(UnitTest ut)
     ut_equals_int(ut, sum, 50005000, __func__);
 
     qua_free(queue);
+    interface_free(int_interface);
 
     return DS_OK;
 
@@ -255,6 +258,7 @@ void qua_test_growth(UnitTest ut)
     ut_equals_integer_t(ut, qua_capacity(queue), 150, __func__);
 
     qua_free(queue);
+    interface_free(int_interface);
 
     return;
 
