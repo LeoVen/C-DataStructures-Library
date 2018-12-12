@@ -8,7 +8,7 @@
  
 #include "SortedList.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests insertion
 Status sli_test_insertion(UnitTest ut)
@@ -19,24 +19,24 @@ Status sli_test_insertion(UnitTest ut)
 
     Status st = DS_OK;
 
-    st += sli_create(&(lists[0]), ASCENDING, compare_int, copy_int, display_int, free);
-    st += sli_create(&(lists[1]), ASCENDING, compare_int, copy_int, display_int, free);
-    st += sli_create(&(lists[2]), ASCENDING, compare_int, copy_int, display_int, free);
-    st += sli_create(&(lists[3]), DESCENDING, compare_int, copy_int, display_int, free);
-    st += sli_create(&(lists[4]), DESCENDING, compare_int, copy_int, display_int, free);
-    st += sli_create(&(lists[5]), DESCENDING, compare_int, copy_int, display_int, free);
+    st += sli_create(&(lists[0]), ASCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
+    st += sli_create(&(lists[1]), ASCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
+    st += sli_create(&(lists[2]), ASCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
+    st += sli_create(&(lists[3]), DESCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
+    st += sli_create(&(lists[4]), DESCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
+    st += sli_create(&(lists[5]), DESCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         goto error;
 
     for (int i = 0; i < 7; i++)
     {
-        st += sli_insert(lists[0], new_int(i));          // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
-        st += sli_insert(lists[1], new_int(arr[i]));     // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
-        st += sli_insert(lists[2], new_int(6 - i));      // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
-        st += sli_insert(lists[3], new_int(i));          // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
-        st += sli_insert(lists[4], new_int(arr[6 - i])); // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
-        st += sli_insert(lists[5], new_int(6 - i));      // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+        st += sli_insert(lists[0], new_int32_t(i));          // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[1], new_int32_t(arr[i]));     // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[2], new_int32_t(6 - i));      // 0 -> 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        st += sli_insert(lists[3], new_int32_t(i));          // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+        st += sli_insert(lists[4], new_int32_t(arr[6 - i])); // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
+        st += sli_insert(lists[5], new_int32_t(6 - i));      // 6 -> 5 -> 4 -> 3 -> 2 -> 1 -> 0
     }
 
     if (st != DS_OK)
@@ -105,7 +105,7 @@ Status sli_test_insertion(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     for (int i = 0; i < 6; i++) {
         sli_free(&(lists[i]));
     }
@@ -123,8 +123,8 @@ Status sli_test_incomplete(UnitTest ut)
     if (st != DS_OK)
         return st;
 
-    void *E = new_int(1);
-    void *EL[2] = {new_int(1), new_int(2)};
+    void *E = new_int32_t(1);
+    void *EL[2] = {new_int32_t(1), new_int32_t(2)};
     void **RL;
 
     integer_t t;
@@ -140,8 +140,8 @@ Status sli_test_incomplete(UnitTest ut)
 
     // This function (sli_to_array) require that we have at least one element
     // in the list:
-    sli_set_v_compare(list, compare_int);
-    sli_insert(list, new_int(1)); // Adding it
+    sli_set_v_compare(list, compare_int32_t);
+    sli_insert(list, new_int32_t(1)); // Adding it
 
     // Little hack...
     sli_set_v_compare(list, NULL); // Like we have never set a comparator...
@@ -166,8 +166,8 @@ Status sli_test_limit(UnitTest ut)
 {
     SortedList list;
 
-    Status st = sli_create(&list, ASCENDING, compare_int, copy_int,
-            display_int, free);
+    Status st = sli_create(&list, ASCENDING, compare_int32_t, copy_int32_t,
+            display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -180,7 +180,7 @@ Status sli_test_limit(UnitTest ut)
     void *elem;
     for (int i = 0; i < 20; i++)
     {
-        elem = new_int(i);
+        elem = new_int32_t(i);
 
         st = sli_insert(list, elem);
 
@@ -194,7 +194,7 @@ Status sli_test_limit(UnitTest ut)
     ut_equals_integer_t(ut, sli_length(list), sli_limit(list), __func__);
     ut_equals_int(ut, sli_set_limit(list, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    int *t = new_int(-1);
+    int *t = new_int32_t(-1);
 
     ut_equals_int(ut, sli_insert(list, t), DS_ERR_FULL, __func__);
 
@@ -208,7 +208,7 @@ Status sli_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     sli_free(&list);
     return st;
 }
@@ -218,7 +218,7 @@ Status sli_test_indexof(UnitTest ut)
 {
     SortedList list;
 
-    Status st = sli_create(&list, ASCENDING, compare_int, copy_int, display_int, free);
+    Status st = sli_create(&list, ASCENDING, compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -228,7 +228,7 @@ Status sli_test_indexof(UnitTest ut)
     // 0, 0, 0, 1, 1, 1, 2, 2, 2
     for (int i = 0; i < 9; i++)
     {
-        elem = new_int(i % 3);
+        elem = new_int32_t(i % 3);
 
         st = sli_insert(list, elem);
 
@@ -243,7 +243,7 @@ Status sli_test_indexof(UnitTest ut)
     void *d0, *d1, *d2;
     integer_t f1, f2;
 
-    void *n0 = new_int(0), *n1 = new_int(1), *n2 = new_int(2);
+    void *n0 = new_int32_t(0), *n1 = new_int32_t(1), *n2 = new_int32_t(2);
 
     st += sli_get(list, &r0, 0);
     st += sli_get(list, &d0, sli_index_first(list, n0));
@@ -276,7 +276,7 @@ Status sli_test_indexof(UnitTest ut)
     ut_equals_int(ut, *(int*)r1, *(int*)d1, __func__);
     ut_equals_int(ut, *(int*)r2, *(int*)d2, __func__);
 
-    void *n3 = new_int(3);
+    void *n3 = new_int32_t(3);
 
     f1 = sli_index_first(list, n3);
     f2 = sli_index_last(list, n3);
@@ -299,7 +299,7 @@ Status sli_test_indexof(UnitTest ut)
     goto error;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     sli_free(&list);
     return st;
 }
@@ -329,9 +329,8 @@ Status SortedListTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "SortedList");
     ut_delete(&ut);
-    status_print(st);
     return st;
 }

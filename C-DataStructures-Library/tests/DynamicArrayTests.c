@@ -8,7 +8,7 @@
 
 #include "DynamicArray.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests locked capacity
 Status dar_test_locked(UnitTest ut)
@@ -16,7 +16,7 @@ Status dar_test_locked(UnitTest ut)
     DynamicArray array;
 
     // in case I ever change the default initial capacity
-    Status st = dar_create(&array, 16, 200, compare_int, copy_int, display_int, free);
+    Status st = dar_create(&array, 16, 200, compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -26,7 +26,7 @@ Status dar_test_locked(UnitTest ut)
     void *elem;
     for (int i = 0; i < 17; i++)
     {
-        elem = new_int(i);
+        elem = new_int32_t(i);
 
         st = dar_insert_back(array, elem);
 
@@ -34,7 +34,7 @@ Status dar_test_locked(UnitTest ut)
             free(elem);
     }
 
-    int *t = new_int(1);
+    int *t = new_int32_t(1);
     ut_equals_int(ut, dar_insert_front(array, t), DS_ERR_FULL, __func__);
     ut_equals_int(ut, dar_insert_at(array, t, 0), DS_ERR_FULL, __func__);
     ut_equals_int(ut, dar_insert_back(array, t), DS_ERR_FULL, __func__);
@@ -63,7 +63,7 @@ Status dar_test_locked(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dar_free(&array);
     return st;
 }
@@ -74,7 +74,7 @@ Status dar_test_growth(UnitTest ut)
     DynamicArray array;
 
     Status st = dar_create(&array, 60, 250,
-                           compare_int, copy_int, display_int, free);
+                           compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -82,7 +82,7 @@ Status dar_test_growth(UnitTest ut)
     void *elem;
     for (int i = 0; i < 100; i++)
     {
-        elem = new_int(i);
+        elem = new_int32_t(i);
 
         st = dar_insert_back(array, elem);
 
@@ -102,7 +102,7 @@ Status dar_test_growth(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dar_free(&array);
     return st;
 }
@@ -130,7 +130,7 @@ Status DynamicArrayTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "DynamicArray");
     ut_delete(&ut);
     return st;

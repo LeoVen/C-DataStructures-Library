@@ -8,7 +8,7 @@
 
 #include "BitArray.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 Status bit_test_NOT(UnitTest ut)
 {
@@ -57,7 +57,7 @@ Status bit_test_NOT(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     return st;
 }
@@ -124,7 +124,7 @@ Status bit_test_AND(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     bit_free(&bits3);
@@ -186,7 +186,7 @@ Status bit_test_OR(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -256,7 +256,7 @@ Status bit_test_XOR(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -317,7 +317,7 @@ Status bit_test_NAND(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -378,7 +378,7 @@ Status bit_test_NOR(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -456,7 +456,7 @@ Status bit_test_NXOR(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -518,7 +518,7 @@ Status bit_test_DIFF(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits1);
     bit_free(&bits2);
     return st;
@@ -552,7 +552,7 @@ Status bit_test_cardinality(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits);
     return st;
 }
@@ -588,7 +588,7 @@ Status bit_test_fill_empty(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     bit_free(&bits);
     return st;
 }
@@ -623,7 +623,7 @@ Status BitArrayTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "BitArray");
     ut_delete(&ut);
     return st;

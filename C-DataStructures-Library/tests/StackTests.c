@@ -9,14 +9,14 @@
 
 #include "Stack.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests locked capacity
 Status stk_test_limit(UnitTest ut)
 {
     Stack stack;
 
-    Status st = stk_create(&stack, compare_int, copy_int, display_int, free);
+    Status st = stk_create(&stack, compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -29,7 +29,7 @@ Status stk_test_limit(UnitTest ut)
     int *elem;
     for (int i = 0; i < 20; i++)
     {
-        elem = new_int(i);
+        elem = new_int32_t(i);
 
         st = stk_insert(stack, elem);
 
@@ -44,7 +44,7 @@ Status stk_test_limit(UnitTest ut)
     ut_equals_int(ut, stk_set_limit(stack, 9), DS_ERR_INVALID_OPERATION, __func__);
 
     // This gets freed later
-    int *t = new_int(1);
+    int *t = new_int32_t(1);
 
     ut_equals_int(ut, stk_push(stack, t), DS_ERR_FULL, __func__);
     ut_equals_int(ut, stk_insert(stack, t), DS_ERR_FULL, __func__);
@@ -59,7 +59,7 @@ Status stk_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     stk_free(&stack);
     return st;
 }
@@ -86,7 +86,7 @@ Status StackTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "Stack");
     ut_delete(&ut);
     return st;

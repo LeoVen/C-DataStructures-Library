@@ -8,14 +8,14 @@
 
 #include "QueueArray.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests qua_grow() in linear insertions
 // Tests while (!empty) loop
 // Sum of dequeued contents should equal to the known result (500500)
 Status qua_test_linear_insertion(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
             free, NULL, NULL);
 
     if (!int_interface)
@@ -32,7 +32,7 @@ Status qua_test_linear_insertion(UnitTest ut)
     void *element;
     for (int i = 1; i <= 1000; i++)
     {
-        element = new_int(i);
+        element = new_int32_t(i);
 
         success = qua_enqueue(queue, element);
 
@@ -77,7 +77,7 @@ Status qua_test_linear_insertion(UnitTest ut)
 // Tests locked capacity
 void qua_test_locked(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
                                             free, NULL, NULL);
 
     if (!int_interface)
@@ -96,7 +96,7 @@ void qua_test_locked(UnitTest ut)
     void *element;
     for (int i = 1; i < 18; i++)
     {
-        element = new_int(i);
+        element = new_int32_t(i);
 
         success = qua_enqueue(queue, element);
 
@@ -111,7 +111,7 @@ void qua_test_locked(UnitTest ut)
 
     qua_capacity_unlock(queue);
 
-    element = new_int(17);
+    element = new_int32_t(17);
     success = qua_enqueue(queue, element);
     if (!success)
     {
@@ -153,7 +153,7 @@ void qua_test_locked(UnitTest ut)
 // Intensive test. Checks if all elements are preserved.
 Status qua_test_intensive(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
                                             free, NULL, NULL);
 
     if (!int_interface)
@@ -174,7 +174,7 @@ Status qua_test_intensive(UnitTest ut)
     {
         if (i % 2 == 0 || qua_empty(queue))
         {
-            element = new_int(++numbers);
+            element = new_int32_t(++numbers);
             success = qua_enqueue(queue, element);
 
             if (!success)
@@ -224,7 +224,7 @@ Status qua_test_intensive(UnitTest ut)
 // Tests capacity multiplication
 void qua_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
                                             free, NULL, NULL);
 
     if (!int_interface)
@@ -240,7 +240,7 @@ void qua_test_growth(UnitTest ut)
     void *element;
     for (int i = 0; i < 100; i++)
     {
-        element = new_int(i);
+        element = new_int32_t(i);
 
         success = qua_enqueue(queue, element);
 
@@ -286,7 +286,7 @@ Status QueueArrayTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "QueueArray");
     ut_delete(&ut);
     return st;

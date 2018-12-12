@@ -8,14 +8,14 @@
 
 #include "Deque.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests limit functionality
 Status deq_test_limit(UnitTest ut)
 {
     Deque deque;
 
-    Status st = deq_create(&deque, compare_int, copy_int, display_int, free);
+    Status st = deq_create(&deque, compare_int32_t, copy_int32_t, display_int32_t, free);
 
     if (st != DS_OK)
         return st;
@@ -28,7 +28,7 @@ Status deq_test_limit(UnitTest ut)
     void *elem;
     for (int i = 0; i < 20; i++)
     {
-        elem = new_int(i);
+        elem = new_int32_t(i);
 
         st = deq_enqueue_rear(deque, elem);
 
@@ -42,7 +42,7 @@ Status deq_test_limit(UnitTest ut)
     ut_equals_integer_t(ut, deq_length(deque), deq_limit(deque), __func__);
     ut_equals_int(ut, deq_set_limit(deque, 9), DS_ERR_INVALID_OPERATION, __func__);
 
-    int *t = new_int(1);
+    int *t = new_int32_t(1);
     ut_equals_int(ut, deq_enqueue_front(deque, t), DS_ERR_FULL, __func__);
     ut_equals_int(ut, deq_enqueue_rear(deque, t), DS_ERR_FULL, __func__);
 
@@ -56,7 +56,7 @@ Status deq_test_limit(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     deq_free(&deque);
     return st;
 }
@@ -83,7 +83,7 @@ Status DequeTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "Deque");
     ut_delete(&ut);
     return st;

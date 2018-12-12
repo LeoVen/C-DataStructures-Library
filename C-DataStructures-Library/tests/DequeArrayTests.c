@@ -8,7 +8,7 @@
 
 #include "DequeArray.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests dqa_grow() in linear insertions
 // Tests while (!empty) loop
@@ -83,7 +83,7 @@ Status dqa_test_linear_insertion(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dqa_delete(&queue);
     return st;
 }
@@ -129,7 +129,7 @@ Status dqa_test_locked(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dqa_delete(&queue);
     return st;
 }
@@ -189,7 +189,7 @@ Status dqa_test_intensive(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dqa_delete(&queue);
     return st;
 }
@@ -220,7 +220,7 @@ Status dqa_test_growth(UnitTest ut)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     dqa_delete(&queue);
     return st;
 }
@@ -250,7 +250,7 @@ Status DequeArrayTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "DequeArray");
     ut_delete(&ut);
     return st;

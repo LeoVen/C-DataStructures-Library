@@ -49,20 +49,15 @@ add_library(StackArray         include/StackArray.h         src/StackArray.c)
 
 add_library(UnitTest tests/UnitTest/UnitTest.h tests/UnitTest/UnitTest.c)
 
+add_library(Utility util/include/Utility.h util/src/Utility.c)
+
 add_library(Interface interface/Interface.h interface/Interface.c)
 
 add_library(CString  util/include/CString.h  util/src/CString.c)
-add_library(Chars    util/include/Chars.h    util/src/Chars.c)
-add_library(Floats   util/include/Floats.h   util/src/Floats.c)
-add_library(Integers util/include/Integers.h util/src/Integers.c)
-add_library(Random   util/include/Random.h   util/src/Random.c)
-add_library(Status   util/include/Status.h   util/src/Status.c)
 
 set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray SinglyLinkedList SortedList Stack StackArray)
 
-set(UTIL Chars Floats Integers Random Status)
+add_dependencies(C_DataStructures_Library ${LIBS} UnitTest Utility CString Interface)
 
-add_dependencies(C_DataStructures_Library ${LIBS} UnitTest ${UTIL} CString Interface)
-
-target_link_libraries(Random m)
-target_link_libraries(C_DataStructures_Library ${LIBS} UnitTest ${UTIL} CString Interface)
+target_link_libraries(Utility m)
+target_link_libraries(C_DataStructures_Library ${LIBS} UnitTest Utility CString Interface)

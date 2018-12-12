@@ -8,12 +8,12 @@
 
 #include "StackArray.h"
 #include "UnitTest.h"
-#include "Util.h"
+#include "Utility.h"
 
 // Tests locked capacity
 void sta_test_locked(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
             free, NULL, NULL);
 
     if (!int_interface)
@@ -32,7 +32,7 @@ void sta_test_locked(UnitTest ut)
     void *element;
     for (int i = 0; i < 17; i++)
     {
-        element = new_int(i);
+        element = new_int32_t(i);
 
         success = sta_push(stack, element);
 
@@ -47,7 +47,7 @@ void sta_test_locked(UnitTest ut)
 
     sta_capacity_unlock(stack);
 
-    element = new_int(1);
+    element = new_int32_t(1);
     success = sta_push(stack, element);
     if (!success)
     {
@@ -89,7 +89,7 @@ void sta_test_locked(UnitTest ut)
 // Tests capacity multiplication
 void sta_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int, copy_int, display_int,
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
             free, NULL, NULL);
 
     if (!int_interface)
@@ -105,7 +105,7 @@ void sta_test_growth(UnitTest ut)
     void *element;
     for (int i = 0; i < 100; i++)
     {
-        element = new_int(i);
+        element = new_int32_t(i);
 
         success = sta_push(stack, element);
 
@@ -149,7 +149,7 @@ Status StackArrayTests(void)
     return DS_OK;
 
     error:
-    printf("Error %s at %s\n", status_string(st), __func__);
+    printf("Error at %s\n", __func__);
     ut_report(ut, "StackArray");
     ut_delete(&ut);
     return st;
