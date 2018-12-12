@@ -10,6 +10,7 @@
 #define C_DATASTRUCTURES_LIBRARY_TESTS_H
 
 #include "Core.h"
+#include "UnitTest.h"
 
 #ifdef __cplusplus
 extern "C" {

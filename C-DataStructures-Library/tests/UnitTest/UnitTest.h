@@ -20,6 +20,8 @@ typedef struct UnitTest_s
     integer_t passed, total;
 } UnitTest_t, *UnitTest;
 
+void FinalReport();
+
 Status ut_init(UnitTest *ut);
 
 Status ut_delete(UnitTest *ut);

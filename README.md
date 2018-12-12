@@ -12,11 +12,11 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-66-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-25669-%232196f3.svg)
-![average](https://img.shields.io/badge/average-389-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-57-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-26127-%232196f3.svg)
+![average](https://img.shields.io/badge/average-458-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
-![minimum](https://img.shields.io/badge/minimum-18-%23f44336.svg)
+![minimum](https://img.shields.io/badge/minimum-19-%23f44336.svg)
 
 ## Planned Data Structures
 
@@ -184,7 +184,7 @@ A bit array (bit set, bit map, bit string or bit vector) is a compacted array of
     ┌───────────────┐
     │       1       |
     └───────────────┘
-    (8 bits used for one value)
+    (8 bits used for 1 value)
     
     In a bit array we can represent 8 boolean values by mapping them for each bit
     ┌─┬─┬─┬─┬─┬─┬─┬─┐

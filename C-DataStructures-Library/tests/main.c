@@ -17,5 +17,7 @@ int main()
     StackArrayTests();
     StackTests();
 
+    FinalReport();
+
     return 0;
 }
