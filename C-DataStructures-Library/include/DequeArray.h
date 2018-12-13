@@ -28,10 +28,11 @@ struct DequeArray_s;
 typedef struct DequeArray_s DequeArray_t;
 
 /// \ref DequeArray
-/// \brief Defines a type of pointer to <code> struct DequeArray_s </code>.
+/// \brief A pointer type for an array-based implementation of a deque.
 ///
-/// This typedef is used to avoid having to declare every deque as a pointer
-/// type since they all must be dynamically allocated.
+/// A pointer type to <code> struct DequeArray_s </code>. This typedef is used
+/// to avoid having to declare every deque array as a pointer type since they
+/// all must be dynamically allocated.
 typedef struct DequeArray_s *DequeArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///

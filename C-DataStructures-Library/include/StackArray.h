@@ -21,17 +21,18 @@ extern "C" {
 struct StackArray_s;
 
 /// \ref StackArray_t
-/// \brief A type for a stack array.
+/// \brief A type for an array-based implementation of a stack.
 ///
 /// A type for a <code> struct StackArray_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct StackArray_s StackArray_t;
 
 /// \ref StackArray
-/// \brief Defines a type of pointer to <code> struct StackArray_s </code>.
+/// \brief A pointer type for an array-based implementation of a stack.
 ///
-/// This typedef is used to avoid having to declare every stack as a pointer
-/// type since they all must be dynamically allocated.
+/// A pointer type to <code> struct StackArray_s </code>. This typedef is used
+/// to avoid having to declare every stack array as a pointer type since they
+/// all must be dynamically allocated.
 typedef struct StackArray_s *StackArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///

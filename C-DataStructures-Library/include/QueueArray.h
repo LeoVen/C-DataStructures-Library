@@ -21,17 +21,18 @@ extern "C" {
 struct QueueArray_s;
 
 /// \ref QueueArray_t
-/// \brief A type for a queue array.
+/// \brief A type for an array-based implementation of a queue.
 ///
 /// A type for a <code> struct QueueArray_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct QueueArray_s QueueArray_t;
 
 /// \ref QueueArray
-/// \brief Defines a type of pointer to <code> struct QueueArray_s </code>.
+/// \brief A pointer type for an array-based implementation of a queue.
 ///
-/// This typedef is used to avoid having to declare every queue as a pointer
-/// type since they all must be dynamically allocated.
+/// A pointer type to <code> struct QueueArray_s </code>. This typedef is used
+/// to avoid having to declare every queue array as a pointer type since they
+/// all must be dynamically allocated.
 typedef struct QueueArray_s *QueueArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///

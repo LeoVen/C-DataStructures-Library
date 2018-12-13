@@ -19,16 +19,17 @@ extern "C" {
 // full documentation.
 struct Stack_s;
 
-/// \brief A type for a FILO singly-linked list.
+/// \brief A type for a singly-linked list implementation of a stack.
 ///
 /// A type for a <code> struct Stack_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct Stack_s Stack_t;
 
-/// \brief A pointer type for a FILO singly-linked list.
+/// \brief A pointer type for a singly-linked list implementation of a stack.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct Stack_s </code>. This typedef is used to
+/// avoid having to declare every stack as a pointer type since they all must
+/// be dynamically allocated.
 typedef struct Stack_s *Stack;
 
 /// \brief Comparator function type.

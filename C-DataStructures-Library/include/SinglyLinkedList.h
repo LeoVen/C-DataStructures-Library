@@ -26,8 +26,9 @@ typedef struct SinglyLinkedList_s SinglyLinkedList_t;
 
 /// \brief A pointer type for a singly-linked list.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct SinglyLinkedList_s </code>. This typedef is
+/// used to avoid having to declare every singly-linked lists as a pointer type
+/// since they all must be dynamically allocated.
 typedef struct SinglyLinkedList_s *SinglyLinkedList;
 
 /// \brief Comparator function type.

@@ -27,8 +27,9 @@ typedef struct Deque_s Deque_t;
 
 /// \brief A pointer type for a doubly-linked list implementation of a deque.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct Deque_s </code>. This typedef is used to
+/// avoid having to declare every deque as a pointer type since they all must
+/// be dynamically allocated.
 typedef struct Deque_s *Deque;
 
 /// \brief Comparator function type.

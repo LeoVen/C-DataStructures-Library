@@ -19,16 +19,17 @@ extern "C" {
 // full documentation.
 struct Queue_s;
 
-/// \brief A type for a FIFO singly-linked list.
+/// \brief A type for a singly-linked list implementation of a queue.
 ///
 /// A type for a <code> struct Queue_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct Queue_s Queue_t;
 
-/// \brief A pointer type for a FIFO singly-linked list.
+/// \brief A pointer type for a singly-linked list implementation of a queue.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct Queue_s </code>. This typedef is used to
+/// avoid having to declare every queue as a pointer type since they all must
+/// be dynamically allocated.
 typedef struct Queue_s *Queue;
 
 /// \brief Comparator function type.

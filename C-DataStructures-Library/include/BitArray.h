@@ -22,8 +22,9 @@ typedef struct BitArray_s BitArray_t;
 
 /// \brief A pointer type for a bit array.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct BitArray_s </code>. This typedef is used to
+/// avoid having to declare every bit array as a pointer type since they all
+/// must be dynamically allocated.
 typedef struct BitArray_s *BitArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///

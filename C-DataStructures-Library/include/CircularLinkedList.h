@@ -26,8 +26,9 @@ typedef struct CircularLinkedList_s CircularLinkedList_t;
 
 /// \brief A pointer type for a circular doubly-linked list.
 ///
-/// Useful for not having to declare every variable as pointer type. This
-/// typedef does that for you.
+/// A pointer type to <code> struct CircularLinkedList_s </code>. This typedef
+/// is used to avoid having to declare every circular lists as a pointer type
+/// since they all must be dynamically allocated.
 typedef struct CircularLinkedList_s *CircularLinkedList;
 
 /// \brief Comparator function type.
