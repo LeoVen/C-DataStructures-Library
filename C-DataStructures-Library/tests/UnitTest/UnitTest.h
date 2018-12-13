@@ -39,6 +39,8 @@ void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2,
 void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
                           const char *test_name);
 
+void ut_error();
+
 #ifdef __cplusplus
 }
 #endif

@@ -8,387 +8,783 @@
 
 #include "DequeArray.h"
 
-// NOT EXPOSED API
-
-Status dqa_grow(DequeArray dqa);
-
-// END OF NOT EXPOSED API
-
-Status dqa_init(DequeArray *dqa)
+/// A DequeArray_s is a buffered Deque_s with enqueue and dequeue operations on
+/// both ends that are represented by indexes. The deque is implemented as a
+/// circular buffer. Its indexes can wrap around the buffer if they reach
+/// either ends. The buffer can also expand. The grow function will first check
+/// if there are any items that wrapped around the buffer. If so, it will
+/// calculate which portion (left or right) has the least amount of elements.
+/// If left is chosen, it will append its contents to the right of the right
+/// portion; otherwise it will shift the right portion to the end of the
+/// buffer. This effectively decreases the amount of shifts needed.
+///
+/// \par Advantages over Deque_s
+/// - Fast insertion
+/// - No need of pointers, only the data is allocated in memory
+///
+/// \par Drawbacks
+/// - When the DequeArray_s is full the buffer needs to be reallocated
+/// - When the buffer is reallocated some items might need to be shifted
+///
+/// \par Functions
+///
+/// Located in the file DequeArray.c
+struct DequeArray_s
 {
-    (*dqa) = malloc(sizeof(DequeArray_t));
+    /// \brief Data buffer.
+    ///
+    /// Buffer where elements are stored in.
+    void **buffer;
 
-    if (!(*dqa))
-        return DS_ERR_ALLOC;
+    /// \brief Front of the deque.
+    ///
+    /// An index that represents the front of the deque.
+    integer_t front;
 
-    (*dqa)->buffer = malloc(sizeof(int) * 32);
+    /// \brief Back of the deque.
+    ///
+    /// An index that represents the back of the deque.
+    integer_t rear;
 
-    if (!((*dqa)->buffer))
+    /// \brief Current amount of elements in the \c QueueArray.
+    ///
+    /// Current amount of elements in the \c QueueArray.
+    integer_t size;
+
+    /// \brief \c QueueArray buffer maximum capacity.
+    ///
+    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
+    /// reallocated and increases according to \c growth_rate.
+    integer_t capacity;
+
+    /// \brief Buffer growth rate.
+    ///
+    /// Buffer growth rate. The new buffer capacity is calculated as:
+    ///
+    /// <code> capacity *= (growth_rate / 100.0) </code>
+    integer_t growth_rate;
+
+    /// \brief Flag for locked capacity.
+    ///
+    /// If \c locked is set to true the buffer will not grow and insertions
+    /// won't be successful once the buffer gets filled up.
+    bool locked;
+
+    /// \brief DequeArray_s interface.
+    ///
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
+
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    integer_t version_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+bool
+static dqa_grow(DequeArray dqa);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+/// Initializes a DequeArray_s with an initial capacity of 32 and a growth rate
+/// of 200, that is, twice the size after each growth.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] interface An interface defining all necessary functions for the
+/// deque to operate.
+///
+/// \return A new DequeArray_s or NULL if allocation failed.
+DequeArray_t *
+dqa_init(Interface_t *interface)
+{
+    DequeArray_t *deque = malloc(sizeof(DequeArray_t));
+
+    if (!deque)
+        return NULL;
+
+    deque->buffer = malloc(sizeof(void*) * 32);
+
+    if (!(deque->buffer))
     {
-        free(*dqa);
-
-        *dqa = NULL;
-
-        return DS_ERR_ALLOC;
+        free(deque);
+        return NULL;
     }
 
-    (*dqa)->capacity = 32;
-    (*dqa)->growth_rate = 200;
+    for (integer_t i = 0; i < 32; i++)
+        deque->buffer[i] = NULL;
 
-    (*dqa)->size = 0;
+    deque->capacity = 32;
+    deque->growth_rate = 200;
+    deque->version_id = 0;
+    deque->size = 0;
+    deque->front = 0;
+    deque->rear = 0;
+    deque->locked = false;
 
-    (*dqa)->front = 0;
-    (*dqa)->rear = 0;
+    deque->interface = interface;
 
-    (*dqa)->locked = false;
-
-    return DS_OK;
+    return deque;
 }
 
-Status dqa_create(DequeArray *dqa, integer_t initial_capacity, integer_t growth_rate)
+/// Initializes a DequeArray_s with a user defined \c initial_capacity and \c
+/// growth_rate. This function only accepts an \c initial_capacity greater than
+/// 0 and a \c growth_rate greater than 100; but keep in mind that in some
+/// cases if the \c initial_capacity is too small and the \c growth_rate is too
+/// close to 100 there won't be an increase in capacity and the minimum growth
+/// will be triggered.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
+/// \param[in] interface An interface defining all necessary functions for the
+/// deque to operate.
+///
+/// \return NULL if the growth rate is less than 101, if the initial capacity
+/// is 0 or if allocation failed.
+/// \return A new DequeArray_s dynamically allocated.
+DequeArray_t *
+dqa_create(integer_t initial_capacity, integer_t growth_rate,
+           Interface_t *interface)
 {
-    if (initial_capacity < 8 || growth_rate <= 100)
-        return DS_ERR_INVALID_ARGUMENT;
+    if (growth_rate <= 100 || initial_capacity <= 0)
+        return NULL;
 
-    (*dqa) = malloc(sizeof(DequeArray_t));
+    DequeArray_t *deque = malloc(sizeof(DequeArray_t));
 
-    if (!(*dqa))
-        return DS_ERR_ALLOC;
+    if (!deque)
+        return NULL;
 
-    (*dqa)->buffer = malloc(sizeof(int) * initial_capacity);
+    deque->buffer = malloc(sizeof(void*) * (size_t)initial_capacity);
 
-    if (!((*dqa)->buffer))
+    if (!(deque->buffer))
     {
-        free(*dqa);
-
-        *dqa = NULL;
-
-        return DS_ERR_ALLOC;
+        free(deque);
+        return NULL;
     }
 
-    (*dqa)->capacity = initial_capacity;
-    (*dqa)->growth_rate = growth_rate;
+    for (integer_t i = 0; i < initial_capacity; i++)
+        deque->buffer[i] = NULL;
 
-    (*dqa)->size = 0;
+    deque->capacity = initial_capacity;
+    deque->growth_rate = growth_rate;
+    deque->version_id = 0;
+    deque->size = 0;
+    deque->front = 0;
+    deque->rear = 0;
+    deque->locked = false;
 
-    (*dqa)->front = 0;
-    (*dqa)->rear = 0;
+    deque->interface = interface;
 
-    (*dqa)->locked = false;
-
-    return DS_OK;
+    return deque;
 }
 
-Status dqa_enqueue_front(DequeArray dqa, int element)
+/// Frees each element at the deque using its interface's \c free and then
+/// frees the deque struct.
+/// \par Interface Requirements
+/// - free
+///
+/// \param[in] deque The deque to be freed from memory.
+void
+dqa_free(DequeArray_t *deque)
 {
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (dqa_full(dqa))
+    for (integer_t i = deque->front, j = 0;
+         j < deque->size;
+         i = (i + 1) % deque->capacity, j++)
     {
-        Status st = dqa_grow(dqa);
-
-        if (st != DS_OK)
-            return st;
+        deque->interface->free(deque->buffer[i]);
     }
 
-    dqa->front = (dqa->front == 0) ? dqa->capacity - 1 : dqa->front - 1;
+    free(deque->buffer);
 
-    dqa->buffer[dqa->front] = element;
-
-    (dqa->size)++;
-
-    return DS_OK;
+    free(deque);
 }
 
-Status dqa_enqueue_rear(DequeArray dqa, int element)
+/// Frees the DequeArray_s structure and leaves all the elements intact. Be
+/// careful as this might cause severe memory leaks. Only use this if your
+/// deque elements are also handled by another structure or algorithm.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque to be freed from memory.
+void
+dqa_free_shallow(DequeArray_t *deque)
 {
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
+    free(deque->buffer);
 
-    if (dqa_full(dqa))
+    free(deque);
+}
+
+/// This function will free all the elements of the specified DequeArray_s and
+/// will keep the structure intact.
+/// \par Interface Requirements
+/// - free
+///
+/// \param[in] deque The deque to have its elements erased.
+///
+/// \return True if all operations were successful.
+bool
+dqa_erase(DequeArray_t *deque)
+{
+    for (integer_t i = deque->front, j = 0;
+         j < deque->size;
+         i = (i + 1) % deque->capacity, j++)
     {
-        Status st = dqa_grow(dqa);
+        deque->interface->free(deque->buffer[i]);
 
-        if (st != DS_OK)
-            return st;
+        deque->buffer[i] = NULL;
     }
 
-    dqa->buffer[dqa->rear] = element;
-
-    dqa->rear = (dqa->rear == dqa->capacity - 1) ? 0 : dqa->rear + 1;
-
-    (dqa->size)++;
-
-    return DS_OK;
+    return true;
 }
 
-Status dqa_dequeue_front(DequeArray dqa, int *result)
+/// Sets a new interface for the specified DequeArray_s.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque DequeArray_s to change the interface.
+/// \param[in] new_interface New interface for the specified structure.
+void
+dqa_config(DequeArray_t *deque, Interface_t *new_interface)
 {
-    *result = 0;
-
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (dqa_empty(dqa))
-        return DS_ERR_INVALID_OPERATION;
-
-    *result = dqa->buffer[dqa->front];
-
-    dqa->front = (dqa->front == dqa->capacity - 1) ? 0 : dqa->front + 1;
-
-    (dqa->size)--;
-
-    return DS_OK;
+    deque->interface = new_interface;
 }
 
-Status dqa_dequeue_rear(DequeArray dqa, int *result)
+/// Returns the current amount of elements in the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The target deque.
+///
+/// \return The amount of elements in the deque.
+integer_t
+dqa_size(DequeArray_t *deque)
 {
-    *result = 0;
-
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (dqa_empty(dqa))
-        return DS_ERR_INVALID_OPERATION;
-
-    dqa->rear = (dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1;
-
-    *result = dqa->buffer[dqa->rear];
-
-    (dqa->size)--;
-
-    return DS_OK;
+    return deque->size;
 }
 
-Status dqa_display(DequeArray dqa)
+/// Returns the current buffer's size of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The target deque.
+///
+/// \return The deque's buffer's size.
+integer_t
+dqa_capacity(DequeArray_t *deque)
 {
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
+    return deque->capacity;
+}
 
-    if (dqa_empty(dqa))
+/// Returns the buffer's growth rate of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The target deque.
+///
+/// \return The buffer's growth rate.
+integer_t
+dqa_growth(DequeArray_t *deque)
+{
+    return deque->growth_rate;
+}
+
+/// Returns the boolean state of \c locked member.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The target deque.
+///
+/// \return True if the buffer's growth is locked, false otherwise.
+bool
+dqa_locked(DequeArray_t *deque)
+{
+    return deque->locked;
+}
+
+/// Sets a new growth_rate to the target deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The target deque.
+/// \param[in] growth_rate Deque's new growth_rate.
+///
+/// \return True if the growth rate was change or false if the parameter is
+/// less than 101.
+bool
+dqa_set_growth(DequeArray_t *deque, integer_t growth_rate)
+{
+    if (growth_rate <= 100)
+        return false;
+
+    deque->growth_rate = growth_rate;
+
+    return true;
+}
+
+/// Inserts an element to the front of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque where the element is to be inserted.
+/// \param[in] element The element to be inserted in the deque.
+///
+/// \return True if the element was successfully added to the deque or false if
+/// the buffer reallocation failed or the deque buffer capacity is locked.
+bool
+dqa_enqueue_front(DequeArray_t *deque, void *element)
+{
+    if (dqa_full(deque))
+    {
+        if (!dqa_grow(deque))
+            return false;
+    }
+
+    deque->front = (deque->front == 0) ? deque->capacity - 1 : deque->front -1;
+
+    deque->buffer[deque->front] = element;
+
+    deque->size++;
+    deque->version_id++;
+
+    return true;
+}
+
+/// Inserts an element to the rear of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque where the element is to be inserted.
+/// \param[in] element The element to be inserted in the deque.
+///
+/// \return True if the element was successfully added to the deque or false if
+/// the buffer reallocation failed or the deque buffer capacity is locked.
+bool
+dqa_enqueue_rear(DequeArray_t *deque, void *element)
+{
+    if (dqa_full(deque))
+    {
+        if (!dqa_grow(deque))
+            return false;
+    }
+
+    deque->buffer[deque->rear] = element;
+
+    deque->rear = (deque->rear == deque->capacity - 1) ? 0 : deque->rear + 1;
+
+    deque->size++;
+    deque->version_id++;
+
+    return true;
+}
+
+/// Removes an element at the front of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque where the element is to be removed from.
+/// \param[out] result The resulting element removed from the deque.
+///
+/// \return True if an element was removed from the deque or false if the deque
+/// is empty.
+bool
+dqa_dequeue_front(DequeArray_t *deque, void **result)
+{
+    *result = NULL;
+
+    if (dqa_empty(deque))
+        return false;
+
+    *result = deque->buffer[deque->front];
+
+    deque->buffer[deque->front] = NULL;
+
+    deque->front = (deque->front == deque->capacity - 1) ? 0 : deque->front +1;
+
+    deque->size--;
+    deque->version_id++;
+
+    return true;
+}
+
+/// Removes an element at the rear of the specified deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque where the element is to be removed from.
+/// \param[out] result The resulting element removed from the deque.
+///
+/// \return True if an element was removed from the deque or false if the deque
+/// is empty.
+bool
+dqa_dequeue_rear(DequeArray_t *deque, void **result)
+{
+    *result = NULL;
+
+    if (dqa_empty(deque))
+        return false;
+
+    deque->rear = (deque->rear == 0) ? deque->capacity - 1 : deque->rear - 1;
+
+    *result = deque->buffer[deque->rear];
+
+    deque->buffer[deque->rear] = NULL;
+
+    deque->size--;
+    deque->version_id++;
+
+    return true;
+}
+
+/// Returns the element at the front of the deque or NULL if the deque is
+/// empty.
+///
+/// \param[in] deque The target deque.
+///
+/// \return NULL if the deque is empty or the element at the front of the
+/// deque.
+void *
+dqa_peek_front(DequeArray_t *deque)
+{
+    if (dqa_empty(deque))
+        return NULL;
+
+    return deque->buffer[deque->front];
+}
+
+/// Returns the element at the rear of the deque or NULL if the deque is empty.
+///
+/// \param[in] deque The target deque.
+///
+/// \return NULL if the deque is empty or the element at the rear of the deque.
+void *
+dqa_peek_rear(DequeArray_t *deque)
+{
+    if (dqa_empty(deque))
+        return NULL;
+
+    integer_t i = (deque->rear == 0) ? deque->capacity - 1 : deque->rear - 1;
+
+    return deque->buffer[i];
+}
+
+/// Returns true if the deque is empty, or false if there are elements in the
+/// deque.
+///
+/// \param[in] deque The target deque.
+///
+/// \return True if the deque is empty, otherwise false.
+bool
+dqa_empty(DequeArray_t *deque)
+{
+    return deque->size == 0;
+}
+
+/// Returns true if the current amount of elements in the deque is the same as
+/// the buffer's capacity, that is, the next element to be added to the deque
+/// will cause the buffer to be reallocated.
+///
+/// \param[in] deque The target deque.
+///
+/// \return True if the amount of elements is the same as the buffer's
+/// capacity, otherwise false.
+bool
+dqa_full(DequeArray_t *deque)
+{
+    return deque->size == deque->capacity;
+}
+
+/// Returns true if the specified size will fit in the deque's buffer without
+/// it being reallocated.
+///
+/// \param[in] deque The target deque.
+/// \param[in] size The specified size.
+///
+/// \return True if a given size fits inside the deque without reallocating the
+/// buffer.
+bool
+dqa_fits(DequeArray_t *deque, unsigned_t size)
+{
+    return (deque->size + size) <= deque->capacity;
+}
+
+/// Locks the the target's buffer growth. If the buffer is full no more
+/// elements will be added to the deque until its capacity is unlocked or
+/// another element is removed.
+///
+/// \param[in] deque The deque to be locked from growing.
+void
+dqa_capacity_lock(DequeArray_t *deque)
+{
+    deque->locked = true;
+}
+
+/// Unlocks the buffer's capacity allowing it to be reallocated once full.
+///
+/// \param[in] deque The deque to have its buffer's growth unlocked.
+void
+dqa_capacity_unlock(DequeArray_t *deque)
+{
+    deque->locked = false;
+}
+
+/// Returns a copy of the specified DequeArray_s with the same interface. All
+/// elements are copied using the deque's interface's copy function.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param[in] deque The deque to be copied.
+///
+/// \return NULL if allocation failed or a copy of the specified deque.
+DequeArray_t *
+dqa_copy(DequeArray_t *deque)
+{
+    DequeArray_t *new_deque = dqa_create(deque->capacity, deque->growth_rate,
+                                         deque->interface);
+
+    if (!new_deque)
+        return NULL;
+
+    for (integer_t i = deque->front, j = 0; j < deque->size - 1;
+         i = (i + 1) % deque->capacity, j++)
+    {
+        new_deque->buffer[i] = deque->interface->copy(deque->buffer[i]);
+    }
+
+    new_deque->front = deque->front;
+    new_deque->rear = deque->rear;
+    new_deque->size = deque->size;
+    new_deque->locked = deque->locked;
+
+    return new_deque;
+}
+
+/// Creates a shallow copy of all elements in the deque, that is, only the
+/// pointers addresses are copied to the new deque.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque to be copied.
+///
+/// \return NULL if allocation failed or a shallow copy of the specified deque.
+DequeArray_t *
+dqa_copy_shallow(DequeArray_t *deque)
+{
+    DequeArray_t *new_deque = dqa_create(deque->capacity, deque->growth_rate,
+                                         deque->interface);
+
+    if (!new_deque)
+        return NULL;
+
+    for (integer_t i = deque->front, j = 0; j < deque->size - 1;
+         i = (i + 1) % deque->capacity, j++)
+    {
+        new_deque->buffer[i] = deque->buffer[i];
+    }
+
+    new_deque->front = deque->front;
+    new_deque->rear = deque->rear;
+    new_deque->size = deque->size;
+    new_deque->locked = deque->locked;
+
+    return new_deque;
+}
+
+/// Makes a comparison between two deques element by element. If one deque has
+/// less elements than the other the comparison of elements will go up until
+/// one deque reaches its limit. If all elements are the same until then, the
+/// tie breaker goes to their size. If it is also the same, then both deques
+/// are equal.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param[in] deque1 A target deque to be compared.
+/// \param[in] deque2 A target deque to be compared.
+///
+/// \return An int according to \ref compare_f.
+int
+dqa_compare(DequeArray_t *deque1, DequeArray_t *deque2)
+{
+    integer_t max_size = deque1->size < deque2->size
+                         ? deque1->size
+                         : deque2->size;
+
+    int comparison = 0;
+    for (integer_t i = 0; i < max_size; i++)
+    {
+        // Since its a circular buffer we need to calculate where the ith
+        // element of each queue is.
+        comparison = deque1->interface->compare(
+                deque1->buffer[(i + deque1->front) % deque1->capacity],
+                deque2->buffer[(i + deque2->front) % deque2->capacity]);
+        if (comparison > 0)
+            return 1;
+        else if (comparison < 0)
+            return -1;
+    }
+
+    // So far all elements were the same
+    if (deque1->size > deque2->size)
+        return 1;
+    else if (deque1->size < deque2->size)
+        return -1;
+
+    return 0;
+}
+
+/// Makes a copy of all the elements in the deque to a C array starting from
+/// the front element to the rear element.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param[in] deque The deque to be copied to the array.
+/// \param[out] length The resulting array's length.
+///
+/// \return The resulting array or NULL if the deque is empty or the array
+/// allocation failed.
+void **
+dqa_to_array(DequeArray_t *deque, integer_t *length)
+{
+    if (dqa_empty(deque))
+        return NULL;
+
+    void **array = malloc(sizeof(void*) * (size_t)deque->size);
+
+    if (!array)
+        return NULL;
+
+    for (integer_t i = deque->front, j = 0;
+         j < deque->size;
+         i = (i + 1) % deque->capacity, j++)
+    {
+        array[i] = deque->interface->copy(deque->buffer[i]);
+    }
+
+    *length = deque->size;
+
+    return array;
+}
+
+/// Displays a DequeArray_s in the console starting from the front element to
+/// the rear element. There are currently four modes:
+/// - -1 Displays each element separated by newline;
+/// -  0 Displays each element like a linked list;
+/// -  1 Displays each element separated by a space;
+/// - Any other number defaults to the array representation.
+/// \par Interface Requirements
+/// - display
+///
+/// \param[in] deque The deque to be displayed in the console.
+/// \param[in] display_mode The way the deque is to be displayed in the console.
+void
+dqa_display(DequeArray_t *deque, int display_mode)
+{
+    if (dqa_empty(deque))
     {
         printf("\nDequeArray\n[ empty ]\n");
-
-        return DS_OK;
+        return;
     }
 
-    printf("\nDequeArray\nfront <->");
-
-    for (integer_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
-        printf(" %d <->", dqa->buffer[i]);
-
-    printf(" rear\n");
-
-    return DS_OK;
-}
-
-Status dqa_display_array(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (dqa_empty(dqa))
+    switch (display_mode)
     {
-        printf("\n[ empty ]\n");
-
-        return DS_OK;
+        case -1:
+            printf("\nDequeArray\n");
+            for (integer_t i = deque->front, j = 0;
+                 j < deque->size - 1;
+                 i = (i + 1) % deque->capacity, j++)
+            {
+                deque->interface->display(deque->buffer[i]);
+                printf("\n");
+            }
+            break;
+        case 0:
+            printf("\nDequeArray\nFront <-> ");
+            for (integer_t i = deque->front, j = 0;
+                 j < deque->size - 1;
+                 i = (i + 1) % deque->capacity, j++)
+            {
+                deque->interface->display(deque->buffer[i]);
+                printf(" <-> ");
+            }
+            deque->interface->display(deque->buffer[
+                    (deque->rear == 0) ? deque->capacity - 1 : deque->rear - 1
+                    ]);
+            printf(" <-> Rear\n");
+            break;
+        case 1:
+            printf("\nDequeArray\n");
+            for (integer_t i = deque->front, j = 0;
+                 j < deque->size - 1;
+                 i = (i + 1) % deque->capacity, j++)
+            {
+                deque->interface->display(deque->buffer[i]);
+                printf(" ");
+            }
+            printf("\n");
+            break;
+        default:
+            printf("\nDequeArray\n[ ");
+            for (integer_t i = deque->front, j = 0;
+                 j < deque->size - 1;
+                 i = (i + 1) % deque->capacity, j++)
+            {
+                deque->interface->display(deque->buffer[i]);
+                printf(", ");
+            }
+            deque->interface->display(deque->buffer[
+                    (deque->rear == 0) ? deque->capacity - 1 : deque->rear - 1
+                    ]);
+            printf(" ]\n");
+            break;
     }
-
-    printf("\nDequeArray\n[ ");
-
-    for (integer_t i = dqa->front, j = 0; j < dqa->size - 1; i = (i + 1) % dqa->capacity, j++)
-        printf("%d, ", dqa->buffer[i]);
-
-    printf("%d ]\n", dqa->buffer[(dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1]);
-
-    return DS_OK;
 }
 
-Status dqa_display_raw(DequeArray dqa)
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+// This function reallocates the data buffer effectively increasing its
+// capacity
+bool
+static dqa_grow(DequeArray_t *deque)
 {
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (deque->locked)
+        return false;
 
-    printf("\n");
-
-    if (dqa_empty(dqa))
-        return DS_OK;
-
-    for (integer_t i = dqa->front, j = 0; j < dqa->size; i = (i + 1) % dqa->capacity, j++)
-        printf("%d ", dqa->buffer[i]);
-
-    printf("\n");
-
-    return DS_OK;
-}
-
-Status dqa_delete(DequeArray *dqa)
-{
-    if ((*dqa) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free((*dqa)->buffer);
-
-    free(*dqa);
-
-    *dqa = NULL;
-
-    return DS_OK;
-}
-
-Status dqa_erase(DequeArray *dqa)
-{
-    if ((*dqa) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = dqa_delete(dqa);
-
-    if (st != DS_OK)
-        return st;
-
-    st = dqa_init(dqa);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-int dqa_peek_front(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return 0;
-
-    if (dqa_empty(dqa))
-        return 0;
-
-    return dqa->buffer[dqa->front];
-}
-
-int dqa_peek_rear(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return 0;
-
-    if (dqa_empty(dqa))
-        return 0;
-
-    return dqa->buffer[(dqa->rear == 0) ? dqa->capacity - 1 : dqa->rear - 1];
-}
-
-integer_t dqa_size(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return -1;
-
-    return dqa->size;
-}
-
-integer_t dqa_capacity(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return -1;
-
-    return dqa->capacity;
-}
-
-bool dqa_empty(DequeArray dqa)
-{
-    return dqa->size == 0;
-}
-
-bool dqa_full(DequeArray dqa)
-{
-    return dqa->size == dqa->capacity;
-}
-
-bool dqa_fits(DequeArray dqa, integer_t size)
-{
-    return (dqa->size + size) <= dqa->capacity;
-}
-
-Status dqa_copy(DequeArray dqa, DequeArray *result)
-{
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = dqa_create(result, dqa->capacity, dqa->growth_rate);
-
-    if (st != DS_OK)
-        return st;
-
-    if (dqa_empty(dqa))
-        return DS_OK;
-
-    for (integer_t i = 0; i < dqa->capacity; i++)
-        (*result)->buffer[i] = dqa->buffer[i];
-
-    (*result)->front = dqa->front;
-    (*result)->rear = dqa->rear;
-
-    (*result)->size = dqa->size;
-
-    (*result)->locked = dqa->locked;
-
-    return DS_OK;
-}
-
-Status dqa_cap_lock(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    dqa->locked = true;
-
-    return DS_OK;
-}
-
-Status dqa_cap_unlock(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    dqa->locked = false;
-
-    return DS_OK;
-}
-
-// NOT EXPOSED API
-
-Status dqa_grow(DequeArray dqa)
-{
-    if (dqa == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (dqa->locked)
-        return DS_ERR_FULL;
-
-    integer_t old_capacity = dqa->capacity;
+    integer_t old_capacity = deque->capacity;
 
     // capacity = capacity * (growth_rate / 100)
-    dqa->capacity = (integer_t) ((double) (dqa->capacity) * ((double) (dqa->growth_rate) / 100.0));
+    deque->capacity = (integer_t) ((double) (deque->capacity)
+            * ((double) (deque->growth_rate) / 100.0));
 
     // 4 is the minimum growth
-    if (dqa->capacity - old_capacity < 4)
-        dqa->capacity = old_capacity + 4;
+    if (deque->capacity - old_capacity < 4)
+        deque->capacity = old_capacity + 4;
 
-    int *new_buffer = realloc(dqa->buffer, sizeof(int) * dqa->capacity);
+    void **new_buffer = realloc(deque->buffer,
+            sizeof(void*) * (size_t)deque->capacity);
 
+    // Reallocation failed
     if (!new_buffer)
     {
-        dqa->capacity = old_capacity;
-
-        return DS_ERR_ALLOC;
+        deque->capacity = old_capacity;
+        return false;
     }
 
-    dqa->buffer = new_buffer;
+    deque->buffer = new_buffer;
 
-    integer_t real_rear = (dqa->rear == 0) ? old_capacity - 1 : dqa->rear - 1;
+    integer_t real_rear = (deque->rear == 0)
+            ? old_capacity - 1
+            : deque->rear - 1;
 
     // Shift elements if the rear index or the front index wrapped around the
     // buffer.
-    if (real_rear < dqa->front)
+    if (real_rear < deque->front)
     {
         // When the buffer is full the rear index equals the front index. In
         // order to shift elements effectively this calculates which portion of
@@ -396,26 +792,29 @@ Status dqa_grow(DequeArray dqa)
         // Shift the right portion to the end of the buffer if the total
         // elements are less than the left portion; otherwise append the left
         // portion to the right portion.
-        if (old_capacity - dqa->front < dqa->rear)
+        if (old_capacity - deque->front < deque->rear)
         {
-            integer_t distance = old_capacity - dqa->front;
+            integer_t distance = old_capacity - deque->front;
 
-            for (integer_t i = old_capacity - 1, j = dqa->capacity - 1; i >= dqa->front; i--, j--)
+            for (integer_t i = old_capacity - 1, j = deque->capacity - 1;
+                    i >= deque->front; i--, j--)
             {
-                dqa->buffer[j] = dqa->buffer[i];
+                deque->buffer[j] = deque->buffer[i];
             }
 
-            dqa->front = dqa->capacity - distance;
+            deque->front = deque->capacity - distance;
         }
-        // If the growth rate is less than 150 the rear index might wrap around the buffer again
+        // If the growth rate is less than 150 the rear index might wrap around
+        // the buffer again
         else
         {
-            for (integer_t i = 0, j = old_capacity; i < dqa->rear; i++, j = (j + 1) % dqa->capacity)
+            for (integer_t i = 0, j = old_capacity; i < deque->rear;
+                    i++, j = (j + 1) % deque->capacity)
             {
-                dqa->buffer[j] = dqa->buffer[i];
+                deque->buffer[j] = deque->buffer[i];
             }
 
-            dqa->rear = (old_capacity + dqa->rear) % dqa->capacity;
+            deque->rear = (old_capacity + deque->rear) % deque->capacity;
         }
     }
     // This case only happens when dqa->front == 0 and dqa->rear == 0
@@ -423,16 +822,29 @@ Status dqa_grow(DequeArray dqa)
     // allowing the rear index to keep increasing instead of wrapping around.
     // This can be achieved by inserting elements only at one end and never
     // removing elements from the other end.
-    else if (dqa->rear == 0)
+    else if (deque->rear == 0)
     {
-        dqa->rear = old_capacity;
+        deque->rear = old_capacity;
     }
     // This should never happen. This function should never be called when the
     // buffer is not full (front == rear and size == capacity).
     else
-        return DS_ERR_UNEXPECTED_RESULT;
+        return false;
 
-    return DS_OK;
+    return true;
 }
 
-// END OF NOT EXPOSED API
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DequeArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DequeArrayWrapper
+

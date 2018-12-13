@@ -10,217 +10,191 @@
 #define C_DATASTRUCTURES_LIBRARY_DEQUEARRAY_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// A DequeArray is a buffered Deque with enqueue and dequeue operations on
-/// both ends that are represented by indexes. It also has the ability to
-/// increase in size when needed. This implementation also uses the QueueArray
-/// implementation of resizing the buffer.
+/// \struct DequeArray_s
+/// \brief A generic array-based double-ended queue.
+struct DequeArray_s;
+
+/// \ref DequeArray_t
+/// \brief A type for a deque array.
 ///
-/// \b Advantages over \c Deque
-/// - Fast insertion
-/// - No need of pointers, only the data is allocated in memory
-///
-/// \b Drawbacks
-/// - When the \c DequeArray is full the buffer needs to be reallocated and
-/// elements need to be shifted
-///
-/// \b Functions
-///
-/// \c DequeArray.c
-struct DequeArray_s
-{
-    /// \brief Data buffer.
-    ///
-    /// Buffer where elements are stored in.
-    int *buffer;
-
-    /// \brief Front of the deque.
-    ///
-    /// An index that represents the front of the deque.
-    integer_t front;
-
-    /// \brief Back of the deque.
-    ///
-    /// An index that represents the back of the deque.
-    integer_t rear;
-
-    /// \brief Current amount of elements in the \c QueueArray.
-    ///
-    /// Current amount of elements in the \c QueueArray.
-    integer_t size;
-
-    /// \brief \c QueueArray buffer maximum capacity.
-    ///
-    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
-    /// reallocated and increases according to \c growth_rate.
-    integer_t capacity;
-
-    /// \brief Buffer growth rate.
-    ///
-    /// Buffer growth rate. The new buffer capacity is calculated as:
-    ///
-    /// <code> capacity *= (growth_rate / 100.0) </code>
-    integer_t growth_rate;
-
-    /// \brief Flag for locked capacity.
-    ///
-    /// If \c locked is set to true the buffer will not grow and if any
-    /// elements are inserted with a full buffer \c DS_ERR_FULL will be
-    /// returned.
-    bool locked;
-};
-
-/// Defines a type for <code> struct DequeArray_s </code>.
-///
-/// Every deque is initialized by \c malloc with \c sizeof(DequeArray_t).
+/// A type for a <code> struct DequeArray_s </code> so you don't have to always
+/// write the full name of it.
 typedef struct DequeArray_s DequeArray_t;
 
-/// Defines a type of pointer to <code> struct DequeArray_s </code>.
+/// \ref DequeArray
+/// \brief Defines a type of pointer to <code> struct DequeArray_s </code>.
 ///
 /// This typedef is used to avoid having to declare every deque as a pointer
 /// type since they all must be dynamically allocated.
 typedef struct DequeArray_s *DequeArray;
 
-/// Initializes a \c DequeArray with an initial capacity of 32 and a growth
-/// rate of 200, that is, twice the size after each growth.
-///
-/// \param[in,out] dqa The deque to be initialized.
-///
-/// \return DS_ERR_ALLOC if deque allocation failed.
-/// \return DS_OK if all operations were successful.
-///
-/// \see dqa_create
-Status dqa_init(DequeArray *dqa);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Initializes a \c DequeArray with a user defined \c initial_capacity and \c
-/// growth_rate. This function only accepts an \c initial_capacity greater than
-/// 8 and a \c growth_rate greater than 100; but keep in mind that in some
-/// cases if the \c initial_capacity is too small and the \c growth_rate is too
-/// close to 100 there won't be an increase in capacity and the minimum growth
-/// will be triggered.
-///
-/// \param[in,out] dqa The deque to be initialized.
-/// \param[in] initial_capacity Buffer initial capacity.
-/// \param[in] growth_rate Buffer growth rate.
-///
-/// \return DS_ERR_ALLOC if deque allocation failed.
-/// \return DS_ERR_INVALID_ARGUMENT if initial_capacity is less than 8 or
-/// growth_rate is less than or equal to 100.
-///
-/// \see dqa_init
-Status dqa_create(DequeArray *dqa, integer_t initial_capacity, integer_t growth_rate);
+/// \ref dqa_init
+/// \brief Initializes a new DequeArray_s.
+DequeArray_t *
+dqa_init(Interface_t *interface);
 
-/// Inserts an element to the front of the specified deque.
-///
-/// \param[in] dqa The deque where the element is to be inserted.
-/// \param[in] element The element to be inserted in the deque.
-///
-/// \return DS_ERR_ALLOC if the buffer reallocation failed.
-/// \return DS_ERR_FULL if the buffer capacity is locked and the deque is full.
-/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_enqueue_front(DequeArray dqa, int element);
+/// \ref dqa_create
+/// \brief Initializes a new DequeArray_s with custom parameters.
+DequeArray_t *
+dqa_create(integer_t initial_capacity, integer_t growth_rate,
+           Interface_t *interface);
 
-/// Inserts an element to the rear of the specified deque.
-///
-/// \param[in] dqa The deque where the element is to be inserted.
-/// \param[in] element The element to be inserted in the deque.
-///
-/// \return DS_ERR_ALLOC if the buffer reallocation failed.
-/// \return DS_ERR_FULL if the buffer capacity is locked and the deque is full.
-/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_enqueue_rear(DequeArray dqa, int element);
+/// \ref dqa_free
+/// \brief Frees from memory a DequeArray_s and its elements.
+void
+dqa_free(DequeArray_t *deque);
 
-/// Removes an element at the front of the specified deque.
-///
-/// \param[in] dqa The deque where the element is to be removed from.
-/// \param[out] result The resulting element removed from the deque.
-///
-/// \return DS_ERR_INVALID_OPERATION if the deque is empty.
-/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_dequeue_front(DequeArray dqa, int *result);
+/// \ref dqa_free_shallow
+/// \brief Frees from memory a DequeArray_s leaving its elements intact.
+void
+dqa_free_shallow(DequeArray_t *deque);
 
-/// Removes an element at the rear of the specified deque.
-///
-/// \param[in] dqa The deque where the element is to be removed from.
-/// \param[out] result The resulting element removed from the deque.
-///
-/// \return DS_ERR_INVALID_OPERATION if the deque is empty.
-/// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_dequeue_rear(DequeArray dqa, int *result);
+/// \ref dqa_erase
+/// \brief Frees from memory all elements of a DequeArray_s.
+bool
+dqa_erase(DequeArray_t *deque);
 
-/// Displays a \c DequeArray in the console.
-///
-/// \param dqa The deque to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_display(DequeArray dqa);
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-/// Displays a \c DequeArray in the console like an array with its values
-/// separated by commas, delimited with brackets.
-///
-/// \param dqa The deque to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_display_array(DequeArray dqa);
+/// \ref dqa_config
+/// \brief Sets a new interface for a target deque.
+void
+dqa_config(DequeArray_t *deque, Interface_t *new_interface);
 
-/// Displays a \c DequeArray in the console with its values separated by
-/// spaces.
-///
-/// \param dqa The deque to be displayed in the console.
-///
-/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_display_raw(DequeArray dqa);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// Frees the deque buffer and the DequeArray structure; the variable then is
-/// set no \c NULL;
-///
-/// \param dqa The deque to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_delete(DequeArray *dqa);
+/// \ref dqa_size
+/// \brief Returns the amount of elements in the specified deque.
+integer_t
+dqa_size(DequeArray_t *deque);
 
-/// This function sets the deque to its initial state, erasing all of its data
-/// and re-initializing the structure. It is equivalent to calling dqa_delete()
-/// and then dqa_init().
-///
-/// \param dqa The deque to be erased.
-///
-/// \return DS_ERR_ALLOC if deque allocation failed.
-/// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
-/// \return DS_OK if all operations were successful.
-Status dqa_erase(DequeArray *dqa);
+/// \ref dqa_capacity
+/// \brief Returns the total buffer capacity of the specified deque.
+integer_t
+dqa_capacity(DequeArray_t *deque);
 
-int dqa_peek_front(DequeArray dqa);
+/// \ref dqa_growth
+/// \brief Returns the growth rate of the specified deque.
+integer_t
+dqa_growth(DequeArray_t *deque);
 
-int dqa_peek_rear(DequeArray dqa);
+/// \ref dqa_locked
+/// \brief Returns true if the deque's buffer is locked, false otherwise.
+bool
+dqa_locked(DequeArray_t *deque);
 
-integer_t dqa_size(DequeArray dqa);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-integer_t dqa_capacity(DequeArray dqa);
+/// \ref qua_set_growth
+/// \brief Sets a new growth rate for the deque's buffer.
+bool
+dqa_set_growth(DequeArray_t *deque, integer_t growth_rate);
 
-bool dqa_empty(DequeArray dqa);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-bool dqa_full(DequeArray dqa);
+/// \ref dqa_enqueue_front
+/// \brief Adds an element at the front of the specified deque.
+bool
+dqa_enqueue_front(DequeArray_t *deque, void *element);
 
-bool dqa_fits(DequeArray dqa, integer_t size);
+/// \ref dqa_enqueue_rear
+/// \brief Adds an element at the rear of the specified deque.
+bool
+dqa_enqueue_rear(DequeArray_t *deque, void *element);
 
-Status dqa_copy(DequeArray dqa, DequeArray *result);
+/// \ref dqa_dequeue_front
+/// \brief Removes and element at the front of the specified deque.
+bool
+dqa_dequeue_front(DequeArray_t *deque, void **result);
 
-Status dqa_cap_lock(DequeArray dqa);
+/// \ref dqa_dequeue_rear
+/// \brief Removes and element at the rear of the specified deque.
+bool
+dqa_dequeue_rear(DequeArray_t *deque, void **result);
 
-Status dqa_cap_unlock(DequeArray dqa);
+/// \ref dqa_peek_front
+/// \brief Returns the element at the front of the deque.
+void *
+dqa_peek_front(DequeArray_t *deque);
+
+/// \ref dqa_peek_rear
+/// \brief Returns the element at the rear of the deque.
+void *
+dqa_peek_rear(DequeArray_t *deque);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+/// \ref dqa_empty
+/// \brief Returns true if the deque is empty, false otherwise.
+bool dqa_empty(DequeArray_t *deque);
+
+/// \ref qua_full
+/// \brief Returns true if the deque is full, false otherwise.
+bool dqa_full(DequeArray_t *deque);
+
+/// \ref qua_fits
+/// \brief Returns true if a given size fits inside the deque without
+/// reallocating the buffer.
+bool dqa_fits(DequeArray_t *deque, unsigned_t size);
+
+/// \ref dqa_capacity_lock
+/// \brief Locks the buffer's growth for the specified deque.
+void
+dqa_capacity_lock(DequeArray_t *deque);
+
+/// \ref dqa_capacity_unlock
+/// \brief Unlocks the buffer's growth for the specified deque.
+void
+dqa_capacity_unlock(DequeArray_t *deque);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref dqa_copy
+/// \brief Returns a copy of the specified deque.
+DequeArray_t *
+dqa_copy(DequeArray_t *deque);
+
+/// \ref dqa_copy_shallow
+/// \brief Creates a shallow copy of the specified deque.
+DequeArray_t *
+dqa_copy_shallow(DequeArray_t *deque);
+
+/// \ref dqa_compare
+/// \brief Compares two deques returning an int according to \ref compare_f.
+int
+dqa_compare(DequeArray_t *deque1, DequeArray_t *deque2);
+
+/// \ref dqa_to_array
+/// \brief Makes a copy of the deque as a C array.
+void **
+dqa_to_array(DequeArray_t *deque, integer_t *length);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+/// \ref dqa_display
+/// \brief Displays a DequeArray_s in the console.
+void
+dqa_display(DequeArray_t *deque, int display_mode);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DequeArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo DequeArrayWrapper
 
 #ifdef __cplusplus
 }

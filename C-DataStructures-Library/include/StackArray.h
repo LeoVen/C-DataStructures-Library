@@ -86,6 +86,11 @@ sta_capacity(StackArray_t *stack);
 integer_t
 sta_growth(StackArray_t *stack);
 
+/// \ref sta_locked
+/// \brief Returns true if the stack's buffer is locked, false otherwise.
+bool
+sta_locked(StackArray_t *stack);
+
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
 /// \ref sta_set_growth
@@ -129,12 +134,12 @@ bool
 sta_fits(StackArray_t *stack, unsigned_t size);
 
 /// \ref sta_capacity_lock
-/// \brief Locks the growth for the specified stack.
+/// \brief Locks the buffer's growth for the specified stack.
 void
 sta_capacity_lock(StackArray stack);
 
 /// \ref sta_capacity_unlock
-/// \brief Unlocks the growth for the specified stack.
+/// \brief Unlocks the buffer's growth for the specified stack.
 void
 sta_capacity_unlock(StackArray stack);
 
@@ -151,14 +156,14 @@ StackArray_t *
 sta_copy_shallow(StackArray_t *stack);
 
 /// \ref sta_compare
-/// \brief Compares two stacks returning an int according to compare_f.
+/// \brief Compares two stacks returning an int according to \ref compare_f.
 int
 sta_compare(StackArray_t *stack1, StackArray_t *stack2);
 
-/// \ref qua_to_array
-/// \brief Makes a copy of the queue as a C array.
+/// \ref sta_to_array
+/// \brief Makes a copy of the stack as a C array.
 void **
-sta_to_array(StackArray_t *stack, integer_t *size);
+sta_to_array(StackArray_t *stack, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 

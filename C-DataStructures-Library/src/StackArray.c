@@ -8,7 +8,7 @@
 
 #include "StackArray.h"
 
-/// A StackArray_s is a buffered Stack with FILO (First-in Last-out) or LIFO
+/// A StackArray_s is a buffered Stack_s with FILO (First-in Last-out) or LIFO
 /// (Last-in First-out) operations, so the first item added is the last one to
 /// be removed. The stack is implemented as a normal buffer that only grows on
 /// one side. This simplifies the structure as no indexes will ever need to
@@ -20,7 +20,7 @@
 /// - No need of pointers, only the data is allocated in memory
 ///
 /// \par Drawbacks
-/// - When the \c StackArray is full the buffer needs to be reallocated
+/// - When the StackArray_s is full the buffer needs to be reallocated
 ///
 /// \par Functions
 ///
@@ -80,8 +80,11 @@ static sta_grow(StackArray stack);
 
 /// Initializes a StackArray_s with an initial capacity of 32 and a growth rate
 /// of 200, that is, twice the size after each growth.
+/// \par Interface Requirements
+/// - None
 ///
-/// \param[in] interface The interface for your StackArray_s.
+/// \param[in] interface An interface defining all necessary functions for the
+/// stack to operate.
 ///
 /// \return A new StackArray_s or NULL if allocation failed.
 StackArray_t *
@@ -101,10 +104,13 @@ sta_new(Interface_t *interface)
         return NULL;
     }
 
+    for (integer_t i = 0; i < 32; i++)
+        stack->buffer[i] = NULL;
+
     stack->capacity = 32;
     stack->growth_rate = 200;
-    stack->size = 0;
     stack->version_id = 0;
+    stack->size = 0;
     stack->locked = false;
 
     stack->interface = interface;
@@ -118,6 +124,8 @@ sta_new(Interface_t *interface)
 /// cases if the \c initial_capacity is too small and the \c growth_rate is too
 /// close to 100 there won't be an increase in capacity and the minimum growth
 /// will be triggered.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] initial_capacity Buffer initial capacity.
 /// \param[in] growth_rate Buffer growth rate.
@@ -139,7 +147,7 @@ sta_create(integer_t initial_capacity, integer_t growth_rate,
     if (!stack)
         return NULL;
 
-    stack->buffer = malloc(sizeof(void*) * initial_capacity);
+    stack->buffer = malloc(sizeof(void*) * (size_t)initial_capacity);
 
     if (!(stack->buffer))
     {
@@ -148,10 +156,13 @@ sta_create(integer_t initial_capacity, integer_t growth_rate,
         return NULL;
     }
 
+    for (integer_t i = 0; i < initial_capacity; i++)
+        stack->buffer[i] = NULL;
+
     stack->capacity = initial_capacity;
     stack->growth_rate = growth_rate;
-    stack->size = 0;
     stack->version_id = 0;
+    stack->size = 0;
     stack->locked = false;
 
     stack->interface = interface;
@@ -196,7 +207,7 @@ sta_free_shallow(StackArray_t *stack)
 /// \par Interface Requirements
 /// - free
 ///
-/// \param[in] stack The stack to be erased.
+/// \param[in] stack The stack to have its elements erased.
 ///
 /// \return True if all operations were successful.
 bool
@@ -213,6 +224,8 @@ sta_erase(StackArray_t *stack)
 }
 
 /// Sets a new interface for the specified StackArray_s.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack StackArray_s to change the interface.
 /// \param[in] new_interface New interface for the specified structure.
@@ -222,24 +235,67 @@ sta_config(StackArray_t *stack, Interface_t *new_interface)
     stack->interface = new_interface;
 }
 
+/// Returns the current amount of elements in the specified stack.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+///
+/// \return The amount of elements in the stack.
 integer_t
 sta_size(StackArray_t *stack)
 {
     return stack->size;
 }
 
+/// Returns the current buffer's size of the specified stack.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+///
+/// \return The stack's buffer's size.
 integer_t
 sta_capacity(StackArray_t *stack)
 {
     return stack->capacity;
 }
 
+/// Returns the buffer's growth rate of the specified stack.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+///
+/// \return The buffer's growth rate.
 integer_t
 sta_growth(StackArray_t *stack)
 {
     return stack->growth_rate;
 }
 
+/// Returns the boolean state of \c locked member.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+///
+/// \return True if the buffer's growth is locked, false otherwise.
+bool
+sta_locked(StackArray_t *stack)
+{
+    return stack->locked;
+}
+
+/// Sets a new growth_rate to the target stack.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+/// \param[in] growth_rate Stack's new growth_rate.
+///
+/// \return True if the growth rate was change or false if the parameter is
+/// less than 101.
 bool
 sta_set_growth(StackArray_t *stack, integer_t growth_rate)
 {
@@ -255,7 +311,7 @@ sta_set_growth(StackArray_t *stack, integer_t growth_rate)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack The StackArray_s where the element is to be inserted.
+/// \param[in] stack The stack where the element is to be inserted.
 /// \param[in] element The element to be inserted in the stack.
 ///
 /// \return True if the element was successfully added to the stack or false if
@@ -304,6 +360,11 @@ sta_pop(StackArray_t *stack, void **result)
     return true;
 }
 
+/// Returns the element at the top of the stack or NULL if the stack is empty.
+///
+/// \param[in] stack The target stack.
+///
+/// \return NULL if the stack is empty or the element at the top of the stack.
 void *
 sta_peek(StackArray_t *stack)
 {
@@ -313,30 +374,58 @@ sta_peek(StackArray_t *stack)
     return stack->buffer[stack->size - 1];
 }
 
+/// Returns true if the stack is empty, or false if there are elements in the
+/// stack.
+///
+/// \param[in] stack The target stack.
+///
+/// \return True if the stack is empty, otherwise false.
 bool
 sta_empty(StackArray_t *stack)
 {
     return stack->size == 0;
 }
 
+/// Returns true if the current amount of elements in the stack is the same as
+/// the buffer's capacity, that is, the next element to be added to the stack
+/// will cause the buffer to be reallocated.
+///
+/// \param[in] stack The target stack.
+///
+/// \return True if the amount of elements is the same as the buffer's
+/// capacity, otherwise false.
 bool
 sta_full(StackArray_t *stack)
 {
     return stack->size == stack->capacity;
 }
 
+/// Returns true if the specified size will fit in the stack's buffer without
+/// it being reallocated.
+///
+/// \param[in] stack The target stack.
+/// \param[in] size The specified size.
+///
+/// \return True if a given size fits inside the stack without reallocating the
+/// buffer.
 bool
 sta_fits(StackArray_t *stack, unsigned_t size)
 {
     return (stack->size + size) <= stack->capacity;
 }
 
+/// Locks the the target's buffer growth. If the buffer is full no more
+/// elements will be added to the stack until its capacity is unlocked or
+/// another element is removed.
 void
 sta_capacity_lock(StackArray stack)
 {
     stack->locked = true;
 }
 
+/// Unlocks the buffer's capacity allowing it to be reallocated once full.
+///
+/// \param[in] stack The stack to have its buffer's growth unlocked.
 void
 sta_capacity_unlock(StackArray stack)
 {
@@ -348,9 +437,9 @@ sta_capacity_unlock(StackArray stack)
 /// \par Interface Requirements
 /// - copy
 ///
-/// \param stack The stack to be copied.
+/// \param[in] stack The stack to be copied.
 ///
-/// \return \c NULL if allocation failed or a copy of the specified stack.
+/// \return NULL if allocation failed or a copy of the specified stack.
 StackArray_t *
 sta_copy(StackArray_t *stack)
 {
@@ -376,10 +465,9 @@ sta_copy(StackArray_t *stack)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param stack The stack to be copied.
+/// \param[in] stack The stack to be copied.
 ///
-/// \return \c NULL if allocation failed or a shallow copy of the specified
-/// stack.
+/// \return NULL if allocation failed or a shallow copy of the specified stack.
 StackArray_t *
 sta_copy_shallow(StackArray_t *stack)
 {
@@ -401,14 +489,18 @@ sta_copy_shallow(StackArray_t *stack)
     return new_stack;
 }
 
-/// Compares two stacks.
+/// Makes a comparison between two stacks element by element. If one stack has
+/// less elements than the other the comparison of elements will go up until
+/// one stack reaches its limit. If all elements are the same until then, the
+/// tie breaker goes to their size. If it is also the same, then both stacks
+/// are equal.
 /// \par Interface Requirements
 /// - compare
 ///
-/// \param stack1
-/// \param stack2
+/// \param[in] stack1 A target stack to be compared.
+/// \param[in] stack2 A target stack to be compared.
 ///
-/// \return
+/// \return An int according to \ref compare_f.
 int
 sta_compare(StackArray_t *stack1, StackArray_t *stack2)
 {
@@ -436,14 +528,39 @@ sta_compare(StackArray_t *stack1, StackArray_t *stack2)
     return 0;
 }
 
+/// Makes a copy of all the elements in the stack to a C array starting from
+/// the top element.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param[in] stack The stack to be copied to the array.
+/// \param[out] length The resulting array's length.
+///
+/// \return The resulting array or NULL if the stack is empty or the array
+/// allocation failed.
 void **
-sta_to_array(StackArray_t *stack, integer_t *size)
+sta_to_array(StackArray_t *stack, integer_t *length)
 {
-    /// \todo sta_to_array
-    return NULL;
+    *length = 0;
+
+    if (sta_empty(stack))
+        return NULL;
+
+    void **array = malloc(sizeof(void*) * (size_t)stack->size);
+
+    if (!array)
+        return NULL;
+
+    for (integer_t i = stack->size - 1; i > 0; i--)
+        array[i] = stack->interface->copy(stack->buffer[i]);
+
+    *length = stack->size;
+
+    return array;
 }
 
-/// Displays a StackArray_s in the console. There are currently four modes:
+/// Displays a StackArray_s in the console starting from the top element. There
+/// are currently four modes:
 /// - -1 Displays each element separated by newline;
 /// -  0 Displays each element like a linked list;
 /// -  1 Displays each element separated by a space;
@@ -451,8 +568,8 @@ sta_to_array(StackArray_t *stack, integer_t *size)
 /// \par Interface Requirements
 /// - display
 ///
-/// \param stack The stack to be displayed in the console.
-/// \param display_mode The way the stack is to be displayed in the console.
+/// \param[in] stack The stack to be displayed in the console.
+/// \param[in] display_mode The way the stack is to be displayed in the console.
 void
 sta_display(StackArray_t *stack, int display_mode)
 {
@@ -522,7 +639,8 @@ static sta_grow(StackArray stack)
     if (stack->capacity - old_capacity < 4)
         stack->capacity = old_capacity + 4;
 
-    void **new_buffer = realloc(stack->buffer,sizeof(void*) * stack->capacity);
+    void **new_buffer = realloc(stack->buffer,
+            sizeof(void*) * (size_t)stack->capacity);
 
     // Reallocation failed
     if (!new_buffer)

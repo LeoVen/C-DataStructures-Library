@@ -10,6 +10,7 @@
 
 unsigned_t GlobalTotalTests = 0;
 unsigned_t GlobalTotalPassed = 0;
+unsigned_t GlobalTotalErrors = 0;
 
 Status ut_init(UnitTest *ut)
 {
@@ -53,11 +54,11 @@ void ut_equals_bool(UnitTest ut, bool param1, bool param2,
     {
         ut->passed++;
         GlobalTotalPassed++;
-        printf("%-30s %s", test_name, "PASSED\n");
+        printf("%-40s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("%-30s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED\n");
     }
 
     ut->total++;
@@ -70,11 +71,11 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     {
         ut->passed++;
         GlobalTotalPassed++;
-        printf("%-30s %s", test_name, "PASSED\n");
+        printf("%-40s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("%-30s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED\n");
     }
 
     ut->total++;
@@ -88,11 +89,11 @@ void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2,
     {
         ut->passed++;
         GlobalTotalPassed++;
-        printf("%-30s %s", test_name, "PASSED\n");
+        printf("%-40s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("%-30s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED\n");
     }
 
     ut->total++;
@@ -106,15 +107,20 @@ void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
     {
         ut->passed++;
         GlobalTotalPassed++;
-        printf("%-30s %s", test_name, "PASSED\n");
+        printf("%-40s %s", test_name, "PASSED\n");
     }
     else
     {
-        printf("%-30s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED\n");
     }
 
     ut->total++;
     GlobalTotalTests++;
+}
+
+void ut_error()
+{
+    GlobalTotalErrors++;
 }
 
 void FinalReport()
@@ -124,5 +130,6 @@ void FinalReport()
     printf("+--------------------------------------------------------------------------------+\n");
     printf("    Total Tests  : %llu\n", GlobalTotalTests);
     printf("    Total Passed : %llu\n", GlobalTotalPassed);
-    printf("    Total Failed : %llu\n\n", GlobalTotalTests - GlobalTotalPassed);
+    printf("    Total Failed : %llu\n", GlobalTotalTests - GlobalTotalPassed);
+    printf("    Total Errors : %llu\n\n", GlobalTotalErrors);
 }

@@ -13,10 +13,10 @@
 // Tests qua_grow() in linear insertions
 // Tests while (!empty) loop
 // Sum of dequeued contents should equal to the known result (500500)
-Status qua_test_linear_insertion(UnitTest ut)
+void qua_test_linear_insertion(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
     if (!int_interface)
         goto error;
@@ -67,10 +67,11 @@ Status qua_test_linear_insertion(UnitTest ut)
     qua_free(queue);
     interface_free(int_interface);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     qua_free(queue);
     interface_free(int_interface);
 }
@@ -78,8 +79,8 @@ Status qua_test_linear_insertion(UnitTest ut)
 // Tests locked capacity
 void qua_test_locked(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-                                            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t,free, NULL, NULL);
 
     if (!int_interface)
         goto error;
@@ -148,15 +149,16 @@ void qua_test_locked(UnitTest ut)
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     qua_free(queue);
     interface_free(int_interface);
 }
 
 // Intensive test. Checks if all elements are preserved.
-Status qua_test_intensive(UnitTest ut)
+void qua_test_intensive(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-                                            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
     if (!int_interface)
         goto error;
@@ -216,10 +218,11 @@ Status qua_test_intensive(UnitTest ut)
     qua_free(queue);
     interface_free(int_interface);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     qua_free(queue);
     interface_free(int_interface);
 }
@@ -227,8 +230,8 @@ Status qua_test_intensive(UnitTest ut)
 // Tests capacity multiplication
 void qua_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-                                            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
     if (!int_interface)
         goto error;
@@ -264,6 +267,7 @@ void qua_test_growth(UnitTest ut)
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     qua_free(queue);
     interface_free(int_interface);
 }

@@ -12,217 +12,355 @@
 
 // Tests dqa_grow() in linear insertions
 // Tests while (!empty) loop
-// Tests front == rear on empty queue
 // Sum of dequeued contents should equal to the known result (500500)
-Status dqa_test_linear_insertion(UnitTest ut)
+void dqa_test_linear_insertion_rear(UnitTest ut)
 {
-    DequeArray queue;
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+                                            display_int32_t, free, NULL, NULL);
 
-    Status st = dqa_init(&queue);
-
-    if (st != DS_OK)
-        return st;
-
-    for (int i = 1; i <= 1000; i++)
-    {
-        st = dqa_enqueue_rear(queue, i);
-
-        if (st != DS_OK)
-            goto error;
-    }
-
-    integer_t size1 = queue->size;
-
-    int j, sum1 = 0;
-    while (!dqa_empty(queue))
-    {
-        st = dqa_dequeue_rear(queue, &j);
-
-        if (st != DS_OK)
-            goto error;
-
-        sum1 += j;
-    }
-
-    ut_equals_int(ut, sum1, 500500, __func__);
-    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
-
-    st = dqa_erase(&queue);
-
-    if (st != DS_OK)
+    if (!int_interface)
         goto error;
 
+    // in case I ever change the default initial capacity
+    DequeArray deque = dqa_create(16, 200, int_interface);
+
+    if (!deque)
+        goto error;
+
+    bool success = false;
+
+    void *element;
     for (int i = 1; i <= 1000; i++)
     {
-        st = dqa_enqueue_front(queue, i);
+        element = new_int32_t(i);
 
-        if (st != DS_OK)
+        success = dqa_enqueue_rear(deque, element);
+
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
     }
 
-    integer_t size2 = queue->size;
+    // size after all insertions
+    integer_t size = dqa_size(deque);
 
-    int sum2 = 0;
-    while (!dqa_empty(queue))
+    int sum = 0;
+    while (!dqa_empty(deque))
     {
-        st = dqa_dequeue_front(queue, &j);
+        success = dqa_dequeue_rear(deque, &element);
 
-        if (st != DS_OK)
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
 
-        sum2 += j;
+        sum += *(int*)element;
+        free(element);
     }
 
-    ut_equals_int(ut, sum2, 500500, __func__);
-    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
+    // see if all elements are preserved
+    ut_equals_int(ut, sum, 500500, __func__);
 
-    ut_equals_integer_t(ut, size1, size2, __func__);
+    dqa_free(deque);
+    interface_free(int_interface);
 
-    dqa_delete(&queue);
-
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dqa_delete(&queue);
-    return st;
+    ut_error();
+    dqa_free(deque);
+    interface_free(int_interface);
+}
+// Tests dqa_grow() in linear insertions
+// Tests while (!empty) loop
+// Sum of dequeued contents should equal to the known result (500500)
+void dqa_test_linear_insertion_front(UnitTest ut)
+{
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+                                            display_int32_t, free, NULL, NULL);
+
+    if (!int_interface)
+        goto error;
+
+    // in case I ever change the default initial capacity
+    DequeArray deque = dqa_create(16, 200, int_interface);
+
+    if (!deque)
+        goto error;
+
+    bool success = false;
+
+    void *element;
+    for (int i = 1; i <= 1000; i++)
+    {
+        element = new_int32_t(i);
+
+        success = dqa_enqueue_front(deque, element);
+
+        if (!success)
+        {
+            free(element);
+            goto error;
+        }
+    }
+
+    // size after all insertions
+    integer_t size = dqa_size(deque);
+
+    int sum = 0;
+    while (!dqa_empty(deque))
+    {
+        success = dqa_dequeue_front(deque, &element);
+
+        if (!success)
+        {
+            free(element);
+            goto error;
+        }
+
+        sum += *(int*)element;
+        free(element);
+    }
+
+    // see if all elements are preserved
+    ut_equals_int(ut, sum, 500500, __func__);
+
+    dqa_free(deque);
+    interface_free(int_interface);
+
+    return;
+
+    error:
+    printf("Error at %s\n", __func__);
+    ut_error();
+    dqa_free(deque);
+    interface_free(int_interface);
 }
 
 // Tests locked capacity
-Status dqa_test_locked(UnitTest ut)
+void dqa_test_locked(UnitTest ut)
 {
-    DequeArray queue;
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+                                            display_int32_t,free, NULL, NULL);
+
+    if (!int_interface)
+        goto error;
 
     // in case I ever change the default initial capacity
-    Status st = dqa_create(&queue, 16, 200);
+    DequeArray deque = dqa_create(16, 200, int_interface);
 
-    if (st != DS_OK)
-        return st;
+    if (!deque)
+        goto error;
 
-    dqa_cap_lock(queue);
+    dqa_capacity_lock(deque);
 
-    for (int i = 0; i < 17; i++)
+    bool success = false;
+
+    // [ 16, 14, 12, 10, 8, 6, 4, 2, 1, 3, 5, 7, 9, 11, 13, 15 ]
+    void *element;
+    for (int i = 1; i < 18; i++)
     {
-        st = dqa_enqueue_front(queue, i);
-    }
+        element = new_int32_t(i);
 
-    Status saved_st = st;
-    integer_t size = queue->size;
-
-    int j, sum = 0;
-    while (!dqa_empty(queue))
-    {
-        st = dqa_dequeue_rear(queue, &j);
-
-        if (st != DS_OK)
-            goto error;
-
-        sum += j; // sum from 0 to 15
-    }
-
-    ut_equals_int(ut, sum, 120, __func__);
-    ut_equals_int(ut, saved_st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, size, 16, __func__);
-
-    dqa_delete(&queue);
-
-    return DS_OK;
-
-    error:
-    printf("Error at %s\n", __func__);
-    dqa_delete(&queue);
-    return st;
-}
-
-// Intensive test. Checks if all elements are preserved.
-Status dqa_test_intensive(UnitTest ut)
-{
-    DequeArray queue;
-
-    Status st = dqa_init(&queue);
-
-    if (st != DS_OK)
-        return st;
-
-    int j = 0, k = 0, sum = 0, numbers = 0;
-
-    // The total sum must be from 1 to 10000 that result in 50005000
-    for (int i = 0; numbers < 10000; i = rand(), j = rand())
-    {
-        if (i % 2 == 0 || dqa_empty(queue))
+        if (i % 2 == 0)
         {
-            if (j % 2 == 0)
-                st = dqa_enqueue_rear(queue, ++numbers);
-            else
-                st = dqa_enqueue_front(queue, ++numbers);
+            success = dqa_enqueue_front(deque, element);
         }
         else
         {
-            if (j % 2 == 0)
-                st = dqa_dequeue_rear(queue, &k);
-            else
-                st = dqa_dequeue_front(queue, &k);
-
-            sum += k;
+            success = dqa_enqueue_rear(deque, element);
         }
 
-        if (st != DS_OK)
-            goto error;
+        if (!success) /* Reached the stack maximum size */
+            free(element);
+    }
+
+    integer_t size = dqa_size(deque);
+
+    ut_equals_bool(ut, success, false, __func__);
+    ut_equals_integer_t(ut, size, 16, __func__);
+
+    dqa_capacity_unlock(deque);
+
+    // [ 16, 14, 12, 10, 8, 6, 4, 2, 1, 3, 5, 7, 9, 11, 13, 15, 17 ]
+    element = new_int32_t(17);
+    success = dqa_enqueue_rear(deque, element);
+    if (!success)
+    {
+        free(element);
+        goto error;
+    }
+
+    ut_equals_integer_t(ut, dqa_size(deque), 17, __func__);
+
+    // 16 is removed
+    success = dqa_dequeue_front(deque, &element);
+
+    if (success)
+        free(element);
+    else
+        goto error;
+
+    // [ 14, 12, 10, 8, 6, 4, 2, 1, 3, 5, 7, 9, 11, 13, 15, 17 ]
+    int sum = 0;
+    while (!dqa_empty(deque))
+    {
+        dqa_dequeue_rear(deque, &element);
+
+        sum += *(int*)element; /* sum from 1 to 17 excluding 16 -> 137 */
+
+        free(element);
+    }
+
+    ut_equals_int(ut, sum, 137, __func__);
+
+    dqa_free(deque);
+    interface_free(int_interface);
+
+    return;
+
+    error:
+    printf("Error at %s\n", __func__);
+    ut_error();
+    dqa_free(deque);
+    interface_free(int_interface);
+}
+
+// Intensive test. Checks if all elements are preserved.
+void dqa_test_intensive(UnitTest ut)
+{
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+                                            display_int32_t, free, NULL, NULL);
+
+    if (!int_interface)
+        goto error;
+
+    // in case I ever change the default initial capacity
+    DequeArray deque = dqa_create(16, 200, int_interface);
+
+    if (!deque)
+        goto error;
+
+    bool success = false;
+    void *element = NULL;
+    int sum = 0, numbers = 0;
+
+    // The total sum must be from 1 to 10000 that result in 50005000
+    for (int i = 0; numbers < 10000; i = rand())
+    {
+        if (i % 2 == 0 || dqa_empty(deque))
+        {
+            element = new_int32_t(++numbers);
+
+            if (i % 4 == 0)
+            {
+                success = dqa_enqueue_front(deque, element);
+            }
+            else
+            {
+                success = dqa_enqueue_rear(deque, element);
+            }
+
+            if (!success)
+            {
+                free(element);
+                goto error;
+            }
+        }
+        else
+        {
+            if (i % 3 == 0)
+            {
+                success = dqa_dequeue_front(deque, &element);
+            }
+            else
+            {
+                success = dqa_dequeue_rear(deque, &element);
+            }
+
+            if (!success)
+                goto error;
+
+            sum += *(int*)element;
+
+            free(element);
+        }
     }
 
     // Emptying the queue
-    while (!dqa_empty(queue))
+    while (!dqa_empty(deque))
     {
-        st = dqa_dequeue_rear(queue, &j);
+        success = dqa_dequeue_front(deque, &element);
 
-        if (st != DS_OK)
+        if (!success)
             goto error;
 
-        sum += j;
+        sum += *(int*)element;
+
+        free(element);
     }
 
     ut_equals_int(ut, sum, 50005000, __func__);
-    ut_equals_integer_t(ut, queue->front, queue->rear, __func__);
 
-    dqa_delete(&queue);
+    dqa_free(deque);
+    interface_free(int_interface);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dqa_delete(&queue);
-    return st;
+    ut_error();
+    dqa_free(deque);
+    interface_free(int_interface);
 }
 
 // Tests capacity multiplication
-Status dqa_test_growth(UnitTest ut)
+void dqa_test_growth(UnitTest ut)
 {
-    DequeArray queue;
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+                                            display_int32_t, free, NULL, NULL);
 
-    Status st = dqa_create(&queue, 60, 250);
+    if (!int_interface)
+        goto error;
 
-    if (st != DS_OK)
-        return st;;
+    DequeArray deque = dqa_create(60, 250, int_interface);
 
+    if (!deque)
+        goto error;
+
+    bool success = false;
+
+    void *element;
     for (int i = 0; i < 100; i++)
     {
-        st = dqa_enqueue_front(queue, i);
+        element = new_int32_t(i);
 
-        if (st != DS_OK)
+        success = dqa_enqueue_rear(deque, element);
+
+        if (!success)
+        {
+            free(element);
             goto error;
+        }
     }
 
     // 60 * (250 / 100)
-    ut_equals_integer_t(ut, queue->capacity, 150, __func__);
+    ut_equals_integer_t(ut, dqa_capacity(deque), 150, __func__);
 
-    dqa_delete(&queue);
+    dqa_free(deque);
+    interface_free(int_interface);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dqa_delete(&queue);
-    return st;
+    ut_error();
+    dqa_free(deque);
+    interface_free(int_interface);
 }
 
 // Runs all DequeArray tests
@@ -235,13 +373,11 @@ Status DequeArrayTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += dqa_test_linear_insertion(ut);
-    st += dqa_test_locked(ut);
-    st += dqa_test_intensive(ut);
-    st += dqa_test_growth(ut);
-
-    if (st != DS_OK)
-        goto error;
+    dqa_test_linear_insertion_rear(ut);
+    dqa_test_linear_insertion_front(ut);
+    dqa_test_locked(ut);
+    dqa_test_intensive(ut);
+    dqa_test_growth(ut);
 
     ut_report(ut, "DequeArray");
 

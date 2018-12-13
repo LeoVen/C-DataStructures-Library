@@ -86,6 +86,11 @@ qua_capacity(QueueArray_t *queue);
 integer_t
 qua_growth(QueueArray_t *queue);
 
+/// \ref qua_locked
+/// \brief Returns true if the queue's buffer is locked, false otherwise.
+bool
+qua_locked(QueueArray_t *queue);
+
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
 /// \ref qua_set_growth
@@ -134,12 +139,12 @@ bool
 qua_fits(QueueArray_t *queue, unsigned_t size);
 
 /// \ref qua_capacity_lock
-/// \brief Locks the growth for the specified queue.
+/// \brief Locks the buffer's growth for the specified queue.
 void
 qua_capacity_lock(QueueArray_t *queue);
 
 /// \ref qua_capacity_unlock
-/// \brief Unlocks the growth for the specified queue.
+/// \brief Unlocks the buffer's growth for the specified queue.
 void
 qua_capacity_unlock(QueueArray_t *queue);
 
@@ -156,14 +161,14 @@ QueueArray_t *
 qua_copy_shallow(QueueArray_t *queue);
 
 /// \ref qua_compare
-/// \brief Compares two queues returning an int according to compare_f.
+/// \brief Compares two queues returning an int according to \ref compare_f.
 int
 qua_compare(QueueArray_t *queue1, QueueArray_t *queue2);
 
 /// \ref qua_to_array
 /// \brief Makes a copy of the queue as a C array.
 void **
-qua_to_array(QueueArray_t *queue, integer_t *size);
+qua_to_array(QueueArray_t *queue, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
@@ -171,6 +176,19 @@ qua_to_array(QueueArray_t *queue, integer_t *size);
 /// \brief Displays a QueueArray_s in the console.
 void
 qua_display(QueueArray_t *queue, int display_mode);
+
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo QueueArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo QueueArrayWrapper
 
 #ifdef __cplusplus
 }

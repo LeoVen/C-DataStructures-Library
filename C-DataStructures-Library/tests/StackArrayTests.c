@@ -83,6 +83,7 @@ void sta_test_locked(UnitTest ut)
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     sta_free(stack);
     interface_free(int_interface);
 }
@@ -127,6 +128,7 @@ void sta_test_growth(UnitTest ut)
 
     error:
     printf("Error at %s\n", __func__);
+    ut_error();
     sta_free(stack);
     interface_free(int_interface);
 }
