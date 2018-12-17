@@ -128,7 +128,7 @@ typedef struct DoublyLinkedNode_s *DoublyLinkedNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status dll_make_node(DoublyLinkedNode *node, void *value);
+static Status dll_make_node(DoublyLinkedNode *node, void *element);
 
 static Status dll_free_node(DoublyLinkedNode *node, dll_free_f free_f);
 
@@ -1584,8 +1584,6 @@ static Status dll_get_node_at(DoublyLinkedList list, DoublyLinkedNode *result, i
 
     return DS_OK;
 }
-
-////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 

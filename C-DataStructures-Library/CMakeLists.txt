@@ -23,6 +23,7 @@ set(TEST_FILES
         tests/DynamicArrayTests.c
         tests/QueueArrayTests.c
         tests/QueueTests.c
+        tests/RedBlackTreeTests.c
         tests/SinglyLinkedListTests.c
         tests/SortedListTests.c
         tests/StackArrayTests.c
@@ -42,6 +43,7 @@ add_library(DynamicArray       include/DynamicArray.h       src/DynamicArray.c)
 add_library(PriorityQueue      include/PriorityQueue.h      src/PriorityQueue.c)
 add_library(Queue              include/Queue.h              src/Queue.c)
 add_library(QueueArray         include/QueueArray.h         src/QueueArray.c)
+add_library(RedBlackTree       include/RedBlackTree.h       src/RedBlackTree.c)
 add_library(SinglyLinkedList   include/SinglyLinkedList.h   src/SinglyLinkedList.c)
 add_library(SortedList         include/SortedList.h         src/SortedList.c)
 add_library(Stack              include/Stack.h              src/Stack.c)
@@ -55,7 +57,7 @@ add_library(Interface interface/Interface.h interface/Interface.c)
 
 add_library(CString  util/include/CString.h  util/src/CString.c)
 
-set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray SinglyLinkedList SortedList Stack StackArray)
+set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray RedBlackTree SinglyLinkedList SortedList Stack StackArray)
 
 add_dependencies(C_DataStructures_Library ${LIBS} UnitTest Utility CString Interface)
 

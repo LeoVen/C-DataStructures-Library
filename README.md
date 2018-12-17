@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-57-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-26965-%232196f3.svg)
-![average](https://img.shields.io/badge/average-473-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-60-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-28331-%232196f3.svg)
+![average](https://img.shields.io/badge/average-472-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-19-%23f44336.svg)
 
@@ -47,7 +47,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [Queue][que]               | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
 | [QueueArray][qua]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
 | [RadixTree][rdt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [RedBlackTree][rbt]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [RedBlackTree][rbt]        | `[#######___]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
 | [SinglyLinkedList][sll]    | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
 | [SkipList][skp]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [SortedArray][sar]         | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -97,6 +97,15 @@ Not implemented yet.
 
 An AVL tree is a type of a tree that has all the properties of a binary search tree with an additional one: at any given node, the absolute difference between heights of left sub-tree and right sub-tree cannot be greater than 1. This property is essential to keep the tree balanced.
 
+Properties of an AVL tree:
+
+* The minimum height of an AVL tree with __N__ nodes is given by <b>floor(Log<sub>2</sub>N)</b>
+* The maximum height of an AVL tree with __N__ nodes is given by <b>sqrt(2) * Log<sub>2</sub>N</b>
+* The minimum number of nodes in an AVL tree with height __H__ is given by the recursive function
+    * <b>N(H) = N(H - 1) + N(H - 2) + 1</b>
+    * Where <b>N(1) = 0</b> and <b>N(2) = 1</b>
+* The maximum number of nodes in an AVL tree with height __H__ is given by <b>2<sup>(H + 1)</sup> - 1</b>
+
 Operations like insertion and removal are the same as a binary search tree differentiating only at the end of each function where the tree might need to be re-balanced. There are two rotations done to keep the tree balanced:
 
 ```
@@ -138,10 +147,10 @@ Also the tree usually does not have duplicate keys, but that can be arranged by 
 
 Some other properties:
 
-* The maximum number of nodes at a level __L__ is given by <b>2^(L - 1)</b>;
-* The maximum number of nodes of a tree with height __H__ is given by <b>2^h - 1</b>;
-* A binary tree with __N__ nodes, the minimum number of levels is <b>Log<sub>2</sub>(N + 1)</b>;
-* A binary tree with __N__ leaves nas at least <b>Log<sub>2</sub>(L) + 1</b>.
+* The minimum height of a binary search tree with __N__ nodes is given by <b>floor(Log<sub>2</sub>N)</b>
+* The maximum height of a binary search tree with __N__ nodes is given by <b>N - 1</b>;
+* The minimum number of nodes of a binary search tree with height __H__ is given by <b>H + 1</b>;
+* The maximum number of nodes of a binary search tree with height __H__ is given by <b>2<sup>(H + 1)</sup> - 1</b>;
 
 The problem with binary search trees is that they can get skewed. To solve this there are other variations like AVL trees and Red-black trees that can balance the distribution of nodes. If we add the numbers from 1 to 7 sequentially this is what would happen to a binary search tree versus an AVL tree:
 
@@ -429,7 +438,19 @@ Not implemented yet.
 
 ### RedBlackTree
 
-Not implemented yet.
+A red-black tree is a binary search tree where each node has a color, which can be either `RED` or `BLACK`. By constraining the node colors on any simple path from the root to a leaf, red-black trees ensure that no such path is more than twice as long as any other, so that the tree is approximately balanced.
+
+The red-black tree needs to satisfy the following properties:
+
+* Every node is either red or black;
+* The root is black;
+* Every NULL child is considered black;
+* If a node is red, then both its children are black;
+* For each node, all simple paths from the node to descendant leaves contains the same number of black nodes.
+
+The __black-height__ `bh(x)` of a red-black tree is the number of black nodes from, but not including, the root node down to a leaf.
+
+The __height__ of a red-black tree with `N` internal nodes is at most `2 * log(N + 1)`.
 
 ### SinglyLinkedList
 

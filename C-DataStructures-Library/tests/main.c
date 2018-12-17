@@ -12,6 +12,7 @@ int main()
     CircularLinkedListTests();
     QueueArrayTests();
     QueueTests();
+    RedBlackTreeTests();
     SinglyLinkedListTests();
     SortedListTests();
     StackArrayTests();

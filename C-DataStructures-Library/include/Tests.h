@@ -33,6 +33,8 @@ Status QueueArrayTests(void);
 
 Status QueueTests(void);
 
+Status RedBlackTreeTests(void);
+
 Status SinglyLinkedListTests(void);
 
 Status SortedListTests(void);
