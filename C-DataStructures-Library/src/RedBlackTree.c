@@ -185,16 +185,16 @@ rbt_display_treeview(RedBlackTreeNode_t *root, integer_t depth, char *path,
                      display_f function, bool direction);
 
 // Traversal
-void
+static void
 rbt_traversal_preorder(RedBlackTreeNode_t *root, display_f function);
 
-void
+static void
 rbt_traversal_inorder(RedBlackTreeNode_t *root, display_f function);
 
-void
+static void
 rbt_traversal_postorder(RedBlackTreeNode_t *root, display_f function);
 
-void
+static void
 rbt_traversal_leaves(RedBlackTreeNode_t *root, display_f function);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
@@ -1273,7 +1273,7 @@ rbt_display_treeview(RedBlackTreeNode_t *root, integer_t depth, char *path,
     rbt_display_treeview(root->left, depth, path, function, false);
 }
 
-void
+static void
 rbt_traversal_preorder(RedBlackTreeNode_t *root, display_f function)
 {
     if (root == NULL)
@@ -1287,7 +1287,7 @@ rbt_traversal_preorder(RedBlackTreeNode_t *root, display_f function)
     rbt_traversal_preorder(root->right, function);
 }
 
-void
+static void
 rbt_traversal_inorder(RedBlackTreeNode_t *root, display_f function)
 {
     if (root == NULL)
@@ -1301,7 +1301,7 @@ rbt_traversal_inorder(RedBlackTreeNode_t *root, display_f function)
     rbt_traversal_inorder(root->right, function);
 }
 
-void
+static void
 rbt_traversal_postorder(RedBlackTreeNode_t *root, display_f function)
 {
     if (root == NULL)
@@ -1315,7 +1315,7 @@ rbt_traversal_postorder(RedBlackTreeNode_t *root, display_f function)
     printf(" ");
 }
 
-void
+static void
 rbt_traversal_leaves(RedBlackTreeNode_t *root, display_f function)
 {
     if (root == NULL)
