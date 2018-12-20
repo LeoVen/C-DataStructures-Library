@@ -8,12 +8,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextr -std=c11")
 set(CMAKE_CXX_STANDARD 11)
 
 set(INCLUDE ./include)
-set(UNIT_TEST ./tests/UnitTest)
-set(UTIL ./util/include)
-set(INTERFACE ./interface)
-include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL} ${INTERFACE})
+set(INCLUDE_UNIT_TEST ./tests/UnitTest)
+set(INCLUDE_UTIL ./util/include)
+set(INCLUDE_INTERFACE ./interface)
+include_directories(${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
 
-set(INCLUDE_FILES include/Core.h include/Tests.h include/CoreSort.h include/CoreTree.h)
+set(INCLUDE_TETS_FILES ${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
 set(TEST_FILES
         tests/AVLTreeTests.c
         tests/BitArrayTests.c
@@ -29,8 +29,13 @@ set(TEST_FILES
         tests/SortedListTests.c
         tests/StackArrayTests.c
         tests/StackTests.c)
+set(INCLUDE_BENCHMARK_FILES ${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
+set(BENCHMARK_FILES
+        benchmarks/AVLTreeBench.c
+        benchmarks/RedBlackTreeBench.c)
 
-add_executable(C_DataStructures_Library tests/main.c ${INCLUDE_FILES} ${TEST_FILES})
+add_executable(C_DataStructures_Library_Tests tests/main.c ${INCLUDE_TETS_FILES} ${TEST_FILES})
+add_executable(C_DataStructures_Library_Benchmarks benchmarks/main.c ${INCLUDE_BENCHMARK_FILES} ${BENCHMARK_FILES})
 
 add_library(Array              include/Array.h              src/Array.c)
 add_library(AVLTree            include/AVLTree.h            src/AVLTree.c)
@@ -52,15 +57,17 @@ add_library(StackArray         include/StackArray.h         src/StackArray.c)
 
 add_library(UnitTest tests/UnitTest/UnitTest.h tests/UnitTest/UnitTest.c)
 
-add_library(Utility util/include/Utility.h util/src/Utility.c)
-
 add_library(Interface interface/Interface.h interface/Interface.c)
 
+add_library(Utility  util/include/Utility.h  util/src/Utility.c)
 add_library(CString  util/include/CString.h  util/src/CString.c)
+add_library(Clock    util/include/Clock.h    util/src/Clock.c)
 
 set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray RedBlackTree SinglyLinkedList SortedList Stack StackArray)
+set(UTIL Utility CString Clock)
 
-add_dependencies(C_DataStructures_Library ${LIBS} UnitTest Utility CString Interface)
+add_dependencies(C_DataStructures_Library_Tests ${LIBS} ${UTIL} UnitTest Interface)
 
 target_link_libraries(Utility m)
-target_link_libraries(C_DataStructures_Library ${LIBS} UnitTest Utility CString Interface)
+target_link_libraries(C_DataStructures_Library_Tests ${LIBS} ${UTIL} UnitTest Interface)
+target_link_libraries(C_DataStructures_Library_Benchmarks ${LIBS} ${UTIL} UnitTest Interface)

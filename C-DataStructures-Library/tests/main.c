@@ -1,6 +1,6 @@
 #include "Tests.h"
 
-int main()
+int main(void)
 {
     srand((unsigned)time(NULL));
 
@@ -24,6 +24,4 @@ int main()
     StackTests();
 
     FinalReport();
-
-    return 0;
 }

@@ -21,6 +21,7 @@ script:
   - cmake --version
   - cmake ..
   - make
-  - ./C_DataStructures_Library
+  - ./C_DataStructures_Library_Tests
+  - ./C_DataStructures_Library_Benchmark
 after_success:
   - bash <(curl -s https://codecov.io/bash)
