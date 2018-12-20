@@ -74,10 +74,10 @@ struct RedBlackTree_s
 /// a color member that states if the node is either \c red or \c black.
 struct RedBlackTreeNode_s
 {
-    /// \brief Node's data.
+    /// \brief Node's key.
     ///
-    /// A pointer to the node's data.
-    void *data;
+    /// A pointer to the node's key.
+    void *key;
 
     /// \brief States if the node is black or not.
     ///
@@ -146,14 +146,19 @@ static void
 rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z);
 
 static void
-rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X,
-        RedBlackTreeNode_t *P);
+rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X);
 
 static RedBlackTreeNode_t *
 rbt_find(RedBlackTree_t *tree, void *element);
 
 static RedBlackTreeNode_t *
+rbt_successor(RedBlackTreeNode_t *N);
+
+static RedBlackTreeNode_t *
 rbt_minimum(RedBlackTreeNode_t *N);
+
+static RedBlackTreeNode_t *
+rbt_maximum(RedBlackTreeNode_t *N);
 
 static void
 rbt_transplant(RedBlackTree_t *tree, RedBlackTreeNode_t *U,
@@ -165,7 +170,7 @@ rbt_color(RedBlackTreeNode_t *node);
 // Displaying modes
 static void
 rbt_display_tree(RedBlackTreeNode_t *root, integer_t height,
-        display_f function);
+                 display_f function);
 
 static void
 rbt_display_color(RedBlackTreeNode_t *root, integer_t height,
@@ -179,10 +184,24 @@ static void
 rbt_display_treeview(RedBlackTreeNode_t *root, integer_t depth, char *path,
                      display_f function, bool direction);
 
+// Traversal
+void
+rbt_traversal_preorder(RedBlackTreeNode_t *root, display_f function);
+
+void
+rbt_traversal_inorder(RedBlackTreeNode_t *root, display_f function);
+
+void
+rbt_traversal_postorder(RedBlackTreeNode_t *root, display_f function);
+
+void
+rbt_traversal_leaves(RedBlackTreeNode_t *root, display_f function);
+
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 /// Initializes a new RedBlackTree_s with \c size, \c limit, and \c version_id
 /// to 0, \c root to NULL and sets its interface.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -210,10 +229,11 @@ rbt_new(Interface_t *interface)
 
 /// Frees a RedBlackTree_s, freeing all of its elements using the interface's
 /// free function.
+///
 /// \par Interface Requirements
 /// - free
 ///
-/// \param tree The red-black tree to be freed from memory
+/// \param tree The red-black tree to be freed from memory.
 void
 rbt_free(RedBlackTree_t *tree)
 {
@@ -224,6 +244,7 @@ rbt_free(RedBlackTree_t *tree)
 
 /// Frees a RedBlackTree_s, freeing all of its nodes, leaving its elements
 /// intact.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -236,9 +257,9 @@ rbt_free_shallow(RedBlackTree_t *tree)
     free(tree);
 }
 
-/// Recursively frees a RedBlackTree_s, freeing all of its elements using the
-/// interface's free function but leaves the tree's structure and interface
-/// without change.
+/// Frees a RedBlackTree_s, freeing all of its elements using the interface's
+/// free function but leaves the tree's structure without a change.
+///
 /// \par Interface Requirements
 /// - free
 ///
@@ -253,8 +274,9 @@ rbt_erase(RedBlackTree_t *tree)
     tree->size = 0;
 }
 
-/// Recursively frees a RedBlackTree_s, freeing all of its nodes, leaving its
-/// elements intact. The RedBlackTree_s structure is not changed.
+/// Frees a RedBlackTree_s, freeing all of its nodes, leaving its elements
+/// intact. The RedBlackTree_s structure is not changed.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -269,11 +291,12 @@ rbt_erase_shallow(RedBlackTree_t *tree)
 }
 
 /// Changes the red-black tree's interface.
+///
 /// \par Interface Requirements
 /// - None
 ///
-/// \param tree
-/// \param new_interface
+/// \param tree RedBlackTree_s reference.
+/// \param new_interface A new interface for the specified red-black tree.
 void
 rbt_config(RedBlackTree_t *tree, Interface_t *new_interface)
 {
@@ -281,6 +304,7 @@ rbt_config(RedBlackTree_t *tree, Interface_t *new_interface)
 }
 
 /// Returns the amount of elements in the red-black tree.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -295,6 +319,7 @@ rbt_size(RedBlackTree_t *tree)
 
 /// Returns the red-black tree's maximum number of elements defined by the
 /// user.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -308,6 +333,7 @@ rbt_limit(RedBlackTree_t *tree)
 }
 
 /// Sets a limit to the amount of elements in the red-black tree.
+///
 /// \par Interface Requirements
 /// - None
 ///
@@ -329,6 +355,7 @@ rbt_set_limit(RedBlackTree_t *tree, integer_t limit)
 
 /// Adds a new element in the specified red-black tree. The tree does not
 /// accepts duplicate values.
+///
 /// \par Interface Requirements
 /// - compare
 ///
@@ -336,11 +363,14 @@ rbt_set_limit(RedBlackTree_t *tree, integer_t limit)
 /// \param element The element to be added to the red-black tree.
 ///
 /// \return True if the element was added to the tree.
-/// \return False if the element is already present in the red-black tree or if
-/// any allocations failed.
+/// \return False if the element is already present in the red-black tree, if
+/// the tree has a limited size or if any allocations failed.
 bool
 rbt_insert(RedBlackTree_t *tree, void *element)
 {
+    if (rbt_full(tree))
+        return false;
+
     if (rbt_empty(tree))
     {
         tree->root = rbt_new_node(element);
@@ -359,9 +389,9 @@ rbt_insert(RedBlackTree_t *tree, void *element)
         {
             parent = scan;
 
-            if (tree->interface->compare(scan->data, element) > 0)
+            if (tree->interface->compare(scan->key, element) > 0)
                 scan = scan->left;
-            else if (tree->interface->compare(scan->data, element) < 0)
+            else if (tree->interface->compare(scan->key, element) < 0)
                 scan = scan->right;
             else
                 return false; /* No duplicates are allowed */
@@ -369,7 +399,7 @@ rbt_insert(RedBlackTree_t *tree, void *element)
 
         RedBlackTreeNode_t *node;
 
-        if (tree->interface->compare(parent->data, element) < 0)
+        if (tree->interface->compare(parent->key, element) < 0)
         {
             parent->right = rbt_new_node(element);
 
@@ -401,6 +431,7 @@ rbt_insert(RedBlackTree_t *tree, void *element)
 
 /// Removes an element, if present, that matches a given element from the
 /// specified red-black tree.
+///
 /// \par Interface Requirements
 /// - compare
 /// - free
@@ -416,64 +447,87 @@ rbt_remove(RedBlackTree_t *tree, void *element)
     RedBlackTreeNode_t *Z = rbt_find(tree, element);
 
     if (Z == NULL)
-        return false; /* Not found */
+        return false;
 
-    RedBlackTreeNode_t *Y = Z;
-    RedBlackTreeNode_t *X = NULL;
-    RedBlackTreeNode_t *P = Z->parent;
-
-    bool original_color = Y->color;
-
-    if (Z->left == NULL)
+    if (rbt_size(tree) == 1)
     {
-        X = Z->right;
-        rbt_transplant(tree, Z, Z->right);
-    }
-    else if (Z->right == NULL)
-    {
-        X = Z->left;
-        rbt_transplant(tree, Z, Z->left);
+        // Remove the last node
+        rbt_free_node(tree->root, tree->interface->free);
+
+        tree->root = NULL;
     }
     else
     {
-        Y = rbt_minimum(Z->right);
+        RedBlackTreeNode_t *Y = NULL;
+        RedBlackTreeNode_t *X = NULL;
 
-        original_color = Y->color;
-
-        X = Y->right;
-
-        if (Y->parent == Z)
-        {
-            if (X == NULL)
-                P = Y;
-            else
-                X->parent = Y;
-        }
+        if (Z->left == NULL || Z->right == NULL)
+            Y = Z;
         else
+            Y = rbt_successor(Z);
+
+        if (Y->left != NULL)
+            X = Y->left;
+        else
+            X = Y->right;
+
+        if (X)
+            X->parent = Y->parent;
+
+        // Disassociate Y from the tree
+        if (Y->parent == NULL)
+            tree->root = X;
+        else if (Y == Y->parent->left)
+            Y->parent->left = X;
+        else
+            Y->parent->right = X;
+
+        // Move Y's element to Z's and Z's to Y's because Y is to be deleted
+        // instead of Z
+        if (Y != Z)
         {
-            rbt_transplant(tree, Y, Y->right);
-            Y->right = Z->right;
-            Y->right->parent = Y;
+            void *temp = Y->key;
+            Y->key = Z->key;
+            Z->key = temp;
         }
 
-        rbt_transplant(tree, Z, Y);
-        Y->left = Z->left;
-        Y->left->parent = Y;
-        Y->color = Z->color;
-    }
-    
-    if (original_color == BLACK)
-        rbt_remove_fixup(tree, X, P);
+        if (rbt_color(Y) == BLACK)
+            rbt_remove_fixup(tree, X);
 
-    rbt_free_node(Z, tree->interface->free);
+        rbt_free_node(Y, tree->interface->free);
+    }
+
     tree->size--;
     tree->version_id++;
 
     return true;
 }
 
+/// Removes the root element and frees it from memory.
+///
+/// \par Interface Requirements
+/// - None
+///
+/// \param tree RedBlackTree_s reference.
+///
+/// \return True if the element was removed.
+/// \return False if the element was not found.
+bool
+rbt_pop(RedBlackTree_t *tree)
+{
+    void *element = rbt_peek(tree);
+
+    if (!element)
+        return false;
+
+    return rbt_remove(tree, element);
+}
+
 /// Checks if the specified red-black tree is empty based on its \c size
 /// counter.
+///
+/// \par Interface Requirements
+/// - None
 ///
 /// \param tree RedBlackTree_s reference.
 ///
@@ -487,6 +541,9 @@ rbt_empty(RedBlackTree_t *tree)
 /// Checks if the specified red-black tree is full. The tree can only be full
 /// if the limit is greater than 0 and the tree's size equals the limit.
 ///
+/// \par Interface Requirements
+/// - None
+///
 /// \param tree RedBlackTree_s reference.
 ///
 /// \return True if \c limit is greater than 0 and the tree's size equals the
@@ -498,6 +555,9 @@ rbt_full(RedBlackTree_t *tree)
 }
 
 /// Checks if a given element is in the red-black tree.
+///
+/// \par Interface Requirements
+/// - None
 ///
 /// \param tree RedBlackTree_s reference.
 /// \param element The element to be searched in the tree.
@@ -512,20 +572,81 @@ rbt_contains(RedBlackTree_t *tree, void *element)
     return node != NULL;
 }
 
+/// Returns the root element.
+///
+/// \par Interface Requirements
+/// - None
+///
+/// \param tree RedBlackTree_s reference.
+///
+/// \return Returns the root element or NULL if the tree is empty.
+void *
+rbt_peek(RedBlackTree_t *tree)
+{
+    if (rbt_empty(tree))
+        return NULL;
+
+    return tree->root->key;
+}
+
+/// Returns the maximum element in the tree or NULL if it is empty.
+///
+/// \par Interface Requirements
+/// - None
+///
+/// \param tree RedBlackTree_s reference.
+///
+/// \return The maximum element or NULL if the tree is empty.
+void *
+rbt_max(RedBlackTree_t *tree)
+{
+    if (rbt_empty(tree))
+        return NULL;
+
+    RedBlackTreeNode_t *scan = tree->root;
+
+    while (scan->right != NULL)
+        scan = scan->right;
+
+    return scan->key;
+}
+
+/// Returns the minimum element in the tree or NULL if it is empty.
+///
+/// \par Interface Requirements
+/// - None
+///
+/// \param tree RedBlackTree_s reference.
+///
+/// \return The minimum element or NULL if the tree is empty.
+void *
+rbt_min(RedBlackTree_t *tree)
+{
+    if (rbt_empty(tree))
+        return NULL;
+
+    RedBlackTreeNode_t *scan = tree->root;
+
+    while (scan->left != NULL)
+        scan = scan->left;
+
+    return scan->key;
+}
+
 /// Displays a RedBlackTree_s in the console. There are currently four modes:
 /// - -1 Displays the tree with \c rbt_display_tree.
 /// - 0 Displays the tree with \c rbt_display_simple.
 /// - 1 Displays the tree with \c rbt_display_color
 /// - Any other values defaults to \c rbt_display_treeview
 ///
+/// \par Interface Requirements
+/// - display
+///
 /// \param tree RedBlackTree_s reference.
 /// \param display_mode The way the tree is to be displayed.
 void
 rbt_display(RedBlackTree_t *tree, int display_mode)
 {
-    if (rbt_empty(tree))
-        return;
-
     if (display_mode)
     {
         printf("\n+--------------------------------------------------+");
@@ -533,9 +654,14 @@ rbt_display(RedBlackTree_t *tree, int display_mode)
         printf("\n+--------------------------------------------------+\n");
     }
 
+    if (rbt_empty(tree) && display_mode)
+    {
+        printf(" EMPTY\n");
+    }
+
     if (display_mode == -1)
     {
-        rbt_display_tree(tree->root, 1, tree->interface->display);
+        rbt_display_tree(tree->root, 0, tree->interface->display);
     }
     else if (display_mode == 0)
     {
@@ -543,7 +669,7 @@ rbt_display(RedBlackTree_t *tree, int display_mode)
     }
     else if (display_mode == 1)
     {
-        rbt_display_color(tree->root, 0, tree->interface->display);
+        rbt_display_color(tree->root, 1, tree->interface->display);
     }
     else
     {
@@ -554,19 +680,57 @@ rbt_display(RedBlackTree_t *tree, int display_mode)
     }
 }
 
+/// Displays an RedBlackTree_s in the console. There are currently four modes:
+/// - -1 Pre-order traversal.
+/// - 0 In-order traversal.
+/// - 1 Post-order traversal.
+/// - Any other values defaults to leaves traversal
+///
+/// \par Interface Requirements
+/// - display
+///
+///
+/// \param tree RedBlackTree_s reference.
+/// \param traversal_mode The way the tree is to be traversed.
+void
+rbt_traversal(RedBlackTree_t *tree, int traversal_mode)
+{
+    switch (traversal_mode)
+    {
+        case -1:
+            printf("Pre-order Traversal\n");
+            rbt_traversal_preorder(tree->root, tree->interface->display);
+            break;
+        case 0:
+            printf("In-order Traversal\n");
+            rbt_traversal_inorder(tree->root, tree->interface->display);
+            break;
+        case 1:
+            printf("Post-order Traversal\n");
+            rbt_traversal_postorder(tree->root, tree->interface->display);
+            break;
+        default:
+            printf("Leaves Traversal\n");
+            rbt_traversal_leaves(tree->root, tree->interface->display);
+            break;
+    }
+
+    printf("\n");
+}
+
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static RedBlackTreeNode_t *
 rbt_new_node(void *element)
 {
-    RedBlackTreeNode node = malloc(sizeof(RedBlackTreeNode_t));
+    RedBlackTreeNode_t *node = malloc(sizeof(RedBlackTreeNode_t));
 
     if (!node)
         return NULL;
 
     // All new nodes are red
     node->color = RED;
-    node->data = element;
+    node->key = element;
 
     node->parent = NULL;
     node->left = NULL;
@@ -578,7 +742,7 @@ rbt_new_node(void *element)
 static void
 rbt_free_node(RedBlackTreeNode_t *node, free_f function)
 {
-    function(node->data);
+    function(node->key);
 
     free(node);
 }
@@ -754,9 +918,10 @@ rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z)
             // Uncle
             Y = Z->parent->parent->right;
 
+            // Uncle is red, recolor parent and grandparent
+            // CASE 1 (symmetrical to 4)
             if (rbt_color(Y) == RED)
             {
-                // CASE 1
                 Z->parent->color = BLACK;
                 Y->color = BLACK;
                 Z->parent->parent->color = RED;
@@ -764,13 +929,15 @@ rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z)
             }
             else
             {
+                // CASE 2 (symmetrical to 5)
+                // Left-right skewed
                 if (Z == Z->parent->right)
                 {
-                    // CASE 2
                     Z = Z->parent;
                     rbt_rotate_left(tree, Z);
                 }
-                // CASE 3
+                // Left-Left skewed
+                // CASE 3 (symmetrical to 6)
                 Z->parent->color = BLACK;
                 Z->parent->parent->color = RED;
                 rbt_rotate_right(tree, Z->parent->parent);
@@ -781,9 +948,10 @@ rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z)
             // Uncle
             Y = Z->parent->parent->left;
 
+            // Uncle is red, recolor parent and grandparent
+            // CASE 4 (symmetrical to 1)
             if (rbt_color(Y) == RED)
             {
-                // CASE 4
                 Z->parent->color = BLACK;
                 Y->color = BLACK;
                 Z->parent->parent->color = RED;
@@ -791,13 +959,15 @@ rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z)
             }
             else
             {
+                // CASE 5 (symmetrical to 2)
+                // Right-left skewed
                 if (Z == Z->parent->left)
                 {
-                    // CASE 5
                     Z = Z->parent;
                     rbt_rotate_right(tree, Z);
                 }
-                // CASE 6
+                // CASE 6 (symmetrical to 3)
+                // Right-Right skewed
                 Z->parent->color = BLACK;
                 Z->parent->parent->color = RED;
                 rbt_rotate_left(tree, Z->parent->parent);
@@ -810,35 +980,34 @@ rbt_insert_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *Z)
 }
 
 static void
-rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X,
-                 RedBlackTreeNode_t *P)
+rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X)
 {
     RedBlackTreeNode_t *W = NULL;
 
-    while (X != tree->root && rbt_color(X) == BLACK)
+    while (X && X != tree->root && rbt_color(X) == BLACK)
     {
-        if (X != NULL)
-            P = X->parent;
-
-        if (X == P->left)
+        if (X == X->parent->left)
         {
-            W = P->right;
+            W = X->parent->right;
 
+            // CASE 1
             if (rbt_color(W) == RED)
             {
                 W->color = BLACK;
-                P->color = RED;
-                rbt_rotate_left(tree, P);
-                W = P->right;
+                X->parent->color = RED;
+                rbt_rotate_left(tree, X->parent);
+                W = X->parent->right;
             }
 
+            // CASE 2
             if (rbt_color(W->left) == BLACK && rbt_color(W->right) == BLACK)
             {
                 W->color = RED;
-                X = P;
+                X = X->parent;
             }
             else
             {
+                // CASE 3
                 if (rbt_color(W->right) == BLACK)
                 {
                     if (W->left != NULL)
@@ -846,38 +1015,42 @@ rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X,
 
                     W->color = RED;
                     rbt_rotate_right(tree, W);
-                    W = P->right;
+                    W = X->parent->right;
                 }
 
-                W->color = P->color;
-                P->color = BLACK;
+                // CASE 4
+                W->color = X->parent->color;
+                X->parent->color = BLACK;
 
                 if (W->right != NULL)
                     W->right->color = BLACK;
 
-                rbt_rotate_left(tree, P);
+                rbt_rotate_left(tree, X->parent);
                 X = tree->root;
             }
         }
-        else /* if X == P->right */
+        else /* if X == X->parent->right */
         {
-            W = P->left;
+            W = X->parent->left;
 
+            // CASE 1
             if (rbt_color(W) == RED)
             {
                 W->color = BLACK;
-                P->color = RED;
-                rbt_rotate_right(tree, P);
-                W = P->left;
+                X->parent->color = RED;
+                rbt_rotate_right(tree, X->parent);
+                W = X->parent->left;
             }
 
+            // CASE 2
             if (rbt_color(W->left) == BLACK && rbt_color(W->right) == BLACK)
             {
                 W->color = RED;
-                X = P;
+                X = X->parent;
             }
             else
             {
+                // CASE 3
                 if (rbt_color(W->left) == BLACK)
                 {
                     if (W->right != NULL)
@@ -885,16 +1058,17 @@ rbt_remove_fixup(RedBlackTree_t *tree, RedBlackTreeNode_t *X,
 
                     W->color = RED;
                     rbt_rotate_left(tree, W);
-                    W = P->left;
+                    W = X->parent->left;
                 }
 
-                W->color = P->color;
-                P->color = BLACK;
+                // CASE 4
+                W->color = X->parent->color;
+                X->parent->color = BLACK;
 
                 if (W->left != NULL)
                     W->left->color = BLACK;
 
-                rbt_rotate_right(tree, P);
+                rbt_rotate_right(tree, X->parent);
                 X = tree->root;
             }
         }
@@ -911,9 +1085,9 @@ rbt_find(RedBlackTree_t *tree, void *element)
 
     while (scan != NULL)
     {
-        if (tree->interface->compare(scan->data, element) > 0)
+        if (tree->interface->compare(scan->key, element) > 0)
             scan = scan->left;
-        else if (tree->interface->compare(scan->data, element) < 0)
+        else if (tree->interface->compare(scan->key, element) < 0)
             scan = scan->right;
         else
             return scan;
@@ -923,11 +1097,38 @@ rbt_find(RedBlackTree_t *tree, void *element)
 }
 
 static RedBlackTreeNode_t *
+rbt_successor(RedBlackTreeNode_t *N)
+{
+    if (N->right != NULL)
+        return rbt_minimum(N->right);
+
+    RedBlackTreeNode_t *Y = N->parent;
+
+    while (Y != NULL && N == Y->right)
+    {
+        N = Y;
+        Y = Y->parent;
+    }
+
+    return Y;
+}
+
+static RedBlackTreeNode_t *
 rbt_minimum(RedBlackTreeNode_t *N)
 {
     // Finds the minimum node of subtree N
     while (N->left != NULL)
         N = N->left;
+
+    return N;
+}
+
+static RedBlackTreeNode_t *
+rbt_maximum(RedBlackTreeNode_t *N)
+{
+    // Finds the maximum node of subtree N
+    while (N->right != NULL)
+        N = N->right;
 
     return N;
 }
@@ -960,19 +1161,18 @@ rbt_color(RedBlackTreeNode_t *node)
 
 static void
 rbt_display_tree(RedBlackTreeNode_t *root, integer_t height,
-        display_f function)
+                 display_f function)
 {
     if (root == NULL)
         return;
 
     rbt_display_tree(root->right, height + 1, function);
 
-    for (integer_t i = 0; i < height - 1; i++)
-        printf("        ");
+    for (integer_t i = 0; i < height; i++)
+        printf("|------- ");
 
-    printf("|---%c---< ", root->color ? 'B' : 'R');
+    function(root->key);
 
-    function(root->data);
     printf("\n");
 
     rbt_display_tree(root->left, height + 1, function);
@@ -987,12 +1187,12 @@ rbt_display_color(RedBlackTreeNode_t *root, integer_t height,
 
     rbt_display_color(root->right, height + 1, function);
 
-    for (integer_t i = 0; i < height; i++)
-        printf("|-------");
+    for (integer_t i = 0; i < height - 1; i++)
+        printf("        ");
 
-    printf("%c ", root->color ? 'B' : 'R');
-    function(root->data);
+    printf("|---%c---< ", root->color ? 'B' : 'R');
 
+    function(root->key);
     printf("\n");
 
     rbt_display_color(root->left, height + 1, function);
@@ -1010,7 +1210,7 @@ rbt_display_simple(RedBlackTreeNode_t *root, integer_t height,
     for (integer_t i = 0; i < height; i++)
         printf("        ");
 
-    function(root->data);
+    function(root->key);
     printf("\n");
 
     rbt_display_simple(root->left, height + 1, function);
@@ -1056,7 +1256,7 @@ rbt_display_treeview(RedBlackTreeNode_t *root, integer_t depth, char *path,
     }
 
     printf(" ");
-    function(root->data);
+    function(root->key);
     printf("\n");
 
     for (int i = 0; i < depth; i++)
@@ -1071,6 +1271,65 @@ rbt_display_treeview(RedBlackTreeNode_t *root, integer_t depth, char *path,
     }
 
     rbt_display_treeview(root->left, depth, path, function, false);
+}
+
+void
+rbt_traversal_preorder(RedBlackTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    function(root->key);
+    printf(" ");
+
+    rbt_traversal_preorder(root->left, function);
+
+    rbt_traversal_preorder(root->right, function);
+}
+
+void
+rbt_traversal_inorder(RedBlackTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    rbt_traversal_inorder(root->left, function);
+
+    function(root->key);
+    printf(" ");
+
+    rbt_traversal_inorder(root->right, function);
+}
+
+void
+rbt_traversal_postorder(RedBlackTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    rbt_traversal_postorder(root->left, function);
+
+    rbt_traversal_postorder(root->right, function);
+
+    function(root->key);
+    printf(" ");
+}
+
+void
+rbt_traversal_leaves(RedBlackTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    rbt_traversal_leaves(root->left, function);
+
+    rbt_traversal_leaves(root->right, function);
+
+    if (root->right == NULL && root->left == NULL)
+    {
+        function(root->key);
+        printf(" ");
+    }
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///

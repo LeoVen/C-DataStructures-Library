@@ -23,12 +23,12 @@ struct RedBlackTree_s;
 /// \ref RedBlackTree_t
 /// \brief A type for a red-black tree.
 ///
-/// A type for a <code> struct RedBlackTree_s </code> so you don't have to always
-/// write the full name of it.
+/// A type for a <code> struct RedBlackTree_s </code> so you don't have to
+/// always write the full name of it.
 typedef struct RedBlackTree_s RedBlackTree_t;
 
 /// \ref RedBlackTree
-/// \brief A pointer type for red-black tree.
+/// \brief A pointer type for a red-black tree.
 ///
 /// Defines a pointer type to <code> struct RedBlackTree_s </code>. This
 /// typedef is used to avoid having to declare every red-black tree as a
@@ -53,7 +53,7 @@ void
 rbt_free_shallow(RedBlackTree_t *tree);
 
 /// \ref rbt_erase
-/// \brief Frees from memory all elements of the RedBlackTree_s.
+/// \brief Frees from memory all elements of a RedBlackTree_s.
 void
 rbt_erase(RedBlackTree_t *tree);
 
@@ -100,6 +100,11 @@ rbt_insert(RedBlackTree_t *tree, void *element);
 bool
 rbt_remove(RedBlackTree_t *tree, void *element);
 
+/// \ref rbt_pop
+/// \brief Removes the root element and frees it from memory.
+bool
+rbt_pop(RedBlackTree_t *tree);
+
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
 /// \ref rbt_empty
@@ -119,12 +124,32 @@ rbt_full(RedBlackTree_t *tree);
 bool
 rbt_contains(RedBlackTree_t *tree, void *element);
 
+/// \ref rbt_peek
+/// \brief Returns the root element if present.
+void *
+rbt_peek(RedBlackTree_t *tree);
+
+/// \ref rbt_max
+/// \brief Returns the maximum element if present.
+void *
+rbt_max(RedBlackTree_t *tree);
+
+/// \ref rbt_min
+/// \brief Returns the minimum element if present.
+void *
+rbt_min(RedBlackTree_t *tree);
+
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
 /// \ref rbt_display
 /// \brief Displays a red-black tree in the console given a display mode.
 void
 rbt_display(RedBlackTree_t *tree, int display_mode);
+
+/// \ref rbt_traversal
+/// \brief Displays each element in the console given a traversal order.
+void
+rbt_traversal(RedBlackTree_t *tree, int traversal_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

@@ -4,6 +4,11 @@ int main()
 {
     srand((unsigned)time(NULL));
 
+    printf("+--------------------------------------------------+\n");
+    printf("|                       Tests                      |\n");
+    printf("+--------------------------------------------------+\n\n");
+
+    AVLTreeTests();
     BitArrayTests();
     DequeArrayTests();
     DequeTests();

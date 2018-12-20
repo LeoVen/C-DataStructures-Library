@@ -15,6 +15,7 @@ include_directories(${INCLUDE} ${UNIT_TEST} ${UTIL} ${INTERFACE})
 
 set(INCLUDE_FILES include/Core.h include/Tests.h include/CoreSort.h include/CoreTree.h)
 set(TEST_FILES
+        tests/AVLTreeTests.c
         tests/BitArrayTests.c
         tests/CircularLinkedListTests.c
         tests/DequeArrayTests.c

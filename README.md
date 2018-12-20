@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-60-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-28331-%232196f3.svg)
-![average](https://img.shields.io/badge/average-472-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-61-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-29479-%232196f3.svg)
+![average](https://img.shields.io/badge/average-483-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-19-%23f44336.svg)
 
@@ -24,7 +24,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | :------------------------- | :------------: | :------------: | :------------: | :------------: | :------------: |
 | [Array][arr]               | `[##########]` | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
 | [AssociativeList][asl]     | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [AVLTree][avl]             | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[#_________]` |
+| [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BitArray][bit]            | `[######____]` | `[__________]` | `[__________]` | `[###_______]` | `[####______]` |
@@ -47,7 +47,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [Queue][que]               | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
 | [QueueArray][qua]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
 | [RadixTree][rdt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [RedBlackTree][rbt]        | `[#######___]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
+| [RedBlackTree][rbt]        | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [SinglyLinkedList][sll]    | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
 | [SkipList][skp]            | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [SortedArray][sar]         | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -61,10 +61,10 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [TreeMap][trm]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [Trie][tri]                | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [UnrolledLinkedList][ull]  | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   __Completed__            |     __14__     |     __4__      |     __0__      |     __0__      |     __1__      |
+|   __Completed__            |     __12__     |     __4__      |     __0__      |     __0__      |     __1__      |
 
 ## Summary
-    
+
 ### Array
 
 An array is an abstraction of a C array composed of a data buffer and a length variable. It is a static array, that is, it won't increase in size. Higher level languages provide a quick variable to get the array's length and this abstraction does exactly that. When you initialize the structure a length variable is stored and you can easily do a for loop like shown below.
