@@ -74,7 +74,7 @@ rbt_bench_IO(unsigned_t elements, unsigned_t iterations)
 
         // Search
         clk_start(stopwatch);
-        for (int64_t j = min; j < max; j++)
+        for (int64_t j = min; j <= max; j++)
         {
             success = rbt_contains(tree, &j);
         }
@@ -86,7 +86,7 @@ rbt_bench_IO(unsigned_t elements, unsigned_t iterations)
         // Removal
         int64_t *search = new_int64_t(min);
         clk_start(stopwatch);
-        for (int64_t j = min; j < max; j++)
+        for (int64_t j = min; j <= max; j++)
         {
             *search = j;
             success = rbt_remove(tree, search);
@@ -123,9 +123,9 @@ rbt_bench_IO(unsigned_t elements, unsigned_t iterations)
     printf("  Total elements added   : %llu\n", elements);
     printf("  Total iterations       : %llu\n", iterations);
     printf("+----------------------------------------+\n");
-    printf("  Average insertion time : %lf\n", insertion_sum / (double)iterations);
-    printf("  Average removal time   : %lf\n", removal_sum / (double)iterations);
-    printf("  Average search time    : %lf\n", search_sum / (double)iterations);
+    printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
+    printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
+    printf("  Average search time    : %lf seconds\n", search_sum / (double)iterations);
     printf("+----------------------------------------+\n");
 }
 
@@ -138,7 +138,7 @@ void RedBlackTreeBench(void)
 
     rbt_bench_IO(100000, 100);
     rbt_bench_IO(1000000, 10);
-    rbt_bench_IO(100000000, 1);
+    rbt_bench_IO(10000000, 1);
 
     printf("\n");
 }

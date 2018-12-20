@@ -621,7 +621,7 @@ void *new_string(char *element)
 
 double rrandom()
 {
-    return (double)rand() / (double)(RAND_MAX + 1);
+    return (double)rand() / ((double)RAND_MAX + 1.0);
 }
 
 int8_t random_int8_t(int8_t min, int8_t max)
