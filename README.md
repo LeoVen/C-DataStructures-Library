@@ -1,6 +1,6 @@
 # C-DataStructures-Library
 
-![license](https://img.shields.io/badge/license-GPL%203-blue.svg)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![build](https://travis-ci.org/LeoVen/C-DataStructures-Library.svg?branch=master)
 
 The purpose of this library is to provide an easy to use, easy to understand and easy to reproduce implementation of data structures with full documentation and commented code when needed. This library has a focus on teaching purposes and the implementations are not high performance or platform/compiler independent.
@@ -13,8 +13,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 ```
 
 ![total files](https://img.shields.io/badge/total%20files-66-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-29986-%232196f3.svg)
-![average](https://img.shields.io/badge/average-454-%23ff9800.svg)
+![total](https://img.shields.io/badge/total%20lines-30402-%232196f3.svg)
+![average](https://img.shields.io/badge/average-460-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-19-%23f44336.svg)
 
@@ -27,7 +27,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [BitArray][bit]            | `[######____]` | `[__________]` | `[__________]` | `[###_______]` | `[####______]` |
+| [BitArray][bit]            | `[#########_]` | `[__________]` | `[__________]` | `[#######___]` | `[#####_____]` |
 | [BTree][btr]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [CircularLinkedList][cll]  | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#####_____]` |
 | [CircularQueueList][cql]   | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |

@@ -8,320 +8,402 @@
 
 #include "BitArray.h"
 
-/// \brief An array of bits to represent 0 and 1 values.
-///
 /// A bit array (bit set, bit map, bit string or bit vector) is a compacted
-/// array of bits represented by the bits in a word (in this case an integer_t)
+/// array of bits represented by the bits in a word (in this case an unsigned_t)
 /// where you can individually set or clear each bit. It is very useful at
 /// implementing a Set of elements where:
 /// - Union represented by the OR operator ( bit_OR() )
 /// - Intersection represented by the AND operator ( bit_AND() );
 /// - Symmetric difference represented by the XOR operator ( bit_XOR() ).
 ///
-/// \todo Make the bit array grow as needed.
+/// \par Functions
+/// Located in the file BitArray.c
 struct BitArray_s
 {
     /// \brief Buffer of bytes.
-    integer_t *buffer;
+    unsigned_t *buffer;
 
     /// \brief Buffer size.
-    integer_t size;
+    unsigned_t size;
 };
 
 // Finding how many shifts are needed for the highest integer type to be mapped
 // as a buffer index. Used in bit_buffer_index().
-static const integer_t bit_shifts =
-          ((sizeof(integer_t) * 8) >> 6) > 0
+static const unsigned_t bit_shifts =
+          ((sizeof(unsigned_t) * 8) >> 6) > 0
         ? 6
-        : ((sizeof(integer_t) * 8) >> 5) > 0
+        : ((sizeof(unsigned_t) * 8) >> 5) > 0
         ? 5
-        : ((sizeof(integer_t) * 8) >> 4) > 0
+        : ((sizeof(unsigned_t) * 8) >> 4) > 0
         ? 4
         : 3; // One byte
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static integer_t bit_buffer_index(integer_t bit_index);
+static unsigned_t
+bit_buffer_index(unsigned_t bit_index);
 
-static bool bit_receive(BitArray bits, integer_t bit_index);
+static bool
+bit_grow(BitArray_t *bits, unsigned_t words);
 
-static Status bit_grow(BitArray bits, integer_t words);
-
-static integer_t bit_count(integer_t i);
+static unsigned_t
+bit_count(unsigned_t i);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// \brief Initializes a BitArray_s.
-///
-/// \param bits
+/// Creates a new bit array.
 ///
 /// \return
-Status bit_init(BitArray *bits)
+BitArray_t *
+bit_new(void)
 {
-    *bits = malloc(sizeof(BitArray_t));
+    BitArray_t *bits = malloc(sizeof(BitArray_t));
 
-    if (!(*bits))
-        return DS_ERR_ALLOC;
+    if (!bits)
+        return NULL;
 
-    (*bits)->buffer = calloc(1, sizeof(integer_t));
+    bits->buffer = calloc(1, sizeof(unsigned_t));
 
-    if (!((*bits)->buffer))
+    if (!(bits->buffer))
     {
-        free(*bits);
-
-        *bits = NULL;
-
-        return DS_ERR_ALLOC;
+        free(bits);
+        return NULL;
     }
 
-    (*bits)->size = 1;
+    bits->size = 1;
 
-    return DS_OK;
+    return bits;
 }
 
-/// \brief Initializes a BitArray_s.
+/// Creates a new bit array with enough space for the required amount of bits.
 ///
-/// \param bits
 /// \param required_bits
 ///
 /// \return
-Status bit_create(BitArray *bits, integer_t required_bits)
+BitArray_t *
+bit_create(unsigned_t required_bits)
 {
-    *bits = NULL;
+    BitArray_t *bits = malloc(sizeof(BitArray_t));
 
-    if (required_bits < 0)
-        return DS_ERR_NEGATIVE_VALUE;
+    if (!bits)
+        return NULL;
 
-    if (required_bits == 0)
-        return DS_ERR_INVALID_ARGUMENT;
+    unsigned_t buffer_size = bit_buffer_index(required_bits - 1) + 1;
 
-    *bits = malloc(sizeof(BitArray_t));
+    bits->buffer = calloc(buffer_size, sizeof(unsigned_t));
 
-    if (!(*bits))
-        return DS_ERR_ALLOC;
-
-    integer_t buffer_size = bit_buffer_index(required_bits - 1) + 1;
-
-    (*bits)->buffer = calloc(buffer_size, sizeof(integer_t));
-
-    if (!((*bits)->buffer))
+    if (!(bits->buffer))
     {
-        free(*bits);
-
-        *bits = NULL;
-
-        return DS_ERR_ALLOC;
+        free(bits);
+        return NULL;
     }
 
-    (*bits)->size = buffer_size;
+    bits->size = buffer_size;
 
-    return DS_OK;
+    return bits;
 }
 
-/// \brief Frees from memory a BitArray_s.
+/// Frees from memory a BitArray_s.
 ///
 /// \param bits
-///
-/// \return
-Status bit_free(BitArray *bits)
+void
+bit_free(BitArray_t *bits)
 {
-    if (*bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free((*bits)->buffer);
-    free(*bits);
-
-    *bits = NULL;
-
-    return DS_OK;
+    free(bits->buffer);
+    free(bits);
 }
 
-/// \brief Returns how many words are in the bit array.
+/// Returns how many words are in the bit array.
 ///
 /// \param bits
 ///
 /// \return
-integer_t bit_size(BitArray bits)
+unsigned_t bit_size(BitArray_t *bits)
 {
     return bits->size;
 }
 
-/// \brief Returns the total amount of bits in the array.
+/// Returns the total amount of bits that can be addressed with the current
+/// amount of words.
 ///
 /// \param bits
 ///
 /// \return
-integer_t bit_nbits(BitArray bits)
+unsigned_t
+bit_nbits(BitArray_t *bits)
 {
-    return bits->size * 64;
+    return bits->size * sizeof(unsigned_t) * 8;
 }
 
-/// \brief Sets to true a bit at a given bit index.
+/// Resizes the buffer to accomodate enough \c bit_index indexes. If the buffer
+/// grows, all new bytes are initializes a 0; if the buffer shrinks then some
+/// data is possibly lost.
 ///
 /// \param bits
-/// \param bit_index
+/// \param bit_size
 ///
 /// \return
-Status bit_set(BitArray bits, integer_t bit_index)
+bool
+bit_resize(BitArray_t *bits, unsigned_t bit_size)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (bit_size == 0)
+        return false;
 
-    if (bit_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
+    // -1 because bit_size is 1-based and we need to pass a 0-based index
+    unsigned_t words = bit_buffer_index(bit_size - 1);
 
-    integer_t index = bit_buffer_index(bit_index);
+    // words is a 0-based index, lets make it a size variable, basically
+    // reverting the last step
+    words++;
 
-    bits->buffer[index] |= ((integer_t)1 << bit_index);
-
-    return DS_OK;
-}
-
-/// \brief Sets to true a given range of bits.
-///
-/// \param bits
-/// \param from_index
-/// \param to_index
-///
-/// \return
-Status bit_set_range(BitArray bits, integer_t from_index, integer_t to_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (from_index < 0 || to_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    if (to_index < from_index)
-        return DS_ERR_INVALID_ARGUMENT;
-
-    integer_t start_index = bit_buffer_index(from_index);
-    integer_t end_index = bit_buffer_index(to_index);
-
-    // Expand to end_index
-    /// \todo bit_set_range
-
-    return DS_OK;
-}
-
-/// \brief Sets to false a bit at a given bit index.
-///
-/// \param bits
-/// \param bit_index
-///
-/// \return
-Status bit_clear(BitArray bits, integer_t bit_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bit_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    integer_t index = bit_buffer_index(bit_index);
-
-    bits->buffer[index] &= ~((integer_t)1 << bit_index);
-
-    return DS_OK;
-}
-
-/// \brief Sets to false a given range of bits.
-///
-/// \param bits
-/// \param from_index
-/// \param to_index
-///
-/// \return
-Status bit_clear_range(BitArray bits, integer_t from_index, integer_t to_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (from_index < 0 || to_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    if (to_index < from_index)
-        return DS_ERR_INVALID_ARGUMENT;
-
-    /// \todo bit_clear_range
-
-    return DS_OK;
-}
-
-/// \brief Flips the state of a bit at a given bit index.
-///
-/// \param bits
-/// \param bit_index
-///
-/// \return
-Status bit_flip(BitArray bits, integer_t bit_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bit_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    integer_t index = bit_buffer_index(bit_index);
-
-    bits->buffer[index] ^= ((integer_t)1 << bit_index);
-
-    return DS_OK;
-}
-
-/// \brief Flips the state of a given range of bits.
-///
-/// \param bits
-/// \param from_index
-/// \param to_index
-///
-/// \return
-Status bit_flip_range(BitArray bits, integer_t from_index, integer_t to_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (from_index < 0 || to_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    if (to_index < from_index)
-        return DS_ERR_INVALID_ARGUMENT;
-
-    /// \todo bit_flip_range
-
-    return DS_OK;
-}
-
-/// \brief Sets the state of a bit at a given bit index.
-///
-/// \param bits
-/// \param state
-/// \param bit_index
-///
-/// \return
-Status bit_put(BitArray bits, bool state, integer_t bit_index)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bit_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    integer_t index = bit_buffer_index(bit_index);
-
-    if (state)
+    // Grow
+    if (bits->size < words)
     {
-        bits->buffer[index] |= ((integer_t)1 << bit_index);
+        unsigned_t new_size = words;
+
+        unsigned_t *new_buffer = realloc(bits->buffer,
+                sizeof(unsigned_t) * new_size);
+
+        // Reallocation failed
+        if (!new_buffer)
+            return false;
+
+        bits->buffer = new_buffer;
+
+        // Set the new words to 0
+        memset(bits->buffer + bits->size, 0,
+               (new_size - bits->size) * sizeof(unsigned_t));
+
+        bits->size = new_size;
+    }
+    // Shrink
+    else if (bits->size > words)
+    {
+        unsigned_t new_size = words;
+
+        unsigned_t *new_buffer = realloc(bits->buffer,
+                sizeof(unsigned_t) * new_size);
+
+        if (!new_buffer)
+            return false;
+
+        bits->buffer = new_buffer;
+        bits->size = new_size;
+    }
+    // if bits->size == words return true
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param bit_index
+///
+/// \return
+bool
+bit_set(BitArray_t *bits, unsigned_t bit_index)
+{
+    if (bit_index < 0)
+        return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
+
+    bits->buffer[index] |= ((unsigned_t)1 << bit_index);
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param from_index
+/// \param to_index
+///
+/// \return
+bool
+bit_set_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
+{
+    if (from_index < 0 || to_index < 0)
+        return false;
+
+    if (to_index < from_index)
+        return false;
+
+    unsigned_t start_index = bit_buffer_index(from_index);
+    unsigned_t end_index = bit_buffer_index(to_index);
+
+    unsigned_t start_mask = ~((unsigned_t)0) << from_index;
+    unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
+
+    if (!bit_grow(bits, end_index + 1))
+        return false;
+
+    if (start_index == end_index)
+    {
+        bits->buffer[start_index] |= (start_mask & end_mask);
     }
     else
     {
-        bits->buffer[index] &= ~((integer_t)1 << bit_index);
+        bits->buffer[start_index] |= start_mask;
+
+        for (unsigned_t i = start_index + 1; i < end_index; i++)
+        {
+            bits->buffer[i] = ~((unsigned_t)0);
+        }
+
+        bits->buffer[end_index] |= end_mask;
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Sets the state of a given range of bits.
+///
+/// \param bits
+/// \param bit_index
+///
+/// \return
+bool
+bit_clear(BitArray_t *bits, unsigned_t bit_index)
+{
+    if (bit_index < 0)
+        return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
+
+    bits->buffer[index] &= ~((unsigned_t)1 << bit_index);
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param from_index
+/// \param to_index
+///
+/// \return
+bool
+bit_clear_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
+{
+    if (from_index < 0 || to_index < 0)
+        return false;
+
+    if (to_index < from_index)
+        return false;
+
+    unsigned_t start_index = bit_buffer_index(from_index);
+    unsigned_t end_index = bit_buffer_index(to_index);
+
+    unsigned_t start_mask = ~((unsigned_t)0) << from_index;
+    unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
+
+    if (!bit_grow(bits, end_index + 1))
+        return false;
+
+    if (start_index == end_index)
+    {
+        bits->buffer[start_index] &= ~(start_mask & end_mask);
+    }
+    else
+    {
+        bits->buffer[start_index] &= ~start_mask;
+
+        for (unsigned_t i = start_index + 1; i < end_index; i++)
+        {
+            bits->buffer[i] = 0;
+        }
+
+        bits->buffer[end_index] &= ~end_mask;
+    }
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param bit_index
+///
+/// \return
+bool
+bit_flip(BitArray_t *bits, unsigned_t bit_index)
+{
+    if (bit_index < 0)
+        return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
+
+    bits->buffer[index] ^= ((unsigned_t)1 << bit_index);
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param from_index
+/// \param to_index
+///
+/// \return
+bool
+bit_flip_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
+{
+    if (from_index < 0 || to_index < 0)
+        return false;
+
+    if (to_index < from_index)
+        return false;
+
+    unsigned_t start_index = bit_buffer_index(from_index);
+    unsigned_t end_index = bit_buffer_index(to_index);
+
+    unsigned_t start_mask = ~((unsigned_t)0) << from_index;
+    unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
+
+    if (!bit_grow(bits, end_index + 1))
+        return false;
+
+    if (start_index == end_index)
+    {
+        bits->buffer[start_index] ^= (start_mask & end_mask);
+    }
+    else
+    {
+        bits->buffer[start_index] ^= start_mask;
+
+        for (unsigned_t i = start_index + 1; i < end_index; i++)
+        {
+            bits->buffer[i] ^= ~((unsigned_t)0);
+        }
+
+        bits->buffer[end_index] ^= end_mask;
+    }
+
+    return true;
+}
+
+///
+/// \param bits
+/// \param state
+/// \param bit_index
+///
+/// \return
+bool
+bit_put(BitArray_t *bits, bool state, unsigned_t bit_index)
+{
+    if (bit_index < 0)
+        return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
+
+    if (state)
+    {
+        bits->buffer[index] |= ((unsigned_t)1 << bit_index);
+    }
+    else
+    {
+        bits->buffer[index] &= ~((unsigned_t)1 << bit_index);
+    }
+
+    return true;
+}
+
 ///
 /// \param bits
 /// \param state
@@ -329,116 +411,138 @@ Status bit_put(BitArray bits, bool state, integer_t bit_index)
 /// \param to_index
 ///
 /// \return
-Status bit_put_range(BitArray bits, bool state, integer_t from_index, integer_t to_index)
+bool
+bit_put_range(BitArray_t *bits, bool state, unsigned_t from_index, unsigned_t to_index)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
     if (from_index < 0 || to_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
+        return false;
 
     if (to_index < from_index)
-        return DS_ERR_INVALID_ARGUMENT;
+        return false;
 
-    /// \todo bit_put_range
+    unsigned_t start_index = bit_buffer_index(from_index);
+    unsigned_t end_index = bit_buffer_index(to_index);
 
-    return DS_OK;
+    unsigned_t start_mask = ~((unsigned_t)0) << from_index;
+    unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
+
+    if (!bit_grow(bits, end_index + 1))
+        return false;
+
+    if (state)
+    {
+        if (start_index == end_index)
+        {
+            bits->buffer[start_index] |= (start_mask & end_mask);
+        }
+        else
+        {
+            bits->buffer[start_index] |= start_mask;
+
+            for (unsigned_t i = start_index + 1; i < end_index; i++)
+            {
+                bits->buffer[i] = ~((unsigned_t)0);
+            }
+
+            bits->buffer[end_index] |= end_mask;
+        }
+    }
+    else
+    {
+        if (start_index == end_index)
+        {
+            bits->buffer[start_index] &= ~(start_mask & end_mask);
+        }
+        else
+        {
+            bits->buffer[start_index] &= ~start_mask;
+
+            for (unsigned_t i = start_index + 1; i < end_index; i++)
+            {
+                bits->buffer[i] = 0;
+            }
+
+            bits->buffer[end_index] &= ~end_mask;
+        }
+    }
+
+    return true;
 }
 
-/// \brief Sets all bits to 1.
 ///
 /// \param bits
 ///
 /// \return
-Status bit_fill(BitArray bits)
+bool
+bit_fill(BitArray_t *bits)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
-        bits->buffer[i] = ~0;
+        bits->buffer[i] = ~((unsigned_t)0);
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Sets all bits to 0.
 ///
 /// \param bits
 ///
 /// \return
-Status bit_empty(BitArray bits)
+bool
+bit_empty(BitArray_t *bits)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
-        bits->buffer[i] = 0;
+        bits->buffer[i] = (unsigned_t)0;
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Retrieves the state of a bit at a given index.
 ///
 /// \param bits
 /// \param bit_index
-/// \param result
 ///
 /// \return
-Status bit_get(BitArray bits, integer_t bit_index, bool *result)
+bool
+bit_get(BitArray_t *bits, unsigned_t bit_index)
 {
-    *result = false;
+    unsigned_t index = bit_buffer_index(bit_index);
 
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
+    unsigned_t value = bits->buffer[index] & ((unsigned_t)1 << bit_index);
 
-    if (bit_index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    integer_t index = bit_buffer_index(bit_index);
-
-    integer_t value = bits->buffer[index] & ((integer_t)1 << bit_index);
-
-    *result = (value) ? true : false;
-
-    return DS_OK;
+    return (value) ? true : false;
 }
 
-/// \brief Returns the amount of set bits in the bit array.
 ///
 /// \param bits
 ///
 /// \return
-integer_t bit_cardinality(BitArray bits)
+unsigned_t
+bit_cardinality(BitArray_t *bits)
 {
-    if (bits == NULL)
-        return -1;
+    unsigned_t sum = 0;
 
-    integer_t sum = 0;
-
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
         sum += bit_count(bits->buffer[i]);
 
     return sum;
 }
 
-/// \brief Returns true if any bits are intersecting.
 ///
-/// Returns true if the specified BitArray 1 has any bits set to true that are
-/// also set to true in the BitArray 2.
+/// Returns true if the specified bit array 1 has any bits set to true that are
+/// also set to true in the bit array 2.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-bool bit_intersects(BitArray bits1, BitArray bits2)
+bool
+bit_intersects(BitArray_t *bits1, BitArray_t *bits2)
 {
-    integer_t size = bits1->size < bits2->size ? bits1->size : bits2->size;
+    unsigned_t size = bits1->size < bits2->size ? bits1->size : bits2->size;
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         if (bits1->buffer[i] & bits2->buffer[i] != 0)
             return true;
@@ -447,60 +551,49 @@ bool bit_intersects(BitArray bits1, BitArray bits2)
     return false;
 }
 
-/// \brief Creates a copy of a BitArray_s.
 ///
 /// \param bits
-/// \param result
 ///
 /// \return
-Status bit_copy(BitArray bits, BitArray *result)
+BitArray_t *
+bit_copy(BitArray_t *bits)
 {
-    *result = NULL;
+    BitArray_t *result = bit_create(bit_nbits(bits));
 
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (!result)
+        return NULL;
 
-    Status st = bit_create(result, bits->size * 64);
-
-    if (st != DS_OK)
-        return st;
-
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
-        (*result)->buffer[i] = bits->buffer[i];
+        result->buffer[i] = bits->buffer[i];
     }
 
-    return DS_OK;
+    return result;
 }
 
-/// \brief Makes a representation of a BitArray_s as an array of booleans.
 ///
 /// \param bits
-/// \param result
+/// \param size
 ///
 /// \return
-Status bit_to_array(BitArray bits, bool **result)
+bool *
+bit_to_array(BitArray_t *bits, unsigned_t *size)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
+    unsigned_t nbits = bit_nbits(bits);
 
-    integer_t nbits = bit_nbits(bits);
+    bool *result = malloc(sizeof(bool) * nbits);
 
-    *result = malloc(sizeof(bool) * nbits);
+    if (!result)
+        return NULL;
 
-    if (!(*result))
-        return DS_ERR_ALLOC;
-
-    for (integer_t i = 0; i < nbits; i++)
+    for (unsigned_t i = 0; i < nbits; i++)
     {
-        (*result)[i] = bit_receive(bits, i);
+        result[i] = bit_get(bits, i);
     }
 
-    return DS_OK;
+    return result;
 }
 
-/// \brief Returns the index of the nearest set bit after a given index.
-///
 /// Returns the index of the nearest bit that is set to true that occurs on or
 /// after the specified starting index. If no such bit exists, if the bit array
 /// reference is \c NULL, or if a negative index is given as the starting
@@ -510,14 +603,13 @@ Status bit_to_array(BitArray bits, bool **result)
 /// \param bit_index
 ///
 /// \return
-integer_t bit_next_set(BitArray bits, integer_t bit_index)
+unsigned_t
+bit_next_set(BitArray_t *bits, unsigned_t bit_index)
 {
     /// \todo bit_next_set
     return -1;
 }
 
-/// \brief Returns the index of the nearest clear bit after a given index.
-///
 /// Returns the index of the nearest bit that is set to false that occurs on or
 /// after the specified starting index. If no such bit exists, if the bit array
 /// reference is \c NULL, or if a negative index is given as the starting
@@ -527,14 +619,13 @@ integer_t bit_next_set(BitArray bits, integer_t bit_index)
 /// \param bit_index
 ///
 /// \return
-integer_t bit_next_clear(BitArray bits, integer_t bit_index)
+unsigned_t
+bit_next_clear(BitArray_t *bits, unsigned_t bit_index)
 {
     /// \todo bit_next_clear
     return -1;
 }
 
-/// \brief Returns the index of the nearest set bit previous to an index.
-///
 /// Returns the index of the nearest bit that is set to true that occurs on or
 /// before the specified starting index. If no such bit exists, if the bit
 /// array reference is \c NULL, or if a negative index is given as the starting
@@ -544,14 +635,13 @@ integer_t bit_next_clear(BitArray bits, integer_t bit_index)
 /// \param bit_index
 ///
 /// \return
-integer_t bit_prev_set(BitArray bits, integer_t bit_index)
+unsigned_t
+bit_prev_set(BitArray_t *bits, unsigned_t bit_index)
 {
     /// \todo bit_prev_set
     return -1;
 }
 
-/// \brief Returns the index of the nearest clear bit previous to an index.
-///
 /// Returns the index of the nearest bit that is set to false that occurs on or
 /// before the specified starting index. If no such bit exists, if the bit
 /// array reference is \c NULL, or if a negative index is given as the starting
@@ -561,306 +651,280 @@ integer_t bit_prev_set(BitArray bits, integer_t bit_index)
 /// \param bit_index
 ///
 /// \return
-integer_t bit_prev_clear(BitArray bits, integer_t bit_index)
+unsigned_t
+bit_prev_clear(BitArray_t *bits, unsigned_t bit_index)
 {
     /// \todo bit_prev_clear
     return -1;
 }
 
-/// \brief Returns true if all bits are set in the bit array.
 ///
 /// \param bits
 ///
 /// \return
-bool bit_all_set(BitArray bits)
+bool
+bit_all_set(BitArray_t *bits)
 {
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
-        if (bits->buffer[i] != (~0))
+        if (bits->buffer[i] != (~(unsigned_t)0))
             return false;
     }
 
     return true;
 }
 
-/// \brief Returns true if all bits are clear in the bit array.
 ///
 /// \param bits
 ///
 /// \return
-bool bit_all_clear(BitArray bits)
+bool
+bit_all_clear(BitArray_t *bits)
 {
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
-        if (bits->buffer[i] != 0)
+        if (bits->buffer[i] != (unsigned_t)0)
             return false;
     }
 
     return true;
 }
 
-/// \brief Performs a \c NOT operation in all bits in the array.
 ///
 /// \param bits
 ///
 /// \return
-Status bit_NOT(BitArray bits)
+bool
+bit_NOT(BitArray_t *bits)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    for (integer_t i = 0; i < bits->size; i++)
+    for (unsigned_t i = 0; i < bits->size; i++)
     {
         bits->buffer[i] = ~bits->buffer[i];
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs an \c AND operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_AND(BitArray bits1, BitArray bits2)
+bool
+bit_AND(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] &= bits2->buffer[i];
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs an \c OR operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_OR(BitArray bits1, BitArray bits2)
+bool
+bit_OR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] |= bits2->buffer[i];
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs an \c XOR operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_XOR(BitArray bits1, BitArray bits2)
+bool
+bit_XOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] ^= bits2->buffer[i];
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs a \c NAND operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_NAND(BitArray bits1, BitArray bits2)
+bool
+bit_NAND(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] & bits2->buffer[i]);
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs a \c NOR operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_NOR(BitArray bits1, BitArray bits2)
+bool
+bit_NOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] | bits2->buffer[i]);
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Performs a \c NXOR operation between two bit arrays.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_NXOR(BitArray bits1, BitArray bits2)
+bool
+bit_NXOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] ^ bits2->buffer[i]);
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Calculates the relative complement of bits1 in bits2.
 ///
 /// \param bits1
 /// \param bits2
 ///
 /// \return
-Status bit_DIFF(BitArray bits1, BitArray bits2)
+bool
+bit_DIFF(BitArray_t *bits1, BitArray_t *bits2)
 {
-    if (bits1 == NULL || bits2 == NULL)
-        return DS_ERR_NULL_POINTER;
+    // Get the longest buffer size
+    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
 
-    // Get the shortest buffer size
-    integer_t size = (bits1->size > bits2->size) ? bits2->size : bits1->size;
+    // Make sure both are the same size
+    bit_grow(bits1, size);
+    bit_grow(bits2, size);
 
-    for (integer_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < size; i++)
     {
         bits1->buffer[i] &= ~(bits2->buffer[i]);
     }
 
-    return DS_OK;
+    return true;
 }
 
-/// \brief Displays each bit individually in the console.
+/// Displays each bit individually in the console as 0's and 1's like an array
+/// where each number is separated by commas and the set is delimited by
+/// brackets.
 ///
 /// \param bits
-///
-/// \return
-Status bit_display(BitArray bits)
+void
+bit_display(BitArray_t *bits)
 {
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
     printf("\nBitArray\n[ ");
 
-    integer_t nbits = bit_nbits(bits);
+    unsigned_t nbits = bit_nbits(bits);
 
-    for (integer_t i = 0; i < nbits - 1; i++)
+    for (unsigned_t i = 0; i < nbits - 1; i++)
     {
-        printf("%d, ", bit_receive(bits, i) ? 1 : 0);
+        printf("%d, ", bit_get(bits, i) ? 1 : 0);
     }
 
-    printf("%d ]\n", bit_receive(bits, nbits - 1) ? 1 : 0);
-
-    return DS_OK;
-}
-
-/// \brief Displays each bit individually in the console like an array.
-///
-/// \param bits
-///
-/// \return
-Status bit_display_array(BitArray bits)
-{
-    if (bits == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    printf("\n[ ");
-
-    integer_t nbits = bit_nbits(bits);
-
-    for (integer_t i = 0; i < nbits - 1; i++)
-    {
-        printf("%d, ", bit_receive(bits, i) ? 1 : 0);
-    }
-
-    printf("%d ]\n", bit_receive(bits, nbits - 1) ? 1 : 0);
-
-    return DS_OK;
+    printf("%d ]\n", bit_get(bits, nbits - 1) ? 1 : 0);
 }
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static integer_t bit_buffer_index(integer_t bit_index)
+static unsigned_t
+bit_buffer_index(unsigned_t bit_index)
 {
-    // bit_shifts defined in header file
     return bit_index >> bit_shifts;
 }
 
-static bool bit_receive(BitArray bits, integer_t bit_index)
-{
-    integer_t index = bit_buffer_index(bit_index);
-
-    integer_t value = bits->buffer[index] & ((integer_t)1 << bit_index);
-
-    return (value) ? true : false;
-}
-
-static Status bit_grow(BitArray bits, integer_t words)
+static bool
+bit_grow(BitArray_t *bits, unsigned_t words)
 {
     if (bits->size >= words)
-        return DS_OK;
+        return true;
 
     // Either double in size or allocate to fit enough words
-    integer_t new_size = (words > bits->size * 2) ? words : bits->size * 2;
+    unsigned_t new_size = (words > bits->size * 2) ? words : bits->size * 2;
 
-    integer_t *new_buffer = realloc(bits->buffer, sizeof(integer_t) * new_size);
+    unsigned_t *new_buffer = realloc(bits->buffer,
+            sizeof(unsigned_t) * new_size);
 
     // Reallocation failed
     if (!new_buffer)
-        return DS_ERR_ALLOC;
+        return false;
 
-    // This needs to be checked
-    memset(bits->buffer + bits->size - 1, 0, new_size - bits->size - 1);
+    bits->buffer = new_buffer;
 
-    /// \todo bit_grow
+    // Set the new words to 0
+    memset(bits->buffer + bits->size, 0,
+            (new_size - bits->size) * sizeof(unsigned_t));
 
-    return DS_OK;
+    bits->size = new_size;
+
+    return true;
 }
 
-// Counts the number of set bits in an integer_t using the
+// Counts the number of set bits in an unsigned_t using the
 // "bit population count"
-static integer_t bit_count(integer_t i)
+static unsigned_t
+bit_count(unsigned_t i)
 {
     i = i - ((i >> 1) & 0x5555555555555555L);
     i = (i & 0x3333333333333333L) + ((i >> 2) & 0x3333333333333333L);
@@ -868,7 +932,19 @@ static integer_t bit_count(integer_t i)
     i = i + (i >> 8);
     i = i + (i >> 16);
     i = i + (i >> 32);
-    return (integer_t)i & 0x7f;
+    return (unsigned_t)i & 0x7f;
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BitArrayIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BitArrayWrapper
