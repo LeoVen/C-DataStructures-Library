@@ -545,6 +545,30 @@ void bit_test_set(UnitTest ut)
 
     ut_equals_unsigned_t(ut, 32, sum, __func__);
 
+    if (!bit_empty(bits))
+        goto error;
+
+    // BitArray has the default size. Provoke an increase in size
+    if (!bit_set(bits, 1))
+        goto error;
+    if (!bit_set(bits, 128))
+        goto error;
+    if (!bit_set(bits, 1000))
+        goto error;
+    if (!bit_set(bits, 20000))
+        goto error;
+
+    nbits = bit_nbits(bits);
+    sum = 0;
+    for (unsigned_t i = 0; i < nbits; i++)
+    {
+        sum += bit_get(bits, i) ? i : 0; // Sum if bit is 1
+    }
+
+    // 1 + 128 + 1000 + 20000 == 21129
+    ut_equals_unsigned_t(ut, 21129, sum, __func__);
+    printf("%u\n", sum);
+
     bit_free(bits);
 
     return;

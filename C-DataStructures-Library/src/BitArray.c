@@ -118,7 +118,8 @@ bit_free(BitArray_t *bits)
 /// \param bits
 ///
 /// \return
-unsigned_t bit_size(BitArray_t *bits)
+unsigned_t
+bit_size(BitArray_t *bits)
 {
     return bits->size;
 }
@@ -207,6 +208,9 @@ bit_set(BitArray_t *bits, unsigned_t bit_index)
         return false;
 
     unsigned_t index = bit_buffer_index(bit_index);
+
+    if (!bit_grow(bits, index + 1))
+        return false;
 
     bits->buffer[index] |= ((unsigned_t)1 << bit_index);
 
