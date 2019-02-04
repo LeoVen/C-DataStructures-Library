@@ -16,14 +16,32 @@
 /// - Intersection represented by the AND operator ( bit_AND() );
 /// - Symmetric difference represented by the XOR operator ( bit_XOR() ).
 ///
+/// The bit array can be very fast at doing Set operations. In 64-bit machines
+/// with 64-bit instructions it is possible to calculate 64 elements at once
+/// on each cycle of a loop instead of checking a byte at a time.
+///
+/// The bit array is a compacted array of 1's and 0's. It is the most dense
+/// storage where every bit represents an independent element in the bit array.
+///
+/// When storing an array of booleans, each position can only be either \c true
+/// or \c false, but to represent a single boolean requires 8 bits since most
+/// computers are byte-addressable. With small arrays there is no need to use
+/// bit arrays but when you need to store more than 100 thousand booleans then
+/// a bit array might be a good choice since the required bytes to represent
+/// this array drops from 100 to 12.5 kilobytes.
+///
 /// \par Functions
 /// Located in the file BitArray.c
 struct BitArray_s
 {
-    /// \brief Buffer of bytes.
+    /// \brief Buffer that stores the bit array's values.
+    ///
+    /// The array that will be used to manipulate each individual bit.
     unsigned_t *buffer;
 
     /// \brief Buffer size.
+    ///
+    /// The current size of the buffer.
     unsigned_t size;
 };
 
@@ -51,9 +69,9 @@ bit_count(unsigned_t i);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// Creates a new bit array.
+/// Creates a new bit array with a default size of 1 word, 64 bits.
 ///
-/// \return
+/// \return A new bit array with a default size of 1 word.
 BitArray_t *
 bit_new(void)
 {
@@ -77,9 +95,10 @@ bit_new(void)
 
 /// Creates a new bit array with enough space for the required amount of bits.
 ///
-/// \param required_bits
+/// \param[in] required_bits Required addressable bits.
 ///
-/// \return
+/// \return A new bit array with enough size to address the required amount of
+/// bits.
 BitArray_t *
 bit_create(unsigned_t required_bits)
 {
@@ -105,7 +124,7 @@ bit_create(unsigned_t required_bits)
 
 /// Frees from memory a BitArray_s.
 ///
-/// \param bits
+/// \param[in] bits The bit array to be freed from memory.
 void
 bit_free(BitArray_t *bits)
 {
@@ -113,13 +132,14 @@ bit_free(BitArray_t *bits)
     free(bits);
 }
 
-/// Returns how many words are in the bit array.
+/// Returns how many words are in the bit array, which is the same as the
+/// array's length.
 ///
-/// \param bits
+/// \param[in] bits The target bit array.
 ///
-/// \return
+/// \return The amount of words in the bit array.
 unsigned_t
-bit_size(BitArray_t *bits)
+bit_nwords(BitArray_t *bits)
 {
     return bits->size;
 }
@@ -127,16 +147,16 @@ bit_size(BitArray_t *bits)
 /// Returns the total amount of bits that can be addressed with the current
 /// amount of words.
 ///
-/// \param bits
+/// \param[in] bits The target bit array.
 ///
-/// \return
+/// \return The amount of addressable bits.
 unsigned_t
 bit_nbits(BitArray_t *bits)
 {
     return bits->size * sizeof(unsigned_t) * 8;
 }
 
-/// Resizes the buffer to accomodate enough \c bit_index indexes. If the buffer
+/// Resize the buffer to accommodate enough \c bit_index indexes. If the buffer
 /// grows, all new bytes are initializes a 0; if the buffer shrinks then some
 /// data is possibly lost.
 ///
@@ -273,6 +293,9 @@ bit_clear(BitArray_t *bits, unsigned_t bit_index)
 
     unsigned_t index = bit_buffer_index(bit_index);
 
+    if (!bit_grow(bits, index + 1))
+        return false;
+
     bits->buffer[index] &= ~((unsigned_t)1 << bit_index);
 
     return true;
@@ -334,6 +357,9 @@ bit_flip(BitArray_t *bits, unsigned_t bit_index)
 
     unsigned_t index = bit_buffer_index(bit_index);
 
+    if (!bit_grow(bits, index + 1))
+        return false;
+
     bits->buffer[index] ^= ((unsigned_t)1 << bit_index);
 
     return true;
@@ -384,17 +410,20 @@ bit_flip_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
 
 ///
 /// \param bits
-/// \param state
 /// \param bit_index
+/// \param state
 ///
 /// \return
 bool
-bit_put(BitArray_t *bits, bool state, unsigned_t bit_index)
+bit_put(BitArray_t *bits, unsigned_t bit_index, bool state)
 {
     if (bit_index < 0)
         return false;
 
     unsigned_t index = bit_buffer_index(bit_index);
+
+    if (!bit_grow(bits, index + 1))
+        return false;
 
     if (state)
     {
@@ -410,13 +439,13 @@ bit_put(BitArray_t *bits, bool state, unsigned_t bit_index)
 
 ///
 /// \param bits
-/// \param state
 /// \param from_index
 /// \param to_index
+/// \param state
 ///
 /// \return
 bool
-bit_put_range(BitArray_t *bits, bool state, unsigned_t from_index, unsigned_t to_index)
+bit_put_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index, bool state)
 {
     if (from_index < 0 || to_index < 0)
         return false;

@@ -21,13 +21,13 @@ void bit_test_resize(UnitTest ut)
         goto error;
 
     ut_equals_unsigned_t(ut, 65536, bit_nbits(bits), __func__);
-    ut_equals_unsigned_t(ut, 1024, bit_size(bits), __func__);
+    ut_equals_unsigned_t(ut, 1024, bit_nwords(bits), __func__);
 
     if (!bit_resize(bits, 64))
         goto error;
 
     ut_equals_unsigned_t(ut, 64, bit_nbits(bits), __func__);
-    ut_equals_unsigned_t(ut, 1, bit_size(bits), __func__);
+    ut_equals_unsigned_t(ut, 1, bit_nwords(bits), __func__);
 
     bit_free(bits);
 
@@ -567,7 +567,6 @@ void bit_test_set(UnitTest ut)
 
     // 1 + 128 + 1000 + 20000 == 21129
     ut_equals_unsigned_t(ut, 21129, sum, __func__);
-    printf("%u\n", sum);
 
     bit_free(bits);
 
@@ -600,6 +599,16 @@ void bit_test_clear(UnitTest ut)
     }
 
     ut_equals_unsigned_t(ut, 1984, sum, __func__);
+
+    if (!bit_empty(bits))
+        goto error;
+
+    if (!bit_clear(bits, 20000))
+        goto error;
+
+    nbits = bit_nbits(bits);
+
+    ut_equals_unsigned_t(ut, 20032, nbits, __func__);
 
     bit_free(bits);
 
@@ -635,6 +644,28 @@ void bit_test_flip(UnitTest ut)
 
     ut_equals_unsigned_t(ut, 529, sum, __func__);
 
+    if (!bit_empty(bits))
+        goto error;
+
+    if (!bit_flip(bits, 1))
+        goto error;
+    if (!bit_flip(bits, 128))
+        goto error;
+    if (!bit_flip(bits, 1000))
+        goto error;
+    if (!bit_flip(bits, 20000))
+        goto error;
+
+    nbits = bit_nbits(bits);
+    sum = 0;
+    for (unsigned_t i = 0; i < nbits; i++)
+    {
+        sum += bit_get(bits, i) ? i : 0; // Sum if bit is 1
+    }
+
+    // 1 + 128 + 1000 + 20000 == 21129
+    ut_equals_unsigned_t(ut, 21129, sum, __func__);
+
     bit_free(bits);
 
     return;
@@ -654,9 +685,9 @@ void bit_test_put(UnitTest ut)
 
     if (!bit_set_range(bits, 0, 32))
         goto error;
-    if (!bit_put(bits, false, 32))
+    if (!bit_put(bits, 32, false))
         goto error;
-    if (!bit_put(bits, true, 33))
+    if (!bit_put(bits, 33, true))
         goto error;
 
     unsigned_t nbits = bit_nbits(bits);
@@ -668,6 +699,28 @@ void bit_test_put(UnitTest ut)
     }
 
     ut_equals_unsigned_t(ut, 529, sum, __func__);
+
+    if (!bit_empty(bits))
+        goto error;
+
+    if (!bit_put(bits, 1, true))
+        goto error;
+    if (!bit_put(bits, 128, true))
+        goto error;
+    if (!bit_put(bits, 1000, true))
+        goto error;
+    if (!bit_put(bits, 20000, true))
+        goto error;
+
+    nbits = bit_nbits(bits);
+    sum = 0;
+    for (unsigned_t i = 0; i < nbits; i++)
+    {
+        sum += bit_get(bits, i) ? i : 0; // Sum if bit is 1
+    }
+
+    // 1 + 128 + 1000 + 20000 == 21129
+    ut_equals_unsigned_t(ut, 21129, sum, __func__);
 
     bit_free(bits);
 
@@ -803,9 +856,9 @@ void bit_test_put_range(UnitTest ut)
 
     if (!bit_resize(bits, 65536))
         goto error;
-    if (!bit_put_range(bits, true, 100, 65435))
+    if (!bit_put_range(bits, 100, 65435, true))
         goto error;
-    if (!bit_put_range(bits, false, 200, 65335))
+    if (!bit_put_range(bits, 200, 65335, false))
         goto error;
 
     unsigned_t nbits = bit_nbits(bits);

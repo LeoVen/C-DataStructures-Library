@@ -50,7 +50,7 @@ bit_free(BitArray_t *bits);
 /// \ref bit_size
 /// \brief Returns the internal buffer's size (how many words are being used).
 unsigned_t
-bit_size(BitArray_t *bits);
+bit_nwords(BitArray_t *bits);
 
 /// \ref bit_nbits
 /// \brief Returns the total amount of bits in the array.
@@ -99,12 +99,12 @@ bit_flip_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index);
 /// \ref bit_put
 /// \brief Sets the state of a bit at a given bit index.
 bool
-bit_put(BitArray_t *bits, bool state, unsigned_t bit_index);
+bit_put(BitArray_t *bits, unsigned_t bit_index, bool state);
 
 /// \ref bit_put_range
 /// \brief Sets the state of a given range of bits.
 bool
-bit_put_range(BitArray_t *bits, bool state, unsigned_t from_index, unsigned_t to_index);
+bit_put_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index, bool state);
 
 /// \ref bit_fill
 /// \brief Sets all bits to 1 in the specified bit array.
