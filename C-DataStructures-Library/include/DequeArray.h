@@ -37,10 +37,10 @@ typedef struct DequeArray_s *DequeArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// \ref dqa_init
+/// \ref dqa_new
 /// \brief Initializes a new DequeArray_s.
 DequeArray_t *
-dqa_init(Interface_t *interface);
+dqa_new(Interface_t *interface);
 
 /// \ref dqa_create
 /// \brief Initializes a new DequeArray_s with custom parameters.

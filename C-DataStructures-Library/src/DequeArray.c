@@ -102,7 +102,7 @@ static dqa_grow(DequeArray dqa);
 ///
 /// \return A new DequeArray_s or NULL if allocation failed.
 DequeArray_t *
-dqa_init(Interface_t *interface)
+dqa_new(Interface_t *interface)
 {
     DequeArray_t *deque = malloc(sizeof(DequeArray_t));
 

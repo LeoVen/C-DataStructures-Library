@@ -47,7 +47,7 @@ bit_free(BitArray_t *bits);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// \ref bit_size
+/// \ref bit_nwords
 /// \brief Returns the internal buffer's size (how many words are being used).
 unsigned_t
 bit_nwords(BitArray_t *bits);
