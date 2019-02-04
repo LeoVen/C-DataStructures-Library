@@ -43,6 +43,12 @@ struct BitArray_s
     ///
     /// The current size of the buffer.
     unsigned_t size;
+
+    /// \brief Number of bits used by the user.
+    ///
+    /// Number of bits used by the user, which is less than or equal to the
+    /// actual number of bits.
+    unsigned_t used_bits;
 };
 
 // Finding how many shifts are needed for the highest integer type to be mapped
@@ -56,13 +62,21 @@ static const unsigned_t bit_shifts =
         ? 4
         : 3; // One byte
 
+static const unsigned_t bit_word_size = sizeof(unsigned_t) * 8;
+
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static unsigned_t
 bit_buffer_index(unsigned_t bit_index);
 
 static bool
-bit_grow(BitArray_t *bits, unsigned_t words);
+bit_grow(BitArray_t *bits, unsigned_t bit_size);
+
+static bool
+bit_clear_unused_bits(BitArray_t *bits);
+
+static bool
+bit_equalize(BitArray_t *bits1, BitArray_t *bits2);
 
 static unsigned_t
 bit_count(unsigned_t i);
@@ -89,6 +103,7 @@ bit_new(void)
     }
 
     bits->size = 1;
+    bits->used_bits = bits->size * bit_word_size;
 
     return bits;
 }
@@ -102,6 +117,9 @@ bit_new(void)
 BitArray_t *
 bit_create(unsigned_t required_bits)
 {
+    if (required_bits == 0)
+        return NULL;
+
     BitArray_t *bits = malloc(sizeof(BitArray_t));
 
     if (!bits)
@@ -118,6 +136,7 @@ bit_create(unsigned_t required_bits)
     }
 
     bits->size = buffer_size;
+    bits->used_bits = required_bits;
 
     return bits;
 }
@@ -144,8 +163,7 @@ bit_nwords(BitArray_t *bits)
     return bits->size;
 }
 
-/// Returns the total amount of bits that can be addressed with the current
-/// amount of words.
+/// Returns the total amount of bits being currently used by the user.
 ///
 /// \param[in] bits The target bit array.
 ///
@@ -153,10 +171,22 @@ bit_nwords(BitArray_t *bits)
 unsigned_t
 bit_nbits(BitArray_t *bits)
 {
+    return bits->used_bits;
+}
+
+/// Returns the total amount of bits that can be addressed with the current
+/// amount of words.
+///
+/// \param[in] bits The target bit array.
+///
+/// \return The amount of possible addressable bits.
+unsigned_t
+bit_nbits_real(BitArray_t *bits)
+{
     return bits->size * sizeof(unsigned_t) * 8;
 }
 
-/// Resize the buffer to accommodate enough \c bit_index indexes. If the buffer
+/// Resize the buffer to accommodate enough \c bit_size indexes. If the buffer
 /// grows, all new bytes are initializes a 0; if the buffer shrinks then some
 /// data is possibly lost.
 ///
@@ -177,10 +207,13 @@ bit_resize(BitArray_t *bits, unsigned_t bit_size)
     // reverting the last step
     words++;
 
+    unsigned_t new_size = words;
+
     // Grow
     if (bits->size < words)
     {
-        unsigned_t new_size = words;
+        // First clear the unused trailing bits
+        bit_clear_unused_bits(bits);
 
         unsigned_t *new_buffer = realloc(bits->buffer,
                 sizeof(unsigned_t) * new_size);
@@ -194,24 +227,22 @@ bit_resize(BitArray_t *bits, unsigned_t bit_size)
         // Set the new words to 0
         memset(bits->buffer + bits->size, 0,
                (new_size - bits->size) * sizeof(unsigned_t));
-
-        bits->size = new_size;
     }
     // Shrink
     else if (bits->size > words)
     {
-        unsigned_t new_size = words;
-
+        // Reallocate the buffer, possibly truncating values
         unsigned_t *new_buffer = realloc(bits->buffer,
                 sizeof(unsigned_t) * new_size);
 
+        // Reallocation failed
         if (!new_buffer)
             return false;
-
-        bits->buffer = new_buffer;
-        bits->size = new_size;
     }
     // if bits->size == words return true
+
+    bits->size = new_size;
+    bits->used_bits = bit_size;
 
     return true;
 }
@@ -227,10 +258,10 @@ bit_set(BitArray_t *bits, unsigned_t bit_index)
     if (bit_index < 0)
         return false;
 
-    unsigned_t index = bit_buffer_index(bit_index);
-
-    if (!bit_grow(bits, index + 1))
+    if (!bit_grow(bits, bit_index + 1))
         return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
 
     bits->buffer[index] |= ((unsigned_t)1 << bit_index);
 
@@ -252,14 +283,14 @@ bit_set_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
     if (to_index < from_index)
         return false;
 
+    if (!bit_grow(bits, to_index + 1))
+        return false;
+
     unsigned_t start_index = bit_buffer_index(from_index);
     unsigned_t end_index = bit_buffer_index(to_index);
 
     unsigned_t start_mask = ~((unsigned_t)0) << from_index;
     unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
-
-    if (!bit_grow(bits, end_index + 1))
-        return false;
 
     if (start_index == end_index)
     {
@@ -291,10 +322,10 @@ bit_clear(BitArray_t *bits, unsigned_t bit_index)
     if (bit_index < 0)
         return false;
 
-    unsigned_t index = bit_buffer_index(bit_index);
-
-    if (!bit_grow(bits, index + 1))
+    if (!bit_grow(bits, bit_index + 1))
         return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
 
     bits->buffer[index] &= ~((unsigned_t)1 << bit_index);
 
@@ -316,14 +347,14 @@ bit_clear_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
     if (to_index < from_index)
         return false;
 
+    if (!bit_grow(bits, to_index + 1))
+        return false;
+
     unsigned_t start_index = bit_buffer_index(from_index);
     unsigned_t end_index = bit_buffer_index(to_index);
 
     unsigned_t start_mask = ~((unsigned_t)0) << from_index;
     unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
-
-    if (!bit_grow(bits, end_index + 1))
-        return false;
 
     if (start_index == end_index)
     {
@@ -355,10 +386,10 @@ bit_flip(BitArray_t *bits, unsigned_t bit_index)
     if (bit_index < 0)
         return false;
 
-    unsigned_t index = bit_buffer_index(bit_index);
-
-    if (!bit_grow(bits, index + 1))
+    if (!bit_grow(bits, bit_index + 1))
         return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
 
     bits->buffer[index] ^= ((unsigned_t)1 << bit_index);
 
@@ -380,14 +411,14 @@ bit_flip_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index)
     if (to_index < from_index)
         return false;
 
+    if (!bit_grow(bits, to_index + 1))
+        return false;
+
     unsigned_t start_index = bit_buffer_index(from_index);
     unsigned_t end_index = bit_buffer_index(to_index);
 
     unsigned_t start_mask = ~((unsigned_t)0) << from_index;
     unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
-
-    if (!bit_grow(bits, end_index + 1))
-        return false;
 
     if (start_index == end_index)
     {
@@ -420,10 +451,10 @@ bit_put(BitArray_t *bits, unsigned_t bit_index, bool state)
     if (bit_index < 0)
         return false;
 
-    unsigned_t index = bit_buffer_index(bit_index);
-
-    if (!bit_grow(bits, index + 1))
+    if (!bit_grow(bits, bit_index + 1))
         return false;
+
+    unsigned_t index = bit_buffer_index(bit_index);
 
     if (state)
     {
@@ -453,14 +484,14 @@ bit_put_range(BitArray_t *bits, unsigned_t from_index, unsigned_t to_index, bool
     if (to_index < from_index)
         return false;
 
+    if (!bit_grow(bits, to_index + 1))
+        return false;
+
     unsigned_t start_index = bit_buffer_index(from_index);
     unsigned_t end_index = bit_buffer_index(to_index);
 
     unsigned_t start_mask = ~((unsigned_t)0) << from_index;
     unsigned_t end_mask = ~((unsigned_t)0) >> -(to_index + 1);
-
-    if (!bit_grow(bits, end_index + 1))
-        return false;
 
     if (state)
     {
@@ -562,7 +593,6 @@ bit_cardinality(BitArray_t *bits)
     return sum;
 }
 
-///
 /// Returns true if the specified bit array 1 has any bits set to true that are
 /// also set to true in the bit array 2.
 ///
@@ -577,7 +607,7 @@ bit_intersects(BitArray_t *bits1, BitArray_t *bits2)
 
     for (unsigned_t i = 0; i < size; i++)
     {
-        if (bits1->buffer[i] & bits2->buffer[i] != 0)
+        if ((bits1->buffer[i] & bits2->buffer[i]) != 0)
             return true;
     }
 
@@ -625,6 +655,33 @@ bit_to_array(BitArray_t *bits, unsigned_t *size)
     }
 
     return result;
+}
+
+/// Creates a new bit array from an existing boolean array.
+///
+/// \param array
+/// \param arr_size
+///
+/// \return
+BitArray_t *
+bit_from_array(bool *array, unsigned_t arr_size)
+{
+   BitArray_t *bits = bit_create(arr_size);
+
+   if (!bits)
+       return NULL;
+
+   for (unsigned_t i = 0; i < arr_size; i++)
+   {
+       if (!bit_put(bits, i, array[i]))
+       {
+           bit_free(bits);
+
+           return NULL;
+       }
+   }
+
+   return bits;
 }
 
 /// Returns the index of the nearest bit that is set to true that occurs on or
@@ -746,14 +803,10 @@ bit_NOT(BitArray_t *bits)
 bool
 bit_AND(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] &= bits2->buffer[i];
     }
@@ -769,14 +822,10 @@ bit_AND(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_OR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] |= bits2->buffer[i];
     }
@@ -792,14 +841,10 @@ bit_OR(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_XOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] ^= bits2->buffer[i];
     }
@@ -815,14 +860,10 @@ bit_XOR(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_NAND(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] & bits2->buffer[i]);
     }
@@ -838,14 +879,10 @@ bit_NAND(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_NOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] | bits2->buffer[i]);
     }
@@ -861,14 +898,10 @@ bit_NOR(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_NXOR(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] = ~(bits1->buffer[i] ^ bits2->buffer[i]);
     }
@@ -884,14 +917,10 @@ bit_NXOR(BitArray_t *bits1, BitArray_t *bits2)
 bool
 bit_DIFF(BitArray_t *bits1, BitArray_t *bits2)
 {
-    // Get the longest buffer size
-    unsigned_t size = (bits1->size > bits2->size) ? bits1->size : bits2->size;
+    if (!bit_equalize(bits1, bits2))
+        return false;
 
-    // Make sure both are the same size
-    bit_grow(bits1, size);
-    bit_grow(bits2, size);
-
-    for (unsigned_t i = 0; i < size; i++)
+    for (unsigned_t i = 0; i < bits1->size; i++)
     {
         bits1->buffer[i] &= ~(bits2->buffer[i]);
     }
@@ -903,7 +932,7 @@ bit_DIFF(BitArray_t *bits1, BitArray_t *bits2)
 /// where each number is separated by commas and the set is delimited by
 /// brackets.
 ///
-/// \param bits
+/// \param bits The bit array to be displayed in the console.
 void
 bit_display(BitArray_t *bits)
 {
@@ -921,20 +950,40 @@ bit_display(BitArray_t *bits)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
+// Translates a bit index to a word index
 static unsigned_t
 bit_buffer_index(unsigned_t bit_index)
 {
     return bit_index >> bit_shifts;
 }
 
+// Increases in size the bit array if needed.
 static bool
-bit_grow(BitArray_t *bits, unsigned_t words)
+bit_grow(BitArray_t *bits, unsigned_t bit_size)
 {
-    if (bits->size >= words)
+    if (bit_size == 0)
+        return false;
+
+    if (bits->used_bits >= bit_size)
         return true;
 
+    // Clears unused bits because they might be a valid bit index so its
+    // default value must be 0
+    if (!bit_clear_unused_bits(bits))
+        return false;
+
+    // There is still enough space with the current array
+    if (bit_size <= bits->size * bit_word_size)
+    {
+        bits->used_bits = bit_size;
+
+        return true;
+    }
+
     // Either double in size or allocate to fit enough words
-    unsigned_t new_size = (words > bits->size * 2) ? words : bits->size * 2;
+    unsigned_t new_bit_size = (bit_size > bits->used_bits * 2) ? bit_size : bits->used_bits * 2;
+
+    unsigned_t new_size = bit_buffer_index(new_bit_size - 1) + 1;
 
     unsigned_t *new_buffer = realloc(bits->buffer,
             sizeof(unsigned_t) * new_size);
@@ -950,6 +999,48 @@ bit_grow(BitArray_t *bits, unsigned_t words)
             (new_size - bits->size) * sizeof(unsigned_t));
 
     bits->size = new_size;
+    bits->used_bits = new_bit_size;
+
+    return true;
+}
+
+// Clears the trailing unused bits.
+static bool
+bit_clear_unused_bits(BitArray_t *bits)
+{
+    // Getting mask for the last word
+    unsigned_t diff = (bits->size * bit_word_size) - bits->used_bits;
+
+    unsigned_t mask;
+
+    if (diff > 0)
+    {
+        mask = (unsigned_t)1 << (63 - diff);
+        mask |= (mask - 1);
+    }
+    else
+    {
+        mask = ~(unsigned_t)0;
+    }
+
+    // Erase it
+    bits->buffer[bits->size - 1] &= mask;
+
+    return true;
+}
+
+// Makes sure that both bit arrays have the same number of used bits
+static bool
+bit_equalize(BitArray_t *bits1, BitArray_t *bits2)
+{
+    // Get the highest used bits from both bit arrays
+    unsigned_t bit_size = (bits1->used_bits > bits2->used_bits)
+                          ? bits1->used_bits
+                          : bits2->used_bits;
+
+    // Make sure both are the same size
+    if (!bit_grow(bits1, bit_size) || !bit_grow(bits2, bit_size))
+        return false;
 
     return true;
 }

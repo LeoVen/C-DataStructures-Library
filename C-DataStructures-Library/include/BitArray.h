@@ -53,9 +53,14 @@ unsigned_t
 bit_nwords(BitArray_t *bits);
 
 /// \ref bit_nbits
-/// \brief Returns the total amount of bits in the array.
+/// \brief Returns the total amount of bits used by the user.
 unsigned_t
 bit_nbits(BitArray_t *bits);
+
+/// \ref bit_nbits_real
+/// \brief Returns the total amount of bits in the array.
+unsigned_t
+bit_nbits_real(BitArray_t *bits);
 
 ///////////////////////////////////////////////////////// BUFFER OPERATIONS ///
 
@@ -142,6 +147,11 @@ bit_copy(BitArray_t *bits);
 /// \brief Makes a representation of a BitArray_s as an array of booleans.
 bool *
 bit_to_array(BitArray_t *bits, unsigned_t *size);
+
+/// \ref bit_from_array
+/// \brief Creates a new bit array from an existing boolean array
+BitArray_t *
+bit_from_array(bool *array, unsigned_t arr_size);
 
 ///////////////////////////////////////////////////////// SEARCH OPERATIONS ///
 

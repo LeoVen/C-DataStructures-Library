@@ -58,7 +58,7 @@ void ut_equals_bool(UnitTest ut, bool param1, bool param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED !\n");
     }
 
     ut->total++;
@@ -75,7 +75,7 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED !\n");
     }
 
     ut->total++;
@@ -93,7 +93,7 @@ void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED !\n");
     }
 
     ut->total++;
@@ -111,7 +111,7 @@ void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED\n");
+        printf("%-40s %s", test_name, "FAILED !\n");
     }
 
     ut->total++;

@@ -13,10 +13,10 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 ```
 
 ![total files](https://img.shields.io/badge/total%20files-66-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-30402-%232196f3.svg)
-![average](https://img.shields.io/badge/average-460-%23ff9800.svg)
+![total](https://img.shields.io/badge/total%20lines-30759-%232196f3.svg)
+![average](https://img.shields.io/badge/average-466-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
-![minimum](https://img.shields.io/badge/minimum-19-%23f44336.svg)
+![minimum](https://img.shields.io/badge/minimum-11-%23f44336.svg)
 
 ## Planned Data Structures
 

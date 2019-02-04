@@ -21,13 +21,87 @@ void bit_test_resize(UnitTest ut)
         goto error;
 
     ut_equals_unsigned_t(ut, 65536, bit_nbits(bits), __func__);
+    ut_equals_unsigned_t(ut, 65536, bit_nbits_real(bits), __func__);
     ut_equals_unsigned_t(ut, 1024, bit_nwords(bits), __func__);
 
-    if (!bit_resize(bits, 64))
+    if (!bit_resize(bits, 80))
         goto error;
 
-    ut_equals_unsigned_t(ut, 64, bit_nbits(bits), __func__);
-    ut_equals_unsigned_t(ut, 1, bit_nwords(bits), __func__);
+    ut_equals_unsigned_t(ut, 80, bit_nbits(bits), __func__);
+    ut_equals_unsigned_t(ut, 128, bit_nbits_real(bits), __func__);
+    ut_equals_unsigned_t(ut, 2, bit_nwords(bits), __func__);
+
+    bit_free(bits);
+
+    return;
+
+    error:
+    printf("Error at %s\n", __func__);
+    bit_free(bits);
+    ut_error();
+}
+
+void bit_test_grow(UnitTest ut)
+{
+    BitArray_t *bits = bit_create(140);
+
+    if (!bits)
+        goto error;
+
+    if (!bit_fill(bits))
+        goto error;
+
+    // Shouldn't toggle an increase in the array size
+    if (!bit_put(bits, 191, true))
+        goto error;
+
+    unsigned_t sum = 0, nbits = bit_nbits(bits);
+    for (unsigned_t i = 0; i < nbits; i++)
+    {
+        sum += bit_get(bits, i) ? i : 0;
+    }
+
+    // Sum from 0 to 139 + 191
+    ut_equals_unsigned_t(ut, 9921, sum, __func__);
+    ut_equals_unsigned_t(ut, 3, bit_nwords(bits), __func__);
+
+    bit_free(bits);
+
+    return;
+
+    error:
+    printf("Error at %s\n", __func__);
+    bit_free(bits);
+    ut_error();
+}
+
+void bit_test_clear_unused_bits(UnitTest ut)
+{
+    BitArray_t *bits = bit_create(140);
+
+    if (!bits)
+        goto error;
+
+    if(!bit_fill(bits))
+        goto error;
+
+    // This should toggle bit_clear_unused_bits
+    if (!bit_set(bits, 200))
+        goto error;
+
+    if (!bit_set(bits, 1000))
+        goto error;
+
+    unsigned_t sum = 0;
+
+    unsigned_t nbits = bit_nbits(bits);
+
+    for (unsigned_t i = 0; i < nbits; i++)
+    {
+        sum += bit_get(bits, i) ? i : 0;
+    }
+
+    ut_equals_unsigned_t(ut, 10930, sum, __func__);
 
     bit_free(bits);
 
@@ -42,7 +116,7 @@ void bit_test_resize(UnitTest ut)
 void
 bit_test_NOT(UnitTest ut)
 {
-    BitArray bits1 = bit_create(1024);
+    BitArray bits1 = bit_create(1000);
 
     if (!bits1)
         goto error;
@@ -68,8 +142,12 @@ bit_test_NOT(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // The sum of all numbers from 0 to 1024 except for multiples of 2 is 262144
-    ut_equals_unsigned_t(ut, 262144, sum, __func__);
+    // The sum of all numbers from 0 to 1000 (not included) except for
+    // multiples of 2
+    // Python3: sum(
+    //      [i if (i % 2 != 0) else 0 for i in range(1000)]
+    // )
+    ut_equals_unsigned_t(ut, 250000, sum, __func__);
 
     bit_free(bits1);
 
@@ -83,9 +161,9 @@ bit_test_NOT(UnitTest ut)
 
 void bit_test_AND(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024),
-               *bits3 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000),
+               *bits3 = bit_create(1000);
 
     if (!bits1 || !bits2 || !bits3)
         goto error;
@@ -125,8 +203,11 @@ void bit_test_AND(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // The sum of all multiples of 12 below 1023 (included) is 43860
-    ut_equals_unsigned_t(ut, 43860, sum, __func__);
+    // The sum of all multiples of 12 below 1000 (not included)
+    // Python3: sum(
+    //      [i if i % 12 == 0 else 0 for i in range(1000)]
+    // )
+    ut_equals_unsigned_t(ut, 41832, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -144,8 +225,8 @@ void bit_test_AND(UnitTest ut)
 
 void bit_test_OR(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-            *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+            *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -177,9 +258,12 @@ void bit_test_OR(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // Should equals the sum of all numbers from 0 to 1023 (included) which is
-    // 523776
-    ut_equals_unsigned_t(ut, 523776, sum, __func__);
+    // Should equals the sum of all numbers from 0 to 1000 (not included)
+    // Python3: sum(
+    //      [i for i in range(1000)]
+    // )
+
+    ut_equals_unsigned_t(ut, 499500, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -195,8 +279,8 @@ void bit_test_OR(UnitTest ut)
 
 void bit_test_XOR(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -228,17 +312,17 @@ void bit_test_XOR(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // The sum of all multiples of all the numbers below 1023 (included) that
-    // are multiples of two but not of three or multiples of three but not
-    // of two equals to 262145
-    // python3: sum(
+    // The sum of all multiples of all the numbers below 1000 (not included)
+    // that are multiples of two but not of three or multiples of three but not
+    // of two equals to 250001
+    // Python3: sum(
     //     [i if (
     //         ((i % 2 == 0) and (i % 3 != 0)) or
     //         ((i % 3 == 0) and (i % 2 != 0))
-    //     else 0
-    //     for i in range(1024)]
+    //     ) else 0
+    //     for i in range(1000)]
     // )
-    ut_equals_unsigned_t(ut, 262145, sum, __func__);
+    ut_equals_unsigned_t(ut, 250001, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -254,8 +338,8 @@ void bit_test_XOR(UnitTest ut)
 
 void bit_test_NAND(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -284,9 +368,12 @@ void bit_test_NAND(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // Sum of all the numbers that are not multiples of 2 up to 1023 (included)
-    // is 262144
-    ut_equals_unsigned_t(ut, 262144, sum, __func__);
+    // Sum of all the numbers that are not multiples of 2 up to 1000 (not
+    // included)
+    // Python3: sum(
+    //      [i if (i % 2 != 0) else 0 for i in range(1000)]
+    // )
+    ut_equals_unsigned_t(ut, 250000, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -302,8 +389,8 @@ void bit_test_NAND(UnitTest ut)
 
 void bit_test_NOR(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -332,9 +419,12 @@ void bit_test_NOR(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // Sum of all the numbers that are not multiples of 2 up to 1023 (included)
-    // is 262144
-    ut_equals_unsigned_t(ut, 262144, sum, __func__);
+    // Sum of all the numbers that are not multiples of 2 up to 1000 (not
+    // included)
+    // Python3: sum(
+    //      [i if (i % 2 != 0) else 0 for i in range(1000)]
+    // )
+    ut_equals_unsigned_t(ut, 250000, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -350,8 +440,8 @@ void bit_test_NOR(UnitTest ut)
 
 void bit_test_NXOR(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -376,20 +466,20 @@ void bit_test_NXOR(UnitTest ut)
     // Negation of symmetric difference gives us all the numbers that are
     // multiples of 6 and all the numbers that are not multiples of 2 or 3
     // separately
-    // python3: sum(
+    // Python3: sum(
     //     [0 if (
     //         ((i % 2 == 0) and (i % 3 != 0)) or
     //         ((i % 3 == 0) and (i % 2 != 0))
     //     else i
-    //     for i in range(1024)]
+    //     for i in range(1000)]
     // )
     // Likewise:
-    // python3: sum(
+    // Python3: sum(
     //     [i if
     //         (i % 6 == 0) or
     //         ((i % 2 != 0) and (i % 3 != 0))
     //     else 0
-    //     for i in range(1024)]
+    //     for i in range(1000)]
     // )
     if (!bit_NXOR(bits1, bits2))
         goto error;
@@ -400,8 +490,8 @@ void bit_test_NXOR(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
-    // Sum totals up to 261631
-    ut_equals_unsigned_t(ut, 261631, sum, __func__);
+    // Sum totals up to 249499
+    ut_equals_unsigned_t(ut, 249499, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -417,8 +507,8 @@ void bit_test_NXOR(UnitTest ut)
 
 void bit_test_DIFF(UnitTest ut)
 {
-    BitArray_t *bits1 = bit_create(1024),
-               *bits2 = bit_create(1024);
+    BitArray_t *bits1 = bit_create(1000),
+               *bits2 = bit_create(1000);
 
     if (!bits1 || !bits2)
         goto error;
@@ -451,8 +541,11 @@ void bit_test_DIFF(UnitTest ut)
         sum += bit_get(bits1, i) ? i : 0; // Sum if bit is 1
     }
 
+    // Python3: sum(
+    //      [i if i % 2 == 0 and not(i % 3 == 0) else 0 for i in range(1000)]
+    // )
     // The sum of all multiples of two that are not multiples of 3 is
-    ut_equals_unsigned_t(ut, 174422, sum, __func__);
+    ut_equals_unsigned_t(ut, 166334, sum, __func__);
 
     bit_free(bits1);
     bit_free(bits2);
@@ -606,7 +699,7 @@ void bit_test_clear(UnitTest ut)
     if (!bit_clear(bits, 20000))
         goto error;
 
-    nbits = bit_nbits(bits);
+    nbits = bit_nbits_real(bits);
 
     ut_equals_unsigned_t(ut, 20032, nbits, __func__);
 
@@ -881,6 +974,56 @@ void bit_test_put_range(UnitTest ut)
     ut_error();
 }
 
+void bit_test_intersects(UnitTest ut)
+{
+    BitArray_t *bits1 = bit_new(),
+               *bits2 = bit_new();
+
+    if (!bits1 || !bits2)
+        goto error;
+
+    if (!bit_set(bits1, 0) || !bit_set(bits1, 62) || !bit_set(bits1, 30))
+        goto error;
+    if (!bit_set(bits2, 1) || !bit_set(bits2, 63) || !bit_set(bits2, 31))
+        goto error;
+
+    // Case 0: no intersection
+    ut_equals_bool(ut, false, bit_intersects(bits1, bits2), __func__);
+
+    if (!bit_put(bits2, 0, true))
+        goto error;
+
+    // Case: first bit intersects
+    ut_equals_bool(ut, true, bit_intersects(bits1, bits2), __func__);
+
+    if (!bit_flip(bits2, 0))
+        goto error;
+    if (!bit_flip(bits2, 30))
+        goto error;
+
+    // Case2: middle bit intersects
+    ut_equals_bool(ut, true, bit_intersects(bits1, bits2), __func__);
+
+    if (!bit_clear(bits2, 30))
+        goto error;
+    if (!bit_put(bits1, 63, true))
+        goto error;
+
+    // Case3: last bit intersects
+    ut_equals_bool(ut, true, bit_intersects(bits1, bits2), __func__);
+
+    bit_free(bits1);
+    bit_free(bits2);
+
+    return;
+
+    error:
+    printf("Error at %s\n", __func__);
+    bit_free(bits1);
+    bit_free(bits2);
+    ut_error();
+}
+
 // Runs all BitArray tests
 Status BitArrayTests(void)
 {
@@ -892,6 +1035,8 @@ Status BitArrayTests(void)
         goto error;
 
     bit_test_resize(ut);
+    bit_test_grow(ut);
+    bit_test_clear_unused_bits(ut);
     bit_test_NOT(ut);
     bit_test_AND(ut);
     bit_test_OR(ut);
@@ -910,6 +1055,7 @@ Status BitArrayTests(void)
     bit_test_clear_range(ut);
     bit_test_flip_range(ut);
     bit_test_put_range(ut);
+    bit_test_intersects(ut);
 
     ut_report(ut, "BitArray");
     ut_delete(&ut);
