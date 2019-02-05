@@ -8,6 +8,7 @@ int main(void)
     printf("|                       Tests                      |\n");
     printf("+--------------------------------------------------+\n\n");
 
+    AssociativeListTests();
     AVLTreeTests();
     BitArrayTests();
     DequeArrayTests();

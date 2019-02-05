@@ -15,6 +15,7 @@ include_directories(${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_IN
 
 set(INCLUDE_TETS_FILES ${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
 set(TEST_FILES
+        tests/AssociativeListTests.c
         tests/AVLTreeTests.c
         tests/BitArrayTests.c
         tests/CircularLinkedListTests.c
@@ -38,6 +39,7 @@ add_executable(C_DataStructures_Library_Tests tests/main.c ${INCLUDE_TETS_FILES}
 add_executable(C_DataStructures_Library_Benchmarks benchmarks/main.c ${INCLUDE_BENCHMARK_FILES} ${BENCHMARK_FILES})
 
 add_library(Array              include/Array.h              src/Array.c)
+add_library(AssociativeList    include/AssociativeList.h    src/AssociativeList.c)
 add_library(AVLTree            include/AVLTree.h            src/AVLTree.c)
 add_library(BinarySearchTree   include/BinarySearchTree.h   src/BinarySearchTree.c)
 add_library(BitArray           include/BitArray.h           src/BitArray.c)
@@ -63,7 +65,7 @@ add_library(Utility  util/include/Utility.h  util/src/Utility.c)
 add_library(CString  util/include/CString.h  util/src/CString.c)
 add_library(Clock    util/include/Clock.h    util/src/Clock.c)
 
-set(LIBS Array AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray RedBlackTree SinglyLinkedList SortedList Stack StackArray)
+set(LIBS Array AssociativeList AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray RedBlackTree SinglyLinkedList SortedList Stack StackArray)
 set(UTIL Utility CString Clock)
 
 add_dependencies(C_DataStructures_Library_Tests ${LIBS} ${UTIL} UnitTest Interface)

@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-66-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-30759-%232196f3.svg)
-![average](https://img.shields.io/badge/average-466-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-69-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-31615-%232196f3.svg)
+![average](https://img.shields.io/badge/average-458-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-11-%23f44336.svg)
 
@@ -23,7 +23,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 |       Structure Name       |  Source Code   |    Iterator    |     Wrapper    |      Tests     |  Documentation |
 | :------------------------- | :------------: | :------------: | :------------: | :------------: | :------------: |
 | [Array][arr]               | `[##########]` | `[##########]` | `[__________]` | `[__________]` | `[#_________]` |
-| [AssociativeList][asl]     | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [AssociativeList][ali]     | `[#####_____]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -91,7 +91,7 @@ Note that the length variable is protected (implementation detail) and only acce
 
 ### AssociativeList
 
-Not implemented yet.
+An associative list is a linked list that works like a map where each node has a key mapped to a value. It is very inefficient with large data sets but can be very handy with smaller ones.
 
 ### AVLTree
 
@@ -602,7 +602,7 @@ arr_desc_free(array_w);
 ```
 
 [arr]: #array
-[asl]: #associativelist
+[ali]: #associativelist
 [avl]: #avltree
 [bst]: #binarysearchtree
 [bnh]: #binomialheap

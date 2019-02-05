@@ -118,6 +118,24 @@ void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
     GlobalTotalTests++;
 }
 
+void ut_equals_double(UnitTest ut, double param1, double param2,
+                          const char *test_name)
+{
+    if (param1 == param2)
+    {
+        ut->passed++;
+        GlobalTotalPassed++;
+        printf("%-40s %s", test_name, "PASSED\n");
+    }
+    else
+    {
+        printf("%-40s %s", test_name, "FAILED !\n");
+    }
+
+    ut->total++;
+    GlobalTotalTests++;
+}
+
 void ut_error()
 {
     GlobalTotalErrors++;

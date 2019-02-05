@@ -44,7 +44,7 @@ typedef void(*free_f)(void *);
 /// \brief A function that returns a hash number for a given element.
 ///
 /// A function that returns a hash number for a given element.
-typedef unsigned_t(*hash_f)(void *);
+typedef unsigned_t(*hash_f)(const void *);
 
 /// \brief A function that compares the priority of two elements.
 ///
