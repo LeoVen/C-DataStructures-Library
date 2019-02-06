@@ -136,9 +136,9 @@ bool
 ali_to_arrays(AssociativeList_t *list, void ***K_array, void ***V_array);
 
 /// \ref ali_from_array
-/// \ref Creates an associative list from two arrays of keys and values.
+/// \brief Creates an associative list from two arrays of keys and values.
 bool
-ali_from_array(AssociativeList_t **list, void **K_array, void **V_array,
+ali_from_arrays(AssociativeList_t **list, void **K_array, void **V_array,
         unsigned_t from_index, unsigned_t to_index);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
