@@ -15,6 +15,7 @@ include_directories(${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_IN
 
 set(INCLUDE_TETS_FILES ${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
 set(TEST_FILES
+        tests/ArrayTests.c
         tests/AssociativeListTests.c
         tests/AVLTreeTests.c
         tests/BitArrayTests.c

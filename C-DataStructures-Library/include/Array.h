@@ -76,7 +76,7 @@ integer_t
 arr_length(Array_t *array);
 
 /// \ref arr_count
-/// \brief Counts how many elements are set in the array.
+/// \brief Returns how many non-null elements are in the array.
 integer_t
 arr_count(Array_t *array);
 

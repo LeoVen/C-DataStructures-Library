@@ -18,6 +18,8 @@ extern "C" {
 
 // Includes all test functions
 
+Status ArrayTests(void);
+
 Status AssociativeListTests(void);
 
 Status AVLTreeTests(void);

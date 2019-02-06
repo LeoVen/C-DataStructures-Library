@@ -66,6 +66,11 @@ struct Array_s
     /// Tracks the C array length.
     integer_t length;
 
+    /// \brief Array's current amount of elements.
+    ///
+    /// Tracks the non-null elements in the array.
+    integer_t count;
+
     /// \brief Array_s interface.
     ///
     /// An interface is like a table that has function pointers for functions
@@ -116,6 +121,7 @@ arr_new(Interface_t *interface, integer_t length)
 
     array->interface = interface;
     array->length = length;
+    array->count = 0;
     array->version_id = 0;
 
     return array;
@@ -194,15 +200,7 @@ arr_length(Array_t *array)
 integer_t
 arr_count(Array_t *array)
 {
-    integer_t count = 0;
-
-    for (integer_t i = 0; i < array->length; i++)
-    {
-        if (array->buffer[i] != NULL)
-            count++;
-    }
-
-    return count;
+    return array->count;
 }
 
 ///
@@ -215,10 +213,11 @@ arr_set_first(Array_t *array, void *element)
 {
     for (integer_t i = 0; i < array->length; i++)
     {
-        if (array->buffer[i] != NULL)
+        if (array->buffer[i] == NULL)
         {
             array->buffer[i] = element;
 
+            array->count += (element == NULL) ? 0 : 1;
             array->version_id++;
 
             return i;
@@ -245,6 +244,7 @@ arr_set(Array_t *array, void *element, integer_t index)
     {
         array->buffer[index] = element;
 
+        array->count += (element == NULL) ? 0 : 1;
         array->version_id++;
 
         return 0;
@@ -264,10 +264,11 @@ arr_set_last(Array_t *array, void *element)
 {
     for (integer_t i = array->length - 1; i >= 0; i--)
     {
-        if (array->buffer[i] != NULL)
+        if (array->buffer[i] == NULL)
         {
             array->buffer[i] = element;
 
+            array->count += (element == NULL) ? 0 : 1;
             array->version_id++;
 
             return i;
@@ -361,6 +362,7 @@ arr_remove_first(Array_t *array, void **result)
             *result = array->buffer[i];
             array->buffer[i] = NULL;
 
+            array->count--;
             array->version_id++;
 
             return i;
@@ -385,12 +387,18 @@ arr_remove(Array_t *array, void **result, integer_t index)
     if (index < 0 || index >= array->length)
         return -2;
 
-    *result = array->buffer[index];
-    array->buffer[index] = NULL;
+    if (array->buffer[index] != NULL)
+    {
+        *result = array->buffer[index];
+        array->buffer[index] = NULL;
 
-    array->version_id++;
+        array->count--;
+        array->version_id++;
 
-    return (*result == NULL) ? -1 : 0;
+        return 0;
+    }
+
+    return -1;
 }
 
 ///
@@ -410,6 +418,7 @@ arr_remove_last(Array_t *array, void **result)
             *result = array->buffer[i];
             array->buffer[i] = NULL;
 
+            array->count--;
             array->version_id++;
 
             return i;
@@ -439,6 +448,9 @@ arr_update_first(Array_t *array, void *element)
 
             array->version_id++;
 
+            if (element == NULL)
+                array->count--;
+
             return i;
         }
     }
@@ -465,6 +477,9 @@ arr_update(Array_t *array, void *element, integer_t index)
     if (replaced)
         array->interface->free(replaced);
 
+    if (element == NULL)
+        array->count--;
+
     array->version_id++;
 
     return 0;
@@ -489,6 +504,9 @@ arr_update_last(Array_t *array, void *element)
 
             array->version_id++;
 
+            if (element == NULL)
+                array->count--;
+
             return i;
         }
     }
@@ -504,13 +522,7 @@ arr_update_last(Array_t *array, void *element)
 bool
 arr_full(Array_t *array)
 {
-    for (integer_t i = 0; i < array->length; i++)
-    {
-        if (array->buffer[i] == NULL)
-            return false;
-    }
-
-    return true;
+    return array->count >= array->length;
 }
 
 ///
@@ -520,13 +532,7 @@ arr_full(Array_t *array)
 bool
 arr_empty(Array_t *array)
 {
-    for (integer_t i = 0; i < array->length; i++)
-    {
-        if (array->buffer[i] != NULL)
-            return false;
-    }
-
-    return true;
+    return array->count <= 0;
 }
 
 ///
@@ -821,8 +827,11 @@ arr_display(Array_t *array, int display_mode)
             printf("\n");
             for (integer_t i = 0; i < array->length - 1; i++)
             {
-                array->interface->display(array->buffer[i]);
-                printf(" ");
+                if (array->buffer[i])
+                {
+                    array->interface->display(array->buffer[i]);
+                    printf(" ");
+                }
             }
             array->interface->display(array->buffer[array->length - 1]);
             printf("\n");
@@ -831,7 +840,10 @@ arr_display(Array_t *array, int display_mode)
             printf("\nArray\n[ ");
             for (integer_t i = 0; i < array->length - 1; i++)
             {
-                array->interface->display(array->buffer[i]);
+                if (array->buffer[i])
+                    array->interface->display(array->buffer[i]);
+                else
+                    printf("NULL");
                 printf(", ");
             }
             array->interface->display(array->buffer[array->length - 1]);
