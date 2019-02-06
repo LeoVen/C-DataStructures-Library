@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-69-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-31615-%232196f3.svg)
-![average](https://img.shields.io/badge/average-458-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-70-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-32025-%232196f3.svg)
+![average](https://img.shields.io/badge/average-457-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-11-%23f44336.svg)
 
@@ -70,21 +70,27 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 An array is an abstraction of a C array composed of a data buffer and a length variable. It is a static array, that is, it won't increase in size. Higher level languages provide a quick variable to get the array's length and this abstraction does exactly that. When you initialize the structure a length variable is stored and you can easily do a for loop like shown below.
 
 ```c
-Array my_array;
+// First create your interface
+Interface_t *my_interface = interface_new(compare_int64_t, copy_int64_t, display_int64_t, free, NULL, NULL);
 
-// Initializes an array of 20 positions
-arr_init(&my_array, 20);
+// Initializes an array of 20 positions of type int64_t
+Array my_array = arr_new(my_interface, 20);
 
 // Many lines of code of code after...
 
-int len = arr_length(my_array); // len = 20
+long long len = arr_length(my_array); // len = 20
 
-for (int i = 0; i < len; i++)
+for (long long i = 0; i < len; i++)
 {
     // Do something
     // Setting the position i with value (i * i)
-    arr_set(my_array, i, i * i);
+    arr_set(my_array, i * i, i);
 }
+
+// Don't forget to free it from memory
+arr_free(my_array);
+// And the interface only after
+interface_free(my_interface);
 ```
 
 Note that the length variable is protected (implementation detail) and only accessible via a function. This is done so to prevent the user from changing the length variable of the array's struct, possibly causing run-time errors. Also access to the buffer is protected and you must use ```arr_set()``` to set a value in the array and ```arr_get()``` to get the value from the array.
