@@ -66,31 +66,11 @@ struct Array_s
     /// Tracks the C array length.
     integer_t length;
 
-    /// \brief Comparator function.
+    /// \brief Array_s interface.
     ///
-    /// A function that compares one element with another that returns an int
-    /// with the following rules:
-    ///
-    /// - <code>[ > 0 ]</code> if first element is greater than the second;
-    /// - <code>[ < 0 ]</code> if second element is greater than the first;
-    /// - <code>[ 0 ]</code> if elements are equal.
-    arr_compare_f v_compare;
-
-    /// \brief Copy function.
-    ///
-    /// A function that returns an exact copy of an element.
-    arr_copy_f v_copy;
-
-    /// \brief Display function.
-    ///
-    /// A function that displays an element in the console. Useful for
-    /// debugging.
-    arr_display_f v_display;
-
-    /// \brief Deallocator function.
-    ///
-    /// A function that completely frees an element from memory.
-    arr_free_f v_free;
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -103,199 +83,117 @@ struct Array_s
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static void arr_quicksort(Array array, void **buffer, integer_t length);
+static void
+arr_quicksort(Array_t *array, void **buffer, integer_t length,
+                          compare_f comparator);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-Status arr_init(Array *array, integer_t length)
+///
+/// \param[in] interface
+/// \param[in] length
+///
+/// \return
+Array_t *
+arr_new(Interface_t *interface, integer_t length)
 {
-    if (length <= 0)
-        return DS_ERR_INVALID_ARGUMENT;
+    Array_t *array = malloc(sizeof(Array_t));
 
-    (*array) = malloc(sizeof(Array_t));
+    if (!array)
+        return NULL;
 
-    if (!(*array))
-        return DS_ERR_ALLOC;
+    array->buffer = malloc(sizeof(void*) * (size_t)length);
 
-    (*array)->buffer = malloc(sizeof(void*) * length);
-
-    if (!(*array)->buffer)
+    if (!array->buffer)
     {
-        free(*array);
+        free(array);
 
-        *array = NULL;
-
-        return DS_ERR_ALLOC;
+        return NULL;
     }
-
-    (*array)->v_compare = NULL;
-    (*array)->v_copy = NULL;
-    (*array)->v_display = NULL;
-    (*array)->v_free = NULL;
 
     for (integer_t i = 0; i < length; i++)
-        (*array)->buffer[i] = NULL;
+        array->buffer[i] = NULL;
 
-    (*array)->length = length;
+    array->interface = interface;
+    array->length = length;
+    array->version_id = 0;
 
-    (*array)->version_id = 0;
-
-    return DS_OK;
+    return array;
 }
 
-Status arr_create(Array *array, integer_t length, arr_compare_f compare_f,
-                  arr_copy_f copy_f, arr_display_f display_f, arr_free_f free_f)
+///
+/// \param[in] array
+void
+arr_free(Array_t *array)
 {
-    if (length <= 0)
-        return DS_ERR_INVALID_ARGUMENT;
-
-    (*array) = malloc(sizeof(Array_t));
-
-    if (!(*array))
-        return DS_ERR_ALLOC;
-
-    (*array)->buffer = malloc(sizeof(void*) * length);
-
-    if (!(*array)->buffer)
+    for (integer_t i = 0; i < array->length; i++)
     {
-        free(*array);
-
-        *array = NULL;
-
-        return DS_ERR_ALLOC;
+        array->interface->free(array->buffer[i]);
     }
 
-    (*array)->v_compare = compare_f;
-    (*array)->v_copy = copy_f;
-    (*array)->v_display = display_f;
-    (*array)->v_free = free_f;
-
-    for (integer_t i = 0; i < length; i++)
-        (*array)->buffer[i] = NULL;
-
-    (*array)->length = length;
-
-    (*array)->version_id = 0;
-
-    return DS_OK;
+    free(array->buffer);
+    free(array);
 }
 
-Status arr_free(Array *array)
+///
+/// \param[in] array
+void
+arr_free_shallow(Array_t *array)
 {
-    if (*array == NULL)
-        return DS_ERR_NULL_POINTER;
+    free(array->buffer);
+    free(array);
+}
 
-    if ((*array)->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    for (integer_t i = 0; i < (*array)->length; i++)
+///
+/// \param[in] array
+void
+arr_erase(Array_t *array)
+{
+    for (integer_t i = 0; i < array->length; i++)
     {
-        (*array)->v_free((*array)->buffer[i]);
+        array->interface->free(array->buffer[i]);
+
+        array->buffer[i] = NULL;
     }
-
-    free((*array)->buffer);
-    free((*array));
-
-    (*array) = NULL;
-
-    return DS_OK;
 }
 
-Status arr_free_shallow(Array *array)
+///
+/// \param[in] array
+void
+arr_erase_shallow(Array_t *array)
 {
-    if (*array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free((*array)->buffer);
-    free((*array));
-
-    (*array) = NULL;
-
-    return DS_OK;
-}
-
-Status arr_erase(Array *array)
-{
-    if (*array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Array new_array;
-
-    Status st = arr_create(&new_array, (*array)->length, (*array)->v_compare,
-            (*array)->v_copy, (*array)->v_display, (*array)->v_free);
-
-    if (st != DS_OK)
-        return st;
-
-    st = arr_free(array);
-
-    // Probably didn't set the free function...
-    if (st != DS_OK)
+    for (integer_t i = 0; i < array->length; i++)
     {
-        free(new_array->buffer);
-        free(new_array);
-
-        return st;
+        array->buffer[i] = NULL;
     }
-
-    *array = new_array;
-
-    return DS_OK;
 }
 
-Status arr_set_v_compare(Array array, arr_compare_f function)
+///
+/// \param[in] array
+/// \param[in] interface
+void
+arr_config(Array_t *array, Interface_t *interface)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    array->v_compare = function;
-
-    return DS_OK;
+    array->interface = interface;
 }
 
-Status arr_set_v_copy(Array array, arr_copy_f function)
+///
+/// \param[in] array
+///
+/// \return
+integer_t
+arr_length(Array_t *array)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    array->v_copy = function;
-
-    return DS_OK;
-}
-
-Status arr_set_v_display(Array array, arr_display_f function)
-{
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    array->v_display = function;
-
-    return DS_OK;
-}
-
-Status arr_set_v_free(Array array, arr_free_f function)
-{
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    array->v_free = function;
-
-    return DS_OK;
-}
-
-integer_t arr_length(Array array)
-{
-    if (array == NULL)
-        return -1;
-
     return array->length;
 }
 
-integer_t arr_count(Array array)
+///
+/// \param[in] array
+///
+/// \return
+integer_t
+arr_count(Array_t *array)
 {
-    if (array == NULL)
-        return -1;
-
     integer_t count = 0;
 
     for (integer_t i = 0; i < array->length; i++)
@@ -307,11 +205,14 @@ integer_t arr_count(Array array)
     return count;
 }
 
-integer_t arr_set_next(Array array, void *element)
+///
+/// \param[in] array
+/// \param[in] element
+///
+/// \return
+integer_t
+arr_set_first(Array_t *array, void *element)
 {
-    if (array == NULL)
-        return -2;
-
     for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
@@ -328,16 +229,17 @@ integer_t arr_set_next(Array array, void *element)
     return -1;
 }
 
-Status arr_set(Array array, integer_t index, void *element)
+///
+/// \param[in] array
+/// \param[in] element
+/// \param[in] index
+///
+/// \return
+integer_t
+arr_set(Array_t *array, void *element, integer_t index)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (index >= array->length)
-        return DS_ERR_OUT_OF_RANGE;
-
-    if (index < 0)
-        return DS_ERR_NEGATIVE_VALUE;
+    if (index < 0 || index >= array->length)
+        return -2;
 
     if (array->buffer[index] == NULL)
     {
@@ -345,17 +247,21 @@ Status arr_set(Array array, integer_t index, void *element)
 
         array->version_id++;
 
-        return DS_OK;
+        return 0;
     }
 
-    return DS_ERR_INVALID_OPERATION;
+    // Index is already taken by another element
+    return -3;
 }
 
-integer_t arr_set_last(Array array, void *element)
+///
+/// \param[in] array
+/// \param[in] element
+///
+/// \return
+integer_t
+arr_set_last(Array_t *array, void *element)
 {
-    if (array == NULL)
-        return -2;
-
     for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
@@ -372,130 +278,231 @@ integer_t arr_set_last(Array array, void *element)
     return -1;
 }
 
-void *arr_get_next(Array array, integer_t *index)
+///
+/// \param[in] array
+/// \param[out] result
+///
+/// \return
+integer_t
+arr_get_first(Array_t *array, void **result)
 {
-    *index = -1;
+    *result = NULL;
 
-    if (array == NULL)
-        return NULL;
-
-    for (integer_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
         {
-            *index = i;
+            *result = array->buffer[i];
 
-            return array->buffer[i];
+            return i;
         }
     }
 
     // Array is empty
-    return NULL;
+    return -1;
 }
 
-void *arr_get(Array array, integer_t index)
+///
+/// \param[in] array
+/// \param[out] result
+/// \param[in] index
+///
+/// \return
+integer_t
+arr_get(Array_t *array, void **result, integer_t index)
 {
-    if (array == NULL)
-        return NULL;
-
     if (index < 0 || index >= array->length)
-        return NULL;
+        return -2;
 
     // This might return NULL
-    return array->buffer[index];
+    *result =  array->buffer[index];
+
+    return (*result == NULL) ? -1 : 0;
 }
 
-void *arr_get_last(Array array, integer_t *index)
+///
+/// \param[in] array
+/// \param[out] result
+///
+/// \return
+integer_t
+arr_get_last(Array_t *array, void **result)
 {
-    *index = -1;
-
-    if (array == NULL)
-        return NULL;
+    *result = NULL;
 
     for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
-            *index = i;
+            *result = array->buffer[i];
 
-            return array->buffer[i];
+            return i;
         }
     }
 
     // Array is empty
-    return NULL;
+    return -1;
 }
 
-void *arr_pop_next(Array array, integer_t *index)
+///
+/// \param[in] array
+/// \param[out] result
+///
+/// \return
+integer_t
+arr_remove_first(Array_t *array, void **result)
 {
-    *index = -1;
+    *result = NULL;
 
-    if (array == NULL)
-        return NULL;
-
-    for (integer_t i = array->length - 1; i >= 0; i--)
+    for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
         {
-            void *element = array->buffer[i];
-
+            *result = array->buffer[i];
             array->buffer[i] = NULL;
-
-            *index = i;
 
             array->version_id++;
 
-            return element;
+            return i;
         }
     }
 
-    return NULL;
+    // Array is empty
+    return -1;
 }
 
-void *arr_pop(Array array, integer_t index)
+///
+/// \param[in] array
+/// \param[out] result
+/// \param[in] index
+///
+/// \return
+integer_t
+arr_remove(Array_t *array, void **result, integer_t index)
 {
-    if (array == NULL)
-        return NULL;
+    *result = NULL;
 
     if (index < 0 || index >= array->length)
-        return NULL;
+        return -2;
 
-    void *element = array->buffer[index];
-
+    *result = array->buffer[index];
     array->buffer[index] = NULL;
 
     array->version_id++;
 
-    return element;
+    return (*result == NULL) ? -1 : 0;
 }
 
-void *arr_pop_last(Array array, integer_t *index)
+///
+/// \param[in] array
+/// \param[out] result
+///
+/// \return
+integer_t
+arr_remove_last(Array_t *array, void **result)
 {
-    *index = -1;
-
-    if (array == NULL)
-        return NULL;
+    *result = NULL;
 
     for (integer_t i = array->length - 1; i >= 0; i--)
     {
         if (array->buffer[i] != NULL)
         {
-            void *element = array->buffer[i];
-
+            *result = array->buffer[i];
             array->buffer[i] = NULL;
-
-            *index = i;
 
             array->version_id++;
 
-            return element;
+            return i;
         }
     }
 
-    return NULL;
+    // Array is empty
+    return -1;
 }
 
-bool arr_full(Array array)
+///
+/// \param[in] array
+/// \param[in] element
+///
+/// \return
+integer_t
+arr_update_first(Array_t *array, void *element)
+{
+    for (integer_t i = 0; i < array->length; i++)
+    {
+        if (array->buffer[i] != NULL)
+        {
+            void *replaced = array->buffer[i];
+            array->buffer[i] = element;
+
+            array->interface->free(replaced);
+
+            array->version_id++;
+
+            return i;
+        }
+    }
+
+    // Array is empty
+    return -1;
+}
+
+///
+/// \param[in] array
+/// \param[in] element
+/// \param[in] index
+///
+/// \return
+integer_t
+arr_update(Array_t *array, void *element, integer_t index)
+{
+    if (index < 0 || index >= array->length)
+        return -2;
+
+    void *replaced = array->buffer[index];
+    array->buffer[index] = element;
+
+    if (replaced)
+        array->interface->free(replaced);
+
+    array->version_id++;
+
+    return 0;
+}
+
+///
+/// \param[in] array
+/// \param[in] element
+///
+/// \return
+integer_t
+arr_update_last(Array_t *array, void *element)
+{
+    for (integer_t i = array->length - 1; i >= 0; i--)
+    {
+        if (array->buffer[i] != NULL)
+        {
+            void *replaced = array->buffer[i];
+            array->buffer[i] = element;
+
+            array->interface->free(replaced);
+
+            array->version_id++;
+
+            return i;
+        }
+    }
+
+    // Array is empty
+    return -1;
+}
+
+///
+/// \param[in] array
+///
+/// \return
+bool
+arr_full(Array_t *array)
 {
     for (integer_t i = 0; i < array->length; i++)
     {
@@ -506,7 +513,12 @@ bool arr_full(Array array)
     return true;
 }
 
-bool arr_empty(Array array)
+///
+/// \param[in] array
+///
+/// \return
+bool
+arr_empty(Array_t *array)
 {
     for (integer_t i = 0; i < array->length; i++)
     {
@@ -517,24 +529,22 @@ bool arr_empty(Array array)
     return true;
 }
 
-void *arr_max(Array array)
+///
+/// \param[in] array
+///
+/// \return
+void *
+arr_max(Array_t *array)
 {
-    if (array == NULL)
-        return NULL;
-
-    if (array->v_compare == NULL)
-        return NULL;
-
     void *result = NULL;
 
     for (integer_t i = 0; i < array->length; i++)
     {
-        // New element
         if (array->buffer[i] != NULL)
         {
             if (result == NULL)
                 result = array->buffer[i];
-            else if (array->v_compare(array->buffer[i], result) > 0)
+            else if (array->interface->compare(array->buffer[i], result) > 0)
             {
                 result = array->buffer[i];
             }
@@ -545,24 +555,22 @@ void *arr_max(Array array)
     return result;
 }
 
-void *arr_min(Array array)
+///
+/// \param[in] array
+///
+/// \return
+void *
+arr_min(Array_t *array)
 {
-    if (array == NULL)
-        return NULL;
-
-    if (array->v_compare == NULL)
-        return NULL;
-
     void *result = NULL;
 
     for (integer_t i = 0; i < array->length; i++)
     {
-        // New element
         if (array->buffer[i] != NULL)
         {
             if (result == NULL)
                 result = array->buffer[i];
-            else if (array->v_compare(array->buffer[i], result) < 0)
+            else if (array->interface->compare(array->buffer[i], result) < 0)
             {
                 result = array->buffer[i];
             }
@@ -573,18 +581,18 @@ void *arr_min(Array array)
     return result;
 }
 
-integer_t arr_index_first(Array array, void *key)
+///
+/// \param[in] array
+/// \param[in] key
+///
+/// \return
+integer_t
+arr_index_first(Array_t *array, void *key)
 {
-    if (array == NULL)
-        return -3;
-
-    if (array->v_compare == NULL)
-        return -2;
-
     for (integer_t index = 0; index < array->length; index++)
     {
         if (array->buffer[index] != NULL)
-            if (array->v_compare(array->buffer[index], key) == 0)
+            if (array->interface->compare(array->buffer[index], key) == 0)
                 return index;
     }
 
@@ -592,18 +600,18 @@ integer_t arr_index_first(Array array, void *key)
     return -1;
 }
 
-integer_t arr_index_last(Array array, void *key)
+///
+/// \param[in] array
+/// \param[in] key
+///
+/// \return
+integer_t
+arr_index_last(Array_t *array, void *key)
 {
-    if (array == NULL)
-        return -3;
-
-    if (array->v_compare == NULL)
-        return -2;
-
     for (integer_t index = array->length - 1; index >= 0; index--)
     {
         if (array->buffer[index] != NULL)
-            if (array->v_compare(array->buffer[index], key) == 0)
+            if (array->interface->compare(array->buffer[index], key) == 0)
                 return index;
     }
 
@@ -611,177 +619,232 @@ integer_t arr_index_last(Array array, void *key)
     return -1;
 }
 
-bool arr_contains(Array array, void *key)
+///
+/// \param[in] array
+/// \param[in] key
+///
+/// \return
+bool
+arr_contains(Array_t *array, void *key)
 {
     for (integer_t i = 0; i < array->length; i++)
     {
         if (array->buffer[i] != NULL)
-            if (array->v_compare(array->buffer[i], key) == 0)
+            if (array->interface->compare(array->buffer[i], key) == 0)
                 return true;
     }
 
     return false;
 }
 
-Status arr_switch(Array array, integer_t pos1, integer_t pos2)
+///
+/// \param[in] array
+/// \param[in] index1
+/// \param[in] index2
+///
+/// \return
+integer_t
+arr_switch(Array_t *array, integer_t index1, integer_t index2)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (index1 < 0 || index1 >= array->length ||
+        index2 < 0 || index2 >= array->length)
+        return -2;
 
-    if (pos1 >= array->length || pos2 >= array->length)
-        return DS_ERR_OUT_OF_RANGE;
-
-    if (pos1 < 0 || pos2 < 0)
-        return DS_ERR_NEGATIVE_VALUE;
-
-    void *temp = array->buffer[pos1];
-    array->buffer[pos1] = array->buffer[pos2];
-    array->buffer[pos2] = temp;
+    void *temp = array->buffer[index1];
+    array->buffer[index1] = array->buffer[index2];
+    array->buffer[index2] = temp;
 
     array->version_id++;
 
-    return DS_OK;
+    return 0;
 }
 
-Status arr_reverse(Array array)
+///
+/// \param[in] array
+///
+/// \return
+integer_t
+arr_reverse(Array_t *array)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st;
-
     for (integer_t i = 0; i < array->length / 2; i++)
     {
-        st = arr_switch(array, i, array->length - i - 1);
-
-        if (st != DS_OK)
-            return st;
+        if (arr_switch(array, i, array->length - i - 1) < 0)
+            return -1;
     }
 
-    return DS_OK;
+    return 0;
 }
 
-Status arr_copy(Array array, Array *result)
+///
+/// \param[in] array
+///
+/// \return
+Array_t *
+arr_copy(Array_t *array)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+    Array_t *result = arr_new(array->interface, array->length);
 
-    if (array->v_copy == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    Status st = arr_create(result, array->length, array->v_compare,
-                           array->v_copy, array->v_display, array->v_free);
-
-    if (st != DS_OK)
-        return st;
+    if (!result)
+        return NULL;
 
     for (integer_t i = 0; i < array->length; i++)
-        (*result)->buffer[i] = array->buffer[i] == NULL ? NULL :
-                               array->v_copy(array->buffer[i]);
+    {
+        result->buffer[i] = array->buffer[i] == NULL
+                            ? NULL
+                            : array->interface->copy(array->buffer[i]);
+    }
 
-    return DS_OK;
+    return result;
 }
 
-Status arr_sort(Array array)
+///
+/// \param[in] array
+///
+/// \return
+Array_t *
+arr_copy_shallow(Array_t *array)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+    Array_t *result = arr_new(array->interface, array->length);
 
-    if (array->v_compare == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    if (!result)
+        return NULL;
 
-    arr_quicksort(array, array->buffer, array->length);
+    for (integer_t i = 0; i < array->length; i++)
+    {
+        result->buffer[i] = array->buffer[i];
+    }
+
+    return result;
+}
+
+///
+/// \param[in] array
+void
+arr_sort(Array_t *array)
+{
+    arr_quicksort(array, array->buffer, array->length,
+            array->interface->compare);
 
     array->version_id++;
-
-    return DS_OK;
 }
 
-Status arr_to_array(Array array, void ***result, integer_t *length)
+///
+/// \param[in] array
+/// \param[in] comparator
+void
+arr_sortby(Array_t *array, compare_f comparator)
 {
-    // If anything goes wrong...
-    *result = NULL;
-    *length = -1;
+    arr_quicksort(array, array->buffer, array->length, comparator);
 
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+    array->version_id++;
+}
 
-    if (array->v_copy == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+///
+/// \param[in] array
+/// \param[out] length
+/// \param[in] shallow
+///
+/// \return
+void **
+arr_to_array(Array_t *array, integer_t *length, bool shallow)
+{
+    void **result = malloc(sizeof(void*) * (size_t)(*length));
+
+    if (!(*result))
+        return false;
 
     *length = array->length;
 
-    *result = malloc(sizeof(void*) * (*length));
-
-    if (!(*result))
-        return DS_ERR_NULL_POINTER;
-
-    for (integer_t i = 0; i < *length; i++)
+    if (shallow)
     {
-        (*result)[i] = (array->buffer[i] == NULL) ?
-                NULL :
-                array->v_copy(array->buffer[i]);
+        for (integer_t i = 0; i < *length; i++)
+        {
+            result[i] = array->buffer[i];
+        }
+    }
+    else
+    {
+        for (integer_t i = 0; i < *length; i++)
+        {
+            result[i] = array->buffer[i] == NULL
+                        ? NULL
+                        : array->interface->copy(array->buffer[i]);
+        }
     }
 
-    return DS_OK;
+    return result;
 }
 
-Status arr_display(Array array)
+///
+/// \param[in] interface
+/// \param[in] buffer
+/// \param[in] length
+///
+/// \return
+Array_t *
+arr_from_array(Interface_t *interface, void **buffer, integer_t length)
 {
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
+    if (length <= 0)
+        return NULL;
 
-    if (array->v_display == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    Array_t *result = arr_new(interface, length);
 
-    if (arr_empty(array))
+    if (!result)
+        return NULL;
+
+    for (integer_t i = 0; i < length; i++)
+    {
+        result->buffer[i] = buffer[i];
+    }
+
+    result->version_id++;
+
+    return result;
+}
+
+///
+/// \param[in] array
+/// \param[in] display_mode
+void
+arr_display(Array_t *array, int display_mode)
+{
+    if (arr_empty(array) && display_mode)
     {
         printf("\nArray\n[ empty ]\n");
 
-        return DS_OK;
+        return;
     }
 
-    printf("\nArray\n[ ");
-
-    for (integer_t i = 0; i < array->length - 1; i++)
+    switch(display_mode)
     {
-        array->v_display(array->buffer[i]);
-
-        printf(", ");
+        case 0:
+            printf("\n");
+            for (integer_t i = 0; i < array->length - 1; i++)
+            {
+                array->interface->display(array->buffer[i]);
+                printf(" ");
+            }
+            array->interface->display(array->buffer[array->length - 1]);
+            printf("\n");
+            break;
+        default:
+            printf("\nArray\n[ ");
+            for (integer_t i = 0; i < array->length - 1; i++)
+            {
+                array->interface->display(array->buffer[i]);
+                printf(", ");
+            }
+            array->interface->display(array->buffer[array->length - 1]);
+            printf(" ]\n");
+            break;
     }
-
-    array->v_display(array->buffer[array->length - 1]);
-
-    printf(" ]\n");
-
-    return DS_OK;
-}
-
-Status arr_display_raw(Array array)
-{
-    if (array == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (array->v_display == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    printf("\n");
-
-    for (integer_t i = 0; i < array->length - 1; i++)
-    {
-        array->v_display(array->buffer[i]);
-
-        printf(" ");
-    }
-
-    printf("\n");
-
-    return DS_OK;
 }
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static void arr_quicksort(Array array, void **buffer, integer_t length)
+static void
+arr_quicksort(Array_t *array, void **buffer, integer_t length,
+                          compare_f comparator)
 {
     if (length < 2)
         return;
@@ -791,10 +854,10 @@ static void arr_quicksort(Array array, void **buffer, integer_t length)
     integer_t i, j;
     for (i = 0, j = length - 1; ; i++, j--)
     {
-        while (array->v_compare(buffer[i], pivot) < 0)
+        while (comparator(buffer[i], pivot) < 0)
             i++;
 
-        while (array->v_compare(buffer[j], pivot) > 0)
+        while (comparator(buffer[j], pivot) > 0)
             j--;
 
         if (i >= j)
@@ -805,8 +868,8 @@ static void arr_quicksort(Array array, void **buffer, integer_t length)
         buffer[j] = temp;
     }
 
-    arr_quicksort(array, buffer, i);
-    arr_quicksort(array, buffer + i, length - i);
+    arr_quicksort(array, buffer, i, comparator);
+    arr_quicksort(array, buffer + i, length - i, comparator);
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
@@ -841,190 +904,196 @@ struct ArrayIterator_s
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static bool arr_iter_target_modified(ArrayIterator iter);
-
-static bool arr_iter_invalid_state(ArrayIterator iter);
+static bool
+arr_iter_target_modified(ArrayIterator_t *iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-Status arr_iter_init(ArrayIterator *iter, Array target)
+///
+/// \param[in] target
+///
+/// \return
+ArrayIterator_t *
+arr_iter_new(Array_t *target)
 {
-    *iter = malloc(sizeof(ArrayIterator_t));
+    ArrayIterator_t *iter = malloc(sizeof(ArrayIterator_t));
 
-    if (!(*iter))
-        return DS_ERR_ALLOC;
+    if (!iter)
+        return NULL;
 
-    (*iter)->target = target;
-    (*iter)->target_id = target->version_id;
-    (*iter)->cursor = 0;
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = 0;
 
-    return DS_OK;
+    return iter;
 }
 
-Status arr_iter_retarget(ArrayIterator *iter, Array target)
+///
+/// \param[in] iter
+/// \param[in] target
+///
+/// \return
+bool
+arr_iter_retarget(ArrayIterator_t *iter, Array_t *target)
 {
-    Status st = arr_iter_free(iter);
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = 0;
 
-    if (st != DS_OK)
-        return st;
-
-    st = arr_iter_init(iter, target);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
+    return true;
 }
 
-Status arr_iter_free(ArrayIterator *iter)
+///
+/// \param[in] iter
+void
+arr_iter_free(ArrayIterator_t *iter)
 {
-    if (*iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free(*iter);
-
-    *iter = NULL;
-
-    return DS_OK;
+    free(iter);
 }
 
-Status arr_iter_next(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_next(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
     if (!arr_iter_has_next(iter))
-        return DS_ERR_ITER;
+        return false;
 
     iter->cursor++;
 
-    return DS_OK;
+    return true;
 }
 
-Status arr_iter_prev(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_prev(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
-    if (!arr_iter_has_next(iter))
-        return DS_ERR_ITER;
+    if (!arr_iter_has_prev(iter))
+        return false;
 
     iter->cursor--;
 
-    return DS_OK;
+    return false;
 }
 
-Status arr_iter_to_start(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_to_start(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
     iter->cursor = 0;
 
-    return DS_OK;
+    return true;
 }
 
-Status arr_iter_to_end(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_to_end(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
     iter->cursor = iter->target->length - 1;
 
-    return DS_OK;
+    return true;
 }
 
-bool arr_iter_has_next(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_has_next(ArrayIterator_t *iter)
 {
     return iter->cursor < iter->target->length - 1;
 }
 
-bool arr_iter_has_prev(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+arr_iter_has_prev(ArrayIterator_t *iter)
 {
     return iter->cursor > 0;
 }
 
-Status arr_iter_set(ArrayIterator iter, void *element)
+bool
+arr_iter_test(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
+    return iter->target->buffer[iter->cursor] != NULL;
+}
 
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
+///
+/// \param[in] iter
+/// \param[in] element
+///
+/// \return
+bool
+arr_iter_set(ArrayIterator_t *iter, void *element)
+{
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    if (iter->target->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+        return false;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        iter->target->v_free(iter->target->buffer[iter->cursor]);
+        iter->target->interface->free(iter->target->buffer[iter->cursor]);
 
     iter->target->buffer[iter->cursor] = element;
 
     iter->target_id++;
     iter->target->version_id++;
 
-    return DS_OK;
+    return true;
 }
 
-Status arr_iter_get(ArrayIterator iter, void **result)
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
+bool
+arr_iter_get(ArrayIterator_t *iter, void **result)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    if (iter->target->v_copy == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+        return false;
 
     if (iter->target->buffer[iter->cursor] != NULL)
-        *result = iter->target->v_copy(iter->target->buffer[iter->cursor]);
+        *result = iter->target->interface->copy(iter->target->buffer[iter->cursor]);
     else
         *result = NULL;
 
-    return DS_OK;
+    return true;
 }
 
-Status arr_iter_pop(ArrayIterator iter, void **result)
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
+bool
+arr_iter_pop(ArrayIterator_t *iter, void **result)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (arr_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (arr_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
     *result = iter->target->buffer[iter->cursor];
 
@@ -1033,17 +1102,16 @@ Status arr_iter_pop(ArrayIterator iter, void **result)
     iter->target_id++;
     iter->target->version_id++;
 
-    return DS_OK;
+    return true;
 }
 
-void *arr_iter_peek_next(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+void *
+arr_iter_peek_next(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return NULL;
-
-    if (arr_iter_invalid_state(iter))
-        return NULL;
-
     if (arr_iter_target_modified(iter))
         return NULL;
 
@@ -1053,28 +1121,26 @@ void *arr_iter_peek_next(ArrayIterator iter)
     return iter->target->buffer[iter->cursor + 1];
 }
 
-void *arr_iter_peek(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+void *
+arr_iter_peek(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return NULL;
-
-    if (arr_iter_invalid_state(iter))
-        return NULL;
-
     if (arr_iter_target_modified(iter))
         return NULL;
 
     return iter->target->buffer[iter->cursor];
 }
 
-void *arr_iter_peek_prev(ArrayIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+void *
+arr_iter_peek_prev(ArrayIterator_t *iter)
 {
-    if (iter == NULL)
-        return NULL;
-
-    if (arr_iter_invalid_state(iter))
-        return NULL;
-
     if (arr_iter_target_modified(iter))
         return NULL;
 
@@ -1086,17 +1152,16 @@ void *arr_iter_peek_prev(ArrayIterator iter)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static bool arr_iter_target_modified(ArrayIterator iter)
+static bool
+arr_iter_target_modified(ArrayIterator_t *iter)
 {
     return iter->target_id != iter->target->version_id;
 }
 
-static bool arr_iter_invalid_state(ArrayIterator iter)
-{
-    if (iter->target == NULL)
-        return true;
-
-    return iter->cursor < 0 || iter->cursor >= iter->target->length;
-}
-
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo ArrayWrapper

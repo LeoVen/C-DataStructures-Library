@@ -10,6 +10,7 @@
 #define C_DATASTRUCTURES_LIBRARY_ARRAY_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,115 +32,201 @@ typedef struct Array_s Array_t;
 /// be dynamically allocated.
 typedef struct Array_s *Array;
 
-/// \brief Display function type.
-///
-/// A type for a function that displays an element in the console.
-typedef void(*arr_display_f)(void *);
-
-/// \brief Comparator function type.
-///
-/// A type for a function that compares two elements, returning:
-/// - [ > 0] when the first element is greater than the second;
-/// - [ < 0] when the first element is less than the second;
-/// - 0 when both elements are equal.
-///
-/// Used when sorting the array.
-typedef int(*arr_compare_f)(void *, void *);
-
-/// \brief A Copy function type.
-///
-/// A type for a function that takes an input (first parameter) and returns an
-/// exact copy of that element.
-typedef void *(*arr_copy_f)(void *);
-
-/// \brief A Free function type.
-///
-/// A type for a function responsible for completely freeing an element from
-/// memory.
-typedef void(*arr_free_f)(void *);
-
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status arr_init(Array *array, integer_t length);
+/// \ref arr_new
+/// \brief Initializes a new Array_s.
+Array_t *
+arr_new(Interface_t *interface, integer_t length);
 
-Status arr_create(Array *array, integer_t length, arr_compare_f compare_f,
-        arr_copy_f copy_f, arr_display_f display_f, arr_free_f free_f);
+/// \ref arr_free
+/// \brief Frees from memory an Array_s and all of its elements.
+void
+arr_free(Array_t *array);
 
-Status arr_free(Array *array);
+/// \ref arr_free_shallow
+/// \brief Frees from memory an Array_s leaving its elements intact.
+void
+arr_free_shallow(Array_t *array);
 
-Status arr_free_shallow(Array *array);
+/// \ref arr_erase
+/// \brief Frees from memory all elements of an Array_s.
+void
+arr_erase(Array_t *array);
 
-Status arr_erase(Array *array);
+/// \ref arr_erase_shallow
+/// \brief Sets all array pointers to NULL (shallow erase).
+void
+arr_erase_shallow(Array_t *array);
+
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
+
+/// \ref arr_config
+/// \brief Sets a new interface for the array.
+void
+arr_config(Array_t *array, Interface_t *interface);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status arr_set_v_compare(Array array, arr_compare_f function);
-
-Status arr_set_v_copy(Array array, arr_copy_f function);
-
-Status arr_set_v_display(Array array, arr_display_f function);
-
-Status arr_set_v_free(Array array, arr_free_f function);
-
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-integer_t arr_length(Array array);
+/// \ref arr_length
+/// \brief Returns the length of the specified array.
+integer_t
+arr_length(Array_t *array);
 
-integer_t arr_count(Array array);
+/// \ref arr_count
+/// \brief Counts how many elements are set in the array.
+integer_t
+arr_count(Array_t *array);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-integer_t arr_set_next(Array array, void *element);
+/// \ref arr_set_first
+/// \brief Sets the first available position of the array to a given element.
+integer_t
+arr_set_first(Array_t *array, void *element);
 
-Status arr_set(Array array, integer_t index, void *element);
+/// \ref arr_set
+/// \brief Sets the specified index to a specified element.
+integer_t
+arr_set(Array_t *array, void *element, integer_t index);
 
-integer_t arr_set_last(Array array, void *element);
+/// \ref arr_set_last
+/// \brief Sets the last available position of the array to a given element.
+integer_t
+arr_set_last(Array_t *array, void *element);
 
-void *arr_get_next(Array array, integer_t *index);
+/// \ref arr_get_first
+/// \brief Gets the first available element in the array.
+integer_t
+arr_get_first(Array_t *array, void **result);
 
-void *arr_get(Array array, integer_t index);
+/// \ref arr_get
+/// \brief Gets an element at the specified index.
+integer_t
+arr_get(Array_t *array, void **result, integer_t index);
 
-void *arr_get_last(Array array, integer_t *index);
+/// \ref arr_get_last
+/// \brief Gets the last available element in the array.
+integer_t
+arr_get_last(Array_t *array, void **result);
 
-void *arr_pop_next(Array array, integer_t *index);
+/// \ref arr_remove_first
+/// \brief Removes the first occurrence of an element in the array.
+integer_t
+arr_remove_first(Array_t *array, void **result);
 
-void *arr_pop(Array array, integer_t index);
+/// \ref arr_remove
+/// \brief Removes an element at the specified index.
+integer_t
+arr_remove(Array_t *array, void **result, integer_t index);
 
-void *arr_pop_last(Array array, integer_t *index);
+/// \ref arr_remove_last
+/// \brief Removes the last occurrence of an element in the array.
+integer_t
+arr_remove_last(Array_t *array, void **result);
+
+/// \ref arr_update_first
+/// \brief Updates the first occurrence of an element in the array.
+integer_t
+arr_update_first(Array_t *array, void *element);
+
+/// \ref arr_update
+/// \brief Updates an element at the specified index.
+integer_t
+arr_update(Array_t *array, void *element, integer_t index);
+
+/// \ref arr_update_last
+/// \brief Updates the last occurrence of an element in the array.
+integer_t
+arr_update_last(Array_t *array, void *element);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool arr_full(Array array);
+/// \ref arr_full
+/// \brief Returns true if the specified array is full.
+bool
+arr_full(Array_t *array);
 
-bool arr_empty(Array array);
+/// \ref arr_empty
+/// \brief Returns true if the specified array is empty.
+bool
+arr_empty(Array_t *array);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *arr_max(Array array);
+/// \ref arr_max
+/// \brief Returns the highest element in the array.
+void *
+arr_max(Array_t *array);
 
-void *arr_min(Array array);
+/// \ref arr_min
+/// \brief Returns the lowest element in the array.
+void *
+arr_min(Array_t *array);
 
-integer_t arr_index_first(Array array, void *key);
+/// \ref arr_index_first
+/// \brief Returns the index of the first element that matches a given key.
+integer_t
+arr_index_first(Array_t *array, void *key);
 
-integer_t arr_index_last(Array array, void *key);
+/// \ref arr_index_last
+/// \brief Returns the index of the last element that matches a given key.
+integer_t
+arr_index_last(Array_t *array, void *key);
 
-bool arr_contains(Array array, void *key);
+/// \ref arr_contains
+/// \brief Returns true if a given key is present in the array.
+bool
+arr_contains(Array_t *array, void *key);
 
-Status arr_switch(Array array, integer_t pos1, integer_t pos2);
+/// \ref arr_switch
+/// \brief Switches two elements from two specified indexes.
+integer_t
+arr_switch(Array_t *array, integer_t index1, integer_t index2);
 
-Status arr_reverse(Array array);
+/// \ref arr_reverse
+/// \brief Reverses the order of its elements.
+integer_t
+arr_reverse(Array_t *array);
 
-Status arr_copy(Array array, Array *result);
+/// \ref arr_copy
+/// \brief Makes a deep copy of the specified array.
+Array_t *
+arr_copy(Array_t *array);
 
-Status arr_to_array(Array array, void ***result, integer_t *length);
+/// \ref arr_copy_shallow
+/// \brief Makes a shallow copy of the specified array.
+Array_t *
+arr_copy_shallow(Array_t *array);
 
-Status arr_sort(Array array);
+/// \ref arr_sort
+/// \brief Sorts the specified array with its interface's compare function.
+void
+arr_sort(Array_t *array);
+
+/// \ref arr_sortby
+/// \brief Sorts the specified array with a given comparator function.
+void
+arr_sortby(Array_t *array, compare_f comparator);
+
+/// \ref arr_to_array
+/// \brief Makes a copy to a C array.
+void **
+arr_to_array(Array_t *array, integer_t *length, bool shallow);
+
+/// \ref arr_from_array
+/// \brief Makes a new Array_s from an existing C array.
+Array_t *
+arr_from_array(Interface_t *interface, void **buffer, integer_t length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status arr_display(Array array);
-
-Status arr_display_raw(Array array);
+/// \ref arr_display
+/// \brief Displays an Array_s in the console.
+void
+arr_display(Array_t *array, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
@@ -160,43 +247,99 @@ typedef struct ArrayIterator_s *ArrayIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status arr_iter_init(ArrayIterator *iter, Array target);
+/// \ref arr_iter_new
+/// \brief Initializes an ArrayIterator_s with a target Array_s.
+ArrayIterator_t *
+arr_iter_new(Array_t *target);
 
-Status arr_iter_retarget(ArrayIterator *iter, Array target);
+/// \ref arr_iter_retarget
+/// \brief Retarget or resets an existing iterator.
+bool
+arr_iter_retarget(ArrayIterator_t *iter, Array target);
 
-Status arr_iter_free(ArrayIterator *iter);
+/// \ref arr_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+arr_iter_free(ArrayIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-Status arr_iter_next(ArrayIterator iter);
+/// \ref arr_iter_next
+/// \brief Moves the iterator to the next element.
+bool
+arr_iter_next(ArrayIterator_t *iter);
 
-Status arr_iter_prev(ArrayIterator iter);
+/// \ref arr_iter_prev
+/// \brief Moves the iterator to the previous element.
+bool
+arr_iter_prev(ArrayIterator_t *iter);
 
-Status arr_iter_to_start(ArrayIterator iter);
+/// \ref arr_iter_to_start
+/// \brief Moves the iterator to the start of the array.
+bool
+arr_iter_to_start(ArrayIterator_t *iter);
 
-Status arr_iter_to_end(ArrayIterator iter);
+/// \ref arr_iter_to_end
+/// \brief Moves the iterator to the end of the array.
+bool
+arr_iter_to_end(ArrayIterator_t *iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool arr_iter_has_next(ArrayIterator iter);
+/// \ref arr_iter_has_next
+/// \brief Returns true if the iterator has a next element to iterate.
+bool
+arr_iter_has_next(ArrayIterator_t *iter);
 
-bool arr_iter_has_prev(ArrayIterator iter);
+/// \ref arr_iter_has_prev
+/// \brief Returns true if the iterator has a previous element to iterate.
+bool
+arr_iter_has_prev(ArrayIterator_t *iter);
+
+/// \ref arr_iter_test
+/// \brief Returns true if the iterator's current position is a valid element.
+bool
+arr_iter_test(ArrayIterator_t *iter);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status arr_iter_set(ArrayIterator iter, void *element);
+/// \ref arr_iter_set
+/// \brief Sets a new element at the iterator's current position.
+bool
+arr_iter_set(ArrayIterator_t *iter, void *element);
 
-Status arr_iter_get(ArrayIterator iter, void **result);
+/// \ref arr_iter_get
+/// \brief Gets a copy of the iterator's current element.
+bool
+arr_iter_get(ArrayIterator_t *iter, void **result);
 
-Status arr_iter_pop(ArrayIterator iter, void **result);
+/// \ref arr_iter_pop
+/// \brief Removes and returns the iterator's current element.
+bool
+arr_iter_pop(ArrayIterator_t *iter, void **result);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *arr_iter_peek_next(ArrayIterator iter);
+/// \ref arr_iter_peek_next
+/// \brief Returns the next element if any.
+void *
+arr_iter_peek_next(ArrayIterator_t *iter);
 
-void *arr_iter_peek(ArrayIterator iter);
+/// \ref arr_iter_peek
+/// \brief Returns the current element.
+void *
+arr_iter_peek(ArrayIterator_t *iter);
 
-void *arr_iter_peek_prev(ArrayIterator iter);
+/// \ref arr_iter_peek_prev
+/// \brief Returns the previous element if any.
+void *
+arr_iter_peek_prev(ArrayIterator_t *iter);
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo ArrayWrapper
 
 #ifdef __cplusplus
 }

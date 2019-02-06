@@ -135,7 +135,7 @@ ali_empty(AssociativeList_t *list);
 bool
 ali_to_arrays(AssociativeList_t *list, void ***K_array, void ***V_array);
 
-/// \ref ali_from_array
+/// \ref ali_from_arrays
 /// \brief Creates an associative list from two arrays of keys and values.
 bool
 ali_from_arrays(AssociativeList_t **list, void **K_array, void **V_array,
