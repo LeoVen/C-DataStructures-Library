@@ -8,8 +8,6 @@
 
 #include "Array.h"
 
-/// \brief A C generic array wrapper.
-///
 /// An Array_s is an abstraction of a C array composed of a data buffer and a
 /// length variable. It is a static array, that is, it won't increase in size.
 /// Higher level languages provide a quick way to get the array's length and
@@ -54,6 +52,9 @@
 /// done to the array. This prevents any iterators from working the moment the
 /// array structure is changed. It works to prevent any undefined behaviour or
 /// run-time errors.
+///
+/// \par Functions
+/// Located in the file Array.c
 struct Array_s
 {
     /// \brief Data buffer.
@@ -94,11 +95,12 @@ arr_quicksort(Array_t *array, void **buffer, integer_t length,
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
+/// Initializes a new Array_s with a custom interface and a defined length.
 ///
-/// \param[in] interface
-/// \param[in] length
+/// \param[in] interface An interface for the new array.
+/// \param[in] length The fixed length for the array.
 ///
-/// \return
+/// \return A new Array_s or NULL if allocation failed.
 Array_t *
 arr_new(Interface_t *interface, integer_t length)
 {
@@ -890,8 +892,6 @@ arr_quicksort(Array_t *array, void **buffer, integer_t length,
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \brief An iterator for an Array_s.
-///
 /// A simple iterator that can traverse backwards and forwards through the
 /// elements of the array.
 struct ArrayIterator_s

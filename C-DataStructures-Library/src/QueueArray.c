@@ -27,7 +27,6 @@
 /// - When the buffer is reallocated some items might need to be shifted
 ///
 /// \par Functions
-///
 /// Located in the file QueueArray.c
 struct QueueArray_s
 {

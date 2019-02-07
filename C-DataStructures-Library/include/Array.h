@@ -16,7 +16,8 @@
 extern "C" {
 #endif
 
-// A C array wrapper. See the source file for the documentation.
+/// \struct Array_s
+/// \brief A C generic array wrapper.
 struct Array_s;
 
 /// \brief A type for a an Array_s.
@@ -232,7 +233,8 @@ arr_display(Array_t *array, int display_mode);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// An array iterator. See the source file for the full documentation.
+/// \struct ArrayIterator_s
+/// \brief An iterator for an Array_s.
 struct ArrayIterator_s;
 
 /// \brief A type for an array iterator.

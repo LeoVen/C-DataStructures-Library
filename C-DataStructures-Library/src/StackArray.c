@@ -23,7 +23,6 @@
 /// - When the StackArray_s is full the buffer needs to be reallocated
 ///
 /// \par Functions
-///
 /// Located in the file StackArray.c
 struct StackArray_s
 {
