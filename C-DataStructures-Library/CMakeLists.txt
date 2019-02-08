@@ -30,11 +30,14 @@ set(TEST_FILES
         tests/SinglyLinkedListTests.c
         tests/SortedListTests.c
         tests/StackArrayTests.c
-        tests/StackTests.c)
+        tests/StackTests.c
+        )
 set(INCLUDE_BENCHMARK_FILES ${INCLUDE} ${INCLUDE_UNIT_TEST} ${INCLUDE_UTIL} ${INCLUDE_INTERFACE})
 set(BENCHMARK_FILES
         benchmarks/AVLTreeBench.c
-        benchmarks/RedBlackTreeBench.c)
+        benchmarks/RedBlackTreeBench.c
+        benchmarks/AssociativeListBench.c
+        )
 
 add_executable(C_DataStructures_Library_Tests tests/main.c ${INCLUDE_TETS_FILES} ${TEST_FILES})
 add_executable(C_DataStructures_Library_Benchmarks benchmarks/main.c ${INCLUDE_BENCHMARK_FILES} ${BENCHMARK_FILES})
@@ -66,7 +69,26 @@ add_library(Utility  util/include/Utility.h  util/src/Utility.c)
 add_library(CString  util/include/CString.h  util/src/CString.c)
 add_library(Clock    util/include/Clock.h    util/src/Clock.c)
 
-set(LIBS Array AssociativeList AVLTree BinarySearchTree BitArray CircularLinkedList Deque DequeArray DoublyLinkedList DynamicArray PriorityQueue Queue QueueArray RedBlackTree SinglyLinkedList SortedList Stack StackArray)
+set(LIBS
+        Array
+        AssociativeList
+        AVLTree
+        BinarySearchTree
+        BitArray
+        CircularLinkedList
+        Deque
+        DequeArray
+        DoublyLinkedList
+        DynamicArray
+        PriorityQueue
+        Queue
+        QueueArray
+        RedBlackTree
+        SinglyLinkedList
+        SortedList
+        Stack
+        StackArray
+        )
 set(UTIL Utility CString Clock)
 
 add_dependencies(C_DataStructures_Library_Tests ${LIBS} ${UTIL} UnitTest Interface)

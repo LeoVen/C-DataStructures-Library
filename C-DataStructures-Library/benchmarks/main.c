@@ -6,6 +6,7 @@ int main(void)
     printf("|                    Benchmarks                    |\n");
     printf("+--------------------------------------------------+\n\n");
 
+    AssociativeListBench();
     AVLTreeBench();
     RedBlackTreeBench();
 }

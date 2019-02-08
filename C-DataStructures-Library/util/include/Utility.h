@@ -114,6 +114,8 @@ long double random_long_double(long double min, long double max);
 
 char random_char(char min, char max);
 
+char *random_string(uint64_t min_length, uint64_t max_length, bool alpha_only);
 char random_alpha();
+char random_print();
 
 #endif //C_DATASTRUCTURES_LIBRARY_UTILITY_H

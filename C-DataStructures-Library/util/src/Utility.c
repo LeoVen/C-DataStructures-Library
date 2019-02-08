@@ -694,10 +694,39 @@ char random_char(char min, char max)
             ((double)max - (double)min + 1.0) + (double)min);
 }
 
-char *random_string(uint64_t max_length, bool alpha_only)
+char *random_string(uint64_t min_length, uint64_t max_length, bool alpha_only)
 {
-    /// \todo random_string
-    return NULL;
+    if (max_length < min_length)
+        return NULL;
+
+    unsigned_t length = random_uint64_t(min_length, max_length);
+
+    char *string = malloc(sizeof(char) * (length + 1));
+
+    if (!string)
+        return NULL;
+
+    if (alpha_only)
+    {
+        const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const size_t alpha_size = 62;
+
+        for (size_t i = 0; i < length; i++)
+        {
+            string[i] = alpha[random_uint64_t(0, alpha_size - 1)];
+        }
+    }
+    else
+    {
+        for (size_t i = 0; i < length; i++)
+        {
+            string[i] = random_print();
+        }
+    }
+
+    string[length] = '\0';
+
+    return string;
 }
 
 char random_alpha()
@@ -710,4 +739,9 @@ char random_alpha()
                           'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
                           'Y', 'Z'};
     return alpha[random_int8_t(0, 61)];
+}
+
+char random_print()
+{
+    return random_int8_t(32, 126);
 }

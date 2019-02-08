@@ -12,6 +12,8 @@
 #include "Core.h"
 #include "Interface.h"
 
+void AssociativeListBench(void);
+
 void AVLTreeBench(void);
 
 void RedBlackTreeBench(void);
