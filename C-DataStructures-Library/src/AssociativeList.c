@@ -32,7 +32,7 @@ struct AssociativeList_s
     ///
     /// If set to true then the associative list is allowed to store a new node
     /// with an already existing key.
-    bool multiple_keys;
+    bool duplicate_keys;
 
     /// \brief Points to the first Node on the list.
     ///
@@ -118,12 +118,12 @@ ali_find(AssociativeList_t *list, AssociativeListNode_t **before, void *key);
 ///
 /// \param[in] key_interface Key interface.
 /// \param[in] value_interface Value interface
-/// \param[in] multiple_keys A flag to allow multiple keys.
+/// \param[in] duplicate_keys A flag to allow multiple keys.
 ///
 /// \return A new AssociativeList_s or NULL if allocation failed.
 AssociativeList_t *
 ali_new(Interface_t *key_interface, Interface_t *value_interface,
-        bool multiple_keys)
+        bool duplicate_keys)
 {
     AssociativeList_t *list = malloc(sizeof(AssociativeList_t));
 
@@ -133,7 +133,7 @@ ali_new(Interface_t *key_interface, Interface_t *value_interface,
     list->length = 0;
     list->limit = 0;
     list->version_id = 0;
-    list->multiple_keys = multiple_keys;
+    list->duplicate_keys = duplicate_keys;
 
     list->head = NULL;
     list->tail = NULL;
@@ -264,9 +264,9 @@ ali_limit(AssociativeList_t *list)
 ///
 /// \return
 bool
-ali_multiple_keys(AssociativeList_t *list)
+ali_duplicate_keys(AssociativeList_t *list)
 {
-    return list->multiple_keys;
+    return list->duplicate_keys;
 }
 
 ///
@@ -315,14 +315,10 @@ ali_insert(AssociativeList_t *list, void *key, void *value)
     if (ali_full(list))
         return false;
 
-    // Multiple keys not allowed, search if there is an existing one
-    if (!list->multiple_keys)
+    // Duplicate keys not allowed, search if there is an existing one
+    if (!list->duplicate_keys)
     {
-        AssociativeListNode_t *_;
-        AssociativeListNode_t *search = ali_find(list, &_, key);
-
-        // Found an exact key. Not allowed.
-        if (search != NULL)
+        if (ali_contains_key(list, key))
             return false;
     }
 
@@ -357,6 +353,8 @@ ali_insert(AssociativeList_t *list, void *key, void *value)
 bool
 ali_remove(AssociativeList_t *list, void *key, void **value)
 {
+    *value = NULL;
+
     if (ali_empty(list))
         return false;
 
@@ -439,6 +437,48 @@ bool
 ali_empty(AssociativeList_t *list)
 {
     return list->length == 0;
+}
+
+///
+/// \param[in] list
+/// \param[in] key
+///
+/// \return
+bool
+ali_contains_key(AssociativeList_t *list, void *key)
+{
+    AssociativeListNode_t *scan = list->head;
+
+    while (scan != NULL)
+    {
+        if (list->K_interface->compare(key, scan->key) == 0)
+            return true;
+
+        scan = scan->next;
+    }
+
+    return false;
+}
+
+///
+/// \param[in] list
+/// \param[in] value
+///
+/// \return
+bool
+ali_contains_value(AssociativeList_t *list, void *value)
+{
+    AssociativeListNode_t *scan = list->head;
+
+    while (scan != NULL)
+    {
+        if (list->V_interface->compare(value, scan->value) == 0)
+            return true;
+
+        scan = scan->next;
+    }
+
+    return false;
 }
 
 ///

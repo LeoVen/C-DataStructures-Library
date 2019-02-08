@@ -40,7 +40,7 @@ typedef struct AssociativeList_s *AssociativeList;
 /// \brief Initializes a new AssociativeList_s.
 AssociativeList_t *
 ali_new(Interface_t *key_interface, Interface_t *value_interface,
-        bool allow_multiple_keys);
+        bool duplicate_keys);
 
 /// \ref ali_free
 /// \brief Frees from memory an AssociativeList_s and its element pairs.
@@ -129,6 +129,16 @@ bool
 ali_empty(AssociativeList_t *list);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref ali_contains_key
+/// \brief Returns true if the associative list contains a given key.
+bool
+ali_contains_key(AssociativeList_t *list, void *key);
+
+/// \ref ali_contains_value
+/// \brief Returns true if the associative list contains a given value.
+bool
+ali_contains_value(AssociativeList_t *list, void *key);
 
 /// \ref ali_to_arrays
 /// \brief Creates two arrays with keys and values from an existing list.

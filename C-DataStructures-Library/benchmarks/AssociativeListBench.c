@@ -11,7 +11,7 @@
 #include "Utility.h"
 
 void
-ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
+ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool duplicate_keys)
 {
     srand(5113);
 
@@ -20,7 +20,7 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
     Interface_t *value_interface = interface_new(compare_int32_t, copy_int32_t,
             display_int32_t, free, hash_int32_t, NULL);
 
-    char **keys = malloc(sizeof(char*) * elements);
+    char **keys = malloc(sizeof(char*) * (size_t)elements);
 
     if (!key_interface || ! value_interface || !keys)
         return;
@@ -30,14 +30,14 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
     if (!stopwatch)
         return;
 
-    AssociativeList_t *list = ali_new(key_interface, value_interface, multiple_keys);
+    AssociativeList_t *list = ali_new(key_interface, value_interface, duplicate_keys);
 
     if (!list)
         return;
 
-    double *insertion_timings = malloc(sizeof(double) * iterations);
-    double *removal_timings = malloc(sizeof(double) * iterations);
-    double *search_timings = malloc(sizeof(double) * iterations);
+    double *insertion_timings = malloc(sizeof(double) * (size_t)iterations);
+    double *removal_timings = malloc(sizeof(double) * (size_t)iterations);
+    double *search_timings = malloc(sizeof(double) * (size_t)iterations);
 
     unsigned_t insertion_total = 0, removal_total = 0, search_total = 0;
 
@@ -58,8 +58,10 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
         // Fill keys array
         for (unsigned_t k = 0; k < elements; k++)
         {
-            keys[k] = random_string(5, 50, false);
+            keys[k] = random_string(5, 1000, false);
         }
+
+        clk_reset(stopwatch);
 
         // Insertion
         clk_start(stopwatch);
@@ -105,7 +107,6 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
         if (ali_length(list) != 0)
             printf("ERROR\n");
 
-        clk_reset(stopwatch);
         ali_erase(list);
     }
 
@@ -131,6 +132,7 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool multiple_keys)
     printf("+----------------------------------------+\n");
     printf("  Total elements added   : %llu\n", elements);
     printf("  Total iterations       : %llu\n", iterations);
+    printf("  Duplicate Keys         : %s\n", duplicate_keys ? "YES" : "NO");
     printf("+----------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
     printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
@@ -145,9 +147,12 @@ void AssociativeListBench(void)
     printf("|            AssociativeList Benchmark             |\n");
     printf("+--------------------------------------------------+\n");
 
-    ali_bench_IO(10000, 1, true);
-    ali_bench_IO(10000, 1, false);
-    ali_bench_IO(10000, 2, true);
+    ali_bench_IO( 10000, 10, true);
+    ali_bench_IO( 10000, 10, false);
+    ali_bench_IO( 50000,  2, true);
+    ali_bench_IO( 50000,  2, false);
+    ali_bench_IO(100000,  1, true);
+    ali_bench_IO(100000,  1, false);
 
     printf("\n");
 }
