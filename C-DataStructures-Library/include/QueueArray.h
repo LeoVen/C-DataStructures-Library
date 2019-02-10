@@ -45,8 +45,8 @@ qua_new(Interface_t *interface);
 /// \ref qua_create
 /// \brief Initializes a new QueueArray_s with custom parameters.
 QueueArray_t *
-qua_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface);
+qua_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate);
 
 /// \ref qua_free
 /// \brief Frees from memory a QueueArray_s and its elements.
@@ -62,6 +62,11 @@ qua_free_shallow(QueueArray_t *queue);
 /// \brief Frees from memory all elements of a QueueArray_s.
 bool
 qua_erase(QueueArray_t *queue);
+
+/// \ref qua_erase_shallow
+/// \brief Resets the QueueArray_s without freeing its elements.
+bool
+qua_erase_shallow(QueueArray_t *queue);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
 

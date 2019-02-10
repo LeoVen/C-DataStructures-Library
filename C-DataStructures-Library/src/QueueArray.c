@@ -149,17 +149,17 @@ qua_new(Interface_t *interface)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] initial_capacity Buffer initial capacity.
-/// \param[in] growth_rate Buffer growth rate.
 /// \param[in] interface An interface defining all necessary functions for the
 /// queue to operate.
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
 ///
 /// \return NULL if the growth rate is less than 101, if the initial capacity
 /// is 0 or if allocation failed.
 /// \return A new QueueArray_s dynamically allocated.
 QueueArray_t *
-qua_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface)
+qua_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate)
 {
     if (growth_rate <= 100 || initial_capacity <= 0)
         return NULL;
@@ -248,6 +248,35 @@ qua_erase(QueueArray_t *queue)
 
         queue->buffer[i] = NULL;
     }
+
+    queue->size = 0;
+    queue->version_id++;
+    queue->front = 0;
+    queue->rear = 0;
+
+    return true;
+}
+
+/// This functions will reset the QueueArray_s without freeing its elements.
+/// This will keep its original interface and its original buffer size.
+///
+/// \param[in] queue The queue to be reset.
+///
+/// \return True if all operations were successful.
+bool
+qua_erase_shallow(QueueArray_t *queue)
+{
+    for (integer_t i = queue->front, j = 0;
+         j < queue->size;
+         i = (i + 1) % queue->capacity, j++)
+    {
+        queue->buffer[i] = NULL;
+    }
+
+    queue->size = 0;
+    queue->version_id++;
+    queue->front = 0;
+    queue->rear = 0;
 
     return true;
 }

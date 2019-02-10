@@ -22,7 +22,7 @@ void qua_test_linear_insertion(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    QueueArray queue = qua_create(16, 200, int_interface);
+    QueueArray queue = qua_create(int_interface, 16, 200);
 
     if (!queue)
         goto error;
@@ -86,7 +86,7 @@ void qua_test_locked(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    QueueArray queue = qua_create(16, 200, int_interface);
+    QueueArray queue = qua_create(int_interface, 16, 200);
 
     if (!queue)
         goto error;
@@ -164,7 +164,7 @@ void qua_test_intensive(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    QueueArray queue = qua_create(16, 200, int_interface);
+    QueueArray queue = qua_create(int_interface, 16, 200);
 
     if (!queue)
         goto error;
@@ -236,7 +236,7 @@ void qua_test_growth(UnitTest ut)
     if (!int_interface)
         goto error;
 
-    QueueArray queue = qua_create(60, 250, int_interface);
+    QueueArray queue = qua_create(int_interface, 60, 250);
 
     if (!queue)
         goto error;

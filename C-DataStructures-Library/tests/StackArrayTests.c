@@ -20,7 +20,7 @@ void sta_test_locked(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    StackArray stack = sta_create(16, 200, int_interface);
+    StackArray stack = sta_create(int_interface, 16, 200);
 
     if (!stack)
         goto error;
@@ -97,7 +97,7 @@ void sta_test_growth(UnitTest ut)
     if (!int_interface)
         goto error;
 
-    StackArray stack = sta_create(60, 250, int_interface);
+    StackArray stack = sta_create(int_interface, 60, 250);
 
     if (!stack)
         goto error;

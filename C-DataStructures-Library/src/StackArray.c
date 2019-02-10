@@ -126,17 +126,17 @@ sta_new(Interface_t *interface)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] initial_capacity Buffer initial capacity.
-/// \param[in] growth_rate Buffer growth rate.
 /// \param[in] interface An interface defining all necessary functions for the
 /// stack to operate.
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
 ///
 /// \return NULL if the growth rate is less than 101, if the initial capacity
 /// is 0 or if allocation failed.
 /// \return A new StackArray_s dynamically allocated.
 StackArray_t *
-sta_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface)
+sta_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate)
 {
     if (growth_rate <= 100 || initial_capacity <= 0)
         return NULL;
@@ -218,6 +218,29 @@ sta_erase(StackArray_t *stack)
 
         stack->buffer[i] = NULL;
     }
+
+    stack->version_id++;
+    stack->size = 0;
+
+    return true;
+}
+
+/// This functions will reset the StackArray_s without freeing its elements.
+/// This will keep its original interface and its original buffer size.
+///
+/// \param[in] queue The queue to be reset.
+///
+/// \return True if all operations were successful.
+bool
+sta_erase_shallow(StackArray_t *stack)
+{
+    for (integer_t i = 0; i < stack->size; i++)
+    {
+        stack->buffer[i] = NULL;
+    }
+
+    stack->version_id++;
+    stack->size = 0;
 
     return true;
 }

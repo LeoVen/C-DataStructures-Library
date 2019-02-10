@@ -45,8 +45,8 @@ sta_new(Interface_t *interface);
 /// \ref sta_create
 /// \brief Initializes a new StackArray_s with custom parameters.
 StackArray_t *
-sta_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface);
+sta_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate);
 
 /// \ref sta_free
 /// \brief Frees from memory a StackArray_s and its elements.
@@ -62,6 +62,11 @@ sta_free_shallow(StackArray_t *stack);
 /// \brief Frees from memory all elements of a StackArray_s.
 bool
 sta_erase(StackArray_t *stack);
+
+/// \ref sta_erase_shallow
+/// \brief Resets the StackArray_s without freeing its elements.
+bool
+sta_erase_shallow(StackArray_t *stack);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
