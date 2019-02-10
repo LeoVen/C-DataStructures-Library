@@ -76,5 +76,5 @@ add_library(DSLIB ${ALL_SRC})
 add_dependencies(C_DataStructures_Library_Tests DSLIB)
 add_dependencies(C_DataStructures_Library_Benchmarks DSLIB)
 
-target_link_libraries(C_DataStructures_Library_Tests DSLIB)
-target_link_libraries(C_DataStructures_Library_Benchmarks DSLIB)
+target_link_libraries(C_DataStructures_Library_Tests DSLIB m)
+target_link_libraries(C_DataStructures_Library_Benchmarks DSLIB m)
