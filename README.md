@@ -25,6 +25,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [Array][arr]               | `[##########]` | `[##########]` | `[__________]` | `[##________]` | `[##________]` |
 | [AssociativeList][ali]     | `[#####_____]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
+| [BinaryHeap][bhp]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BitArray][bit]            | `[#########_]` | `[__________]` | `[__________]` | `[#######___]` | `[#####_____]` |
@@ -140,6 +141,10 @@ Operations like insertion and removal are the same as a binary search tree diffe
 ```
 
 The AVL tree is more balanced than a red-black tree and has a guaranteed `O(log n)` search time. The drawbacks are that after inserting or removing an element the tree might need several rotations to satisfy the AVL tree properties.
+
+### BinaryHeap
+
+Not implemented yet.
 
 ### BinarySearchTree
 
@@ -610,6 +615,7 @@ arr_desc_free(array_w);
 [arr]: #array
 [ali]: #associativelist
 [avl]: #avltree
+[bhp]: #binaryheap
 [bst]: #binarysearchtree
 [bnh]: #binomialheap
 [bit]: #bitarray
