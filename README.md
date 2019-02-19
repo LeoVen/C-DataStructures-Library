@@ -12,11 +12,11 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-70-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-32025-%232196f3.svg)
-![average](https://img.shields.io/badge/average-457-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-74-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-32939-%232196f3.svg)
+![average](https://img.shields.io/badge/average-445-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
-![minimum](https://img.shields.io/badge/minimum-11-%23f44336.svg)
+![minimum](https://img.shields.io/badge/minimum-12-%23f44336.svg)
 
 ## Planned Data Structures
 
@@ -40,7 +40,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [FibonacciHeap][fbh]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [HashMap][hmp]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [HashSet][hst]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [Heap][hep]                | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
+| [Heap][hep]                | `[####______]` | `[__________]` | `[__________]` | `[__________]` | `[#_________]` |
 | [MultiHashMap][mhm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [MultiTreeMap][mtm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [PriorityHeap][prh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -116,7 +116,7 @@ Properties of an AVL tree:
 Operations like insertion and removal are the same as a binary search tree differentiating only at the end of each function where the tree might need to be re-balanced. There are two rotations done to keep the tree balanced:
 
 ```
-    T1, T2, T3 and T4 are subtrees.
+    T1, T2, T3 and T4 are sub-trees.
 
     Right Rotation:
 
@@ -185,7 +185,7 @@ The problem with binary search trees is that they can get skewed. To solve this 
 
 ```
 
-This makes search as `O(N)` and is much slower than it should be so a balanced binary search tree is prefered for maintaining the shape of the tree to make operations run in faster times.
+This makes search as `O(N)` and is much slower than it should be so a balanced binary search tree is preferred for maintaining the shape of the tree to make operations run in faster times.
 
 ### BinomialHeap
 
@@ -205,13 +205,13 @@ A bit array (bit set, bit map, bit string or bit vector) is a compacted array of
     │       1       |
     └───────────────┘
     (8 bits used for 1 value)
-    
+
     In a bit array we can represent 8 boolean values by mapping them for each bit
     ┌─┬─┬─┬─┬─┬─┬─┬─┐
     │1│1│0│1│0│1│0│1|
     └─┴─┴─┴─┴─┴─┴─┴─┘
     (8 bits used for 8 values)
-    We effectively have the equivalent of an array of booleans but much more compressed    
+    We effectively have the equivalent of an array of booleans but much more compressed
 ```
 
 ### BTree
@@ -273,14 +273,14 @@ A deque array is the implementation of a deque using a circular buffer. It is ve
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
               │                   │
             front                rear
-    
+
     rear index have wrapped around the buffer
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │ P │ Q │ R |   |   |   |   | M | N | O |
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
               │                   │
              rear               front
-             
+
     front index have wrapped around the buffer
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │ F │ G │ H |   |   |   |   | C | D | E |
@@ -341,7 +341,22 @@ Not implemented yet.
 
 ### Heap
 
-Not implemented yet.
+A Heap is a data structure that can either be implemented as an array or as a binary heap, where it satisfies the heap property:
+
+* In case of a Min-Heap:
+    * The smallest element is at the root.
+    * Every node is greater than its parent if that node is not root.
+* In case of a Max-Heap:
+    * The highest element is at the root.
+    * Every node is lesser than its parent if that node is not root.
+
+In this case it is implemented as a dynamic array where each node is located at:
+
+* Parent : `I / 2`
+* Left   : `2 * I`
+* Right  : `2 * I + 1`
+
+Where the current node is located in the position `I` in the array.
 
 ### MultiHashMap
 
@@ -370,7 +385,7 @@ A queue is a FIFO (First-in First-out) or LILO (Last-in Last-out) abstract data 
       │                                                                     │
     front                                                                  rear
  ```
- 
+
  Elements are dequeued from the `front` pointer and enqueued from the `rear` pointer.
 
 ### QueueArray
@@ -384,7 +399,7 @@ A queue array is the implementation of a queue using a circular buffer. It is ve
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
               │                   │
             front                rear
-    
+
     rear index have wrapped around the buffer
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │ P │ Q │ R |   |   |   |   | M | N | O |
@@ -403,7 +418,7 @@ When the rear pointer is closer to the end it is much more efficient to simply s
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
                               │   │
                             rear front
-    
+
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │ P │ Q │ R | S | T | U | V |   |   |   |   |   |   |   |   |   |   | M | N | O |
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
@@ -419,7 +434,7 @@ But when the rear index is closer to the beginning of the buffer we can append t
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
               │   │
             rear front
-    
+
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │   │   │   | I | J | K | L | M | N | O | P | Q | R |   |   |   |   |   |   |   |   |
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
@@ -435,7 +450,7 @@ There is also a third option when there is no need to shift elements. This happe
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
       │                                   │
     front                                rear
-    
+
     ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
     │ F │ G │ H | I | J | K | L | M | N | O |   |   |   |   |   |   |   |   |   |   |   |
     └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
@@ -487,7 +502,7 @@ Not implemented yet.
 
 ### SortedList
 
-A sorted list is a generic doubly-linked sorted list. Its elements are sorted with a user-provided `compare` function. This list is very inefficient at inserting elements with the cost os keeping them sorted. A tree would keep the elements sorted much more easily but it would not be a linear structure. Being a linked list many operations will take `O(n)` but others like `sli_max()` and `sli_min()`, that retrieves the maximum and the minimum values, take only `O(1)` where in a balanced tree it would take `O(log n)`. Iteration is also simplified and you can also remove elements more easily.  
+A sorted list is a generic doubly-linked sorted list. Its elements are sorted with a user-provided `compare` function. This list is very inefficient at inserting elements with the cost os keeping them sorted. A tree would keep the elements sorted much more easily but it would not be a linear structure. Being a linked list many operations will take `O(n)` but others like `sli_max()` and `sli_min()`, that retrieves the maximum and the minimum values, take only `O(1)` where in a balanced tree it would take `O(log n)`. Iteration is also simplified and you can also remove elements more easily.
 
 ```c
 SortedList slist;
@@ -497,7 +512,7 @@ sli_create(&slist, ASCENDING, compare_int, copy_int, display_int, free);
 for (int i = 7; i >= 0; i--)
     sli_insert(slist, new_int(i));
 
-sli_free(&slist); 
+sli_free(&slist);
 ```
 
 The above code would produce the following list.

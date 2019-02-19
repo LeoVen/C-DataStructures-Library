@@ -16,6 +16,7 @@ int main(void)
     DequeTests();
     DoublyLinkedListTests();
     DynamicArrayTests();
+    HeapTests();
     CircularLinkedListTests();
     QueueArrayTests();
     QueueTests();

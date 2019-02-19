@@ -36,6 +36,7 @@ set(TEST_FILES
         tests/DequeTests.c
         tests/DoublyLinkedListTests.c
         tests/DynamicArrayTests.c
+        tests/HeapTests.c
         tests/QueueArrayTests.c
         tests/QueueTests.c
         tests/RedBlackTreeTests.c

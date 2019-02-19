@@ -34,6 +34,8 @@ Status DoublyLinkedListTests(void);
 
 Status DynamicArrayTests(void);
 
+Status HeapTests(void);
+
 Status CircularLinkedListTests(void);
 
 Status QueueArrayTests(void);
