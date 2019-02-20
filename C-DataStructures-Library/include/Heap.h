@@ -37,11 +37,20 @@ typedef struct Heap_s *Heap;
 
 /// \enum HeapKind_e
 /// \brief Defines an enum for the two kinds of a heap.
-typedef enum HeapKind_e
+enum HeapKind_e
 {
+    /// A max-heap. The parent element is greater than its children and root is
+    /// the highest element.
     MaxHeap = 1,
+
+    /// A min-heap. The parent element is lesser than its children and root is
+    /// the lowest element.
     MinHeap = -1
-} HeapKind;
+};
+
+/// \ref HeapKind
+/// \brief A type for <code> enum HeapKind_e </code>.
+typedef enum HeapKind_e HeapKind;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
@@ -105,6 +114,11 @@ hep_growth(Heap_t *heap);
 bool
 hep_locked(Heap_t *heap);
 
+/// \ref hep_kind
+/// \brief Returns if the heap is a MaxHeap or a MinHeap.
+HeapKind
+hep_kind(Heap_t *heap);
+
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
 /// \ref hep_set_growth
@@ -131,8 +145,8 @@ hep_insert(Heap_t *heap, void *element);
 
 /// \ref hep_remove
 /// \brief Removes the top element from the heap.
-void *
-hep_remove(Heap_t *heap);
+bool
+hep_remove(Heap_t *heap, void **result);
 
 /// \ref hep_peek
 /// \brief Return the root element of the heap.
@@ -154,6 +168,11 @@ hep_full(Heap_t *heap);
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
+
+/// \ref hep_display
+/// \brief Displays a Heap_s in the console.
+void
+hep_display(Heap_t *heap, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
