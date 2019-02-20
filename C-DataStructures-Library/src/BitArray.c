@@ -1,6 +1,6 @@
 /**
  * @file BitArray.c
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 05/12/2018
@@ -981,7 +981,8 @@ bit_grow(BitArray_t *bits, unsigned_t bit_size)
     }
 
     // Either double in size or allocate to fit enough words
-    unsigned_t new_bit_size = (bit_size > bits->used_bits * 2) ? bit_size : bits->used_bits * 2;
+    unsigned_t new_bit_size = (bit_size > bits->used_bits * 2)
+            ? bit_size : bits->used_bits * 2;
 
     unsigned_t new_size = bit_buffer_index(new_bit_size - 1) + 1;
 

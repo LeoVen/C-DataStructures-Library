@@ -1,6 +1,6 @@
 /**
  * @file DequeArray.c
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 29/10/2018
@@ -329,6 +329,26 @@ dqa_set_growth(DequeArray_t *deque, integer_t growth_rate)
     return true;
 }
 
+/// Locks the the target's buffer growth. If the buffer is full no more
+/// elements will be added to the deque until its capacity is unlocked or
+/// another element is removed.
+///
+/// \param[in] deque The deque to have its buffer's growth locked.
+void
+dqa_capacity_lock(DequeArray_t *deque)
+{
+    deque->locked = true;
+}
+
+/// Unlocks the buffer's capacity allowing it to be reallocated once full.
+///
+/// \param[in] deque The deque to have its buffer's growth unlocked.
+void
+dqa_capacity_unlock(DequeArray_t *deque)
+{
+    deque->locked = false;
+}
+
 /// Inserts an element to the front of the specified deque.
 /// \par Interface Requirements
 /// - None
@@ -513,26 +533,6 @@ bool
 dqa_fits(DequeArray_t *deque, unsigned_t size)
 {
     return (deque->size + size) <= deque->capacity;
-}
-
-/// Locks the the target's buffer growth. If the buffer is full no more
-/// elements will be added to the deque until its capacity is unlocked or
-/// another element is removed.
-///
-/// \param[in] deque The deque to be locked from growing.
-void
-dqa_capacity_lock(DequeArray_t *deque)
-{
-    deque->locked = true;
-}
-
-/// Unlocks the buffer's capacity allowing it to be reallocated once full.
-///
-/// \param[in] deque The deque to have its buffer's growth unlocked.
-void
-dqa_capacity_unlock(DequeArray_t *deque)
-{
-    deque->locked = false;
 }
 
 /// Returns a copy of the specified DequeArray_s with the same interface. All

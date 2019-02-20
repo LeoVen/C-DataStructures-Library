@@ -3,7 +3,7 @@
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![build](https://travis-ci.org/LeoVen/C-DataStructures-Library.svg?branch=master)
 
-The purpose of this library is to provide an easy to use, easy to understand and easy to reproduce implementation of data structures with full documentation and commented code when needed. This library has a focus on teaching purposes and the implementations are not high performance or platform/compiler independent.
+The purpose of this library is to provide an easy to use, easy to understand and easy to reproduce implementation of data structures with full documentation and commented code when needed. This library has a focus on teaching purposes and the implementations are not high performance or platform/compiler independent. All data structures are very heap-centric since their type is `void *`, allowing them to be generic with the use of interfaces (`Interface_t`) that are responsible for handling many operations on a desired data type like. They are: compare, copy, display, free, hash and priority.
 
 ## Code Metrics
 
@@ -13,8 +13,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 ```
 
 ![total files](https://img.shields.io/badge/total%20files-74-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-32939-%232196f3.svg)
-![average](https://img.shields.io/badge/average-445-%23ff9800.svg)
+![total](https://img.shields.io/badge/total%20lines-33322-%232196f3.svg)
+![average](https://img.shields.io/badge/average-450-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-12-%23f44336.svg)
 

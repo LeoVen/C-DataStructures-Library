@@ -1,6 +1,6 @@
 /**
  * @file BitArray.h
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 05/12/2018

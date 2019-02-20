@@ -1,6 +1,6 @@
 /**
  * @file DynamicArrayTests.c
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 23/10/2018
@@ -11,15 +11,15 @@
 #include "Utility.h"
 
 // Tests locked capacity
-Status dar_test_locked(UnitTest ut)
+void dar_test_locked(UnitTest ut)
 {
-    DynamicArray array;
+    Interface_t *interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
-    // in case I ever change the default initial capacity
-    Status st = dar_create(&array, 16, 200, compare_int32_t, copy_int32_t, display_int32_t, free);
+    DynamicArray_t *array = dar_create(interface, 16, 200);
 
-    if (st != DS_OK)
-        return st;
+    if (!array)
+        return;
 
     dar_capacity_lock(array);
 
@@ -28,17 +28,14 @@ Status dar_test_locked(UnitTest ut)
     {
         elem = new_int32_t(i);
 
-        st = dar_insert_back(array, elem);
-
-        if (st == DS_ERR_FULL)
+        if (!dar_insert_back(array, elem))
             free(elem);
     }
 
     int *t = new_int32_t(1);
-    ut_equals_int(ut, dar_insert_front(array, t), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, dar_insert_at(array, t, 0), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, dar_insert_back(array, t), DS_ERR_FULL, __func__);
-
+    ut_equals_bool(ut, dar_insert_front(array, t), false, __func__);
+    ut_equals_bool(ut, dar_insert_at(array, t, 0), false, __func__);
+    ut_equals_bool(ut, dar_insert_back(array, t), false, __func__);
     free(t);
 
     integer_t size = dar_size(array);
@@ -47,9 +44,7 @@ Status dar_test_locked(UnitTest ut)
     void *R;
     while (!dar_empty(array))
     {
-        st = dar_remove_back(array, &R);
-
-        if (st != DS_OK)
+        if (!dar_remove_back(array, &R))
             goto error;
 
         sum += *(int*)R; // sum from 0 to 15
@@ -59,35 +54,33 @@ Status dar_test_locked(UnitTest ut)
     ut_equals_int(ut, sum, 120, __func__);
     ut_equals_integer_t(ut, size, 16, __func__);
 
-    dar_free(&array);
+    dar_free(array);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dar_free(&array);
-    return st;
+    ut_error();
+    dar_free(array);
 }
 
 // Tests capacity multiplication
-Status dar_test_growth(UnitTest ut)
+void dar_test_growth(UnitTest ut)
 {
-    DynamicArray array;
+    Interface_t *interface = interface_new(compare_int32_t, copy_int32_t,
+                                           display_int32_t, free, NULL, NULL);
 
-    Status st = dar_create(&array, 60, 250,
-                           compare_int32_t, copy_int32_t, display_int32_t, free);
+    DynamicArray_t *array = dar_create(interface, 60, 250);
 
-    if (st != DS_OK)
-        return st;
+    if (!array)
+        return;
 
     void *elem;
     for (int i = 0; i < 100; i++)
     {
         elem = new_int32_t(i);
 
-        st = dar_insert_back(array, elem);
-
-        if (st != DS_OK)
+        if (!dar_insert_back(array, elem))
         {
             free(elem);
 
@@ -98,14 +91,14 @@ Status dar_test_growth(UnitTest ut)
     // 60 * (250 / 100)
     ut_equals_integer_t(ut, dar_capacity(array), 150, __func__);
 
-    dar_free(&array);
+    dar_free(array);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dar_free(&array);
-    return st;
+    ut_error();
+    dar_free(array);
 }
 
 // Runs all DynamicArray tests
@@ -118,11 +111,8 @@ Status DynamicArrayTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += dar_test_locked(ut);
-    st += dar_test_growth(ut);
-
-    if (st != DS_OK)
-        goto error;
+    dar_test_locked(ut);
+    dar_test_growth(ut);
 
     ut_report(ut, "DynamicArray");
 

@@ -1,6 +1,6 @@
 /**
  * @file QueueArray.h
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 04/10/2018
@@ -60,12 +60,12 @@ qua_free_shallow(QueueArray_t *queue);
 
 /// \ref qua_erase
 /// \brief Frees from memory all elements of a QueueArray_s.
-bool
+void
 qua_erase(QueueArray_t *queue);
 
 /// \ref qua_erase_shallow
 /// \brief Resets the QueueArray_s without freeing its elements.
-bool
+void
 qua_erase_shallow(QueueArray_t *queue);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
@@ -103,6 +103,16 @@ qua_locked(QueueArray_t *queue);
 /// \brief Sets a new growth rate for the queue's buffer.
 bool
 qua_set_growth(QueueArray_t *queue, integer_t growth_rate);
+
+/// \ref qua_capacity_lock
+/// \brief Locks the buffer's growth for the specified queue.
+void
+qua_capacity_lock(QueueArray_t *queue);
+
+/// \ref qua_capacity_unlock
+/// \brief Unlocks the buffer's growth for the specified queue.
+void
+qua_capacity_unlock(QueueArray_t *queue);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
@@ -144,16 +154,6 @@ qua_full(QueueArray_t *queue);
 bool
 qua_fits(QueueArray_t *queue, unsigned_t size);
 
-/// \ref qua_capacity_lock
-/// \brief Locks the buffer's growth for the specified queue.
-void
-qua_capacity_lock(QueueArray_t *queue);
-
-/// \ref qua_capacity_unlock
-/// \brief Unlocks the buffer's growth for the specified queue.
-void
-qua_capacity_unlock(QueueArray_t *queue);
-
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
 /// \ref qua_copy
@@ -182,7 +182,6 @@ qua_to_array(QueueArray_t *queue, integer_t *length);
 /// \brief Displays a QueueArray_s in the console.
 void
 qua_display(QueueArray_t *queue, int display_mode);
-
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

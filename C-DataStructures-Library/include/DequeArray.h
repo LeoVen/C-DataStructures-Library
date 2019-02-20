@@ -1,6 +1,6 @@
 /**
  * @file DequeArray.h
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 29/10/2018
@@ -99,6 +99,16 @@ dqa_locked(DequeArray_t *deque);
 bool
 dqa_set_growth(DequeArray_t *deque, integer_t growth_rate);
 
+/// \ref dqa_capacity_lock
+/// \brief Locks the buffer's growth for the specified deque.
+void
+dqa_capacity_lock(DequeArray_t *deque);
+
+/// \ref dqa_capacity_unlock
+/// \brief Unlocks the buffer's growth for the specified deque.
+void
+dqa_capacity_unlock(DequeArray_t *deque);
+
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 /// \ref dqa_enqueue_front
@@ -145,16 +155,6 @@ bool dqa_full(DequeArray_t *deque);
 /// \brief Returns true if a given size fits inside the deque without
 /// reallocating the buffer.
 bool dqa_fits(DequeArray_t *deque, unsigned_t size);
-
-/// \ref dqa_capacity_lock
-/// \brief Locks the buffer's growth for the specified deque.
-void
-dqa_capacity_lock(DequeArray_t *deque);
-
-/// \ref dqa_capacity_unlock
-/// \brief Unlocks the buffer's growth for the specified deque.
-void
-dqa_capacity_unlock(DequeArray_t *deque);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 

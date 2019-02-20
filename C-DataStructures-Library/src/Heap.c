@@ -101,6 +101,7 @@ hep_display_tree(Heap_t *heap, integer_t index, integer_t height);
 
 ///
 /// \param[in] interface
+/// \param[in] kind
 ///
 /// \return
 Heap_t *
@@ -142,6 +143,7 @@ hep_new(Interface_t *interface, HeapKind kind)
 /// \param[in] interface
 /// \param[in] size
 /// \param[in] growth_rate
+/// \param[in] kind
 ///
 /// \return
 Heap_t *

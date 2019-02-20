@@ -1,6 +1,6 @@
 /**
  * @file StackArray.c
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 03/10/2018
@@ -73,7 +73,7 @@ struct StackArray_s
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 bool
-static sta_grow(StackArray stack);
+static sta_grow(StackArray_t *stack);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -89,7 +89,7 @@ static sta_grow(StackArray stack);
 StackArray_t *
 sta_new(Interface_t *interface)
 {
-    StackArray stack = malloc(sizeof(StackArray_t));
+    StackArray_t *stack = malloc(sizeof(StackArray_t));
 
     if (!stack)
         return NULL;
@@ -141,7 +141,7 @@ sta_create(Interface_t *interface, integer_t initial_capacity,
     if (growth_rate <= 100 || initial_capacity <= 0)
         return NULL;
 
-    StackArray stack = malloc(sizeof(StackArray_t));
+    StackArray_t *stack = malloc(sizeof(StackArray_t));
 
     if (!stack)
         return NULL;
@@ -207,9 +207,7 @@ sta_free_shallow(StackArray_t *stack)
 /// - free
 ///
 /// \param[in] stack The stack to have its elements erased.
-///
-/// \return True if all operations were successful.
-bool
+void
 sta_erase(StackArray_t *stack)
 {
     for (integer_t i = 0; i < stack->size; i++)
@@ -221,17 +219,13 @@ sta_erase(StackArray_t *stack)
 
     stack->version_id++;
     stack->size = 0;
-
-    return true;
 }
 
 /// This functions will reset the StackArray_s without freeing its elements.
 /// This will keep its original interface and its original buffer size.
 ///
-/// \param[in] queue The queue to be reset.
-///
-/// \return True if all operations were successful.
-bool
+/// \param[in] stack The stack to be reset.
+void
 sta_erase_shallow(StackArray_t *stack)
 {
     for (integer_t i = 0; i < stack->size; i++)
@@ -241,8 +235,6 @@ sta_erase_shallow(StackArray_t *stack)
 
     stack->version_id++;
     stack->size = 0;
-
-    return true;
 }
 
 /// Sets a new interface for the specified StackArray_s.
@@ -327,6 +319,26 @@ sta_set_growth(StackArray_t *stack, integer_t growth_rate)
     stack->growth_rate = growth_rate;
 
     return true;
+}
+
+/// Locks the the target's buffer growth. If the buffer is full no more
+/// elements will be added to the stack until its capacity is unlocked or
+/// another element is removed.
+///
+/// \param[in] stack The stack to have its buffer's growth locked.
+void
+sta_capacity_lock(StackArray_t *stack)
+{
+    stack->locked = true;
+}
+
+/// Unlocks the buffer's capacity allowing it to be reallocated once full.
+///
+/// \param[in] stack The stack to have its buffer's growth unlocked.
+void
+sta_capacity_unlock(StackArray_t *stack)
+{
+    stack->locked = false;
 }
 
 /// Inserts an element at the top of the specified stack.
@@ -436,24 +448,6 @@ sta_fits(StackArray_t *stack, unsigned_t size)
     return (stack->size + size) <= stack->capacity;
 }
 
-/// Locks the the target's buffer growth. If the buffer is full no more
-/// elements will be added to the stack until its capacity is unlocked or
-/// another element is removed.
-void
-sta_capacity_lock(StackArray stack)
-{
-    stack->locked = true;
-}
-
-/// Unlocks the buffer's capacity allowing it to be reallocated once full.
-///
-/// \param[in] stack The stack to have its buffer's growth unlocked.
-void
-sta_capacity_unlock(StackArray stack)
-{
-    stack->locked = false;
-}
-
 /// Returns a copy of the specified StackArray_s with the same interface. All
 /// elements are copied using the stack's interface's copy function.
 /// \par Interface Requirements
@@ -465,8 +459,8 @@ sta_capacity_unlock(StackArray stack)
 StackArray_t *
 sta_copy(StackArray_t *stack)
 {
-    StackArray_t *new_stack = sta_create(stack->capacity, stack->growth_rate,
-            stack->interface);
+    StackArray_t *new_stack = sta_create(stack->interface, stack->capacity,
+                                         stack->growth_rate);
 
     if (!new_stack)
         return NULL;
@@ -493,8 +487,8 @@ sta_copy(StackArray_t *stack)
 StackArray_t *
 sta_copy_shallow(StackArray_t *stack)
 {
-    StackArray_t *new_stack = sta_create(stack->capacity, stack->growth_rate,
-                                         stack->interface);
+    StackArray_t *new_stack = sta_create(stack->interface, stack->capacity,
+                                         stack->growth_rate);
 
     if (!new_stack)
         return NULL;
@@ -646,7 +640,7 @@ sta_display(StackArray_t *stack, int display_mode)
 
 // This function reallocates the data buffer increasing its capacity
 bool
-static sta_grow(StackArray stack)
+static sta_grow(StackArray_t *stack)
 {
     if (stack->locked)
         return false;

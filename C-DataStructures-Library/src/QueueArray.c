@@ -1,6 +1,6 @@
 /**
  * @file QueueArray.c
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 04/10/2018
@@ -235,9 +235,7 @@ qua_free_shallow(QueueArray_t *queue)
 /// - free
 ///
 /// \param[in] queue The queue to have its elements erased.
-///
-/// \return True if all operations were successful.
-bool
+void
 qua_erase(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
@@ -253,17 +251,13 @@ qua_erase(QueueArray_t *queue)
     queue->version_id++;
     queue->front = 0;
     queue->rear = 0;
-
-    return true;
 }
 
 /// This functions will reset the QueueArray_s without freeing its elements.
 /// This will keep its original interface and its original buffer size.
 ///
 /// \param[in] queue The queue to be reset.
-///
-/// \return True if all operations were successful.
-bool
+void
 qua_erase_shallow(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
@@ -277,8 +271,6 @@ qua_erase_shallow(QueueArray_t *queue)
     queue->version_id++;
     queue->front = 0;
     queue->rear = 0;
-
-    return true;
 }
 
 /// Sets a new interface for the specified QueueArray_s.
@@ -363,6 +355,26 @@ qua_set_growth(QueueArray_t *queue, integer_t growth_rate)
     queue->growth_rate = growth_rate;
 
     return true;
+}
+
+/// Locks the the target's buffer growth. If the buffer is full no more
+/// elements will be added to the queue until its capacity is unlocked or
+/// another element is removed.
+///
+/// \param[in] queue The queue to have its buffer's growth locked.
+void
+qua_capacity_lock(QueueArray_t *queue)
+{
+    queue->locked = true;
+}
+
+/// Unlocks the buffer's capacity allowing it to be reallocated once full.
+///
+/// \param[in] queue The queue to have its buffer's growth unlocked.
+void
+qua_capacity_unlock(QueueArray_t *queue)
+{
+    queue->locked = false;
 }
 
 /// Inserts an element into the specified queue. The element is added at the
@@ -497,26 +509,6 @@ qua_fits(QueueArray_t *queue, unsigned_t size)
     return (queue->size + size) <= queue->capacity;
 }
 
-/// Locks the the target's buffer growth. If the buffer is full no more
-/// elements will be added to the queue until its capacity is unlocked or
-/// another element is removed.
-///
-/// \param[in] queue The queue to be locked from growing.
-void
-qua_capacity_lock(QueueArray_t *queue)
-{
-    queue->locked = true;
-}
-
-/// Unlocks the buffer's capacity allowing it to be reallocated once full.
-///
-/// \param[in] queue The queue to have its buffer's growth unlocked.
-void
-qua_capacity_unlock(QueueArray_t *queue)
-{
-    queue->locked = false;
-}
-
 /// Returns a copy of the specified QueueArray_s with the same interface. All
 /// elements are copied using the queue's interface's copy function.
 /// \par Interface Requirements
@@ -528,8 +520,8 @@ qua_capacity_unlock(QueueArray_t *queue)
 QueueArray_t *
 qua_copy(QueueArray_t *queue)
 {
-    QueueArray_t *new_queue = qua_create(queue->capacity, queue->growth_rate,
-                                         queue->interface);
+    QueueArray_t *new_queue = qua_create(queue->interface, queue->capacity,
+                                         queue->growth_rate);
 
     if (!new_queue)
         return NULL;
@@ -559,8 +551,8 @@ qua_copy(QueueArray_t *queue)
 QueueArray_t *
 qua_copy_shallow(QueueArray_t *queue)
 {
-    QueueArray_t *new_queue = qua_create(queue->capacity, queue->growth_rate,
-                                         queue->interface);
+    QueueArray_t *new_queue = qua_create(queue->interface, queue->capacity,
+                                         queue->growth_rate);
 
     if (!new_queue)
         return NULL;

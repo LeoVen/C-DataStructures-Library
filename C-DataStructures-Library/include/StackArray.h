@@ -1,6 +1,6 @@
 /**
  * @file StackArray.h
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 03/10/2018
@@ -60,12 +60,12 @@ sta_free_shallow(StackArray_t *stack);
 
 /// \ref sta_erase
 /// \brief Frees from memory all elements of a StackArray_s.
-bool
+void
 sta_erase(StackArray_t *stack);
 
 /// \ref sta_erase_shallow
 /// \brief Resets the StackArray_s without freeing its elements.
-bool
+void
 sta_erase_shallow(StackArray_t *stack);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
@@ -104,6 +104,16 @@ sta_locked(StackArray_t *stack);
 bool
 sta_set_growth(StackArray_t *stack, integer_t growth_rate);
 
+/// \ref sta_capacity_lock
+/// \brief Locks the buffer's growth for the specified stack.
+void
+sta_capacity_lock(StackArray_t *stack);
+
+/// \ref sta_capacity_unlock
+/// \brief Unlocks the buffer's growth for the specified stack.
+void
+sta_capacity_unlock(StackArray_t *stack);
+
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 /// \ref sta_push
@@ -138,16 +148,6 @@ sta_full(StackArray_t *stack);
 /// reallocating the buffer.
 bool
 sta_fits(StackArray_t *stack, unsigned_t size);
-
-/// \ref sta_capacity_lock
-/// \brief Locks the buffer's growth for the specified stack.
-void
-sta_capacity_lock(StackArray stack);
-
-/// \ref sta_capacity_unlock
-/// \brief Unlocks the buffer's growth for the specified stack.
-void
-sta_capacity_unlock(StackArray stack);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 

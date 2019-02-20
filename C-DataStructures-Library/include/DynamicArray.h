@@ -1,6 +1,6 @@
 /**
  * @file DynamicArray.h
- * 
+ *
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 01/10/2018
@@ -10,12 +10,14 @@
 #define C_DATASTRUCTURES_LIBRARY_DYNAMICARRAY_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// A dynamic C array wrapper. See the source file for the documentation.
+/// \struct DynamicArray_s
+/// \brief A C generic array wrapper with dynamic size.
 struct DynamicArray_s;
 
 /// \brief A type for a an DynamicArray_s.
@@ -31,140 +33,238 @@ typedef struct DynamicArray_s DynamicArray_t;
 /// they all must be dynamically allocated.
 typedef struct DynamicArray_s *DynamicArray;
 
-/// \brief Display function type.
-///
-/// A type for a function that displays an element in the console.
-typedef void(*dar_display_f)(void *);
-
-/// \brief Comparator function type.
-///
-/// A type for a function that compares two elements, returning:
-/// - [ > 0] when the first element is greater than the second;
-/// - [ < 0] when the first element is less than the second;
-/// - 0 when both elements are equal.
-///
-/// Used when sorting the array.
-typedef int(*dar_compare_f)(void *, void *);
-
-/// \brief A Copy function type.
-///
-/// A type for a function that takes an input (first parameter) and returns an
-/// exact copy of that element.
-typedef void *(*dar_copy_f)(void *);
-
-/// \brief A Free function type.
-///
-/// A type for a function responsible for completely freeing an element from
-/// memory.
-typedef void(*dar_free_f)(void *);
-
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status dar_init(DynamicArray *d_array);
+/// \ref dar_new
+/// \brief Initializes a dynamic array structure with default size.
+DynamicArray_t *
+dar_new(Interface_t *interface);
 
-Status dar_create(DynamicArray *d_array, integer_t initial_capacity,
-        integer_t growth_rate, dar_compare_f compare_f, dar_copy_f copy_f,
-        dar_display_f display_f, dar_free_f free_f);
+/// \ref dar_create
+/// \brief Creates a dynamic array with a custom initial capacity.
+DynamicArray_t *
+dar_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate);
 
-Status dar_free(DynamicArray *d_array);
+/// \ref dar_free
+/// \brief Frees from memory a dynamic array and its elements.
+void
+dar_free(DynamicArray_t *array);
 
-Status dar_free_shallow(DynamicArray *d_array);
+/// \ref dar_free_shallow
+/// \brief Frees from memory a dynamic array leaving its elements intact.
+void
+dar_free_shallow(DynamicArray_t *array);
 
-Status dar_erase(DynamicArray *d_array);
+/// \ref dar_erase
+/// \brief Frees from memory all elements of the dynamic array.
+void
+dar_erase(DynamicArray_t *array);
+
+/// \ref dar_erase_shallow
+/// \brief Resets the dynamic array without freeing its elements.
+void
+dar_erase_shallow(DynamicArray_t *array);
+
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
+
+/// \ref dar_config
+/// \brief Sets a new interface for a target dynamic array.
+void
+dar_config(DynamicArray_t *array, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-Status dar_set_v_compare(DynamicArray d_array, dar_compare_f function);
+/// \ref dar_capacity_lock
+/// \brief Locks the growth of the dynamic array.
+void
+dar_capacity_lock(DynamicArray_t *array);
 
-Status dar_set_v_copy(DynamicArray d_array, dar_copy_f function);
-
-Status dar_set_v_display(DynamicArray d_array, dar_display_f function);
-
-Status dar_set_v_free(DynamicArray d_array, dar_free_f function);
-
-Status dar_capacity_lock(DynamicArray d_array);
-
-Status dar_capacity_unlock(DynamicArray d_array);
+/// \ref dar_capacity_unlock
+/// \brief Unlocks the growth of the dynamic array.
+void
+dar_capacity_unlock(DynamicArray_t *array);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-integer_t dar_capacity(DynamicArray d_array);
+/// \ref dar_capacity
+/// \brief Returns the current buffer's capacity.
+integer_t
+dar_capacity(DynamicArray_t *array);
 
-integer_t dar_size(DynamicArray d_array);
+/// \ref dar_size
+/// \brief Returns the current amount of elements in the dynamic array.
+integer_t
+dar_size(DynamicArray_t *array);
 
-integer_t dar_growth_rate(DynamicArray d_array);
+/// \ref dar_growth_rate
+/// \brief Returns the current set growth_rate.
+integer_t
+dar_growth_rate(DynamicArray_t *array);
 
-bool dar_is_locked(DynamicArray d_array);
+/// \ref dar_is_locked
+/// \brief Returns true if the dynamic array's growth is locked.
+bool
+dar_is_locked(DynamicArray_t *array);
 
-void *dar_get(DynamicArray d_array, integer_t index);
+/// \ref dar_get
+/// \brief Returns an element at the specified position of the array.
+void *
+dar_get(DynamicArray_t *array, integer_t index);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status dar_insert(DynamicArray d_array, void **array, integer_t array_size,
-        integer_t index);
+/// \ref dar_insert
+/// \brief Inserts an array of elements at a given index.
+bool
+dar_insert(DynamicArray_t *array, void **elements, integer_t array_size,
+           integer_t index);
 
-Status dar_insert_front(DynamicArray d_array, void *element);
+/// \ref dar_insert_front
+/// \brief Inserts an element at the start of the array.
+bool
+dar_insert_front(DynamicArray_t *array, void *element);
 
-Status dar_insert_at(DynamicArray d_array, void *element, integer_t index);
+/// \ref dar_insert_at
+/// \brief Inserts an element at the specified index.
+bool
+dar_insert_at(DynamicArray_t *array, void *element, integer_t index);
 
-Status dar_insert_back(DynamicArray d_array, void *element);
+/// \ref dar_insert_back
+/// \brief Inserts and element at the end of the array.
+bool
+dar_insert_back(DynamicArray_t *array, void *element);
 
-Status dar_remove(DynamicArray d_array, integer_t from, integer_t to,
-        void ***result, integer_t *size);
+/// \ref dar_remove
+/// \brief Extracts a sub-array from a given range.
+bool
+dar_remove(DynamicArray_t *array, integer_t from, integer_t to, void ***result,
+           integer_t *size);
 
-Status dar_remove_front(DynamicArray d_array, void **result);
+/// \ref dar_remove_front
+/// \brief Removes the first element from the array.
+bool
+dar_remove_front(DynamicArray_t *array, void **result);
 
-Status dar_remove_at(DynamicArray d_array, void **result, integer_t index);
+/// \ref dar_remove_at
+/// \brief Removes an element located at a given index.
+bool
+dar_remove_at(DynamicArray_t *array, void **result, integer_t index);
 
-Status dar_remove_back(DynamicArray d_array, void **result);
+/// \ref dar_remove_back
+/// \brief Removes the last element from the array.
+bool
+dar_remove_back(DynamicArray_t *array, void **result);
 
-Status dar_delete(DynamicArray d_array, integer_t from, integer_t to);
+/// \ref dar_delete
+/// \brief Deletes a given range using the interface's free function.
+bool
+dar_delete(DynamicArray_t *array, integer_t from, integer_t to);
 
-Status dar_prepend(DynamicArray d_array1, DynamicArray d_array2);
+/// \ref dar_prepend
+/// \brief Prepends the second array into the first, emptying it.
+bool
+dar_prepend(DynamicArray_t *array1, DynamicArray_t *array2);
 
-Status dar_add(DynamicArray d_array1, DynamicArray d_array2, integer_t index);
+/// \ref dar_add
+/// \brief Adds the second array into the first at a given index, emptying it.
+bool
+dar_add(DynamicArray_t *array1, DynamicArray_t *array2, integer_t index);
 
-Status dar_append(DynamicArray d_array1, DynamicArray d_array2);
+/// \ref dar_append
+/// \brief Appends the second array into the first, emptying it.
+bool
+dar_append(DynamicArray_t *array1, DynamicArray_t *array2);
 
-Status dar_replace(DynamicArray d_array, void *element, integer_t index);
+/// \ref dar_replace
+/// \brief Frees the element and replaces it by a new one at a given index.
+bool
+dar_replace(DynamicArray_t *array, void *element, integer_t index);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool dar_empty(DynamicArray d_array);
+/// \ref dar_empty
+/// \brief Returns true if the array is empty, otherwise false.
+bool
+dar_empty(DynamicArray_t *array);
 
-bool dar_full(DynamicArray d_array);
+/// \ref dar_full
+/// \brief Returns true if the array is full, otherwise false.
+bool
+dar_full(DynamicArray_t *array);
 
-bool dar_fits(DynamicArray d_array, integer_t size);
+/// \ref dar_fits
+/// \brief Returns true if the given size fits in the array without resizing.
+bool
+dar_fits(DynamicArray_t *array, integer_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *dar_max(DynamicArray d_array);
+/// \ref dar_max
+/// \brief Returns the maximum element in the array.
+void *
+dar_max(DynamicArray_t *array);
 
-void *dar_min(DynamicArray d_array);
+/// \ref dar_min
+/// \brief Returns the minimum element in the array.
+void *
+dar_min(DynamicArray_t *array);
 
-integer_t dar_index_first(DynamicArray d_array, void *key);
+/// \ref dar_index_first
+/// \brief Returns the first index of an element that matches a given key.
+integer_t
+dar_index_first(DynamicArray_t *array, void *key);
 
-integer_t dar_index_last(DynamicArray d_array, void *key);
+/// \ref dar_index_last
+/// \brief Returns the last index of an element that matches a given key.
+integer_t
+dar_index_last(DynamicArray_t *array, void *key);
 
-bool dar_contains(DynamicArray d_array, void *element);
+/// \ref dar_contains
+/// \brief Returns true if a given element is present in the array.
+bool
+dar_contains(DynamicArray_t *array, void *element);
 
-Status dar_switch(DynamicArray d_array, integer_t pos1, integer_t pos2);
+/// \ref dar_switch
+/// \brief Switches two elements within the array.
+bool
+dar_switch(DynamicArray_t *array, integer_t pos1, integer_t pos2);
 
-Status dar_reverse(DynamicArray d_array);
+/// \ref dar_reverse
+/// \brief Reverses the order of the array's elements.
+bool
+dar_reverse(DynamicArray_t *array);
 
-Status dar_copy(DynamicArray d_array, DynamicArray *result);
+/// \ref dar_copy
+/// \brief Returns a copy of the specified dynamic array.
+DynamicArray_t *
+dar_copy(DynamicArray_t *array);
 
-Status dar_to_array(DynamicArray d_array, void ***result, integer_t *length);
+/// \ref dar_copy_shallow
+/// \brief Returns a shallow copy of the specified dynamic array.
+DynamicArray_t *
+dar_copy_shallow(DynamicArray_t *array);
 
-Status dar_sort(DynamicArray d_array);
+/// \ref dar_to_array
+/// \brief Makes a C array from an existing DynamicArray_s.
+void **
+dar_to_array(DynamicArray_t *array, integer_t *length);
+
+/// \ref dar_from_array
+/// \brief Makes a new DynamicArray_s from an existing C array.
+DynamicArray_t *
+dar_from_array(Interface_t *interface, void **buffer, integer_t length,
+               integer_t growth_rate);
+
+void
+dar_sort(DynamicArray_t *array);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status dar_display(DynamicArray d_array);
-
-Status dar_display_array(DynamicArray d_array);
-
-Status dar_display_raw(DynamicArray d_array);
+/// \ref dar_display
+/// \brief Displays a DynamicArray_s in the console.
+void
+dar_display(DynamicArray_t *array, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
@@ -185,43 +285,83 @@ typedef struct DynamicArrayIterator_s *DynamicArrayIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status dar_iter_init(DynamicArrayIterator *iter, DynamicArray target);
+/// \ref dar_iter_new
+/// \brief Creates a new dynamic array iterator given a target.
+DynamicArrayIterator_t *
+dar_iter_new(DynamicArray_t *target);
 
-Status dar_iter_retarget(DynamicArrayIterator *iter, DynamicArray target);
+/// \ref dar_iter_retarget
+/// \brief Retargets an existing iterator.
+void
+dar_iter_retarget(DynamicArrayIterator_t *iter, DynamicArray_t *target);
 
-Status dar_iter_free(DynamicArrayIterator *iter);
+/// \ref dar_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+dar_iter_free(DynamicArrayIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-Status dar_iter_next(DynamicArrayIterator iter);
+/// \ref dar_iter_next
+/// \brief Iterates to the next element if available.
+bool
+dar_iter_next(DynamicArrayIterator_t *iter);
 
-Status dar_iter_prev(DynamicArrayIterator iter);
+/// \ref dar_iter_prev
+/// \brief Iterates to the previous element if available.
+bool
+dar_iter_prev(DynamicArrayIterator_t *iter);
 
-Status dar_iter_to_start(DynamicArrayIterator iter);
+/// \ref dar_iter_to_start
+/// \brief Iterates to the first element in the array.
+bool
+dar_iter_to_start(DynamicArrayIterator_t *iter);
 
-Status dar_iter_to_end(DynamicArrayIterator iter);
+/// \ref dar_iter_to_end
+/// \brief Iterates to the last element in the array.
+bool
+dar_iter_to_end(DynamicArrayIterator_t *iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool dar_iter_has_next(DynamicArrayIterator iter);
+/// \ref dar_iter_has_next
+/// \brief Returns true if there is another element next in the iteration.
+bool
+dar_iter_has_next(DynamicArrayIterator_t *iter);
 
-bool dar_iter_has_prev(DynamicArrayIterator iter);
+/// \ref dar_iter_has_prev
+/// \brief Returns true if it is possible to iterate to a previous element.
+bool
+dar_iter_has_prev(DynamicArrayIterator_t *iter);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status dar_iter_set(DynamicArrayIterator iter, void *element);
+/// \ref dar_iter_set
+/// \brief Sets the element pointed by the iterator to a new element.
+bool
+dar_iter_set(DynamicArrayIterator_t *iter, void *element);
 
-Status dar_iter_get(DynamicArrayIterator iter, void **result);
-
-Status dar_iter_pop(DynamicArrayIterator iter, void **result);
+/// \ref dar_iter_get
+/// \brief Gets the element pointed by the iterator.
+bool
+dar_iter_get(DynamicArrayIterator_t *iter, void **result);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *dar_iter_peek_next(DynamicArrayIterator iter);
+/// \ref dar_iter_peek_next
+/// \brief Returns the next element in the iteration if available.
+void *
+dar_iter_peek_next(DynamicArrayIterator_t *iter);
 
-void *dar_iter_peek(DynamicArrayIterator iter);
+/// \ref dar_iter_peek
+/// \brief Returns the current element in the iteration if available.
+void *
+dar_iter_peek(DynamicArrayIterator_t *iter);
 
-void *dar_iter_peek_prev(DynamicArrayIterator iter);
+/// \ref dar_iter_peek_prev
+/// \brief Returns the previous element in the iteration if available.
+void *
+dar_iter_peek_prev(DynamicArrayIterator_t *iter);
 
 #ifdef __cplusplus
 }
