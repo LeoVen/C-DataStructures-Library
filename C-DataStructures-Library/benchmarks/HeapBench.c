@@ -148,26 +148,26 @@ hep_bench_IO(unsigned_t elements, unsigned_t iterations)
     free(search_timings);
     free(removal_timings);
 
-    printf("+----------------------------------------+\n");
-    printf("  Total elements added      : %llu\n", elements);
-    printf("  Total iterations          : %llu\n", iterations);
-    printf("+----------------------------------------+\n");
-    printf("  Average insertion time    : %lf seconds\n", insertion_sum / (double)iterations);
-    printf("  Average removal time      : %lf seconds\n", removal_sum / (double)iterations);
-    printf("  Average decrease-key time : %lf seconds\n", search_sum / (double)iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
+    printf("  Total elements added   : %llu\n", elements);
+    printf("  Total iterations       : %llu\n", iterations);
+    printf("+--------------------------------------------------+\n");
+    printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
+    printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
+    printf("  Average decr-key time  : %lf seconds\n", search_sum / (double)iterations);
+    printf("+--------------------------------------------------+\n");
 }
 
 // Runs all Heap benchmarks
 void HeapBench(void)
 {
-    printf("+--------------------------------------------------+\n");
-    printf("|                  Heap Benchmark                  |\n");
-    printf("+--------------------------------------------------+\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("|                       Heap Benchmark                       |\n");
+    printf("+------------------------------------------------------------+\n");
 
     hep_bench_IO(100000, 100);
     hep_bench_IO(1000000, 10);
-    hep_bench_IO(10000000, 1);
+    hep_bench_IO(10000000, 2);
 
     printf("\n");
 }

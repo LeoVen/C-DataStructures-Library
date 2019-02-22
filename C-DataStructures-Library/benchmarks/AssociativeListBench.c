@@ -129,23 +129,23 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool duplicate_keys)
     free(removal_timings);
     free(keys);
 
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Total elements added   : %llu\n", elements);
     printf("  Total iterations       : %llu\n", iterations);
     printf("  Duplicate Keys         : %s\n", duplicate_keys ? "YES" : "NO");
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
     printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
     printf("  Average search time    : %lf seconds\n", search_sum / (double)iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
 }
 
 // Runs all AssociativeList benchmarks
 void AssociativeListBench(void)
 {
-    printf("+--------------------------------------------------+\n");
-    printf("|            AssociativeList Benchmark             |\n");
-    printf("+--------------------------------------------------+\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("|                 AssociativeList Benchmark                  |\n");
+    printf("+------------------------------------------------------------+\n");
 
     ali_bench_IO( 10000, 10, true);
     ali_bench_IO( 10000, 10, false);

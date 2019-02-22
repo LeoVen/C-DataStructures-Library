@@ -12,11 +12,11 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-74-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-33322-%232196f3.svg)
-![average](https://img.shields.io/badge/average-450-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-75-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-33579-%232196f3.svg)
+![average](https://img.shields.io/badge/average-447-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
-![minimum](https://img.shields.io/badge/minimum-12-%23f44336.svg)
+![minimum](https://img.shields.io/badge/minimum-13-%23f44336.svg)
 
 ## Planned Data Structures
 

@@ -119,26 +119,27 @@ avl_bench_IO(unsigned_t elements, unsigned_t iterations)
     free(search_timings);
     free(removal_timings);
 
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Total elements added   : %llu\n", elements);
     printf("  Total iterations       : %llu\n", iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
     printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
     printf("  Average search time    : %lf seconds\n", search_sum / (double)iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
 }
 
 // Runs all AVLTree benchmarks
 void AVLTreeBench(void)
 {
-    printf("+--------------------------------------------------+\n");
-    printf("|                AVLTree Benchmark                 |\n");
-    printf("+--------------------------------------------------+\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("|                     AVLTree Benchmark                      |\n");
+    printf("+------------------------------------------------------------+\n");
 
     avl_bench_IO(100000, 100);
     avl_bench_IO(1000000, 10);
-    avl_bench_IO(10000000, 1);
+    avl_bench_IO(10000000, 2);
+    avl_bench_IO(100000000, 1);
 
     printf("\n");
 }

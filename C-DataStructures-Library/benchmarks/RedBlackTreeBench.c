@@ -119,26 +119,27 @@ rbt_bench_IO(unsigned_t elements, unsigned_t iterations)
     free(search_timings);
     free(removal_timings);
 
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Total elements added   : %llu\n", elements);
     printf("  Total iterations       : %llu\n", iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
     printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
     printf("  Average search time    : %lf seconds\n", search_sum / (double)iterations);
-    printf("+----------------------------------------+\n");
+    printf("+--------------------------------------------------+\n");
 }
 
 // Runs all RedBlackTree benchmarks
 void RedBlackTreeBench(void)
 {
-    printf("+--------------------------------------------------+\n");
-    printf("|              RedBlackTree Benchmark              |\n");
-    printf("+--------------------------------------------------+\n");
+    printf("+------------------------------------------------------------+\n");
+    printf("|                   RedBlackTree Benchmark                   |\n");
+    printf("+------------------------------------------------------------+\n");
 
     rbt_bench_IO(100000, 100);
     rbt_bench_IO(1000000, 10);
-    rbt_bench_IO(10000000, 1);
+    rbt_bench_IO(10000000, 2);
+    rbt_bench_IO(100000000, 1);
 
     printf("\n");
 }

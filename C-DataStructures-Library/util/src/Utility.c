@@ -674,7 +674,8 @@ uint64_t random_uint64_t(uint64_t min, uint64_t max)
 
 float random_float(float min, float max)
 {
-    return ((float)rand()/(float)(RAND_MAX + 1)) * ((max - min + 1.0f) + min);
+    return ((float)rand()/(float)((float)RAND_MAX + 1.0)) *
+            ((max - min + 1.0f) + min);
 }
 
 double random_double(double min, double max)
@@ -684,7 +685,7 @@ double random_double(double min, double max)
 
 long double random_long_double(long double min, long double max)
 {
-    return ((long double)rand() / (long double)(RAND_MAX + 1)) *
+    return ((long double)rand() / ((long double)RAND_MAX + 1.0)) *
             ((max - min + 1.0f) + min);
 }
 
@@ -708,7 +709,8 @@ char *random_string(uint64_t min_length, uint64_t max_length, bool alpha_only)
 
     if (alpha_only)
     {
-        const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const char *alpha =
+              "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const size_t alpha_size = 62;
 
         for (size_t i = 0; i < length; i++)
