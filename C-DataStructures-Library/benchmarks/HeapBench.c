@@ -167,7 +167,7 @@ void HeapBench(void)
 
     hep_bench_IO(100000, 100);
     hep_bench_IO(1000000, 10);
-    hep_bench_IO(10000000, 2);
+    hep_bench_IO(10000000, 1);
 
     printf("\n");
 }

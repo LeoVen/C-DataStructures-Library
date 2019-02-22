@@ -138,8 +138,7 @@ void RedBlackTreeBench(void)
 
     rbt_bench_IO(100000, 100);
     rbt_bench_IO(1000000, 10);
-    rbt_bench_IO(10000000, 2);
-    rbt_bench_IO(100000000, 1);
+    rbt_bench_IO(10000000, 1);
 
     printf("\n");
 }

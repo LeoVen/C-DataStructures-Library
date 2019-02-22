@@ -138,8 +138,7 @@ void AVLTreeBench(void)
 
     avl_bench_IO(100000, 100);
     avl_bench_IO(1000000, 10);
-    avl_bench_IO(10000000, 2);
-    avl_bench_IO(100000000, 1);
+    avl_bench_IO(10000000, 1);
 
     printf("\n");
 }
