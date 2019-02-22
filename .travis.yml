@@ -22,6 +22,6 @@ script:
   - cmake ..
   - make
   - ./C_DataStructures_Library_Tests
-  - travis_wait ./C_DataStructures_Library_Benchmarks
+  - travis_wait 60 ./C_DataStructures_Library_Benchmarks
 after_success:
   - bash <(curl -s https://codecov.io/bash)
