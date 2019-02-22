@@ -53,9 +53,10 @@ set(INCLUDE_BENCHMARK_FILES
         ${INCLUDE_INTERFACE}
 )
 set(BENCHMARK_FILES
-        benchmarks/AVLTreeBench.c
-        benchmarks/RedBlackTreeBench.c
         benchmarks/AssociativeListBench.c
+        benchmarks/AVLTreeBench.c
+        benchmarks/HeapBench.c
+        benchmarks/RedBlackTreeBench.c
 )
 
 add_executable(C_DataStructures_Library_Tests tests/main.c ${INCLUDE_TETS_FILES} ${TEST_FILES})

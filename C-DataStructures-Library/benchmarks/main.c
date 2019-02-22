@@ -8,5 +8,6 @@ int main(void)
 
     AssociativeListBench();
     AVLTreeBench();
+    HeapBench();
     RedBlackTreeBench();
 }

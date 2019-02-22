@@ -16,6 +16,8 @@ void AssociativeListBench(void);
 
 void AVLTreeBench(void);
 
+void HeapBench(void);
+
 void RedBlackTreeBench(void);
 
 #endif //C_DATASTRUCTURES_LIBRARY_BENCHMARKS_H

@@ -167,6 +167,21 @@ hep_full(Heap_t *heap);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
+/// \ref hep_heapify
+/// \brief Fixes the tree if the root element is changed.
+bool
+hep_heapify(Heap_t *heap);
+
+/// \ref hep_copy
+/// \brief Makes a copy of an existing heap.
+Heap_t *
+hep_copy(Heap_t *heap);
+
+/// \ref hep_copy_shallow
+/// \brief Makes a shallow copy of an existing heap.
+Heap_t *
+hep_copy_shallow(Heap_t *heap);
+
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
 /// \ref hep_display

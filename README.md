@@ -40,7 +40,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [FibonacciHeap][fbh]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [HashMap][hmp]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [HashSet][hst]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [Heap][hep]                | `[####______]` | `[__________]` | `[__________]` | `[__________]` | `[#_________]` |
+| [Heap][hep]                | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[#_________]` |
 | [MultiHashMap][mhm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [MultiTreeMap][mtm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [PriorityHeap][prh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -357,6 +357,52 @@ In this case it is implemented as a dynamic array where each node is located at:
 * Right  : `2 * I + 1`
 
 Where the current node is located in the position `I` in the array.
+
+Since this implementation of a Heap is a multi-purpose one, it can be used to sort elements or used as a priority queue.
+
+#### Sorting
+
+```c
+// Sorting a buffer of [int32_t *] of length [len]
+Heap_t *heap = hep_new(my_int32_interface, MaxHeap);
+
+for (int i = 0; i < len; i++)
+{
+    if (!hep_insert(heap, buffer[i]))
+        /* Something went wrong */
+}
+
+// Now the heap has all the buffer's elements.
+
+void *result;
+for (int i = 0; i < len; i++)
+{
+    if (!hep_remove(heap, &result))
+        /* Something went wrong */
+    
+    buffer[i] = (int32_t *)result;
+}
+
+// Now buffer is sorted
+```
+
+#### Priority Queue
+
+```c
+// All operations work the same as above. An useful functionality in priority
+// queues is decrease or increase key. To do this you must do it manually. Then
+// you can call hep_heapify() to fix the changed root like so:
+
+// ... Elements are inserted
+
+// Returns root
+int32_t *element = (int32_t *)hep_peek(heap);
+
+*element += 2;
+
+if (!hep_heapify(heap))
+    /* Something went wrong */
+```
 
 ### MultiHashMap
 

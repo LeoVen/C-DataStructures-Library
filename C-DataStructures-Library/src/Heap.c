@@ -419,6 +419,68 @@ hep_full(Heap_t *heap)
 
 ///
 /// \param[in] heap
+///
+/// \return
+bool
+hep_heapify(Heap_t *heap)
+{
+    return hep_float_down(heap, 0);
+}
+
+///
+/// \param[in] heap
+///
+/// \return
+Heap_t *
+hep_copy(Heap_t *heap)
+{
+    Heap_t *copy = hep_create(heap->interface, heap->count, heap->growth_rate,
+                              heap->kind);
+
+    if (!copy)
+        return NULL;
+
+    copy->locked = copy->locked;
+
+    for (integer_t i = 0; i < heap->count; i++)
+    {
+        copy->buffer[i] = heap->interface->copy(heap->buffer[i]);
+    }
+
+    copy->count = heap->count;
+    copy->version_id++;
+
+    return copy;
+}
+
+///
+/// \param[in] heap
+///
+/// \return
+Heap_t *
+hep_copy_shallow(Heap_t *heap)
+{
+    Heap_t *copy = hep_create(heap->interface, heap->count, heap->growth_rate,
+                              heap->kind);
+
+    if (!copy)
+        return NULL;
+
+    copy->locked = copy->locked;
+
+    for (integer_t i = 0; i < heap->count; i++)
+    {
+        copy->buffer[i] = heap->buffer[i];
+    }
+
+    copy->count = heap->count;
+    copy->version_id++;
+
+    return copy;
+}
+
+///
+/// \param[in] heap
 /// \param[in] display_mode
 void
 hep_display(Heap_t *heap, int display_mode)
@@ -571,7 +633,6 @@ hep_float_down(Heap_t *heap, integer_t index)
     // min-heap or a max-heap and it inverts the compare function output when
     // working with a min-heap.
     integer_t mod = heap->kind;
-
 
     // Float down
     while (index < heap->count)
