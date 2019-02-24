@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-75-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-33579-%232196f3.svg)
-![average](https://img.shields.io/badge/average-447-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-76-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-34082-%232196f3.svg)
+![average](https://img.shields.io/badge/average-448-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-13-%23f44336.svg)
 
@@ -26,7 +26,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [AssociativeList][ali]     | `[#####_____]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [BinaryHeap][bhp]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[##________]` |
+| [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[##________]` |
 | [BinomialHeap][bnh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BitArray][bit]            | `[#########_]` | `[__________]` | `[__________]` | `[#######___]` | `[#####_____]` |
 | [BTree][btr]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |

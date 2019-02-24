@@ -10,115 +10,158 @@
 #define C_DATASTRUCTURES_LIBRARY_BINARYSEARCHTREE_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/// A BinarySearchTree is a node-based binary tree with the following
-/// properties:
-/// - The left subtree of a node contains only nodes with keys lesser than the
-/// node’s key;
-/// - The right subtree of a node contains only nodes with keys greater than
-/// the node’s key;
-/// - The left and right subtree each must also be a binary search tree.
-///
-/// This Binary Search Tree implementation allows duplicate values. If a
-/// duplicate value is inserted, the \c count located at the node is increased.
-///
-/// To initialize a BinarySearchTree use bst_init(). After that you can insert
-/// elements using bst_insert(). To remove elements you can use bst_remove() or
-/// if you wish to remove the \c root element use bst_pop(). You can also
-/// remove all elements using bst_remove_all().
-///
-/// \b Functions
-///
-/// Located in the file BinarySearchTree.c
-struct BinarySearchTree_s
-{
-    /// \brief Total elements int the tree.
-    ///
-    /// Total elements in the tree. This is not the total amount of nodes in
-    /// the tree as repetitive values are stores in the same node with a \c
-    /// count variable.
-    integer_t count;
+/// \struct BinarySearchTree_s
+/// \brief A generic, multi-purpose binary search tree.
+struct BinarySearchTree_s;
 
-    /// \brief Root node.
-    ///
-    /// The first node in the tree.
-    struct BinarySearchTreeNode_s *root;
-};
-
-/// Defines a type for <code> struct BinarySearchTree_s </code>.
+/// \ref BinarySearchTree_t
+/// \brief A type for a binary search tree.
 ///
-/// Every tree is initialized by \c malloc with \c sizeof(BinarySearchTree_t).
+/// A type for a <code> struct BinarySearchTree_s </code> so you don't have to
+/// always write the full name of it.
 typedef struct BinarySearchTree_s BinarySearchTree_t;
 
-/// Defines a type of pointer to <code> struct BinarySearchTree_s </code>.
+/// \ref BinarySearchTree
+/// \brief A pointer type for a binary search tree.
 ///
-/// This typedef is used to avoid having to declare every BST as a pointer
-/// type since they all must be dynamically allocated.
+/// Defines a pointer type to <code> struct BinarySearchTree_s </code>. This
+/// typedef is used to avoid having to declare every binary search tree as a
+/// pointer type since they all must be dynamically allocated.
 typedef struct BinarySearchTree_s *BinarySearchTree;
 
-/// Initializes a BinarySearchTree.
-///
-/// \param[in,out] bst
-///
-/// \return
-Status bst_init(BinarySearchTree *bst);
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// Inserts the specified element into the tree.
-///
-/// \param[in] bst
-/// \param[in] element
-///
-/// \return
-Status bst_insert(BinarySearchTree bst, int element);
+/// \ref bst_new
+/// \brief Initializes a new binary search tree.
+BinarySearchTree_t *
+bst_new(Interface_t *interface);
 
-/// Removes the specified element from the tree.
-///
-/// \param[in] bst
-/// \param[in] element
-///
-/// \return
-Status bst_remove(BinarySearchTree bst, int element);
+/// \ref bst_free
+/// \brief Frees from memory a BinarySearchTree_s and its elements.
+void
+bst_free(BinarySearchTree_t *tree);
 
-/// Removes all instances of the specified element from the tree.
-///
-/// \param[in] bst
-/// \param[in] element
-/// \param[out] total
-///
-/// \return
-Status bst_remove_all(BinarySearchTree bst, int element, unsigned *total);
+/// \ref bst_free_shallow
+/// \brief Frees from memory a BinarySearchTree_s leaving its elements intact.
+void
+bst_free_shallow(BinarySearchTree_t *tree);
 
-/// Removes and retrieves root element.
-///
-/// \param bst
-/// \param result
-///
-/// \return
-Status bst_pop(BinarySearchTree bst, int *result);
+/// \ref bst_erase
+/// \brief Frees from memory all elements of a BinarySearchTree_s.
+void
+bst_erase(BinarySearchTree_t *tree);
 
-Status bst_display(BinarySearchTree bst, int display);
+/// \ref bst_erase_shallow
+/// \brief Frees from memory all the nodes of a BinarySearchTree_s.
+void
+bst_erase_shallow(BinarySearchTree_t *tree);
 
-Status bst_delete(BinarySearchTree *bst);
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-Status bst_erase(BinarySearchTree *bst);
+/// \ref bst_config
+/// \brief Sets a new interface for the target binary search tree.
+void
+bst_config(BinarySearchTree_t *tree, Interface_t *new_interface);
 
-bool bst_empty(BinarySearchTree bst);
+/////////////////////////////////////////////////////////////////// GETTERS ///
 
-bool bst_contains(BinarySearchTree bst, int value);
+/// \ref bst_count
+/// \brief Returns the amount of elements in the binary search tree.
+integer_t
+bst_count(BinarySearchTree_t *tree);
 
-int bst_max(BinarySearchTree bst);
+/// \ref bst_limit
+/// \brief Returns the binary search tree's maximum number of elements.
+integer_t
+bst_limit(BinarySearchTree_t *tree);
 
-int bst_min(BinarySearchTree bst);
+/////////////////////////////////////////////////////////////////// SETTERS ///
 
-int bst_peek(BinarySearchTree bst);
+/// \ref bst_set_limit
+/// \brief Sets a new limit to the binary search tree's size.
+bool
+bst_set_limit(BinarySearchTree_t *tree, integer_t limit);
 
-integer_t bst_height(BinarySearchTree bst);
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status bst_traversal(BinarySearchTree bst, int traversal);
+/// \ref bst_insert
+/// \brief Adds a new element in the specified binary search tree.
+bool
+bst_insert(BinarySearchTree_t *tree, void *element);
+
+/// \ref bst_remove
+/// \brief Removes an element from the tree that matches the given element.
+bool
+bst_remove(BinarySearchTree_t *tree, void *element);
+
+/// \ref bst_pop
+/// \brief Removes the root element and frees it from memory.
+bool
+bst_pop(BinarySearchTree_t *tree);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+/// \ref bst_empty
+/// \brief Checks if the specified binary search tree is empty.
+bool
+bst_empty(BinarySearchTree_t *tree);
+
+/// \ref bst_full
+/// \brief Checks if the specified binary search tree is full.
+bool
+bst_full(BinarySearchTree_t *tree);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref bst_contains
+/// \brief Checks if a given element is in the binary search tree.
+bool
+bst_contains(BinarySearchTree_t *tree, void *element);
+
+/// \ref bst_peek
+/// \brief Returns the root element if present.
+void *
+bst_peek(BinarySearchTree_t *tree);
+
+/// \ref bst_max
+/// \brief Returns the maximum element if present.
+void *
+bst_max(BinarySearchTree_t *tree);
+
+/// \ref bst_min
+/// \brief Returns the minimum element if present.
+void *
+bst_min(BinarySearchTree_t *tree);
+
+/////////////////////////////////////////////////////////////////// DISPLAY ///
+
+/// \ref bst_display
+/// \brief Displays a binary search tree in the console given a display mode.
+void
+bst_display(BinarySearchTree_t *tree, int display_mode);
+
+/// \ref bst_traversal
+/// \brief Displays each element in the console given a traversal order.
+void
+bst_traversal(BinarySearchTree_t *tree, int traversal_mode);
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BinarySearchTreeIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BinarySearchTreeWrapper
 
 #ifdef __cplusplus
 }

@@ -8,620 +8,565 @@
 
 #include "BinarySearchTree.h"
 
-// NOT EXPOSED API
-
-/// Node for the BinarySearchTree implementation.
-typedef struct BinarySearchTreeNode_s
+/// A BinarySearchTree_s is a node-based binary tree with the following
+/// properties:
+/// - The left subtree of a node contains only nodes with keys lesser than the
+/// node’s key;
+/// - The right subtree of a node contains only nodes with keys greater than
+/// the node’s key;
+/// - The left and right subtree each must also be a binary search tree.
+///
+/// This Binary Search Tree does not allow duplicate values.
+///
+/// To crate a new BinarySearchTree_s use bst_new(). After that you can insert
+/// elements using bst_insert(). To remove elements you can use bst_remove() or
+/// if you wish to remove the \c root element use bst_pop().
+///
+/// \par Functions
+/// Located in the file BinarySearchTree.c
+struct BinarySearchTree_s
 {
-    int key;                               /*!< Node's key */
-    unsigned count;                        /*!< Amount of repeated keys */
-    struct BinarySearchTreeNode_s *right;  /*!< Pointer to right child */
-    struct BinarySearchTreeNode_s *left;   /*!< Pointer to left child */
-    struct BinarySearchTreeNode_s *parent; /*!< Pointer to parent Node */
-} BinarySearchTreeNode_t, *BinarySearchTreeNode;
+    /// \brief Total elements int the tree.
+    ///
+    /// Total elements in the tree linked together by the root node.
+    integer_t count;
 
-Status bst_make_node(BinarySearchTreeNode *node, int value);
+    /// \brief Tree size limit.
+    ///
+    /// If it is set to 0 or a negative value then the tree has no limit to its
+    /// size. Otherwise it won't be able to have more elements than the
+    /// specified value. The tree is always initialized with no restrictions to
+    /// its size, that is, \c limit equals 0. The user won't be able to limit
+    /// the tree size if it already has more elements than the specified limit.
+    integer_t limit;
 
-Status bst_delete_recursive(BinarySearchTreeNode *node);
+    /// \brief The tree's root node.
+    ///
+    /// The root element of a binary search tree.
+    struct BinarySearchTreeNode_s *root;
 
-integer_t bst_node_height(BinarySearchTreeNode node);
+    /// \brief BinarySearchTree_s interface.
+    ///
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
 
-integer_t bst_node_depth(BinarySearchTreeNode node);
+    /// \brief A version id to keep track of modifications.
+    ///
+    /// This version id is used by the iterator to check if the structure was
+    /// modified. The iterator can only function if its version_id is the same
+    /// as the structure's version id, that is, there have been no structural
+    /// modifications (except for those done by the iterator itself).
+    integer_t version_id;
+};
 
-BinarySearchTreeNode bst_node_find(BinarySearchTreeNode root, int value);
-
-Status bst_display_raw(BinarySearchTreeNode node, integer_t spaces);
-
-Status bst_display_interactive(BinarySearchTreeNode node, integer_t spaces);
-
-Status bst_display_clean(BinarySearchTreeNode node, integer_t spaces);
-
-Status bst_display_quantity(BinarySearchTreeNode node, integer_t spaces);
-
-Status bst_traversal_preorder(BinarySearchTreeNode node);
-
-Status bst_traversal_inorder(BinarySearchTreeNode node);
-
-Status bst_traversal_postorder(BinarySearchTreeNode node);
-
-Status bst_traversal_leaves(BinarySearchTreeNode node);
-
-// END OF NOT EXPOSED API
-
-Status bst_init(BinarySearchTree *bst)
+/// \brief A BinarySearchTree_s node.
+///
+/// Implementation detail. This node is a binary search tree node with a
+/// <code> void * </code> key pointer that represents the element of that node
+/// and three pointers: one to its right child, an element that is greater than
+/// the current element; one to its left child, an element that is lesser than
+/// the current element; and one to its parent, an element that was inserted
+/// before this one. They all can be NULL. When parent is NULL then this node
+/// is the root node; when right or left are NULL, it means that there are no
+/// sub-trees following that branch.
+struct BinarySearchTreeNode_s
 {
-    (*bst) = malloc(sizeof(BinarySearchTree_t));
+    /// \brief Node's data.
+    ///
+    /// A pointer to the node's data.
+    void *key;
 
-    if (!(*bst))
-        return DS_ERR_ALLOC;
+    /// \brief A pointer to its right child.
+    ///
+    /// A pointer to its right child where its element is greater than the
+    /// current node or NULL if there is no right subtree or if this node is
+    /// a leaf.
+    struct BinarySearchTreeNode_s *right;
 
-    (*bst)->root = NULL;
+    /// \brief A pointer to its left child.
+    ///
+    /// A pointer to its left child where its element is smaller than the
+    /// current node or NULL if there is no left subtree or if this node is
+    /// a leaf.
+    struct BinarySearchTreeNode_s *left;
 
-    (*bst)->count = 0;
+    /// \brief Pointer to parent node.
+    ///
+    /// Pointer to parent node or NULL if this is the root node.
+    struct BinarySearchTreeNode_s *parent;
+};
 
-    return DS_OK;
+/// \brief A type for a binary search tree node.
+///
+/// Defines a type to a <code> struct BinarySearchTreeNode_s </code>.
+typedef struct BinarySearchTreeNode_s BinarySearchTreeNode_t;
+
+/// \brief A pointer type for a binary search tree node.
+///
+/// Defines a pointer type to a <code> struct BinarySearchTreeNode_s </code>.
+typedef struct BinarySearchTreeNode_s *BinarySearchTreeNode;
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static BinarySearchTreeNode_t *
+bst_new_node(void *element);
+
+static void
+bst_free_node(BinarySearchTreeNode_t *node, free_f function);
+
+static void
+bst_free_node_shallow(BinarySearchTreeNode_t *node);
+
+static void
+bst_free_tree(BinarySearchTreeNode_t *root, free_f function);
+
+static void
+bst_free_tree_shallow(BinarySearchTreeNode_t *root);
+
+BinarySearchTreeNode_t *
+bst_node_find(BinarySearchTree_t *tree, void *element);
+
+int
+bst_node_height(BinarySearchTreeNode_t *root);
+
+// Displaying modes
+static void
+bst_display_tree(BinarySearchTreeNode_t *root, integer_t height,
+                 display_f function);
+
+static void
+bst_display_height(BinarySearchTreeNode_t *root, integer_t height,
+                   display_f function);
+
+static void
+bst_display_simple(BinarySearchTreeNode_t *root, integer_t height,
+                   display_f function);
+
+static void
+bst_display_treeview(BinarySearchTreeNode_t *root, integer_t depth, char *path,
+                     display_f function, bool direction);
+
+// Traversal
+static void
+bst_traversal_preorder(BinarySearchTreeNode_t *root, display_f function);
+
+static void
+bst_traversal_inorder(BinarySearchTreeNode_t *root, display_f function);
+
+static void
+bst_traversal_postorder(BinarySearchTreeNode_t *root, display_f function);
+
+static void
+bst_traversal_leaves(BinarySearchTreeNode_t *root, display_f function);
+
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///
+/// \param[in] interface
+///
+/// \return
+BinarySearchTree_t *
+bst_new(Interface_t *interface)
+{
+    BinarySearchTree_t *tree = malloc(sizeof(BinarySearchTree_t));
+
+    if (!tree)
+        return NULL;
+
+    tree->count = 0;
+    tree->limit = 0;
+    tree->version_id = 0;
+    tree->root = NULL;
+
+    tree->interface = interface;
+
+    return tree;
 }
 
-Status bst_insert(BinarySearchTree bst, int value)
+///
+/// \param[in] tree
+void
+bst_free(BinarySearchTree_t *tree)
 {
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
+    bst_free_tree(tree->root, tree->interface->free);
 
-    BinarySearchTreeNode scan = bst->root;
-    BinarySearchTreeNode before = NULL;
+    free(tree);
+}
 
-    while (scan != NULL)
+///
+/// \param[in] tree
+void
+bst_free_shallow(BinarySearchTree_t *tree)
+{
+    bst_free_tree_shallow(tree->root);
+
+    free(tree);
+}
+
+///
+/// \param[in] tree
+void
+bst_erase(BinarySearchTree_t *tree)
+{
+    bst_free_tree(tree->root, tree->interface->free);
+
+    tree->root = NULL;
+    tree->count = 0;
+}
+
+///
+/// \param[in] tree
+void
+bst_erase_shallow(BinarySearchTree_t *tree)
+{
+    bst_free_tree_shallow(tree->root);
+
+    tree->root = NULL;
+    tree->count = 0;
+}
+
+///
+/// \param[in] tree
+/// \param[in] new_interface
+void
+bst_config(BinarySearchTree_t *tree, Interface_t *new_interface)
+{
+    tree->interface = new_interface;
+}
+
+///
+/// \param[in] tree
+///
+/// \return
+integer_t
+bst_count(BinarySearchTree_t *tree)
+{
+    return tree->count;
+}
+
+///
+/// \param[in] tree
+///
+/// \return
+integer_t
+bst_limit(BinarySearchTree_t *tree)
+{
+    return tree->limit;
+}
+
+///
+/// \param[in] tree
+/// \param[in] limit
+///
+/// \return
+bool
+bst_set_limit(BinarySearchTree_t *tree, integer_t limit)
+{
+    if (tree->count > limit && limit > 0)
+        return false;
+
+    tree->limit = limit;
+
+    return true;
+}
+
+/// Inserts the specified element into the tree.
+///
+/// \param[in] tree
+/// \param[in] element
+///
+/// \return
+bool
+bst_insert(BinarySearchTree_t *tree, void *element)
+{
+    if (bst_full(tree))
+        return false;
+
+    if (bst_empty(tree))
     {
-        before = scan;
+        tree->root = bst_new_node(element);
 
-        if (scan->key > value)
-            scan = scan->left;
-        else if (scan->key < value)
-            scan = scan->right;
+        if (!tree->root)
+            return false;
+    }
+    else
+    {
+        BinarySearchTreeNode_t *scan = tree->root;
+        BinarySearchTreeNode_t *parent = scan;
+
+        while (scan != NULL)
+        {
+            parent = scan;
+
+            if (tree->interface->compare(scan->key, element) > 0)
+                scan = scan->left;
+            else if (tree->interface->compare(scan->key, element) < 0)
+                scan = scan->right;
+            else
+                return false; /* No duplicates are allowed */
+        }
+
+        if (tree->interface->compare(parent->key, element) < 0)
+        {
+            parent->right = bst_new_node(element);
+
+            if (!parent->right)
+                return false;
+
+            parent->right->parent = parent;
+        }
         else
         {
-            (bst->count)++;
+            parent->left = bst_new_node(element);
 
-            (scan->count)++;
+            if (!parent->left)
+                return false;
 
-            return DS_OK;
+            parent->left->parent = parent;
         }
     }
 
-    BinarySearchTreeNode node;
+    tree->count++;
+    tree->version_id++;
 
-    Status st = bst_make_node(&node, value);
-
-    if (st != DS_OK)
-        return st;
-
-    if (before == NULL)
-    {
-        node->parent = NULL;
-
-        bst->root = node;
-
-        (bst->count)++;
-
-        return DS_OK;
-    }
-
-    node->parent = before;
-
-    if (before->key < value)
-        before->right = node;
-    else
-        before->left = node;
-
-    (bst->count)++;
-
-    return DS_OK;
+    return true;
 }
 
-Status bst_remove(BinarySearchTree bst, int element)
+/// Removes the specified element from the tree.
+///
+/// \param[in] tree
+/// \param[in] element
+///
+/// \return
+bool
+bst_remove(BinarySearchTree_t *tree, void *element)
 {
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bst_empty(bst))
-        return DS_ERR_INVALID_OPERATION;
-
-    BinarySearchTreeNode temp, node = bst_node_find(bst->root, element);
+    BinarySearchTreeNode_t *temp = NULL, *node = bst_node_find(tree, element);
 
     if (node == NULL)
-        return DS_ERR_NOT_FOUND;
-
-    Status st;
+        return false;
 
     bool is_root = node->parent == NULL;
 
-    if (node->count > 1)
-    {
-        (node->count)--;
-    }
-    else
-    {
-        // Deleting a leaf. No need to update parent pointers.
-        if (node->left == NULL && node->right == NULL)
-        {
-            // Deleting last element
-            if (is_root)
-                bst->root = NULL;
-            else
-            {
-                // This is the right leaf of a node
-                if (node->parent->right == node)
-                    node->parent->right = NULL;
-                // This is the left leaf of a node
-                else
-                    node->parent->left = NULL;
-            }
-
-            free(node);
-        }
-        // Only right subtree. Need to update right subtree parent pointer.
-        else if (node->left == NULL)
-        {
-            // Short-circuit the right subtree
-            if (is_root)
-            {
-                bst->root = node->right;
-
-                bst->root->parent = NULL;
-            }
-            else
-            {
-                // Linking the subtree parent pointer
-                node->right->parent = node->parent;
-
-                // This is the right child of a node
-                if (node->parent->right == node)
-                    node->parent->right = node->right;
-                // This is the left child of a node
-                else
-                    node->parent->left = node->right;
-            }
-
-            free(node);
-        }
-        // Only left subtree. Need to update left subtree parent pointer.
-        else if (node->right == NULL)
-        {
-            // Short-circuit the left subtree
-            if (is_root)
-            {
-                bst->root = node->left;
-
-                bst->root->parent = NULL;
-            }
-            else
-            {
-                // Linking the subtree parent pointer
-                node->left->parent = node->parent;
-
-                // This is the right child of a node
-                if (node->parent->right == node)
-                    node->parent->right = node->left;
-                // This is the left child of a node
-                else
-                    node->parent->left = node->left;
-            }
-
-            free(node);
-        }
-        // Node has left and right subtrees
-        else
-        {
-            // Replace current value with successor's (temp) and then delete it.
-            // Note that we don't care about is_root since we are only replacing
-            // the node's contents.
-            temp = node->right;
-
-            // Finding successor node (temp)
-            while (temp->left != NULL)
-                temp = temp->left;
-
-            // Storing key in a temporary value
-            int temp_key = temp->key;
-            unsigned temp_count = temp->count;
-
-            // Deleting temp
-            // This node can not be an inner node so there are only three
-            // options. Its a leaf, or it has either left or right subtrees
-            // but not both.
-            if (temp->left == NULL && temp->right == NULL)
-            {
-                // Can't be root
-
-                // This is the right leaf of a node
-                if (temp->parent->right == temp)
-                    temp->parent->right = NULL;
-                // This is the left leaf of a node
-                else
-                    temp->parent->left = NULL;
-
-                free(temp);
-            }
-            // Only right subtree. Need to update right subtree parent pointer.
-            else if (temp->left == NULL)
-            {
-                // Can't be root
-
-                // Linking the subtree parent pointer
-                temp->right->parent = temp->parent;
-
-                // This is the right child of a node
-                if (temp->parent->right == temp)
-                    temp->parent->right = temp->right;
-                // This is the left child of a node
-                else
-                    temp->parent->left = temp->right;
-
-                free(temp);
-            }
-            // Only left subtree. Need to update left subtree parent pointer.
-            else if (temp->right == NULL)
-            {
-                // Can't be root
-
-                // Linking the subtree parent pointer
-                temp->left->parent = temp->parent;
-
-                // This is the right child of a node
-                if (temp->parent->right == temp)
-                    temp->parent->right = temp->left;
-                // This is the left child of a node
-                else
-                    temp->parent->left = temp->left;
-
-                free(temp);
-            }
-            // Undefined behaviour
-            else
-                return DS_ERR_UNEXPECTED_RESULT;
-
-            // Finally switching values
-            node->key = temp_key;
-            node->count = temp_count;
-        }
-    }
-
-    (bst->count)--;
-
-    return DS_OK;
-}
-
-Status bst_remove_all(BinarySearchTree bst, int element, unsigned *total)
-{
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bst_empty(bst))
-        return DS_ERR_INVALID_OPERATION;
-
-    BinarySearchTreeNode temp, node = bst_node_find(bst->root, element);
-
-    if (node == NULL)
-        return DS_ERR_NOT_FOUND;
-
-    *total = node->count;
-
-    Status st;
-
-    bool is_root = node->parent == NULL;
-
+    // Deleting a leaf. No need to update parent pointers.
     if (node->left == NULL && node->right == NULL)
     {
+        // Deleting last element
         if (is_root)
-            bst->root = NULL;
+            tree->root = NULL;
         else
         {
+            // This is the right leaf of a node
             if (node->parent->right == node)
                 node->parent->right = NULL;
+            // This is the left leaf of a node
             else
                 node->parent->left = NULL;
         }
 
-        free(node);
+        bst_free_node(node, tree->interface->free);
     }
+    // Only right subtree. Need to update right subtree parent pointer.
     else if (node->left == NULL)
     {
+        // Short-circuit the right subtree
         if (is_root)
         {
-            bst->root = node->right;
+            tree->root = node->right;
 
-            bst->root->parent = NULL;
+            tree->root->parent = NULL;
         }
         else
         {
+            // Linking the subtree parent pointer
             node->right->parent = node->parent;
 
+            // This is the right child of a node
             if (node->parent->right == node)
                 node->parent->right = node->right;
+            // This is the left child of a node
             else
                 node->parent->left = node->right;
         }
 
-        free(node);
+        bst_free_node(node, tree->interface->free);
     }
+    // Only left subtree. Need to update left subtree parent pointer.
     else if (node->right == NULL)
     {
+        // Short-circuit the left subtree
         if (is_root)
         {
-            bst->root = node->left;
+            tree->root = node->left;
 
-            bst->root->parent = NULL;
+            tree->root->parent = NULL;
         }
         else
         {
+            // Linking the subtree parent pointer
             node->left->parent = node->parent;
 
+            // This is the right child of a node
             if (node->parent->right == node)
                 node->parent->right = node->left;
+            // This is the left child of a node
             else
                 node->parent->left = node->left;
         }
 
-        free(node);
+        bst_free_node(node, tree->interface->free);
     }
+    // Node has left and right subtrees
     else
     {
+        // Replace current value with successor's (temp) and then delete it.
+        // Note that we don't care about is_root since we are only replacing
+        // the node's contents.
         temp = node->right;
 
+        // Finding successor node (temp)
         while (temp->left != NULL)
             temp = temp->left;
 
-        int temp_key = temp->key;
-        unsigned temp_count = temp->count;
+        // Storing key in a temporary value
+        void *temp_key = temp->key;
 
+        // Deleting temp
+        // This node can not be an inner node so there are only three
+        // options. Its a leaf, or it has either left or right subtrees
+        // but not both.
         if (temp->left == NULL && temp->right == NULL)
         {
+            // Can't be root
+
+            // This is the right leaf of a node
             if (temp->parent->right == temp)
                 temp->parent->right = NULL;
+            // This is the left leaf of a node
             else
                 temp->parent->left = NULL;
-
-            free(temp);
         }
+        // Only right subtree. Need to update right subtree parent pointer.
         else if (temp->left == NULL)
         {
+            // Can't be root
+
+            // Linking the subtree parent pointer
             temp->right->parent = temp->parent;
 
+            // This is the right child of a node
             if (temp->parent->right == temp)
                 temp->parent->right = temp->right;
+            // This is the left child of a node
             else
                 temp->parent->left = temp->right;
-
-            free(temp);
         }
+        // Only left subtree. Need to update left subtree parent pointer.
         else if (temp->right == NULL)
         {
+            // Can't be root
+
+            // Linking the subtree parent pointer
             temp->left->parent = temp->parent;
 
+            // This is the right child of a node
             if (temp->parent->right == temp)
                 temp->parent->right = temp->left;
+            // This is the left child of a node
             else
                 temp->parent->left = temp->left;
-
-            free(temp);
         }
-        else
-            return DS_ERR_UNEXPECTED_RESULT;
 
+        // Delete temp node
+        bst_free_node_shallow(temp);
+        tree->interface->free(node->key);
+
+
+        // Finally switching values
         node->key = temp_key;
-        node->count = temp_count;
     }
 
-    (bst->count)--;
+    tree->count--;
+    tree->version_id++;
 
-    return DS_OK;
+    return true;
 }
 
-Status bst_pop(BinarySearchTree bst, int *result)
+/// Removes and frees root element.
+///
+/// \param[in] tree
+///
+/// \return
+bool
+bst_pop(BinarySearchTree_t *tree)
 {
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
+    void *element = bst_peek(tree);
 
-    if (bst_empty(bst))
-        return DS_ERR_INVALID_OPERATION;
-
-    *result = bst_peek(bst);
-
-    Status st = bst_remove(bst, *result);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-Status bst_display(BinarySearchTree bst, int display)
-{
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bst_empty(bst))
-        return DS_ERR_INVALID_OPERATION;
-
-    Status st;
-
-    if (display)
-    {
-        printf("\n+--------------------------------------------------+");
-        printf("\n|                Binary Search Tree                |");
-        printf("\n+--------------------------------------------------+");
-    }
-
-    switch (display)
-    {
-        case -1:
-            printf("\n<PARENT(DATA)[D-DEPTH|H-HEIGHT]\n\n");
-            st = bst_display_clean(bst->root, 0);
-            break;
-        case 0:
-            printf("\n\n");
-            st = bst_display_raw(bst->root, 0);
-            break;
-        case 1:
-            printf("\n<PARENT(DATA)[D-DEPTH|H-HEIGHT]\n\n");
-            st = bst_display_interactive(bst->root, 0);
-            break;
-        default:
-            printf("\n<PARENT(DATA)[QUANTITY]\n\n");
-            st = bst_display_quantity(bst->root, 0);
-            break;
-    }
-
-    printf("\n");
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-Status bst_display_raw(BinarySearchTreeNode node, integer_t spaces)
-{
-    if (node == NULL)
-        return DS_OK;
-
-    bst_display_raw(node->right, spaces + 1);
-
-    for (integer_t i = 0; i < spaces * 6; i++)
-        printf(" ");
-
-    printf("%d\n", node->key);
-
-    bst_display_raw(node->left, spaces + 1);
-
-    return DS_OK;
-}
-
-Status bst_display_interactive(BinarySearchTreeNode node, integer_t spaces)
-{
-    if (node == NULL)
-        return DS_OK;
-
-    bst_display_interactive(node->right, spaces + 1);
-
-    for (integer_t i = 0; i < spaces; i++)
-        printf("|-------");
-
-    printf("<%d(%d)[D-%llu|H-%llu]\n", (node->parent) ? node->parent->key : 0,
-            node->key, bst_node_depth(node), bst_node_height(node) - 1);
-
-    bst_display_interactive(node->left, spaces + 1);
-
-    return DS_OK;
-}
-
-Status bst_display_clean(BinarySearchTreeNode node, integer_t spaces)
-{
-    if (node == NULL)
-        return DS_OK;
-
-    bst_display_clean(node->right, spaces + 1);
-
-    for (integer_t i = 0; i < spaces; i++)
-        printf("|       ");
-
-    printf("< %d ( %d )\n", (node->parent) ? node->parent->key : 0, node->key);
-
-    bst_display_clean(node->left, spaces + 1);
-
-    return DS_OK;
-}
-
-Status bst_display_quantity(BinarySearchTreeNode node, integer_t spaces)
-{
-    if (node == NULL)
-        return DS_OK;
-
-    bst_display_quantity(node->right, spaces + 1);
-
-    for (integer_t i = 0; i < spaces; i++)
-        printf("|_______");
-
-    printf("<%d(%d)[%d]\n", (node->parent) ? node->parent->key : 0,
-                node->key, node->count);
-
-    bst_display_quantity(node->left, spaces + 1);
-
-    return DS_OK;
-}
-
-Status bst_delete(BinarySearchTree *bst)
-{
-    if (*bst == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = bst_delete_recursive(&((*bst)->root));
-
-    if (st != DS_OK)
-        return st;
-
-    free(*bst);
-
-    *bst = NULL;
-
-    return DS_OK;
-}
-
-Status bst_erase(BinarySearchTree *bst)
-{
-    if ((*bst) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    Status st = bst_delete(bst);
-
-    if (st != DS_OK)
-        return st;
-
-    st = bst_init(bst);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
-}
-
-bool bst_empty(BinarySearchTree bst)
-{
-    return bst->count == 0;
-}
-
-bool bst_contains(BinarySearchTree bst, int value)
-{
-    if (bst == NULL)
+    if (!element)
         return false;
 
-    if (bst_empty(bst))
-        return false;
-
-    BinarySearchTreeNode node = bst->root;
-
-    while (node != NULL)
-    {
-        if (node->key < value)
-            node = node->right;
-        else if (node->key > value)
-            node = node->left;
-        else
-            return true;
-    }
-
-    return false;
+    return bst_remove(tree, element);
 }
 
-int bst_max(BinarySearchTree bst)
+///
+/// \param[in] tree
+///
+/// \return
+bool
+bst_empty(BinarySearchTree_t *tree)
 {
-    if (bst == NULL)
-        return 0;
+    return tree->count == 0;
+}
 
-    if (bst_empty(bst))
-        return 0;
+///
+/// \param[in] tree
+///
+/// \return
+bool
+bst_full(BinarySearchTree_t *tree)
+{
+    return tree->limit > 0 && tree->count >= tree->limit;
+}
 
-    BinarySearchTreeNode scan = bst->root;
+///
+/// \param[in] tree
+/// \param[in] element
+///
+/// \return
+bool
+bst_contains(BinarySearchTree_t *tree, void *element)
+{
+    BinarySearchTreeNode_t *node = bst_node_find(tree, element);
+
+    return node == NULL ? false : true;
+}
+
+///
+/// \param[in] tree
+///
+/// \return
+void *
+bst_peek(BinarySearchTree_t *tree)
+{
+    if (bst_empty(tree))
+        return NULL;
+
+    return tree->root->key;
+}
+
+///
+/// \param[in] tree
+///
+/// \return
+void *
+bst_max(BinarySearchTree_t *tree)
+{
+    if (bst_empty(tree))
+        return NULL;
+
+    BinarySearchTreeNode_t *scan = tree->root;
 
     while (scan->right != NULL)
         scan = scan->right;
@@ -629,15 +574,17 @@ int bst_max(BinarySearchTree bst)
     return scan->key;
 }
 
-int bst_min(BinarySearchTree bst)
+///
+/// \param[in] tree
+///
+/// \return
+void *
+bst_min(BinarySearchTree_t *tree)
 {
-    if (bst == NULL)
-        return 0;
+    if (bst_empty(tree))
+        return NULL;
 
-    if (bst_empty(bst))
-        return 0;
-
-    BinarySearchTreeNode scan = bst->root;
+    BinarySearchTreeNode_t *scan = tree->root;
 
     while (scan->left != NULL)
         scan = scan->left;
@@ -645,141 +592,224 @@ int bst_min(BinarySearchTree bst)
     return scan->key;
 }
 
-int bst_peek(BinarySearchTree bst)
+///
+/// \param[in] tree
+/// \param[in] display_mode
+void
+bst_display(BinarySearchTree_t *tree, int display_mode)
 {
-    if (bst == NULL)
-        return 0;
+    if (display_mode)
+    {
+        printf("\n+--------------------------------------------------+");
+        printf("\n|                Binary Search Tree                |");
+        printf("\n+--------------------------------------------------+\n");
+    }
 
-    if (bst_empty(bst))
-        return 0;
+    if (bst_empty(tree) && display_mode)
+    {
+        printf(" EMPTY\n");
+    }
 
-    return bst->root->key;
+    if (display_mode == -1)
+    {
+        bst_display_tree(tree->root, 0, tree->interface->display);
+    }
+    else if (display_mode == 0)
+    {
+        bst_display_simple(tree->root, 0, tree->interface->display);
+    }
+    else if (display_mode == 1)
+    {
+        bst_display_height(tree->root, 1, tree->interface->display);
+    }
+    else
+    {
+        char path[5000] = {};
+
+        bst_display_treeview(tree->root, 0, path, tree->interface->display, false);
+        printf("\n");
+    }
 }
 
-integer_t bst_height(BinarySearchTree bst)
+///
+/// \param[in] tree
+/// \param[in] traversal_mode
+void
+bst_traversal(BinarySearchTree_t *tree, int traversal_mode)
 {
-    if (bst == NULL)
-        return -1;
-
-    return bst_node_height(bst->root);
-}
-
-Status bst_traversal(BinarySearchTree bst, int traversal)
-{
-    if (bst == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (bst_empty(bst))
-        return DS_ERR_INVALID_OPERATION;
-
-    Status st;
-
-    switch (traversal)
+    switch (traversal_mode)
     {
         case -1:
-            printf("\nPreorder Traversal\n");
-            st = bst_traversal_preorder(bst->root);
+            printf("Pre-order Traversal\n");
+            bst_traversal_preorder(tree->root, tree->interface->display);
             break;
         case 0:
-            printf("\nInorder Traversal\n");
-            st = bst_traversal_inorder(bst->root);
+            printf("In-order Traversal\n");
+            bst_traversal_inorder(tree->root, tree->interface->display);
             break;
         case 1:
-            printf("\nPostorder Traversal\n");
-            st = bst_traversal_postorder(bst->root);
+            printf("Post-order Traversal\n");
+            bst_traversal_postorder(tree->root, tree->interface->display);
             break;
         default:
-            printf("\nLeaves Traversal\n");
-            st = bst_traversal_leaves(bst->root);
+            printf("Leaves Traversal\n");
+            bst_traversal_leaves(tree->root, tree->interface->display);
             break;
     }
 
     printf("\n");
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
 }
 
-// NOT EXPOSED API
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-Status bst_delete_recursive(BinarySearchTreeNode *node)
+static BinarySearchTreeNode_t *
+bst_new_node(void *element)
 {
-    if (*node == NULL)
-        return DS_OK;
+    BinarySearchTreeNode_t * node = malloc(sizeof(BinarySearchTreeNode_t));
 
-    bst_delete_recursive(&((*node)->right));
-
-    bst_delete_recursive(&((*node)->left));
-
-    free((*node));
-
-    return DS_OK;
-}
-
-Status bst_make_node(BinarySearchTreeNode *node, int value)
-{
-    (*node) = malloc(sizeof(BinarySearchTreeNode_t));
-
-    if (!(*node))
-        return DS_ERR_ALLOC;
-
-    (*node)->key = value;
-    (*node)->count = 1;
-
-    (*node)->left = NULL;
-    (*node)->right = NULL;
-
-    (*node)->parent = NULL;
-
-    return DS_OK;
-}
-
-integer_t bst_node_height(BinarySearchTreeNode node)
-{
-    if (node == NULL)
-        return 0;
-
-    integer_t r_height = bst_node_height(node->right);
-
-    integer_t l_height = bst_node_height(node->left);
-
-    return (l_height > r_height) ? l_height + 1 : r_height + 1;
-}
-
-integer_t bst_node_depth(BinarySearchTreeNode node)
-{
-    if (node == NULL)
-        return 0;
-
-    BinarySearchTreeNode scan = node;
-
-    integer_t depth = 0;
-
-    while (scan->parent != NULL)
-    {
-        scan = scan->parent;
-
-        depth++;
-    }
-
-    return depth;
-}
-
-BinarySearchTreeNode bst_node_find(BinarySearchTreeNode root, int value)
-{
-    if (root == NULL)
+    if (!node)
         return NULL;
 
-    BinarySearchTreeNode scan = root;
+    node->key = element;
+
+    node->parent = NULL;
+    node->left = NULL;
+    node->right = NULL;
+
+    return node;
+}
+
+static void
+bst_free_node(BinarySearchTreeNode_t *node, free_f function)
+{
+    function(node->key);
+
+    free(node);
+}
+
+static void
+bst_free_node_shallow(BinarySearchTreeNode_t *node)
+{
+    free(node);
+}
+
+static void
+bst_free_tree(BinarySearchTreeNode_t *root, free_f function)
+{
+    BinarySearchTreeNode_t *scan = root;
+    BinarySearchTreeNode_t *up = NULL;
 
     while (scan != NULL)
     {
-        if (scan->key < value)
-            scan = scan->right;
-        else if (scan->key > value)
+        if (scan->left != NULL)
+        {
+            BinarySearchTreeNode_t *left = scan->left;
+
+            scan->left = up;
+            up = scan;
+            scan = left;
+        }
+        else if (scan->right != NULL)
+        {
+            BinarySearchTreeNode_t *right = scan->right;
+
+            scan->left = up;
+            scan->right = NULL;
+            up = scan;
+            scan = right;
+        }
+        else
+        {
+            if (up == NULL)
+            {
+                bst_free_node(scan, function);
+                scan = NULL;
+            }
+
+            while (up != NULL)
+            {
+                bst_free_node(scan, function);
+
+                if (up->right != NULL)
+                {
+                    scan = up->right;
+                    up->right = NULL;
+                    break;
+                }
+                else
+                {
+                    scan = up;
+                    up = up->left;
+                }
+            }
+        }
+    }
+}
+
+static void
+bst_free_tree_shallow(BinarySearchTreeNode_t *root)
+{
+    BinarySearchTreeNode_t *scan = root;
+    BinarySearchTreeNode_t *up = NULL;
+
+    while (scan != NULL)
+    {
+        if (scan->left != NULL)
+        {
+            BinarySearchTreeNode_t *left = scan->left;
+
+            scan->left = up;
+            up = scan;
+            scan = left;
+        }
+        else if (scan->right != NULL)
+        {
+            BinarySearchTreeNode_t *right = scan->right;
+
+            scan->left = up;
+            scan->right = NULL;
+            up = scan;
+            scan = right;
+        }
+        else
+        {
+            if (up == NULL)
+            {
+                bst_free_node_shallow(scan);
+                scan = NULL;
+            }
+
+            while (up != NULL)
+            {
+                bst_free_node_shallow(scan);
+
+                if (up->right != NULL)
+                {
+                    scan = up->right;
+                    up->right = NULL;
+                    break;
+                }
+                else
+                {
+                    scan = up;
+                    up = up->left;
+                }
+            }
+        }
+    }
+}
+
+BinarySearchTreeNode_t *
+bst_node_find(BinarySearchTree_t *tree, void *element)
+{
+    BinarySearchTreeNode_t *scan = tree->root;
+
+    while (scan != NULL)
+    {
+        if (tree->interface->compare(scan->key, element) > 0)
             scan = scan->left;
+        else if (tree->interface->compare(scan->key, element) < 0)
+            scan = scan->right;
         else
             return scan;
     }
@@ -787,64 +817,203 @@ BinarySearchTreeNode bst_node_find(BinarySearchTreeNode root, int value)
     return NULL;
 }
 
-Status bst_traversal_preorder(BinarySearchTreeNode node)
+int
+bst_node_height(BinarySearchTreeNode_t *root)
 {
-    if (node == NULL)
-        return DS_OK;
+    if (root == NULL)
+        return 0;
 
-    printf(" %d", node->key);
+    int r_height = bst_node_height(root->right);
 
-    bst_traversal_preorder(node->left);
+    int l_height = bst_node_height(root->left);
 
-    bst_traversal_preorder(node->right);
-
-    return DS_OK;
+    return (l_height > r_height) ? l_height + 1 : r_height + 1;
 }
 
-Status bst_traversal_inorder(BinarySearchTreeNode node)
+static void
+bst_display_tree(BinarySearchTreeNode_t *root, integer_t height,
+                 display_f function)
 {
-    if (node == NULL)
-        return DS_OK;
+    if (root == NULL)
+        return;
 
-    bst_traversal_inorder(node->left);
+    bst_display_tree(root->right, height + 1, function);
 
-    printf(" %d", node->key);
+    for (integer_t i = 0; i < height; i++)
+        printf("|------- ");
 
-    bst_traversal_inorder(node->right);
+    function(root->key);
 
-    return DS_OK;
+    printf("\n");
+
+    bst_display_tree(root->left, height + 1, function);
 }
 
-Status bst_traversal_postorder(BinarySearchTreeNode node)
+static void
+bst_display_height(BinarySearchTreeNode_t *root, integer_t height,
+                   display_f function)
 {
-    if (node == NULL)
-        return DS_OK;
+    if (root == NULL)
+        return;
 
-    bst_traversal_postorder(node->left);
+    bst_display_height(root->right, height + 1, function);
 
-    bst_traversal_postorder(node->right);
+    for (integer_t i = 0; i < height - 1; i++)
+        printf("        ");
 
-    printf(" %d", node->key);
+    printf("|--%d---< ", bst_node_height(root));
 
-    return DS_OK;
+    function(root->key);
+    printf("\n");
+
+    bst_display_height(root->left, height + 1, function);
 }
 
-Status bst_traversal_leaves(BinarySearchTreeNode node)
+static void
+bst_display_simple(BinarySearchTreeNode_t *root, integer_t height,
+                   display_f function)
 {
-    if (node->left != NULL)
+    if (root == NULL)
+        return;
+
+    bst_display_simple(root->right, height + 1, function);
+
+    for (integer_t i = 0; i < height; i++)
+        printf("        ");
+
+    function(root->key);
+    printf("\n");
+
+    bst_display_simple(root->left, height + 1, function);
+}
+
+static void
+bst_display_treeview(BinarySearchTreeNode_t *root, integer_t depth, char *path,
+                     display_f function, bool direction)
+{
+    const integer_t spaces = 8;
+
+    if (root == NULL)
+        return;
+
+    depth++;
+
+    bst_display_treeview(root->right, depth, path, function, true);
+
+    path[depth - 2] = 0;
+
+    if(direction)
+        path[depth - 2] = 1;
+
+    if(root->left)
+        path[depth - 1] = 1;
+
+    printf("\n");
+
+    for (integer_t i = 0; i < depth - 1; i++)
     {
-        bst_traversal_leaves(node->left);
-    }
-    if (node->right != NULL)
-    {
-        bst_traversal_leaves(node->right);
-    }
-    if (node->left == NULL && node->right == NULL)
-    {
-        printf(" %d", node->key);
+        if (i == depth - 2)
+            printf("%c", direction ? 218 : 192);
+        else if (path[i])
+            printf("%c", 179);
+        else
+            printf(" ");
+
+        for (integer_t j = 1; j < spaces; j++)
+            if (i < depth - 2)
+                printf(" ");
+            else
+                printf("%c", 196);
     }
 
-    return DS_OK;
+    printf(" ");
+    function(root->key);
+    printf("\n");
+
+    for (int i = 0; i < depth; i++)
+    {
+        if (path[i] && (root->left || i != depth -1))
+            printf("%c", 179);
+        else
+            printf(" ");
+
+        for (integer_t j = 1; j < spaces; j++)
+            printf(" ");
+    }
+
+    bst_display_treeview(root->left, depth, path, function, false);
 }
 
-// END OF NOT EXPOSED API
+static void
+bst_traversal_preorder(BinarySearchTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    function(root->key);
+    printf(" ");
+
+    bst_traversal_preorder(root->left, function);
+
+    bst_traversal_preorder(root->right, function);
+}
+
+static void
+bst_traversal_inorder(BinarySearchTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    bst_traversal_inorder(root->left, function);
+
+    function(root->key);
+    printf(" ");
+
+    bst_traversal_inorder(root->right, function);
+}
+
+static void
+bst_traversal_postorder(BinarySearchTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    bst_traversal_postorder(root->left, function);
+
+    bst_traversal_postorder(root->right, function);
+
+    function(root->key);
+    printf(" ");
+}
+
+static void
+bst_traversal_leaves(BinarySearchTreeNode_t *root, display_f function)
+{
+    if (root == NULL)
+        return;
+
+    bst_traversal_leaves(root->left, function);
+
+    bst_traversal_leaves(root->right, function);
+
+    if (root->right == NULL && root->left == NULL)
+    {
+        function(root->key);
+        printf(" ");
+    }
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+
+///////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////// Iterator ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BinarySearchTreeIterator
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo BinarySearchTreeWrapper

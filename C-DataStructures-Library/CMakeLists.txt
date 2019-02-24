@@ -4,7 +4,7 @@ project(C_DataStructures_Library)
 set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
 set(CMAKE_STATIC_LIBRARY_SUFFIX "_x64.a")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextr -std=c11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c11")
 set(CMAKE_CXX_STANDARD 11)
 
 set(INCLUDE ./include)
@@ -26,24 +26,8 @@ set(INCLUDE_TETS_FILES
         ${INCLUDE_UTIL}
         ${INCLUDE_INTERFACE}
 )
-set(TEST_FILES
-        tests/ArrayTests.c
-        tests/AssociativeListTests.c
-        tests/AVLTreeTests.c
-        tests/BitArrayTests.c
-        tests/CircularLinkedListTests.c
-        tests/DequeArrayTests.c
-        tests/DequeTests.c
-        tests/DoublyLinkedListTests.c
-        tests/DynamicArrayTests.c
-        tests/HeapTests.c
-        tests/QueueArrayTests.c
-        tests/QueueTests.c
-        tests/RedBlackTreeTests.c
-        tests/SinglyLinkedListTests.c
-        tests/SortedListTests.c
-        tests/StackArrayTests.c
-        tests/StackTests.c
+file(GLOB TEST_FILES
+        "./tests/*.c"
 )
 
 set(INCLUDE_BENCHMARK_FILES

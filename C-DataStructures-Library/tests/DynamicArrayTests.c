@@ -55,6 +55,7 @@ void dar_test_locked(UnitTest ut)
     ut_equals_integer_t(ut, size, 16, __func__);
 
     dar_free(array);
+    interface_free(interface);
 
     return;
 
@@ -62,6 +63,7 @@ void dar_test_locked(UnitTest ut)
     printf("Error at %s\n", __func__);
     ut_error();
     dar_free(array);
+    interface_free(interface);
 }
 
 // Tests capacity multiplication
@@ -92,6 +94,7 @@ void dar_test_growth(UnitTest ut)
     ut_equals_integer_t(ut, dar_capacity(array), 150, __func__);
 
     dar_free(array);
+    interface_free(interface);
 
     return;
 
@@ -99,6 +102,7 @@ void dar_test_growth(UnitTest ut)
     printf("Error at %s\n", __func__);
     ut_error();
     dar_free(array);
+    interface_free(interface);
 }
 
 // Runs all DynamicArray tests

@@ -24,6 +24,8 @@ Status AssociativeListTests(void);
 
 Status AVLTreeTests(void);
 
+Status BinarySearchTreeTests(void);
+
 Status BitArrayTests(void);
 
 Status DequeArrayTests(void);

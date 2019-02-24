@@ -11,6 +11,7 @@ int main(void)
     ArrayTests();
     AssociativeListTests();
     AVLTreeTests();
+    BinarySearchTreeTests();
     BitArrayTests();
     DequeArrayTests();
     DequeTests();

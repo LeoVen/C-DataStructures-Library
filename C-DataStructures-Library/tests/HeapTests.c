@@ -108,7 +108,7 @@ void hep_test_IO1(UnitTest ut)
 
         ut_equals_bool(ut, true, sorted, __func__);
 
-        for (int i = 1; i < elements; i++)
+        for (int i = 0; i < elements; i++)
         {
             free(buffer[i]);
         }
