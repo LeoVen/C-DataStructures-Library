@@ -54,12 +54,12 @@ void
 sta_free(StackArray_t *stack);
 
 /// \ref sta_free_shallow
-/// \brief Frees from memory a StackArray_s leaving its elements intact.
+/// \brief Frees from memory a StackArray_s without freeing its elements.
 void
 sta_free_shallow(StackArray_t *stack);
 
 /// \ref sta_erase
-/// \brief Frees from memory all elements of a StackArray_s.
+/// \brief Resets the StackArray_s freeing all its elements.
 void
 sta_erase(StackArray_t *stack);
 
@@ -80,7 +80,7 @@ sta_config(StackArray_t *stack, Interface_t *new_interface);
 /// \ref sta_size
 /// \brief Returns the amount of elements in the specified stack.
 integer_t
-sta_size(StackArray_t *stack);
+sta_count(StackArray_t *stack);
 
 /// \ref sta_capacity
 /// \brief Returns the total buffer capacity of the specified stack.
@@ -122,7 +122,7 @@ bool
 sta_push(StackArray_t *stack, void *element);
 
 /// \ref sta_pop
-/// \brief Removes and retrieves a new element in the specified stack.
+/// \brief Removes and retrieves the top element in the specified stack.
 bool
 sta_pop(StackArray_t *stack, void **result);
 
@@ -147,9 +147,14 @@ sta_full(StackArray_t *stack);
 /// \brief Returns true if a given size fits inside the stack without
 /// reallocating the buffer.
 bool
-sta_fits(StackArray_t *stack, unsigned_t size);
+sta_fits(StackArray_t *stack, integer_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref sta_contains
+/// \brief Returns true if an elements is present in the specified stack.
+bool
+sta_contains(StackArray_t *stack, void *key);
 
 /// \ref sta_copy
 /// \brief Returns a copy of the specified stack.
@@ -165,6 +170,11 @@ sta_copy_shallow(StackArray_t *stack);
 /// \brief Compares two stacks returning an int according to \ref compare_f.
 int
 sta_compare(StackArray_t *stack1, StackArray_t *stack2);
+
+/// \ref sta_stack
+/// \brief Stacks one stack at the top of the other.
+bool
+sta_stack(StackArray_t *stack1, StackArray_t *stack2);
 
 /// \ref sta_to_array
 /// \brief Makes a copy of the stack as a C array.

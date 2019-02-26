@@ -16,13 +16,9 @@ void sta_test_locked(UnitTest ut)
     Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
             free, NULL, NULL);
 
-    if (!int_interface)
-        goto error;
+    StackArray_t *stack = sta_create(int_interface, 16, 200);
 
-    // in case I ever change the default initial capacity
-    StackArray stack = sta_create(int_interface, 16, 200);
-
-    if (!stack)
+    if (!stack || !int_interface)
         goto error;
 
     sta_capacity_lock(stack);
@@ -40,7 +36,7 @@ void sta_test_locked(UnitTest ut)
             free(element);
     }
 
-    integer_t size = sta_size(stack);
+    integer_t size = sta_count(stack);
 
     ut_equals_bool(ut, success, false, __func__);
     ut_equals_integer_t(ut, size, 16, __func__);
@@ -55,7 +51,7 @@ void sta_test_locked(UnitTest ut)
         goto error;
     }
 
-    ut_equals_integer_t(ut, sta_size(stack), 17, __func__);
+    ut_equals_integer_t(ut, sta_count(stack), 17, __func__);
 
     success = sta_pop(stack, &element);
 
@@ -94,12 +90,9 @@ void sta_test_growth(UnitTest ut)
     Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
             free, NULL, NULL);
 
-    if (!int_interface)
-        goto error;
+    StackArray_t *stack = sta_create(int_interface, 60, 250);
 
-    StackArray stack = sta_create(int_interface, 60, 250);
-
-    if (!stack)
+    if (!stack || !int_interface)
         goto error;
 
     bool success = false;

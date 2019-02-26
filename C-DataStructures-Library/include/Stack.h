@@ -10,21 +10,24 @@
 #define C_DATASTRUCTURES_LIBRARY_STACK_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// A singly-linked list implementation of a stack. See the source file for the
-// full documentation.
+/// \struct Stack_s
+/// \brief A linked list implementation of a generic stack.
 struct Stack_s;
 
+/// \ref Stack_t
 /// \brief A type for a singly-linked list implementation of a stack.
 ///
 /// A type for a <code> struct Stack_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct Stack_s Stack_t;
 
+/// \ref StacK
 /// \brief A pointer type for a singly-linked list implementation of a stack.
 ///
 /// A pointer type to <code> struct Stack_s </code>. This typedef is used to
@@ -32,100 +35,126 @@ typedef struct Stack_s Stack_t;
 /// be dynamically allocated.
 typedef struct Stack_s *Stack;
 
-/// \brief Comparator function type.
-///
-/// A type for a function that compares two elements, returning:
-/// - [ > 0] when the first element is greater than the second;
-/// - [ < 0] when the first element is less than the second;
-/// - 0 when both elements are equal.
-typedef int(*stk_compare_f)(void *, void *);
-
-/// \brief A Copy function type.
-///
-/// A type for a function that takes an input (first parameter) and returns an
-/// exact copy of that element.
-typedef void *(*stk_copy_f)(void *);
-
-/// \brief Display function type.
-///
-/// A type for a function that displays an element in the console. Please do
-/// not print a newline character.
-typedef void(*stk_display_f)(void *);
-
-/// \brief A Free function type.
-///
-/// A type for a function responsible for completely freeing an element from
-/// memory.
-typedef void(*stk_free_f)(void *);
-
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status stk_init(Stack *stack);
+/// \ref stk_new
+/// \brief Initializes a new Stack_s.
+Stack_t *
+stk_new(Interface_t *interface);
 
-Status stk_create(Stack *stack, stk_compare_f compare_f, stk_copy_f copy_f,
-                  stk_display_f display_f, stk_free_f free_f);
+/// \ref stk_free
+/// \brief Frees from memory a Stack_s and all its elements.
+void
+stk_free(Stack_t *stack);
 
-Status stk_free(Stack *stack);
+/// \ref stk_free_shallow
+/// \brief Frees from memory a Stack_s without freeing its elements.
+void
+stk_free_shallow(Stack_t *stack);
 
-Status stk_free_shallow(Stack *stack);
+/// \ref stk_erase
+/// \brief Resets the Stack_s freeing all its elements.
+void
+stk_erase(Stack_t *stack);
 
-Status stk_erase(Stack *stack);
+/// \ref stk_erase_shallow
+/// \brief Resets the Stack_s without freeing its elements.
+void
+stk_erase_shallow(Stack_t *stack);
 
-/////////////////////////////////////////////////////////////////// SETTERS ///
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-Status stk_set_v_compare(Stack stack, stk_compare_f function);
-
-Status stk_set_v_copy(Stack stack, stk_copy_f function);
-
-Status stk_set_v_display(Stack stack, stk_display_f function);
-
-Status stk_set_v_free(Stack stack, stk_free_f function);
-
-Status stk_set_limit(Stack stack, integer_t limit);
+/// \ref stk_config
+/// \brief Sets a new interface for a target stack.
+void
+stk_config(Stack_t *stack, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-integer_t stk_height(Stack stack);
+/// \ref stk_count
+/// \brief Returns the amount of elements in the specified stack.
+integer_t
+stk_count(Stack_t *stack);
 
-integer_t stk_limit(Stack stack);
+/// \ref stk_limit
+/// \brief Returns the current stack limit.
+integer_t
+stk_limit(Stack_t *stack);
+
+/////////////////////////////////////////////////////////////////// SETTERS ///
+
+/// \ref stk_set_limit
+/// \brief Sets a limit to the amount of elements to the specified stack.
+bool
+stk_set_limit(Stack_t *stack, integer_t limit);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status stk_push(Stack stack, void *element);
+/// \ref stk_push
+/// \brief Inserts an element to the specified Stack_s.
+bool
+stk_push(Stack_t *stack, void *element);
 
-Status stk_insert(Stack stack, void *element);
+/// \ref stk_pop
+/// \brief Removes and retrieves the top element in the specified stack.
+bool
+stk_pop(Stack_t *stack, void **result);
 
-void *stk_pop(Stack stack);
-
-Status stk_remove(Stack stack, void **result);
-
-Status stk_slice(Stack stack);
+/// \ref stk_peek
+/// \brief Returns the top element in the specified stack.
+void *
+stk_peek(Stack_t *stack);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool stk_full(Stack stack);
+/// \ref stk_empty
+/// \brief Returns true if the stack is full, false otherwise.
+bool
+stk_empty(Stack_t *stack);
 
-bool stk_empty(Stack stack);
+/// \ref stk_full
+/// \brief Returns true if the stack is empty, false otherwise.
+bool
+stk_full(Stack_t *stack);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *stk_peek(Stack stack);
+/// \ref stk_contains
+/// \brief Returns true if an elements is present in the specified stack.
+bool
+stk_contains(Stack_t *stack, void *key);
 
-bool stk_contains(Stack stack, void *key);
+/// \ref stk_copy
+/// \brief Returns a copy of the specified stack.
+Stack_t *
+stk_copy(Stack_t *stack);
 
-Status stk_copy(Stack stack, Stack *result);
+/// \ref stk_copy_shallow
+/// \brief Creates a shallow copy of the specified stack.
+Stack_t *
+stk_copy_shallow(Stack_t *stack);
 
-Status stk_stack(Stack stack1, Stack stack2);
+/// \ref stk_compare
+/// \brief Compares two stacks returning an int according to \ref compare_f.
+int
+stk_compare(Stack_t *stack1, Stack_t *stack2);
 
-Status stk_to_array(Stack stack,  void ***result, integer_t *length);
+/// \ref stk_stack
+/// \brief Stacks one stack at the top of the other.
+bool
+stk_stack(Stack_t *stack1, Stack_t *stack2);
+
+/// \ref stk_to_array
+/// \brief Makes a copy of the stack as a C array.
+void **
+stk_to_array(Stack_t *stack, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status stk_display(Stack stack);
-
-Status stk_display_array(Stack stack);
-
-Status stk_display_raw(Stack stack);
+/// \ref stk_display
+/// \brief Displays a Stack_s in the console.
+void
+stk_display(Stack_t *stack, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
@@ -146,39 +175,69 @@ typedef struct StackIterator_s *StackIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status stk_iter_init(StackIterator *iter, Stack target);
+/// \ref stk_iter_new
+/// \brief Creates a new stack iterator given a target stack.
+StackIterator_t *
+stk_iter_new(Stack_t *target);
 
-Status stk_iter_retarget(StackIterator *iter, Stack target);
+/// \ref stk_iter_retarget
+/// \brief Retargets an existing iterator.
+void
+stk_iter_retarget(StackIterator_t *iter, Stack_t *target);
 
-Status stk_iter_free(StackIterator *iter);
+/// \ref stk_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+stk_iter_free(StackIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-Status stk_iter_next(StackIterator iter);
+/// \ref stk_iter_next
+/// \brief Iterates to the next element if available.
+bool
+stk_iter_next(StackIterator_t *iter);
 
-Status stk_iter_to_top(StackIterator iter);
+/// \ref stk_iter_to_top
+/// \brief Iterates to the top element in the stack.
+bool
+stk_iter_to_top(StackIterator_t *iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool stk_iter_has_next(StackIterator iter);
-
-////////////////////////////////////////////////////////// SETTER AND GETTER ///
-
-Status stk_iter_get(StackIterator iter, void **result);
-
-Status stk_iter_set(StackIterator iter, void *element);
+/// \ref stk_iter_has_next
+/// \brief Returns true if there is another element next in the iteration.
+bool
+stk_iter_has_next(StackIterator_t *iter);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status stk_iter_insert(StackIterator iter, void *element);
+/// \ref stk_iter_get
+/// \brief Gets the element pointed by the iterator.
+bool
+stk_iter_get(StackIterator_t *iter, void **result);
 
-Status stk_iter_remove(StackIterator iter, void **result);
+/// \ref stk_iter_set
+/// \brief Sets the element pointed by the iterator to a new element.
+bool
+stk_iter_set(StackIterator_t *iter, void *element);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *stk_iter_peek_next(StackIterator iter);
+/// \ref stk_iter_peek_next
+/// \brief Returns the next element in the iteration if available.
+void *
+stk_iter_peek_next(StackIterator_t *iter);
 
-void *stk_iter_peek(StackIterator iter);
+/// \ref stk_iter_peek
+/// \brief Returns the current element in the iteration if available.
+void *
+stk_iter_peek(StackIterator_t *iter);
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo StackWrapper
 
 #ifdef __cplusplus
 }
