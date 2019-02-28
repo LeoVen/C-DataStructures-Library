@@ -1,9 +1,6 @@
 cmake_minimum_required(VERSION 3.9.2)
 project(C_DataStructures_Library)
 
-set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
-set(CMAKE_STATIC_LIBRARY_SUFFIX "_x64.a")
-
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -std=c11")
 set(CMAKE_CXX_STANDARD 11)
 

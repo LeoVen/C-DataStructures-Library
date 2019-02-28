@@ -12,9 +12,9 @@ Used method (powershell):
 Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPath -notlike @("*cmake-build-debug*") -and !$_.PSISContainer} |foreach{(GC $_).Count} | Measure-Object -Average -Sum -Maximum -Minimum
 ```
 
-![total files](https://img.shields.io/badge/total%20files-76-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-34082-%232196f3.svg)
-![average](https://img.shields.io/badge/average-448-%23ff9800.svg)
+![total files](https://img.shields.io/badge/total%20files-77-%23607d8b.svg)
+![total](https://img.shields.io/badge/total%20lines-34409-%232196f3.svg)
+![average](https://img.shields.io/badge/average-446-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-13-%23f44336.svg)
 
@@ -23,7 +23,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 |       Structure Name       |  Source Code   |    Iterator    |     Wrapper    |      Tests     |  Documentation |
 | :------------------------- | :------------: | :------------: | :------------: | :------------: | :------------: |
 | [Array][arr]               | `[##########]` | `[##########]` | `[__________]` | `[##________]` | `[##________]` |
-| [AssociativeList][ali]     | `[#####_____]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
+| [AssociativeList][ali]     | `[#######___]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [AVLTree][avl]             | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [BinaryHeap][bhp]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [BinarySearchTree][bst]    | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[##________]` |
@@ -43,8 +43,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [Heap][hep]                | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[#_________]` |
 | [MultiHashMap][mhm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [MultiTreeMap][mtm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [PriorityHeap][prh]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [PriorityQueue][prq]       | `[##########]` | `[__________]` | `[__________]` | `[__________]` | `[#_________]` |
+| [PriorityList][pli]        | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
+| [PriorityQueue][prq]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [Queue][que]               | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
 | [QueueArray][qua]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
 | [RadixTree][rdt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -412,13 +412,13 @@ Not implemented yet.
 
 Not implemented yet.
 
-### PriorityHeap
+### PriorityList
 
-Not implemented yet.
+The priority list is a linked list implementation of a priority queue. It has a lot in common with a sorted list, but in this case the elements are sorted according to their priority.
 
 ### PriorityQueue
 
-The priority queue is a linked list implementation. It has a lot in common with a sorted list, but in this case the elements are sorted according to their priority.
+Not implemented yet.
 
 ### Queue
 
@@ -694,7 +694,7 @@ arr_desc_free(array_w);
 [hep]: #heap
 [mhm]: #multihashmap
 [mtm]: #multitreemap
-[prh]: #priorityheap
+[pli]: #prioritylist
 [prq]: #priorityqueue
 [que]: #queue
 [qua]: #queuearray

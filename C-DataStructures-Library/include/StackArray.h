@@ -77,7 +77,7 @@ sta_config(StackArray_t *stack, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// \ref sta_size
+/// \ref sta_count
 /// \brief Returns the amount of elements in the specified stack.
 integer_t
 sta_count(StackArray_t *stack);

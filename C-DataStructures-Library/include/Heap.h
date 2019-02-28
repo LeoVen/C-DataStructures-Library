@@ -17,7 +17,7 @@ extern "C" {
 #endif
 
 /// \struct Heap_s
-/// \brief A generic, array-basedpower heap.
+/// \brief A generic, array-based heap.
 struct Heap_s;
 
 /// \ref Heap_t
@@ -81,7 +81,7 @@ void
 hep_erase(Heap_t *heap);
 
 /// \ref hep_erase_shallow
-/// \brief Frees from memory all the nodes of a Heap_s.
+/// \brief Removes all references to the elements inserted into the Heap_s.
 void
 hep_erase_shallow(Heap_t *heap);
 

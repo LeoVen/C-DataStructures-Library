@@ -705,7 +705,8 @@ stk_display(Stack_t *stack, int display_mode)
                 scan = scan->below;
             }
             stack->interface->display(scan->data);
-            printf("NULL\n");
+            printf(" NULL\n");
+            break;
         case 1:
             printf("\nStack\n");
             while (scan != NULL)
@@ -797,6 +798,10 @@ stk_iter_target_modified(StackIterator iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
+///
+/// \param[in] target
+///
+/// \return
 StackIterator_t *
 stk_iter_new(Stack_t *target)
 {
@@ -812,6 +817,9 @@ stk_iter_new(Stack_t *target)
     return iter;
 }
 
+///
+/// \param[in] iter
+/// \param[in] target
 void
 stk_iter_retarget(StackIterator_t *iter, Stack_t *target)
 {
@@ -819,12 +827,18 @@ stk_iter_retarget(StackIterator_t *iter, Stack_t *target)
     iter->target_id = target->version_id;
 }
 
+///
+/// \param[in] iter
 void
 stk_iter_free(StackIterator_t *iter)
 {
     free(iter);
 }
 
+///
+/// \param[in] iter
+///
+/// \return
 bool
 stk_iter_next(StackIterator_t *iter)
 {
@@ -839,6 +853,10 @@ stk_iter_next(StackIterator_t *iter)
     return true;
 }
 
+///
+/// \param[in] iter
+///
+/// \return
 bool
 stk_iter_to_top(StackIterator_t *iter)
 {
@@ -853,12 +871,21 @@ stk_iter_to_top(StackIterator_t *iter)
     return true;
 }
 
+///
+/// \param[in] iter
+///
+/// \return
 bool
 stk_iter_has_next(StackIterator iter)
 {
     return iter->cursor->below != NULL;
 }
 
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
 bool
 stk_iter_get(StackIterator_t *iter, void **result)
 {
@@ -870,6 +897,11 @@ stk_iter_get(StackIterator_t *iter, void **result)
     return true;
 }
 
+///
+/// \param[in] iter
+/// \param[in] element
+///
+/// \return
 bool
 stk_iter_set(StackIterator_t *iter, void *element)
 {
@@ -883,6 +915,10 @@ stk_iter_set(StackIterator_t *iter, void *element)
     return true;
 }
 
+///
+/// \param[in] iter
+///
+/// \return
 void *
 stk_iter_peek_next(StackIterator_t *iter)
 {
@@ -895,6 +931,10 @@ stk_iter_peek_next(StackIterator_t *iter)
     return iter->cursor->below->data;
 }
 
+///
+/// \param[in] iter
+///
+/// \return
 void *
 stk_iter_peek(StackIterator iter)
 {

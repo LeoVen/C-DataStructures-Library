@@ -74,10 +74,6 @@ dar_grow(DynamicArray_t *array, integer_t required_size);
 static void
 dar_quicksort(DynamicArray_t *array, void **buffer, integer_t size);
 
-integer_t
-dar_calculate_growth(integer_t required, integer_t current,
-                     integer_t multiplier);
-
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 /// Initializes a DynamicArray_s with an initial capacity of 32 and a growth
@@ -1104,17 +1100,18 @@ dar_grow(DynamicArray_t *array, integer_t required_capacity)
     integer_t old_capacity = array->capacity;
 
     // Either grows or get the required capacity
-    integer_t new_capacity = \
-              required_capacity > array->capacity * array->growth_rate
-            ? dar_calculate_growth(required_capacity, array->capacity, array->growth_rate)
-            : (integer_t) ((double) (array->capacity) *
-                          ((double) (array->growth_rate) / 100.0));
-
-    array->capacity = new_capacity;
+    integer_t new_capacity = (integer_t) ((double) (array->capacity) *
+                               ((double) (array->growth_rate) / 100.0));
 
     // 4 is the minimum growth
     if (array->capacity - old_capacity < 4)
         array->capacity = old_capacity + 4;
+
+    // Not enough...
+    if (new_capacity < required_capacity)
+        new_capacity = required_capacity;
+
+    array->capacity = new_capacity;
 
     void **new_buffer = realloc(array->buffer,
             sizeof(void*) * (size_t)array->capacity);
@@ -1159,20 +1156,6 @@ dar_quicksort(DynamicArray_t *array, void **buffer, integer_t size)
 
     dar_quicksort(array, buffer, i);
     dar_quicksort(array, buffer + i, size - i);
-}
-
-integer_t
-dar_calculate_growth(integer_t required, integer_t current,
-                     integer_t multiplier)
-{
-    double mult = (double)multiplier / 100.0,
-            req = (double)required,
-           curr = (double)current;
-
-    while (curr < req)
-        curr *= mult;
-
-    return (integer_t)curr;
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///

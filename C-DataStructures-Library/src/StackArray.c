@@ -684,7 +684,8 @@ sta_display(StackArray_t *stack, int display_mode)
                 printf(" -> ");
             }
             stack->interface->display(stack->buffer[stack->count - 1]);
-            printf("NULL\n");
+            printf(" NULL\n");
+            break;
         case 1:
             printf("\nStackArray\n");
             for (integer_t i = 0; i < stack->count; i++)

@@ -372,7 +372,7 @@ pli_full(PriorityList_t *plist)
 bool
 pli_contains(PriorityList_t *plist, void *key)
 {
-    PriorityListNode_t *scan = plist->head;
+    PriorityListNode_t *scan = plist->front;
 
     while (scan != NULL)
     {

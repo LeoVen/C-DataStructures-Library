@@ -6,7 +6,6 @@
  * @date 23/10/2018
  */
 
-
 #include "Stack.h"
 #include "UnitTest.h"
 #include "Utility.h"

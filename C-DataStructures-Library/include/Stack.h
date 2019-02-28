@@ -27,7 +27,7 @@ struct Stack_s;
 /// write the full name of it.
 typedef struct Stack_s Stack_t;
 
-/// \ref StacK
+/// \ref Stack
 /// \brief A pointer type for a singly-linked list implementation of a stack.
 ///
 /// A pointer type to <code> struct Stack_s </code>. This typedef is used to

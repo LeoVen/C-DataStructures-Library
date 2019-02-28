@@ -136,7 +136,8 @@ arr_free(Array_t *array)
 {
     for (integer_t i = 0; i < array->length; i++)
     {
-        array->interface->free(array->buffer[i]);
+        if (array->buffer[i] != NULL)
+            array->interface->free(array->buffer[i]);
     }
 
     free(array->buffer);

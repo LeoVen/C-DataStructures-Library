@@ -56,7 +56,7 @@ typedef unsigned_t(*hash_f)(const void *);
 /// - <code>[ < 0 ]</code> if second element has a higher priority than the
 /// first element;
 /// - <code>[ 0 ]</code> if elements have the same priority.
-typedef int(*priority_f)(void *, void *);
+typedef int(*priority_f)(const void *, const void *);
 
 /// \brief An interface used by all data structures that stores functions for a
 /// user defined data type.
