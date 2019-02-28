@@ -13,12 +13,13 @@ int main(void)
     AVLTreeTests();
     BinarySearchTreeTests();
     BitArrayTests();
+    CircularLinkedListTests();
     DequeArrayTests();
     DequeTests();
     DoublyLinkedListTests();
     DynamicArrayTests();
     HeapTests();
-    CircularLinkedListTests();
+    PriorityListTests();
     QueueArrayTests();
     QueueTests();
     RedBlackTreeTests();

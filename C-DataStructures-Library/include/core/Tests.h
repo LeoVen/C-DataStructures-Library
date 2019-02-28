@@ -28,6 +28,8 @@ Status BinarySearchTreeTests(void);
 
 Status BitArrayTests(void);
 
+Status CircularLinkedListTests(void);
+
 Status DequeArrayTests(void);
 
 Status DequeTests(void);
@@ -38,7 +40,7 @@ Status DynamicArrayTests(void);
 
 Status HeapTests(void);
 
-Status CircularLinkedListTests(void);
+Status PriorityListTests(void);
 
 Status QueueArrayTests(void);
 
