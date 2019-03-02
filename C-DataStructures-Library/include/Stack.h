@@ -160,7 +160,8 @@ stk_display(Stack_t *stack, int display_mode);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// A stack iterator. See the source file for the full documentation.
+/// \struct StackIterator_s.
+/// \brief A Stack_s iterator.
 struct StackIterator_s;
 
 /// \brief A type for a stack iterator.

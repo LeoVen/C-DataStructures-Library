@@ -192,7 +192,94 @@ sta_display(StackArray_t *stack, int display_mode);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \todo StackArrayIterator
+/// \struct StackArrayIterator_s.
+/// \brief A StackArray_s iterator.
+struct StackArrayIterator_s;
+
+/// \brief A type for a stack iterator.
+///
+/// A type for a <code> struct StackArrayIterator_s </code>.
+typedef struct StackArrayIterator_s StackArrayIterator_t;
+
+/// \brief A pointer type for a stack iterator.
+///
+/// A pointer type for a <code> struct StackArrayIterator_s </code>.
+typedef struct StackArrayIterator_s *StackArrayIterator;
+
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
+
+/// \ref sta_iter_new
+/// \brief Creates a new stack iterator given a target stack.
+StackArrayIterator_t *
+sta_iter_new(StackArray_t *target);
+
+/// \ref sta_iter_retarget
+/// \brief Retargets an existing iterator.
+void
+sta_iter_retarget(StackArrayIterator_t *iter, StackArray_t *target);
+
+/// \ref sta_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+sta_iter_free(StackArrayIterator_t *iter);
+
+///////////////////////////////////////////////////////////////// ITERATION ///
+
+/// \ref sta_iter_next
+/// \brief Iterates to the next element if available.
+bool
+sta_iter_next(StackArrayIterator_t *iter);
+
+/// \ref sta_iter_to_top
+/// \brief Moves the cursor to the top element in the stack.
+bool
+sta_iter_to_top(StackArrayIterator_t *iter);
+
+/// \ref sta_iter_to_bottom
+/// \brief Moves the cursor to the last element in the stack.
+bool
+sta_iter_to_bottom(StackArrayIterator_t *iter);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+/// \ref sta_iter_has_next
+/// \brief Returns true if there is another element next in the iteration.
+bool
+sta_iter_has_next(StackArrayIterator_t *iter);
+
+/// \ref sta_iter_has_prev
+/// \brief Returns true if there is a previous element in the iteration.
+bool
+sta_iter_has_prev(StackArrayIterator_t *iter);
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+/// \ref sta_iter_get
+/// \brief Gets the element pointed by the iterator.
+bool
+sta_iter_get(StackArrayIterator_t *iter, void **result);
+
+/// \ref sta_iter_set
+/// \brief Sets the element pointed by the iterator to a new element.
+bool
+sta_iter_set(StackArrayIterator_t *iter, void *element);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref sta_iter_peek_next
+/// \brief Returns the next element in the iteration if available.
+void *
+sta_iter_peek_next(StackArrayIterator_t *iter);
+
+/// \ref sta_iter_peek
+/// \brief Returns the current element in the iteration if available.
+void *
+sta_iter_peek(StackArrayIterator_t *iter);
+
+/// \ref sta_iter_peek_prev
+/// \brief Returns the previous element in the iteration if available.
+void *
+sta_iter_peek_prev(StackArrayIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///

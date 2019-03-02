@@ -753,7 +753,253 @@ static sta_grow(StackArray_t *stack, integer_t required_size)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \todo StackArrayIterator
+/// This is a stack array iterator and it is represented by the current
+/// element's index. Is is also possible to traverse this stack both ways due
+/// to the array's nature.
+struct StackArrayIterator_s
+{
+    /// \brief Target StackArray_s.
+    ///
+    /// Target StackArray_s. The iterator might need to use some information
+    /// provided by the stack or change some of its data members.
+    struct StackArray_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Current element's index. The iterator is always initialized with 0,
+    /// that is, the start (top) of the stack.
+    integer_t cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure. This is kept to prevent iteration on the target structure
+    /// that may have been modified and thus causing undefined behaviours or
+    /// run-time crashes.
+    integer_t target_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool
+sta_iter_target_modified(StackArrayIterator_t *iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///
+/// \param[in] target
+///
+/// \return
+StackArrayIterator_t *
+sta_iter_new(StackArray_t *target)
+{
+    if (sta_empty(target))
+        return NULL;
+
+    StackArrayIterator_t *iter = malloc(sizeof(StackArrayIterator_t));
+
+    if (!iter)
+        return NULL;
+
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = 0;
+
+    return iter;
+}
+
+///
+/// \param[in] iter
+/// \param[in] target
+void
+sta_iter_retarget(StackArrayIterator_t *iter, StackArray_t *target)
+{
+    iter->target = target;
+    iter->target_id = target->version_id;
+}
+
+///
+/// \param[in] iter
+void
+sta_iter_free(StackArrayIterator_t *iter)
+{
+    free(iter);
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_next(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    if (!sta_iter_has_next(iter))
+        return false;
+
+    iter->cursor++;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_prev(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    if (!sta_iter_has_prev(iter))
+        return false;
+
+    iter->cursor--;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_to_top(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    iter->cursor = 0;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_to_bottom(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    iter->cursor = iter->target->count == 0 ? 0 : iter->target->count - 1;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_has_next(StackArrayIterator_t *iter)
+{
+    return iter->cursor + 1 < iter->target->count;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+sta_iter_has_prev(StackArrayIterator_t *iter)
+{
+    return iter->cursor > 0;
+}
+
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
+bool
+sta_iter_get(StackArrayIterator_t *iter, void **result)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    *result = iter->target->buffer[iter->cursor];
+
+    return true;
+}
+
+///
+/// \param[in] iter
+/// \param[in] element
+///
+/// \return
+bool
+sta_iter_set(StackArrayIterator_t *iter, void *element)
+{
+    if (sta_iter_target_modified(iter))
+        return false;
+
+    iter->target->interface->free(iter->target->buffer[iter->cursor]);
+
+    iter->target->buffer[iter->cursor] = element;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+sta_iter_peek_next(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return NULL;
+
+    if (!sta_iter_has_next(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor + 1];
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+sta_iter_peek(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor];
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+sta_iter_peek_prev(StackArrayIterator_t *iter)
+{
+    if (sta_iter_target_modified(iter))
+        return NULL;
+
+    if (!sta_iter_has_prev(iter))
+        return NULL;
+
+    return iter->target->buffer[iter->cursor - 1];
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool
+sta_iter_target_modified(StackArrayIterator_t *iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///

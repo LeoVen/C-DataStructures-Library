@@ -765,9 +765,8 @@ stk_free_node_shallow(StackNode_t *node)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \brief An iterator for a Stack_s.
-///
-/// This iterator is a forward-only iterator.
+/// This iterator is a forward-only iterator. Its cursor is represented by a
+/// pointer to one of the stack's node.
 struct StackIterator_s
 {
     /// \brief Target Stack_s.
@@ -794,7 +793,7 @@ struct StackIterator_s
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackIterator iter);
+stk_iter_target_modified(StackIterator_t *iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -805,6 +804,9 @@ stk_iter_target_modified(StackIterator iter);
 StackIterator_t *
 stk_iter_new(Stack_t *target)
 {
+    if (stk_empty(target))
+        return NULL;
+
     StackIterator_t *iter = malloc(sizeof(StackIterator_t));
 
     if (!iter)
@@ -863,9 +865,6 @@ stk_iter_to_top(StackIterator_t *iter)
     if (stk_iter_target_modified(iter))
         return false;
 
-    if (!stk_iter_has_next(iter))
-        return false;
-
     iter->cursor = iter->target->top;
 
     return true;
@@ -876,7 +875,7 @@ stk_iter_to_top(StackIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_has_next(StackIterator iter)
+stk_iter_has_next(StackIterator_t *iter)
 {
     return iter->cursor->below != NULL;
 }
@@ -936,7 +935,7 @@ stk_iter_peek_next(StackIterator_t *iter)
 ///
 /// \return
 void *
-stk_iter_peek(StackIterator iter)
+stk_iter_peek(StackIterator_t *iter)
 {
     if (stk_iter_target_modified(iter))
         return NULL;
@@ -947,7 +946,7 @@ stk_iter_peek(StackIterator iter)
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackIterator iter)
+stk_iter_target_modified(StackIterator_t *iter)
 {
     return iter->target_id != iter->target->version_id;
 }
