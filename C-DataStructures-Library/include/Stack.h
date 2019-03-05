@@ -234,6 +234,17 @@ stk_iter_peek_next(StackIterator_t *iter);
 void *
 stk_iter_peek(StackIterator_t *iter);
 
+#define STK_FOR_EACH(target, body)                     \
+    do {                                               \
+        StackIterator_t *iter_ = stk_iter_new(target); \
+        while (stk_iter_has_next(iter_)) {             \
+            void *var = stk_iter_peek(iter_);          \
+            body;                                      \
+            stk_iter_next(iter_);                      \
+        }                                              \
+        stk_iter_free(iter_);                          \
+    } while (0);                                       \
+
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
 ///////////////////////////////////////////////////////////////////////////////

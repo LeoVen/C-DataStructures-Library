@@ -899,7 +899,7 @@ sta_iter_to_bottom(StackArrayIterator_t *iter)
 bool
 sta_iter_has_next(StackArrayIterator_t *iter)
 {
-    return iter->cursor + 1 < iter->target->count;
+    return iter->cursor < iter->target->count;
 }
 
 ///
