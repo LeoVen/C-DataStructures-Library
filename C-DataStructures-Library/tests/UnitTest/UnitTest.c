@@ -59,7 +59,8 @@ void ut_equals_bool(UnitTest ut, bool param1, bool param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED !\n");
+        printf("%-40s FAILED ! { %" PRId32 ", %" PRId32 " }\n", test_name,
+               param1, param2);
     }
 
     ut->total++;
@@ -76,7 +77,8 @@ void ut_equals_int(UnitTest ut, int param1, int param2, const char *test_name)
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED !\n");
+        printf("%-40s FAILED ! { %" PRId32 ", %" PRId32 " }\n", test_name,
+               param1, param2);
     }
 
     ut->total++;
@@ -90,11 +92,12 @@ void ut_equals_integer_t(UnitTest ut, integer_t param1, integer_t param2,
     {
         ut->passed++;
         GlobalTotalPassed++;
-        printf("%-40s %s", test_name, "PASSED\n");
+        printf("%-40s PASSED\n", test_name);
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED !\n");
+        printf("%-40s FAILED ! { %" PRIdMAX ", %" PRIdMAX " }\n", test_name,
+                param1, param2);
     }
 
     ut->total++;
@@ -112,7 +115,8 @@ void ut_equals_unsigned_t(UnitTest ut, unsigned_t param1, unsigned_t param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED !\n");
+        printf("%-40s FAILED ! { %" PRIuMAX ", %" PRIuMAX " }\n", test_name,
+               param1, param2);
     }
 
     ut->total++;
@@ -130,7 +134,7 @@ void ut_equals_double(UnitTest ut, double param1, double param2,
     }
     else
     {
-        printf("%-40s %s", test_name, "FAILED !\n");
+        printf("%-40s FAILED ! { %lf, %lf }\n", test_name, param1, param2);
     }
 
     ut->total++;
