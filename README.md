@@ -13,8 +13,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 ```
 
 ![total files](https://img.shields.io/badge/total%20files-77-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-34742-%232196f3.svg)
-![average](https://img.shields.io/badge/average-451-%23ff9800.svg)
+![total](https://img.shields.io/badge/total%20lines-34866-%232196f3.svg)
+![average](https://img.shields.io/badge/average-452-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-13-%23f44336.svg)
 
@@ -57,7 +57,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [SortedHashSet][shs]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [SplayTree][spt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [StackArray][sta]          | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
-| [StackList][stk]           | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[########__]` |
+| [StackList][stl]           | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[########__]` |
 | [TreeSet][trs]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [TreeMap][trm]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [Trie][tri]                | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -708,7 +708,7 @@ arr_desc_free(array_w);
 [shs]: #sortedhashset
 [spt]: #splaytree
 [sta]: #stackarray
-[stk]: #stacklist
+[stl]: #stacklist
 [trs]: #treeset
 [trm]: #treemap
 [tri]: #trie

@@ -12,32 +12,32 @@
 /// Last-out) or LIFO (Last-in First-out) operations, so the first item added
 /// is the last one to be removed. It is implemented as a SinglyLinkedList_s
 /// but with restricted operations to preserve the FILO (LIFO) order of
-/// elements. The function \c stk_push() is equivalent to \c sll_insert_head()
-/// and the function \c stk_pop() is equivalent to \c sll_remove_head().
+/// elements. The function \c stl_push() is equivalent to \c sll_insert_head()
+/// and the function \c stl_pop() is equivalent to \c sll_remove_head().
 /// Removal and insertions are O(1). Both push and pop functions operate on
 /// what would be the \c head of a SinglyLinkedList_s.
 ///
-/// To initialize the stack use stk_init(). This only initializes the
+/// To initialize the stack use stl_init(). This only initializes the
 /// structure. If you don't set the default functions later you won't be able
 /// to do certain operations. If you want to initialize it completely, use
-/// instead stk_create(). Here you must pass in default functions (compare,
+/// instead stl_create(). Here you must pass in default functions (compare,
 /// copy, display and free) according with the specifications of each type of
 /// function.
 ///
-/// To insert elements in the stack use stk_push() or stk_insert() as an alias.
-/// To remove an element you have three options: stk_pop() that will return
-/// \c NULL if something goes wrong; stk_remove() that returns a Status and the
-/// result is in the arguments; or stk_slice() that will simply remove the top
+/// To insert elements in the stack use stl_push() or stl_insert() as an alias.
+/// To remove an element you have three options: stl_pop() that will return
+/// \c NULL if something goes wrong; stl_remove() that returns a Status and the
+/// result is in the arguments; or stl_slice() that will simply remove the top
 /// element without returning it, so this function needs a default free
 /// function to work.
 ///
-/// To delete a stack use stk_free(). This completely frees all elements and
+/// To delete a stack use stl_free(). This completely frees all elements and
 /// sets the stack pointer to \c NULL. Note that if you haven't set a default
 /// free function you won't be able to delete the stack or its elements. You
 /// must set a free function that will be responsible for freeing from memory
-/// all elements. You can also use stk_free_shallow() that will only free the
+/// all elements. You can also use stl_free_shallow() that will only free the
 /// stack structure. If you simply want to erase all its contents use
-/// stk_erase(). This will keep all default functions and all elements will be
+/// stl_erase(). This will keep all default functions and all elements will be
 /// removed from the stack and freed from memory.
 ///
 /// The stack maintains a version id that keeps track of structural changes
@@ -74,7 +74,7 @@ struct StackList_s
 
     /// \brief The element at the top of the \c StackList.
     ///
-    /// The element at the top of StackList_s. stk_push() and stk_pop() operate
+    /// The element at the top of StackList_s. stl_push() and stl_pop() operate
     /// relative to this pointer. It points to \c NULL if the stack is empty.
     struct StackListNode_s *top;
 
@@ -124,13 +124,13 @@ typedef struct StackListNode_s *StackListNode;
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static StackListNode_t *
-stk_new_node(void *element);
+stl_new_node(void *element);
 
 static void
-stk_free_node(StackListNode_t *node, free_f free_f);
+stl_free_node(StackListNode_t *node, free_f free_f);
 
 static void
-stk_free_node_shallow(StackListNode_t *node);
+stl_free_node_shallow(StackListNode_t *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -144,7 +144,7 @@ stk_free_node_shallow(StackListNode_t *node);
 ///
 /// \return A new StackList_s or NULL if allocation failed.
 StackList_t *
-stk_new(Interface_t *interface)
+stl_new(Interface_t *interface)
 {
     StackList_t *stack = malloc(sizeof(StackList_t));
 
@@ -169,7 +169,7 @@ stk_new(Interface_t *interface)
 ///
 /// \param[in] stack The stack to be freed from memory.
 void
-stk_free(StackList_t *stack)
+stl_free(StackList_t *stack)
 {
     StackListNode_t *prev = stack->top;
 
@@ -177,7 +177,7 @@ stk_free(StackList_t *stack)
     {
         stack->top = stack->top->below;
 
-        stk_free_node(prev, stack->interface->free);
+        stl_free_node(prev, stack->interface->free);
 
         prev = stack->top;
     }
@@ -192,7 +192,7 @@ stk_free(StackList_t *stack)
 ///
 /// \param[in] stack StackList_s to be freed from memory.
 void
-stk_free_shallow(StackList_t *stack)
+stl_free_shallow(StackList_t *stack)
 {
     StackListNode_t *prev = stack->top;
 
@@ -200,7 +200,7 @@ stk_free_shallow(StackList_t *stack)
     {
         stack->top = stack->top->below;
 
-        stk_free_node_shallow(prev);
+        stl_free_node_shallow(prev);
 
         prev = stack->top;
     }
@@ -215,7 +215,7 @@ stk_free_shallow(StackList_t *stack)
 ///
 /// \param[in] stack The stack to have its elements erased.
 void
-stk_erase(StackList_t *stack)
+stl_erase(StackList_t *stack)
 {
     StackListNode_t *prev = stack->top;
 
@@ -223,7 +223,7 @@ stk_erase(StackList_t *stack)
     {
         stack->top = stack->top->below;
 
-        stk_free_node(prev, stack->interface->free);
+        stl_free_node(prev, stack->interface->free);
 
         prev = stack->top;
     }
@@ -240,7 +240,7 @@ stk_erase(StackList_t *stack)
 ///
 /// \param[in] stack The stack to have its nodes erased.
 void
-stk_erase_shallow(StackList_t *stack)
+stl_erase_shallow(StackList_t *stack)
 {
     StackListNode_t *prev = stack->top;
 
@@ -248,7 +248,7 @@ stk_erase_shallow(StackList_t *stack)
     {
         stack->top = stack->top->below;
 
-        stk_free_node_shallow(prev);
+        stl_free_node_shallow(prev);
 
         prev = stack->top;
     }
@@ -264,7 +264,7 @@ stk_erase_shallow(StackList_t *stack)
 /// \param[in] stack StackList_s to change the interface.
 /// \param[in] new_interface New interface for the specified structure.
 void
-stk_config(StackList_t *stack, Interface_t *new_interface)
+stl_config(StackList_t *stack, Interface_t *new_interface)
 {
     stack->interface = new_interface;
 }
@@ -275,7 +275,7 @@ stk_config(StackList_t *stack, Interface_t *new_interface)
 ///
 /// \return The stack total amount of elements.
 integer_t
-stk_count(StackList_t *stack)
+stl_count(StackList_t *stack)
 {
     return stack->count;
 }
@@ -288,7 +288,7 @@ stk_count(StackList_t *stack)
 ///
 /// \return The current stack limit.
 integer_t
-stk_limit(StackList_t *stack)
+stl_limit(StackList_t *stack)
 {
     return stack->limit;
 }
@@ -305,7 +305,7 @@ stk_limit(StackList_t *stack)
 /// \return True if a new limit was set. False if the new limit is lower than
 /// the current amount of elements in the stack.
 bool
-stk_set_limit(StackList_t *stack, integer_t limit)
+stl_set_limit(StackList_t *stack, integer_t limit)
 {
     // The new limit can't be lower than the stack's current length.
     if (stack->count > limit && limit > 0)
@@ -326,12 +326,12 @@ stk_set_limit(StackList_t *stack, integer_t limit)
 /// \return True if the element was successfully added to the stack or false if
 /// the stack reached its limit size or memory allocation failed.
 bool
-stk_push(StackList_t *stack, void *element)
+stl_push(StackList_t *stack, void *element)
 {
-    if (stk_full(stack))
+    if (stl_full(stack))
         return false;
 
-    StackListNode_t *node = stk_new_node(element);
+    StackListNode_t *node = stl_new_node(element);
 
     if (!node)
         return false;
@@ -354,11 +354,11 @@ stk_push(StackList_t *stack, void *element)
 /// \return True if an element was removed from the stack or false if the stack
 /// is empty.
 bool
-stk_pop(StackList_t *stack, void **result)
+stl_pop(StackList_t *stack, void **result)
 {
     *result = NULL;
 
-    if (stk_empty(stack))
+    if (stl_empty(stack))
         return false;
 
     StackListNode_t *node = stack->top;
@@ -366,7 +366,7 @@ stk_pop(StackList_t *stack, void **result)
 
     *result = node->data;
 
-    stk_free_node_shallow(node);
+    stl_free_node_shallow(node);
 
     stack->count--;
     stack->version_id++;
@@ -380,9 +380,9 @@ stk_pop(StackList_t *stack, void **result)
 ///
 /// \return NULL if the stack is empty or the element at the top of the stack.
 void *
-stk_peek(StackList_t *stack)
+stl_peek(StackList_t *stack)
 {
-    if (stk_empty(stack))
+    if (stl_empty(stack))
         return NULL;
 
     return stack->top->data;
@@ -397,21 +397,21 @@ stk_peek(StackList_t *stack)
 ///
 /// \return True if the stack is empty, otherwise false.
 bool
-stk_empty(StackList_t *stack)
+stl_empty(StackList_t *stack)
 {
     return stack->count == 0;
 }
 
 /// Returns true if the stack is full or false otherwise. The stack can only be
 /// full if its limit is set to a value higher than 0 and respecting all rules
-/// from stk_set_limit().
+/// from stl_set_limit().
 ///
 /// \param[in] stack StackList_s reference.
 ///
 /// \return True if the amount of elements in the stack have reached a limit
 /// (being greater than 0).
 bool
-stk_full(StackList_t *stack)
+stl_full(StackList_t *stack)
 {
     return stack->limit > 0 && stack->count >= stack->limit;
 }
@@ -423,7 +423,7 @@ stk_full(StackList_t *stack)
 ///
 /// \return True if the element is present in the stack, otherwise false.
 bool
-stk_contains(StackList_t *stack, void *key)
+stl_contains(StackList_t *stack, void *key)
 {
     StackListNode scan = stack->top;
 
@@ -447,9 +447,9 @@ stk_contains(StackList_t *stack, void *key)
 ///
 /// \return NULL if allocation failed or a copy of the specified stack.
 StackList_t *
-stk_copy(StackList_t *stack)
+stl_copy(StackList_t *stack)
 {
-    StackList_t *result = stk_new(stack->interface);
+    StackList_t *result = stl_new(stack->interface);
 
     if (!result)
         return NULL;
@@ -463,11 +463,11 @@ stk_copy(StackList_t *stack)
 
     while (scan != NULL)
     {
-        copy = stk_new_node(stack->interface->copy(scan->data));
+        copy = stl_new_node(stack->interface->copy(scan->data));
 
         if (!copy)
         {
-            stk_free_node(copy, stack->interface->free);
+            stl_free_node(copy, stack->interface->free);
             return false;
         }
 
@@ -499,9 +499,9 @@ stk_copy(StackList_t *stack)
 ///
 /// \return NULL if allocation failed or a shallow copy of the specified stack.
 StackList_t *
-stk_copy_shallow(StackList_t *stack)
+stl_copy_shallow(StackList_t *stack)
 {
-    StackList_t *result = stk_new(stack->interface);
+    StackList_t *result = stl_new(stack->interface);
 
     if (!result)
         return NULL;
@@ -515,11 +515,11 @@ stk_copy_shallow(StackList_t *stack)
 
     while (scan != NULL)
     {
-        copy = stk_new_node(scan->data);
+        copy = stl_new_node(scan->data);
 
         if (!copy)
         {
-            stk_free_node(copy, stack->interface->free);
+            stl_free_node(copy, stack->interface->free);
             return false;
         }
 
@@ -555,7 +555,7 @@ stk_copy_shallow(StackList_t *stack)
 ///
 /// \return An int according to \ref compare_f.
 int
-stk_compare(StackList_t *stack1, StackList_t *stack2)
+stl_compare(StackList_t *stack1, StackList_t *stack2)
 {
     StackListNode_t *scan1 = stack1->top, *scan2 = stack2->top;
 
@@ -592,12 +592,12 @@ stk_compare(StackList_t *stack1, StackList_t *stack2)
 ///
 /// \return True if all operations were successful, otherwise false.
 bool
-stk_stack(StackList_t *stack1, StackList_t *stack2)
+stl_stack(StackList_t *stack1, StackList_t *stack2)
 {
-    if (stk_empty(stack2))
+    if (stl_empty(stack2))
         return true;
 
-    if (stk_empty(stack1))
+    if (stl_empty(stack1))
     {
         stack1->top = stack2->top;
         stack1->count = stack2->count;
@@ -639,11 +639,11 @@ stk_stack(StackList_t *stack1, StackList_t *stack2)
 /// \return The resulting array or NULL if the stack is empty or the array
 /// allocation failed.
 void **
-stk_to_array(StackList_t *stack, integer_t *length)
+stl_to_array(StackList_t *stack, integer_t *length)
 {
     *length = 0;
 
-    if (stk_empty(stack))
+    if (stl_empty(stack))
         return NULL;
 
     void **array = malloc(sizeof(void*) * (size_t)stack->count);
@@ -677,9 +677,9 @@ stk_to_array(StackList_t *stack, integer_t *length)
 /// \param[in] stack The stack to be displayed in the console.
 /// \param[in] display_mode How the stack is to be displayed in the console.
 void
-stk_display(StackList_t *stack, int display_mode)
+stl_display(StackList_t *stack, int display_mode)
 {
-    if (stk_empty(stack))
+    if (stl_empty(stack))
     {
         printf("\nStackList\n[ empty ]\n");
         return;
@@ -735,7 +735,7 @@ stk_display(StackList_t *stack, int display_mode)
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static StackListNode_t *
-stk_new_node(void *element)
+stl_new_node(void *element)
 {
     StackListNode_t *node = malloc(sizeof(StackListNode_t));
 
@@ -749,14 +749,14 @@ stk_new_node(void *element)
 }
 
 static void
-stk_free_node(StackListNode_t *node, free_f free_f)
+stl_free_node(StackListNode_t *node, free_f free_f)
 {
     free_f(node->data);
     free(node);
 }
 
 static void
-stk_free_node_shallow(StackListNode_t *node)
+stl_free_node_shallow(StackListNode_t *node)
 {
     free(node);
 }
@@ -795,7 +795,7 @@ struct StackListIterator_s
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackListIterator_t *iter);
+stl_iter_target_modified(StackListIterator_t *iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -804,9 +804,9 @@ stk_iter_target_modified(StackListIterator_t *iter);
 ///
 /// \return
 StackListIterator_t *
-stk_iter_new(StackList_t *target)
+stl_iter_new(StackList_t *target)
 {
-    if (stk_empty(target))
+    if (stl_empty(target))
         return NULL;
 
     StackListIterator_t *iter = malloc(sizeof(StackListIterator_t));
@@ -825,7 +825,7 @@ stk_iter_new(StackList_t *target)
 /// \param[in] iter
 /// \param[in] target
 void
-stk_iter_retarget(StackListIterator_t *iter, StackList_t *target)
+stl_iter_retarget(StackListIterator_t *iter, StackList_t *target)
 {
     iter->target = target;
     iter->target_id = target->version_id;
@@ -834,7 +834,7 @@ stk_iter_retarget(StackListIterator_t *iter, StackList_t *target)
 ///
 /// \param[in] iter
 void
-stk_iter_free(StackListIterator_t *iter)
+stl_iter_free(StackListIterator_t *iter)
 {
     free(iter);
 }
@@ -844,12 +844,12 @@ stk_iter_free(StackListIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_next(StackListIterator_t *iter)
+stl_iter_next(StackListIterator_t *iter)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return false;
 
-    if (!stk_iter_has_next(iter))
+    if (!stl_iter_has_next(iter))
         return false;
 
     iter->cursor = iter->cursor->below;
@@ -862,9 +862,9 @@ stk_iter_next(StackListIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_to_top(StackListIterator_t *iter)
+stl_iter_to_top(StackListIterator_t *iter)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return false;
 
     iter->cursor = iter->target->top;
@@ -877,7 +877,7 @@ stk_iter_to_top(StackListIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_has_next(StackListIterator_t *iter)
+stl_iter_has_next(StackListIterator_t *iter)
 {
     return iter->cursor->below != NULL;
 }
@@ -888,9 +888,9 @@ stk_iter_has_next(StackListIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_get(StackListIterator_t *iter, void **result)
+stl_iter_get(StackListIterator_t *iter, void **result)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return false;
 
     *result = iter->cursor->data;
@@ -904,9 +904,9 @@ stk_iter_get(StackListIterator_t *iter, void **result)
 ///
 /// \return
 bool
-stk_iter_set(StackListIterator_t *iter, void *element)
+stl_iter_set(StackListIterator_t *iter, void *element)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return false;
 
     iter->target->interface->free(iter->cursor->data);
@@ -921,12 +921,12 @@ stk_iter_set(StackListIterator_t *iter, void *element)
 ///
 /// \return
 void *
-stk_iter_peek_next(StackListIterator_t *iter)
+stl_iter_peek_next(StackListIterator_t *iter)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return NULL;
 
-    if (!stk_iter_has_next(iter))
+    if (!stl_iter_has_next(iter))
         return NULL;
 
     return iter->cursor->below->data;
@@ -937,9 +937,9 @@ stk_iter_peek_next(StackListIterator_t *iter)
 ///
 /// \return
 void *
-stk_iter_peek(StackListIterator_t *iter)
+stl_iter_peek(StackListIterator_t *iter)
 {
-    if (stk_iter_target_modified(iter))
+    if (stl_iter_target_modified(iter))
         return NULL;
 
     return iter->cursor->data;
@@ -948,7 +948,7 @@ stk_iter_peek(StackListIterator_t *iter)
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackListIterator_t *iter)
+stl_iter_target_modified(StackListIterator_t *iter)
 {
     return iter->target_id != iter->target->version_id;
 }

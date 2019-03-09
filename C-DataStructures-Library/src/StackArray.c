@@ -8,15 +8,15 @@
 
 #include "StackArray.h"
 
-/// A StackArray_s is a buffered Stack_s with FILO (First-in Last-out) or LIFO
-/// (Last-in First-out) operations, so the first item added is the last one to
-/// be removed. The stack is implemented as a normal buffer that only grows on
-/// one side. This simplifies the structure as no indexes will ever need to
-/// wrap around the buffer. The size of the stack, or the amount of elements
-/// in the stack can be used as an index for push and pop operations. The
-/// buffer can also expand according to the \c growth_rate.
+/// A StackArray_s is a buffered StackList_s with FILO (First-in Last-out) or
+/// LIFO (Last-in First-out) operations, so the first item added is the last
+/// one to be removed. The stack is implemented as a normal buffer that only
+/// grows on one side. This simplifies the structure as no indexes will ever
+/// need to wrap around the buffer. The size of the stack, or the amount of
+/// elements in the stack can be used as an index for push and pop operations.
+/// The buffer can also expand according to the \c growth_rate.
 ///
-/// \par Advantages over Stack_s
+/// \par Advantages over StackList_s
 /// - No need of pointers, only the data is allocated in memory
 ///
 /// \par Drawbacks

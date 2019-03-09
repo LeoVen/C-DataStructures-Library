@@ -37,124 +37,124 @@ typedef struct StackList_s *StackList;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// \ref stk_new
+/// \ref stl_new
 /// \brief Initializes a new StackList_s.
 StackList_t *
-stk_new(Interface_t *interface);
+stl_new(Interface_t *interface);
 
-/// \ref stk_free
+/// \ref stl_free
 /// \brief Frees from memory a StackList_s and all its elements.
 void
-stk_free(StackList_t *stack);
+stl_free(StackList_t *stack);
 
-/// \ref stk_free_shallow
+/// \ref stl_free_shallow
 /// \brief Frees from memory a StackList_s without freeing its elements.
 void
-stk_free_shallow(StackList_t *stack);
+stl_free_shallow(StackList_t *stack);
 
-/// \ref stk_erase
+/// \ref stl_erase
 /// \brief Resets the StackList_s freeing all its elements.
 void
-stk_erase(StackList_t *stack);
+stl_erase(StackList_t *stack);
 
-/// \ref stk_erase_shallow
+/// \ref stl_erase_shallow
 /// \brief Resets the StackList_s without freeing its elements.
 void
-stk_erase_shallow(StackList_t *stack);
+stl_erase_shallow(StackList_t *stack);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-/// \ref stk_config
+/// \ref stl_config
 /// \brief Sets a new interface for a target stack.
 void
-stk_config(StackList_t *stack, Interface_t *new_interface);
+stl_config(StackList_t *stack, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// \ref stk_count
+/// \ref stl_count
 /// \brief Returns the amount of elements in the specified stack.
 integer_t
-stk_count(StackList_t *stack);
+stl_count(StackList_t *stack);
 
-/// \ref stk_limit
+/// \ref stl_limit
 /// \brief Returns the current stack limit.
 integer_t
-stk_limit(StackList_t *stack);
+stl_limit(StackList_t *stack);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-/// \ref stk_set_limit
+/// \ref stl_set_limit
 /// \brief Sets a limit to the amount of elements to the specified stack.
 bool
-stk_set_limit(StackList_t *stack, integer_t limit);
+stl_set_limit(StackList_t *stack, integer_t limit);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-/// \ref stk_push
+/// \ref stl_push
 /// \brief Inserts an element to the specified StackList_s.
 bool
-stk_push(StackList_t *stack, void *element);
+stl_push(StackList_t *stack, void *element);
 
-/// \ref stk_pop
+/// \ref stl_pop
 /// \brief Removes and retrieves the top element in the specified stack.
 bool
-stk_pop(StackList_t *stack, void **result);
+stl_pop(StackList_t *stack, void **result);
 
-/// \ref stk_peek
+/// \ref stl_peek
 /// \brief Returns the top element in the specified stack.
 void *
-stk_peek(StackList_t *stack);
+stl_peek(StackList_t *stack);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-/// \ref stk_empty
+/// \ref stl_empty
 /// \brief Returns true if the stack is full, false otherwise.
 bool
-stk_empty(StackList_t *stack);
+stl_empty(StackList_t *stack);
 
-/// \ref stk_full
+/// \ref stl_full
 /// \brief Returns true if the stack is empty, false otherwise.
 bool
-stk_full(StackList_t *stack);
+stl_full(StackList_t *stack);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-/// \ref stk_contains
+/// \ref stl_contains
 /// \brief Returns true if an elements is present in the specified stack.
 bool
-stk_contains(StackList_t *stack, void *key);
+stl_contains(StackList_t *stack, void *key);
 
-/// \ref stk_copy
+/// \ref stl_copy
 /// \brief Returns a copy of the specified stack.
 StackList_t *
-stk_copy(StackList_t *stack);
+stl_copy(StackList_t *stack);
 
-/// \ref stk_copy_shallow
+/// \ref stl_copy_shallow
 /// \brief Creates a shallow copy of the specified stack.
 StackList_t *
-stk_copy_shallow(StackList_t *stack);
+stl_copy_shallow(StackList_t *stack);
 
-/// \ref stk_compare
+/// \ref stl_compare
 /// \brief Compares two stacks returning an int according to \ref compare_f.
 int
-stk_compare(StackList_t *stack1, StackList_t *stack2);
+stl_compare(StackList_t *stack1, StackList_t *stack2);
 
-/// \ref stk_stack
+/// \ref stl_stack
 /// \brief StackLists one stack at the top of the other.
 bool
-stk_stack(StackList_t *stack1, StackList_t *stack2);
+stl_stack(StackList_t *stack1, StackList_t *stack2);
 
-/// \ref stk_to_array
+/// \ref stl_to_array
 /// \brief Makes a copy of the stack as a C array.
 void **
-stk_to_array(StackList_t *stack, integer_t *length);
+stl_to_array(StackList_t *stack, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-/// \ref stk_display
+/// \ref stl_display
 /// \brief Displays a StackList_s in the console.
 void
-stk_display(StackList_t *stack, int display_mode);
+stl_display(StackList_t *stack, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
@@ -176,74 +176,74 @@ typedef struct StackListIterator_s *StackListIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// \ref stk_iter_new
+/// \ref stl_iter_new
 /// \brief Creates a new stack iterator given a target stack.
 StackListIterator_t *
-stk_iter_new(StackList_t *target);
+stl_iter_new(StackList_t *target);
 
-/// \ref stk_iter_retarget
+/// \ref stl_iter_retarget
 /// \brief Retargets an existing iterator.
 void
-stk_iter_retarget(StackListIterator_t *iter, StackList_t *target);
+stl_iter_retarget(StackListIterator_t *iter, StackList_t *target);
 
-/// \ref stk_iter_free
+/// \ref stl_iter_free
 /// \brief Frees from memory an existing iterator.
 void
-stk_iter_free(StackListIterator_t *iter);
+stl_iter_free(StackListIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-/// \ref stk_iter_next
+/// \ref stl_iter_next
 /// \brief Iterates to the next element if available.
 bool
-stk_iter_next(StackListIterator_t *iter);
+stl_iter_next(StackListIterator_t *iter);
 
-/// \ref stk_iter_to_top
+/// \ref stl_iter_to_top
 /// \brief Iterates to the top element in the stack.
 bool
-stk_iter_to_top(StackListIterator_t *iter);
+stl_iter_to_top(StackListIterator_t *iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-/// \ref stk_iter_has_next
+/// \ref stl_iter_has_next
 /// \brief Returns true if there is another element next in the iteration.
 bool
-stk_iter_has_next(StackListIterator_t *iter);
+stl_iter_has_next(StackListIterator_t *iter);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-/// \ref stk_iter_get
+/// \ref stl_iter_get
 /// \brief Gets the element pointed by the iterator.
 bool
-stk_iter_get(StackListIterator_t *iter, void **result);
+stl_iter_get(StackListIterator_t *iter, void **result);
 
-/// \ref stk_iter_set
+/// \ref stl_iter_set
 /// \brief Sets the element pointed by the iterator to a new element.
 bool
-stk_iter_set(StackListIterator_t *iter, void *element);
+stl_iter_set(StackListIterator_t *iter, void *element);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-/// \ref stk_iter_peek_next
+/// \ref stl_iter_peek_next
 /// \brief Returns the next element in the iteration if available.
 void *
-stk_iter_peek_next(StackListIterator_t *iter);
+stl_iter_peek_next(StackListIterator_t *iter);
 
-/// \ref stk_iter_peek
+/// \ref stl_iter_peek
 /// \brief Returns the current element in the iteration if available.
 void *
-stk_iter_peek(StackListIterator_t *iter);
+stl_iter_peek(StackListIterator_t *iter);
 
-#define STK_FOR_EACH(target, body)                     \
-    do {                                               \
-        StackListIterator_t *iter_ = stk_iter_new(target); \
-        while (stk_iter_has_next(iter_)) {             \
-            void *var = stk_iter_peek(iter_);          \
-            body;                                      \
-            stk_iter_next(iter_);                      \
-        }                                              \
-        stk_iter_free(iter_);                          \
-    } while (0);                                       \
+#define STK_FOR_EACH(target, body)                         \
+    do {                                                   \
+        StackListIterator_t *iter_ = stl_iter_new(target); \
+        while (stl_iter_has_next(iter_)) {                 \
+            void *var = stl_iter_peek(iter_);              \
+            body;                                          \
+            stl_iter_next(iter_);                          \
+        }                                                  \
+        stl_iter_free(iter_);                              \
+    } while (0);                                           \
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///

@@ -281,16 +281,16 @@ sta_iter_peek(StackArrayIterator_t *iter);
 void *
 sta_iter_peek_prev(StackArrayIterator_t *iter);
 
-#define STA_FOR_EACH(target, body)                     \
-    do {                                               \
+#define STA_FOR_EACH(target, body)                          \
+    do {                                                    \
         StackArrayIterator_t *iter_ = sta_iter_new(target); \
-        while (sta_iter_has_next(iter_)) {             \
-            void *var = sta_iter_peek(iter_);          \
-            body;                                      \
-            sta_iter_next(iter_);                      \
-        }                                              \
-        sta_iter_free(iter_);                          \
-    } while (0);                                       \
+        while (sta_iter_has_next(iter_)) {                  \
+            void *var = sta_iter_peek(iter_);               \
+            body;                                           \
+            sta_iter_next(iter_);                           \
+        }                                                   \
+        sta_iter_free(iter_);                               \
+    } while (0);                                            \
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
