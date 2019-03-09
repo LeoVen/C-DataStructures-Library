@@ -1,12 +1,12 @@
 /**
- * @file Deque.c
+ * @file DequeList.c
  * 
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 27/09/2018
  */
 
-#include "Deque.h"
+#include "DequeList.h"
 
 /// \brief A linked list implementation of a generic deque.
 ///
@@ -29,16 +29,16 @@
 ///
 /// \b Functions
 ///
-/// Located in the file Deque.c
-struct Deque_s
+/// Located in the file DequeList.c
+struct DequeList_s
 {
-    /// \brief Current amount of elements in the \c Deque.
+    /// \brief Current amount of elements in the \c DequeList.
     ///
     /// Deque current amount of nodes linked between the \c front and \c rear
     /// pointers.
     integer_t length;
 
-    /// \brief Deque length limit.
+    /// \brief DequeList length limit.
     ///
     /// If it is set to 0 or a negative value then the deque has no limit to
     /// its length. Otherwise it won't be able to have more elements than the
@@ -51,12 +51,12 @@ struct Deque_s
     /// \brief Points to the first Node on the deque.
     ///
     /// Points to the first Node on the deque or \c NULL if the deque is empty.
-    struct DequeNode_s *front;
+    struct DequeListNode_s *front;
 
     /// \brief Points to the last Node on the deque.
     ///
     /// Points to the first Node on the deque or \c NULL if the deque is empty.
-    struct DequeNode_s *rear;
+    struct DequeListNode_s *rear;
 
     /// \brief Comparator function.
     ///
@@ -66,23 +66,23 @@ struct Deque_s
     /// - <code>[ > 0 ]</code> if first element is greater than the second;
     /// - <code>[ < 0 ]</code> if second element is greater than the first;
     /// - <code>[ 0 ]</code> if elements are equal.
-    deq_compare_f v_compare;
+    dql_compare_f v_compare;
 
     /// \brief Copy function.
     ///
     /// A function that returns an exact copy of an element.
-    deq_copy_f v_copy;
+    dql_copy_f v_copy;
 
     /// \brief Display function.
     ///
     /// A function that displays an element in the console. Useful for
     /// debugging.
-    deq_display_f v_display;
+    dql_display_f v_display;
 
     /// \brief Deallocator function.
     ///
     /// A function that completely frees an element from memory.
-    deq_free_f v_free;
+    dql_free_f v_free;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -93,12 +93,12 @@ struct Deque_s
     integer_t version_id;
 };
 
-/// \brief A Deque_s node.
+/// \brief A DequeList_s node.
 ///
 /// Implementation detail. This is a doubly-linked node with a pointer to the
 /// previous node (or \c NULL if it is the front node) and another pointer to
 /// the next node (or \c NULL if it is the rear node).
-struct DequeNode_s
+struct DequeListNode_s
 {
     /// \brief Data pointer.
     ///
@@ -108,37 +108,37 @@ struct DequeNode_s
     /// \brief Next node on the deque.
     ///
     /// Next node on the deque or \c NULL if this is the rear node.
-    struct DequeNode_s *next;
+    struct DequeListNode_s *next;
 
     /// \brief Previous node on the deque.
     ///
     /// Previous node on the deque or \c NULL if this is the front node.
-    struct DequeNode_s *prev;
+    struct DequeListNode_s *prev;
 };
 
 /// \brief A type for a deque node.
 ///
-/// Defines a type to a <code> struct DequeNode_s </code>.
-typedef struct DequeNode_s DequeNode_t;
+/// Defines a type to a <code> struct DequeListNode_s </code>.
+typedef struct DequeListNode_s DequeListNode_t;
 
 /// \brief A pointer type for a deque node.
 ///
-/// Defines a pointer type to a <code> struct DequeNode_s </code>.
-typedef struct DequeNode_s *DequeNode;
+/// Defines a pointer type to a <code> struct DequeListNode_s </code>.
+typedef struct DequeListNode_s *DequeListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status deq_make_node(DequeNode *node, void *data);
+static Status dql_make_node(DequeListNode *node, void *data);
 
-static Status deq_free_node(DequeNode *node, deq_free_f free_f);
+static Status dql_free_node(DequeListNode *node, dql_free_f free_f);
 
-static Status deq_free_node_shallow(DequeNode *node);
+static Status dql_free_node_shallow(DequeListNode *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// \brief Initializes a Deque_s structure.
+/// \brief Initializes a DequeList_s structure.
 ///
-/// Initializes a new Deque_s structure with initial length and limit as 0.
+/// Initializes a new DequeList_s structure with initial length and limit as 0.
 /// Note that it does not sets any default functions. If you don't set them
 /// later you won't be able to do certain operations that depend on a user-
 /// defined function.
@@ -147,9 +147,9 @@ static Status deq_free_node_shallow(DequeNode *node);
 ///
 /// \return DS_ERR_ALLOC if deque allocation failed.
 /// \return DS_OK if all operations were successful.
-Status deq_init(Deque *deque)
+Status dql_init(DequeList *deque)
 {
-    (*deque) = malloc(sizeof(Deque_t));
+    (*deque) = malloc(sizeof(DequeList_t));
 
     if (!(*deque))
         return DS_ERR_ALLOC;
@@ -169,12 +169,12 @@ Status deq_init(Deque *deque)
     return DS_OK;
 }
 
-/// \brief Creates a Deque_s.
+/// \brief Creates a DequeList_s.
 ///
-/// This function completely creates a Deque_s, setting all of its default
+/// This function completely creates a DequeList_s, setting all of its default
 /// functions.
 ///
-/// \param[in,out] deque Deque_s to be allocated.
+/// \param[in,out] deque DequeList_s to be allocated.
 /// \param[in] compare_f A function that compares two elements.
 /// \param[in] copy_f A function that makes an exact copy of an element.
 /// \param[in] display_f A function that displays in the console an element.
@@ -182,10 +182,10 @@ Status deq_init(Deque *deque)
 ///
 /// \return DS_ERR_ALLOC if deque allocation failed.
 /// \return DS_OK if all operations are successful.
-Status deq_create(Deque *deque, deq_compare_f compare_f, deq_copy_f copy_f,
-                  deq_display_f display_f, deq_free_f free_f)
+Status dql_create(DequeList *deque, dql_compare_f compare_f, dql_copy_f copy_f,
+                  dql_display_f display_f, dql_free_f free_f)
 {
-    *deque = malloc(sizeof(Deque_t));
+    *deque = malloc(sizeof(DequeList_t));
 
     if (!(*deque))
         return DS_ERR_ALLOC;
@@ -205,18 +205,18 @@ Status deq_create(Deque *deque, deq_compare_f compare_f, deq_copy_f copy_f,
     return DS_OK;
 }
 
-/// \brief Frees from memory a Deque_s and all its elements.
+/// \brief Frees from memory a DequeList_s and all its elements.
 ///
 /// This function frees from memory all the deque's elements using its default
 /// free function and then frees the deque's structure. The variable is then
 /// set to \c NULL.
 ///
-/// \param[in,out] deque The Deque_s to be freed from memory.
+/// \param[in,out] deque The DequeList_s to be freed from memory.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
 /// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_free(Deque *deque)
+Status dql_free(DequeList *deque)
 {
     if ((*deque) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -224,7 +224,7 @@ Status deq_free(Deque *deque)
     if ((*deque)->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    DequeNode prev = (*deque)->front;
+    DequeListNode prev = (*deque)->front;
 
     Status st;
 
@@ -232,7 +232,7 @@ Status deq_free(Deque *deque)
     {
         (*deque)->front = (*deque)->front->prev;
 
-        st = deq_free_node(&prev, (*deque)->v_free);
+        st = dql_free_node(&prev, (*deque)->v_free);
 
         if (st != DS_OK)
             return st;
@@ -247,22 +247,22 @@ Status deq_free(Deque *deque)
     return DS_OK;
 }
 
-/// \brief Frees from memory a Deque_s.
+/// \brief Frees from memory a DequeList_s.
 ///
 /// This function frees from memory all the deque's nodes without freeing its
 /// data and then frees the deque structure. The variable is then set to
 /// \c NULL.
 ///
-/// \param[in,out] deque Deque_s to be freed from memory.
+/// \param[in,out] deque DequeList_s to be freed from memory.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_free_shallow(Deque *deque)
+Status dql_free_shallow(DequeList *deque)
 {
     if ((*deque) == NULL)
         return DS_ERR_NULL_POINTER;
 
-    DequeNode prev = (*deque)->front;
+    DequeListNode prev = (*deque)->front;
 
     Status st;
 
@@ -270,7 +270,7 @@ Status deq_free_shallow(Deque *deque)
     {
         (*deque)->front = (*deque)->front->prev;
 
-        st = deq_free_node_shallow(&prev);
+        st = dql_free_node_shallow(&prev);
 
         if (st != DS_OK)
             return st;
@@ -285,32 +285,32 @@ Status deq_free_shallow(Deque *deque)
     return DS_OK;
 }
 
-/// \brief Erases a Deque_s.
+/// \brief Erases a DequeList_s.
 ///
 /// This function is equivalent to freeing a deque and the creating it again.
 /// This will reset the deque to its initial state with no elements, but will
 /// keep all of its default functions.
 ///
-/// \param[in,out] deque Deque_s to be erased.
+/// \param[in,out] deque DequeList_s to be erased.
 ///
 /// \return DS_ERR_ALLOC if deque allocation failed.
 /// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
 /// \return DS_ERR_NULL_POINTER if the deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_erase(Deque *deque)
+Status dql_erase(DequeList *deque)
 {
     if (*deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    Deque new_deque;
+    DequeList new_deque;
 
-    Status st = deq_create(&new_deque, (*deque)->v_compare, (*deque)->v_copy,
+    Status st = dql_create(&new_deque, (*deque)->v_compare, (*deque)->v_copy,
             (*deque)->v_display, (*deque)->v_free);
 
     if (st !=  DS_OK)
         return st;
 
-    st = deq_free(deque);
+    st = dql_free(deque);
 
     // Probably didn't set the free function...
     if (st !=  DS_OK)
@@ -328,14 +328,14 @@ Status deq_erase(Deque *deque)
 /// \brief Sets the default compare function.
 ///
 /// Use this function to set a default compare function. It needs to comply
-/// with the deq_compare_f specifications.
+/// with the dql_compare_f specifications.
 ///
-/// \param[in] deque Deque_s to set the default compare function.
-/// \param[in] function A deq_compare_f kind of function.
+/// \param[in] deque DequeList_s to set the default compare function.
+/// \param[in] function A dql_compare_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_v_compare(Deque deque, deq_compare_f function)
+Status dql_set_v_compare(DequeList deque, dql_compare_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -348,14 +348,14 @@ Status deq_set_v_compare(Deque deque, deq_compare_f function)
 /// \brief Sets the default copy function.
 ///
 /// Use this function to set a default compare function. It needs to comply
-/// with the deq_copy_f specifications.
+/// with the dql_copy_f specifications.
 ///
-/// \param[in] deque Deque_s to set the default copy function.
-/// \param[in] function A deq_copy_f kind of function.
+/// \param[in] deque DequeList_s to set the default copy function.
+/// \param[in] function A dql_copy_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_v_copy(Deque deque, deq_copy_f function)
+Status dql_set_v_copy(DequeList deque, dql_copy_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -368,14 +368,14 @@ Status deq_set_v_copy(Deque deque, deq_copy_f function)
 /// \brief Sets the default display function.
 ///
 /// Use this function to set a default display function. It needs to comply
-/// with the deq_display_f specifications. Useful for debugging.
+/// with the dql_display_f specifications. Useful for debugging.
 ///
-/// \param[in] deque Deque_s to set the default display function.
-/// \param[in] function A deq_display_f kind of function.
+/// \param[in] deque DequeList_s to set the default display function.
+/// \param[in] function A dql_display_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_v_display(Deque deque, deq_display_f function)
+Status dql_set_v_display(DequeList deque, dql_display_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -388,14 +388,14 @@ Status deq_set_v_display(Deque deque, deq_display_f function)
 /// \brief Sets the default free function.
 ///
 /// Use this function to set a default free function. It needs to comply
-/// with the deq_free_f specifications.
+/// with the dql_free_f specifications.
 ///
-/// \param[in] deque Deque_s to set the default free function.
-/// \param[in] function A deq_free_f kind of function.
+/// \param[in] deque DequeList_s to set the default free function.
+/// \param[in] function A dql_free_f kind of function.
 ///
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_v_free(Deque deque, deq_free_f function)
+Status dql_set_v_free(DequeList deque, dql_free_f function)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -405,20 +405,20 @@ Status deq_set_v_free(Deque deque, deq_free_f function)
     return DS_OK;
 }
 
-/// \brief Sets a limit to the specified Deque_s's length.
+/// \brief Sets a limit to the specified DequeList_s's length.
 ///
-/// Limit's the Deque_s's length. You can only set a limit greater or equal to
+/// Limit's the DequeList_s's length. You can only set a limit greater or equal to
 /// the deque's current length and greater than 0. To remove this limitation
 /// simply set the limit to 0 or less.
 ///
-/// \param[in] deque Deque_s reference.
+/// \param[in] deque DequeList_s reference.
 /// \param[in] limit Maximum deque length.
 ///
 /// \return DS_ERR_INVALID_OPERATION if the limitation is less than the deque's
 /// current length.
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations are successful.
-Status deq_set_limit(Deque deque, integer_t limit)
+Status dql_set_limit(DequeList deque, integer_t limit)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -432,7 +432,7 @@ Status deq_set_limit(Deque deque, integer_t limit)
     return DS_OK;
 }
 
-integer_t deq_length(Deque deque)
+integer_t dql_length(DequeList deque)
 {
     if (deque == NULL)
         return -1;
@@ -440,7 +440,7 @@ integer_t deq_length(Deque deque)
     return deque->length;
 }
 
-integer_t deq_limit(Deque deque)
+integer_t dql_limit(DequeList deque)
 {
     if (deque == NULL)
         return -1;
@@ -458,22 +458,22 @@ integer_t deq_limit(Deque deque)
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_enqueue_front(Deque deque, void *element)
+Status dql_enqueue_front(DequeList deque, void *element)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq_full(deque))
+    if (dql_full(deque))
         return DS_ERR_FULL;
 
-    DequeNode node;
+    DequeListNode node;
 
-    Status st = deq_make_node(&node, element);
+    Status st = dql_make_node(&node, element);
 
     if (st != DS_OK)
         return st;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
     {
         deque->front = node;
         deque->rear = node;
@@ -502,22 +502,22 @@ Status deq_enqueue_front(Deque deque, void *element)
 /// length reached the specified limit.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_enqueue_rear(Deque deque, void *element)
+Status dql_enqueue_rear(DequeList deque, void *element)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq_full(deque))
+    if (dql_full(deque))
         return DS_ERR_FULL;
 
-    DequeNode node;
+    DequeListNode node;
 
-    Status st = deq_make_node(&node, element);
+    Status st = dql_make_node(&node, element);
 
     if (st != DS_OK)
         return st;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
     {
         deque->front = node;
         deque->rear = node;
@@ -544,17 +544,17 @@ Status deq_enqueue_rear(Deque deque, void *element)
 /// \return DS_ERR_INVALID_OPERATION if the deque is empty.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_dequeue_front(Deque deque, void **result)
+Status dql_dequeue_front(DequeList deque, void **result)
 {
     *result = NULL;
 
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return DS_ERR_INVALID_OPERATION;
 
-    DequeNode node = deque->front;
+    DequeListNode node = deque->front;
 
     *result = node->data;
 
@@ -565,7 +565,7 @@ Status deq_dequeue_front(Deque deque, void **result)
     else
         deque->front->next = NULL;
 
-    Status st = deq_free_node_shallow(&node);
+    Status st = dql_free_node_shallow(&node);
 
     if (st != DS_OK)
         return st;
@@ -584,17 +584,17 @@ Status deq_dequeue_front(Deque deque, void **result)
 /// \return DS_ERR_INVALID_OPERATION if the deque is empty.
 /// \return DS_ERR_NULL_POINTER if deque reference is \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_dequeue_rear(Deque deque, void **result)
+Status dql_dequeue_rear(DequeList deque, void **result)
 {
     *result = NULL;
 
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return DS_ERR_INVALID_OPERATION;
 
-    DequeNode node = deque->rear;
+    DequeListNode node = deque->rear;
 
     *result = node->data;
 
@@ -605,7 +605,7 @@ Status deq_dequeue_rear(Deque deque, void **result)
     else
         deque->rear->prev = NULL;
 
-    Status st = deq_free_node_shallow(&node);
+    Status st = dql_free_node_shallow(&node);
 
     if (st != DS_OK)
         return st;
@@ -616,45 +616,45 @@ Status deq_dequeue_rear(Deque deque, void **result)
     return DS_OK;
 }
 
-bool deq_full(Deque deque)
+bool dql_full(DequeList deque)
 {
     return deque->limit > 0 && deque->length >= deque->limit;
 }
 
-bool deq_empty(Deque deque)
+bool dql_empty(DequeList deque)
 {
     return deque->length == 0;
 }
 
-void *deq_peek_front(Deque deque)
+void *dql_peek_front(DequeList deque)
 {
     if (deque == NULL)
         return NULL;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return NULL;
 
     return deque->front->data;
 }
 
-void *deq_peek_rear(Deque deque)
+void *dql_peek_rear(DequeList deque)
 {
     if (deque == NULL)
         return NULL;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return NULL;
 
     return deque->rear->data;
 }
 
-bool deq_contains(Deque deque, void *key)
+bool dql_contains(DequeList deque, void *key)
 {
     // TODO
     return false;
 }
 
-Status deq_copy(Deque deque, Deque *result)
+Status dql_copy(DequeList deque, DequeList *result)
 {
     *result = NULL;
 
@@ -664,7 +664,7 @@ Status deq_copy(Deque deque, Deque *result)
     if (deque->v_copy == NULL || deque->v_free == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    Status st = deq_create(result, deque->v_compare, deque->v_copy,
+    Status st = dql_create(result, deque->v_compare, deque->v_copy,
                            deque->v_display, deque->v_free);
 
     if (st != DS_OK)
@@ -672,10 +672,10 @@ Status deq_copy(Deque deque, Deque *result)
 
     (*result)->limit = deque->limit;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return DS_OK;
 
-    DequeNode scan = deque->front;
+    DequeListNode scan = deque->front;
 
     void *elem;
 
@@ -683,7 +683,7 @@ Status deq_copy(Deque deque, Deque *result)
     {
         elem = deque->v_copy(scan->data);
 
-        st = deq_enqueue_rear(*result, elem);
+        st = dql_enqueue_rear(*result, elem);
 
         if (st != DS_OK)
         {
@@ -698,34 +698,34 @@ Status deq_copy(Deque deque, Deque *result)
     return DS_OK;
 }
 
-Status deq_append(Deque deque1, Deque deque2)
+Status dql_append(DequeList deque1, DequeList deque2)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;
 }
 
-Status deq_prepend(Deque deque1, Deque deque2)
+Status dql_prepend(DequeList deque1, DequeList deque2)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;
 }
 
-Status deq_to_array(Deque deque,  void ***result, integer_t *length)
+Status dql_to_array(DequeList deque,  void ***result, integer_t *length)
 {
     // TODO
     return DS_ERR_INVALID_OPERATION;
 }
 
-/// \brief Displays a Deque_s in the console.
+/// \brief Displays a DequeList_s in the console.
 ///
-/// Displays a Deque_s in the console starting from \c front to \c rear.
+/// Displays a DequeList_s in the console starting from \c front to \c rear.
 ///
-/// \param[in] deque The Deque_s to be displayed in the console.
+/// \param[in] deque The DequeList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_display(Deque deque)
+Status dql_display(DequeList deque)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -733,16 +733,16 @@ Status deq_display(Deque deque)
     if (deque->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
     {
-        printf("\nDeque\n[ empty ]\n");
+        printf("\nDequeList\n[ empty ]\n");
 
         return DS_OK;
     }
 
-    DequeNode scan = deque->front;
+    DequeListNode scan = deque->front;
 
-    printf("\nDeque\nfront <-> ");
+    printf("\nDequeList\nfront <-> ");
 
     while (scan != NULL)
     {
@@ -758,17 +758,17 @@ Status deq_display(Deque deque)
     return DS_OK;
 }
 
-/// \brief Displays a Deque_s in the console like an array.
+/// \brief Displays a DequeList_s in the console like an array.
 ///
-/// Displays a Deque_s in the console starting from \c front to \c rear like an
+/// Displays a DequeList_s in the console starting from \c front to \c rear like an
 /// array with its elements separated by commas, delimited with brackets.
 ///
-/// \param[in] deque The Deque_s to be displayed in the console.
+/// \param[in] deque The DequeList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the deque references to \c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_display_array(Deque deque)
+Status dql_display_array(DequeList deque)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -776,14 +776,14 @@ Status deq_display_array(Deque deque)
     if (deque->v_display == NULL)
         return DS_ERR_INCOMPLETE_TYPE;
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
     {
         printf("\n[ empty ]\n");
 
         return DS_OK;
     }
 
-    DequeNode scan = deque->front;
+    DequeListNode scan = deque->front;
 
     printf("\n[ ");
 
@@ -803,17 +803,17 @@ Status deq_display_array(Deque deque)
     return DS_OK;
 }
 
-/// \brief Displays a Deque_s in the console.
+/// \brief Displays a DequeList_s in the console.
 ///
-/// Displays a Deque_s in the console starting from \c front to \c rear with
+/// Displays a DequeList_s in the console starting from \c front to \c rear with
 /// its elements separated by spaces.
 ///
-/// \param[in] deque The Deque_s to be displayed in the console.
+/// \param[in] deque The DequeList_s to be displayed in the console.
 ///
 /// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
 /// \return DS_ERR_NULL_POINTER if the deque references to\c NULL.
 /// \return DS_OK if all operations were successful.
-Status deq_display_raw(Deque deque)
+Status dql_display_raw(DequeList deque)
 {
     if (deque == NULL)
         return DS_ERR_NULL_POINTER;
@@ -823,10 +823,10 @@ Status deq_display_raw(Deque deque)
 
     printf("\n");
 
-    if (deq_empty(deque))
+    if (dql_empty(deque))
         return DS_OK;
 
-    DequeNode scan = deque->front;
+    DequeListNode scan = deque->front;
 
     while (scan != NULL)
     {
@@ -844,9 +844,9 @@ Status deq_display_raw(Deque deque)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status deq_make_node(DequeNode *node, void *data)
+static Status dql_make_node(DequeListNode *node, void *data)
 {
-    (*node) = malloc(sizeof(DequeNode_t));
+    (*node) = malloc(sizeof(DequeListNode_t));
 
     if (!(*node))
         return DS_ERR_ALLOC;
@@ -859,7 +859,7 @@ static Status deq_make_node(DequeNode *node, void *data)
     return DS_OK;
 }
 
-static Status deq_free_node(DequeNode *node, deq_free_f free_f)
+static Status dql_free_node(DequeListNode *node, dql_free_f free_f)
 {
     if ((*node) == NULL)
         return DS_ERR_NULL_POINTER;
@@ -873,7 +873,7 @@ static Status deq_free_node(DequeNode *node, deq_free_f free_f)
     return DS_OK;
 }
 
-static Status deq_free_node_shallow(DequeNode *node)
+static Status dql_free_node_shallow(DequeListNode *node)
 {
     if (*node == NULL)
         return DS_ERR_NULL_POINTER;

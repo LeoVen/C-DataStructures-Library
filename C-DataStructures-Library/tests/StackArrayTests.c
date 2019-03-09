@@ -13,8 +13,8 @@
 // Tests locked capacity
 void sta_test_locked(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
     StackArray_t *stack = sta_create(int_interface, 16, 200);
 
@@ -87,8 +87,8 @@ void sta_test_locked(UnitTest ut)
 // Tests capacity multiplication
 void sta_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t, display_int32_t,
-            free, NULL, NULL);
+    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
+            display_int32_t, free, NULL, NULL);
 
     StackArray_t *stack = sta_create(int_interface, 60, 250);
 

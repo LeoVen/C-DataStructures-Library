@@ -1,12 +1,12 @@
 /**
- * @file Stack.c
+ * @file StackList.c
  * 
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 26/09/2018
  */
 
-#include "Stack.h"
+#include "StackList.h"
 
 /// This is a linked list implementation of a Stack with FILO (First-in
 /// Last-out) or LIFO (Last-in First-out) operations, so the first item added
@@ -54,15 +54,15 @@
 /// - More memory usage as in every node there is a pointer to the next node
 ///
 /// \b Functions
-/// Located in the file Stack.c
-struct Stack_s
+/// Located in the file StackList.c
+struct StackList_s
 {
-    /// \brief Current amount of elements in the Stack_s.
+    /// \brief Current amount of elements in the StackList_s.
     ///
-    /// Current amount of elements in the Stack_s.
+    /// Current amount of elements in the StackList_s.
     integer_t count;
 
-    /// \brief Stack count limit.
+    /// \brief StackList count limit.
     ///
     /// If it is set to 0 or a negative value then the stack has no limit to
     /// its count. Otherwise it won't be able to have more elements than the
@@ -72,13 +72,13 @@ struct Stack_s
     /// specified limit.
     integer_t limit;
 
-    /// \brief The element at the top of the \c Stack.
+    /// \brief The element at the top of the \c StackList.
     ///
-    /// The element at the top of Stack_s. stk_push() and stk_pop() operate
+    /// The element at the top of StackList_s. stk_push() and stk_pop() operate
     /// relative to this pointer. It points to \c NULL if the stack is empty.
-    struct StackNode_s *top;
+    struct StackListNode_s *top;
 
-    /// \brief Stack_s interface.
+    /// \brief StackList_s interface.
     ///
     /// An interface is like a table that has function pointers for functions
     /// that will manipulate a desired data type.
@@ -93,11 +93,11 @@ struct Stack_s
     integer_t version_id;
 };
 
-/// \brief A Stack_s node.
+/// \brief A StackList_s node.
 ///
 /// Implementation detail. This is a singly-linked node. It has one data member
 /// and one pointer to the next node or \c NULL if it is the bottommost node.
-struct StackNode_s
+struct StackListNode_s
 {
     /// \brief Data pointer.
     ///
@@ -108,45 +108,45 @@ struct StackNode_s
     ///
     /// Node underneath the current node or \c NULL if it is the bottommost
     /// node.
-    struct StackNode_s *below;
+    struct StackListNode_s *below;
 };
 
 /// \brief A type for a stack node.
 ///
-/// Defines a type to a <code> struct StackNode_s </code>.
-typedef struct StackNode_s StackNode_t;
+/// Defines a type to a <code> struct StackListNode_s </code>.
+typedef struct StackListNode_s StackListNode_t;
 
 /// \brief A pointer type for a stack node.
 ///
-/// Defines a pointer type to a <code> struct StackNode_s </code>.
-typedef struct StackNode_s *StackNode;
+/// Defines a pointer type to a <code> struct StackListNode_s </code>.
+typedef struct StackListNode_s *StackListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static StackNode_t *
+static StackListNode_t *
 stk_new_node(void *element);
 
 static void
-stk_free_node(StackNode_t *node, free_f free_f);
+stk_free_node(StackListNode_t *node, free_f free_f);
 
 static void
-stk_free_node_shallow(StackNode_t *node);
+stk_free_node_shallow(StackListNode_t *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// Initializes a new Stack_s with no default functions. Be sure to initialize
-/// them when needed or some functions might return with an error.
+/// Initializes a new StackList_s with no default functions. Be sure to
+/// initialize them when needed or some functions might return with an error.
 /// \par Interface Requirements
 /// - None
 ///
 /// \param[in] interface An interface defining all necessary functions for the
 /// stack to operate.
 ///
-/// \return A new Stack_s or NULL if allocation failed.
-Stack_t *
+/// \return A new StackList_s or NULL if allocation failed.
+StackList_t *
 stk_new(Interface_t *interface)
 {
-    Stack_t *stack = malloc(sizeof(Stack_t));
+    StackList_t *stack = malloc(sizeof(StackList_t));
 
     if (!stack)
         return NULL;
@@ -169,9 +169,9 @@ stk_new(Interface_t *interface)
 ///
 /// \param[in] stack The stack to be freed from memory.
 void
-stk_free(Stack_t *stack)
+stk_free(StackList_t *stack)
 {
-    StackNode_t *prev = stack->top;
+    StackListNode_t *prev = stack->top;
 
     while (stack->top != NULL)
     {
@@ -190,11 +190,11 @@ stk_free(Stack_t *stack)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack Stack_s to be freed from memory.
+/// \param[in] stack StackList_s to be freed from memory.
 void
-stk_free_shallow(Stack_t *stack)
+stk_free_shallow(StackList_t *stack)
 {
-    StackNode_t *prev = stack->top;
+    StackListNode_t *prev = stack->top;
 
     while (stack->top != NULL)
     {
@@ -208,16 +208,16 @@ stk_free_shallow(Stack_t *stack)
     free(stack);
 }
 
-/// This function will reset the Stack_s, freeing all of its elements, keeping
-/// the structure intact including its original interface.
+/// This function will reset the StackList_s, freeing all of its elements,
+/// keeping the structure intact including its original interface.
 /// \par Interface Requirements
 /// - free
 ///
 /// \param[in] stack The stack to have its elements erased.
 void
-stk_erase(Stack_t *stack)
+stk_erase(StackList_t *stack)
 {
-    StackNode_t *prev = stack->top;
+    StackListNode_t *prev = stack->top;
 
     while (stack->top != NULL)
     {
@@ -232,16 +232,17 @@ stk_erase(Stack_t *stack)
     stack->version_id++;
 }
 
-/// This function will reset the Stack_s, freeing all of its nodes but not its
-/// elements, keeping the structure intact including its original interface.
+/// This function will reset the StackList_s, freeing all of its nodes but not
+/// its elements, keeping the structure intact including its original
+/// interface.
 /// \par Interface Requirements
 /// - None
 ///
 /// \param[in] stack The stack to have its nodes erased.
 void
-stk_erase_shallow(Stack_t *stack)
+stk_erase_shallow(StackList_t *stack)
 {
-    StackNode_t *prev = stack->top;
+    StackListNode_t *prev = stack->top;
 
     while (stack->top != NULL)
     {
@@ -256,25 +257,25 @@ stk_erase_shallow(Stack_t *stack)
     stack->version_id++;
 }
 
-/// Sets a new interface for the specified Stack_s.
+/// Sets a new interface for the specified StackList_s.
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack Stack_s to change the interface.
+/// \param[in] stack StackList_s to change the interface.
 /// \param[in] new_interface New interface for the specified structure.
 void
-stk_config(Stack_t *stack, Interface_t *new_interface)
+stk_config(StackList_t *stack, Interface_t *new_interface)
 {
     stack->interface = new_interface;
 }
 
 /// Returns the current amount of elements in the specified stack.
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 ///
 /// \return The stack total amount of elements.
 integer_t
-stk_count(Stack_t *stack)
+stk_count(StackList_t *stack)
 {
     return stack->count;
 }
@@ -283,28 +284,28 @@ stk_count(Stack_t *stack)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 ///
 /// \return The current stack limit.
 integer_t
-stk_limit(Stack_t *stack)
+stk_limit(StackList_t *stack)
 {
     return stack->limit;
 }
 
-/// Limit's the Stack_s's length. You can only set a limit greater or
+/// Limit's the StackList_s's length. You can only set a limit greater or
 /// equal to the stack's current length and greater than 0. To remove this
 /// limitation simply set the limit to 0 or less.
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 /// \param[in] limit New stack limit.
 ///
 /// \return True if a new limit was set. False if the new limit is lower than
 /// the current amount of elements in the stack.
 bool
-stk_set_limit(Stack_t *stack, integer_t limit)
+stk_set_limit(StackList_t *stack, integer_t limit)
 {
     // The new limit can't be lower than the stack's current length.
     if (stack->count > limit && limit > 0)
@@ -319,18 +320,18 @@ stk_set_limit(Stack_t *stack, integer_t limit)
 /// \par Interface Requirements
 /// - None
 ///
-/// \param[in] stack Stack_s reference where the element is to be inserted.
+/// \param[in] stack StackList_s reference where the element is to be inserted.
 /// \param[in] element Element to be inserted onto the stack.
 ///
 /// \return True if the element was successfully added to the stack or false if
 /// the stack reached its limit size or memory allocation failed.
 bool
-stk_push(Stack_t *stack, void *element)
+stk_push(StackList_t *stack, void *element)
 {
     if (stk_full(stack))
         return false;
 
-    StackNode_t *node = stk_new_node(element);
+    StackListNode_t *node = stk_new_node(element);
 
     if (!node)
         return false;
@@ -353,14 +354,14 @@ stk_push(Stack_t *stack, void *element)
 /// \return True if an element was removed from the stack or false if the stack
 /// is empty.
 bool
-stk_pop(Stack_t *stack, void **result)
+stk_pop(StackList_t *stack, void **result)
 {
     *result = NULL;
 
     if (stk_empty(stack))
         return false;
 
-    StackNode_t *node = stack->top;
+    StackListNode_t *node = stack->top;
     stack->top = stack->top->below;
 
     *result = node->data;
@@ -375,11 +376,11 @@ stk_pop(Stack_t *stack, void **result)
 
 /// Returns the element at the top of the stack or NULL if the stack is empty.
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 ///
 /// \return NULL if the stack is empty or the element at the top of the stack.
 void *
-stk_peek(Stack_t *stack)
+stk_peek(StackList_t *stack)
 {
     if (stk_empty(stack))
         return NULL;
@@ -392,11 +393,11 @@ stk_peek(Stack_t *stack)
 /// check if the top pointer is \c NULL or not. The length variable already
 /// tracks it.
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 ///
 /// \return True if the stack is empty, otherwise false.
 bool
-stk_empty(Stack_t *stack)
+stk_empty(StackList_t *stack)
 {
     return stack->count == 0;
 }
@@ -405,26 +406,26 @@ stk_empty(Stack_t *stack)
 /// full if its limit is set to a value higher than 0 and respecting all rules
 /// from stk_set_limit().
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 ///
 /// \return True if the amount of elements in the stack have reached a limit
 /// (being greater than 0).
 bool
-stk_full(Stack_t *stack)
+stk_full(StackList_t *stack)
 {
     return stack->limit > 0 && stack->count >= stack->limit;
 }
 
 /// Returns true if the element is present in the stack, otherwise false.
 ///
-/// \param[in] stack Stack_s reference.
+/// \param[in] stack StackList_s reference.
 /// \param[in] key Key to be matched.
 ///
 /// \return True if the element is present in the stack, otherwise false.
 bool
-stk_contains(Stack_t *stack, void *key)
+stk_contains(StackList_t *stack, void *key)
 {
-    StackNode scan = stack->top;
+    StackListNode scan = stack->top;
 
     while (scan != NULL)
     {
@@ -437,7 +438,7 @@ stk_contains(Stack_t *stack, void *key)
     return false;
 }
 
-/// Returns a copy of the specified Stack_s with the same interface. All
+/// Returns a copy of the specified StackList_s with the same interface. All
 /// elements are copied using the stack interface's copy function.
 /// \par Interface Requirements
 /// - copy
@@ -445,10 +446,10 @@ stk_contains(Stack_t *stack, void *key)
 /// \param[in] stack The stack to be copied.
 ///
 /// \return NULL if allocation failed or a copy of the specified stack.
-Stack_t *
-stk_copy(Stack_t *stack)
+StackList_t *
+stk_copy(StackList_t *stack)
 {
-    Stack_t *result = stk_new(stack->interface);
+    StackList_t *result = stk_new(stack->interface);
 
     if (!result)
         return NULL;
@@ -458,7 +459,7 @@ stk_copy(Stack_t *stack)
     // scan -> goes through the original stack
     // copy -> current element being copied
     // prev -> copy's previous node to make the link
-    StackNode_t *prev = NULL, *copy, *scan = stack->top;
+    StackListNode_t *prev = NULL, *copy, *scan = stack->top;
 
     while (scan != NULL)
     {
@@ -489,17 +490,18 @@ stk_copy(Stack_t *stack)
     return result;
 }
 
-/// Returns a shallow copy of the specified Stack_s with the same interface.
+/// Returns a shallow copy of the specified StackList_s with the same
+/// interface.
 /// \par Interface Requirements
 /// - None
 ///
 /// \param[in] stack The stack to be copied.
 ///
 /// \return NULL if allocation failed or a shallow copy of the specified stack.
-Stack_t *
-stk_copy_shallow(Stack_t *stack)
+StackList_t *
+stk_copy_shallow(StackList_t *stack)
 {
-    Stack_t *result = stk_new(stack->interface);
+    StackList_t *result = stk_new(stack->interface);
 
     if (!result)
         return NULL;
@@ -509,7 +511,7 @@ stk_copy_shallow(Stack_t *stack)
     // scan -> goes through the original stack
     // copy -> current element being copied
     // prev -> copy's previous node to make the link
-    StackNode_t *prev = NULL, *copy, *scan = stack->top;
+    StackListNode_t *prev = NULL, *copy, *scan = stack->top;
 
     while (scan != NULL)
     {
@@ -553,9 +555,9 @@ stk_copy_shallow(Stack_t *stack)
 ///
 /// \return An int according to \ref compare_f.
 int
-stk_compare(Stack_t *stack1, Stack_t *stack2)
+stk_compare(StackList_t *stack1, StackList_t *stack2)
 {
-    StackNode_t *scan1 = stack1->top, *scan2 = stack2->top;
+    StackListNode_t *scan1 = stack1->top, *scan2 = stack2->top;
 
     int comparison = 0;
     while (scan1 != NULL && scan2 != NULL)
@@ -590,7 +592,7 @@ stk_compare(Stack_t *stack1, Stack_t *stack2)
 ///
 /// \return True if all operations were successful, otherwise false.
 bool
-stk_stack(Stack_t *stack1, Stack_t *stack2)
+stk_stack(StackList_t *stack1, StackList_t *stack2)
 {
     if (stk_empty(stack2))
         return true;
@@ -605,7 +607,7 @@ stk_stack(Stack_t *stack1, Stack_t *stack2)
     }
     else
     {
-        StackNode_t *scan = stack2->top;
+        StackListNode_t *scan = stack2->top;
 
         while (scan->below !=  NULL)
             scan = scan->below;
@@ -637,7 +639,7 @@ stk_stack(Stack_t *stack1, Stack_t *stack2)
 /// \return The resulting array or NULL if the stack is empty or the array
 /// allocation failed.
 void **
-stk_to_array(Stack_t *stack, integer_t *length)
+stk_to_array(StackList_t *stack, integer_t *length)
 {
     *length = 0;
 
@@ -649,7 +651,7 @@ stk_to_array(Stack_t *stack, integer_t *length)
     if (!array)
         return NULL;
 
-    StackNode_t *scan = stack->top;
+    StackListNode_t *scan = stack->top;
 
     integer_t i = 0;
     while (scan != NULL)
@@ -663,8 +665,8 @@ stk_to_array(Stack_t *stack, integer_t *length)
     return array;
 }
 
-/// Displays a Stack_s in the console starting from the top element. There are
-/// currently four modes:
+/// Displays a StackList_s in the console starting from the top element. There
+/// are currently four modes:
 /// - -1 Displays each element separated by newline;
 /// -  0 Displays each element like a linked list;
 /// -  1 Displays each element separated by a space;
@@ -673,22 +675,22 @@ stk_to_array(Stack_t *stack, integer_t *length)
 /// - display
 ///
 /// \param[in] stack The stack to be displayed in the console.
-/// \param[in] display_mode The way the stack is to be displayed in the console.
+/// \param[in] display_mode How the stack is to be displayed in the console.
 void
-stk_display(Stack_t *stack, int display_mode)
+stk_display(StackList_t *stack, int display_mode)
 {
     if (stk_empty(stack))
     {
-        printf("\nStack\n[ empty ]\n");
+        printf("\nStackList\n[ empty ]\n");
         return;
     }
 
-    StackNode_t *scan = stack->top;
+    StackListNode_t *scan = stack->top;
 
     switch (display_mode)
     {
         case -1:
-            printf("\nStack\n");
+            printf("\nStackList\n");
             while (scan != NULL)
             {
                 stack->interface->display(scan->data);
@@ -697,7 +699,7 @@ stk_display(Stack_t *stack, int display_mode)
             }
             break;
         case 0:
-            printf("\nStack\nTop -> ");
+            printf("\nStackList\nTop -> ");
             while (scan->below != NULL)
             {
                 stack->interface->display(scan->data);
@@ -708,7 +710,7 @@ stk_display(Stack_t *stack, int display_mode)
             printf(" NULL\n");
             break;
         case 1:
-            printf("\nStack\n");
+            printf("\nStackList\n");
             while (scan != NULL)
             {
                 stack->interface->display(scan->data);
@@ -718,7 +720,7 @@ stk_display(Stack_t *stack, int display_mode)
             printf("\n");
             break;
         default:
-            printf("\nStack\n[ ");
+            printf("\nStackList\n[ ");
             while (scan->below != NULL)
             {
                 stack->interface->display(scan->data);
@@ -732,10 +734,10 @@ stk_display(Stack_t *stack, int display_mode)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static StackNode_t *
+static StackListNode_t *
 stk_new_node(void *element)
 {
-    StackNode_t *node = malloc(sizeof(StackNode_t));
+    StackListNode_t *node = malloc(sizeof(StackListNode_t));
 
     if (!node)
         return NULL;
@@ -747,14 +749,14 @@ stk_new_node(void *element)
 }
 
 static void
-stk_free_node(StackNode_t *node, free_f free_f)
+stk_free_node(StackListNode_t *node, free_f free_f)
 {
     free_f(node->data);
     free(node);
 }
 
 static void
-stk_free_node_shallow(StackNode_t *node)
+stk_free_node_shallow(StackListNode_t *node)
 {
     free(node);
 }
@@ -767,19 +769,19 @@ stk_free_node_shallow(StackNode_t *node)
 
 /// This iterator is a forward-only iterator. Its cursor is represented by a
 /// pointer to one of the stack's node.
-struct StackIterator_s
+struct StackListIterator_s
 {
-    /// \brief Target Stack_s.
+    /// \brief Target StackList_s.
     ///
-    /// Target Stack_s. The iterator might need to use some information
+    /// Target StackList_s. The iterator might need to use some information
     /// provided by the stack or change some of its data members.
-    struct Stack_s *target;
+    struct StackList_s *target;
 
     /// \brief Current element.
     ///
     /// Points to the current node. The iterator is always initialized with the
     /// cursor pointing to the start (top) of the stack.
-    struct StackNode_s *cursor;
+    struct StackListNode_s *cursor;
 
     /// \brief Target version ID.
     ///
@@ -793,7 +795,7 @@ struct StackIterator_s
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackIterator_t *iter);
+stk_iter_target_modified(StackListIterator_t *iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -801,13 +803,13 @@ stk_iter_target_modified(StackIterator_t *iter);
 /// \param[in] target
 ///
 /// \return
-StackIterator_t *
-stk_iter_new(Stack_t *target)
+StackListIterator_t *
+stk_iter_new(StackList_t *target)
 {
     if (stk_empty(target))
         return NULL;
 
-    StackIterator_t *iter = malloc(sizeof(StackIterator_t));
+    StackListIterator_t *iter = malloc(sizeof(StackListIterator_t));
 
     if (!iter)
         return NULL;
@@ -823,7 +825,7 @@ stk_iter_new(Stack_t *target)
 /// \param[in] iter
 /// \param[in] target
 void
-stk_iter_retarget(StackIterator_t *iter, Stack_t *target)
+stk_iter_retarget(StackListIterator_t *iter, StackList_t *target)
 {
     iter->target = target;
     iter->target_id = target->version_id;
@@ -832,7 +834,7 @@ stk_iter_retarget(StackIterator_t *iter, Stack_t *target)
 ///
 /// \param[in] iter
 void
-stk_iter_free(StackIterator_t *iter)
+stk_iter_free(StackListIterator_t *iter)
 {
     free(iter);
 }
@@ -842,7 +844,7 @@ stk_iter_free(StackIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_next(StackIterator_t *iter)
+stk_iter_next(StackListIterator_t *iter)
 {
     if (stk_iter_target_modified(iter))
         return false;
@@ -860,7 +862,7 @@ stk_iter_next(StackIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_to_top(StackIterator_t *iter)
+stk_iter_to_top(StackListIterator_t *iter)
 {
     if (stk_iter_target_modified(iter))
         return false;
@@ -875,7 +877,7 @@ stk_iter_to_top(StackIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_has_next(StackIterator_t *iter)
+stk_iter_has_next(StackListIterator_t *iter)
 {
     return iter->cursor->below != NULL;
 }
@@ -886,7 +888,7 @@ stk_iter_has_next(StackIterator_t *iter)
 ///
 /// \return
 bool
-stk_iter_get(StackIterator_t *iter, void **result)
+stk_iter_get(StackListIterator_t *iter, void **result)
 {
     if (stk_iter_target_modified(iter))
         return false;
@@ -902,7 +904,7 @@ stk_iter_get(StackIterator_t *iter, void **result)
 ///
 /// \return
 bool
-stk_iter_set(StackIterator_t *iter, void *element)
+stk_iter_set(StackListIterator_t *iter, void *element)
 {
     if (stk_iter_target_modified(iter))
         return false;
@@ -919,7 +921,7 @@ stk_iter_set(StackIterator_t *iter, void *element)
 ///
 /// \return
 void *
-stk_iter_peek_next(StackIterator_t *iter)
+stk_iter_peek_next(StackListIterator_t *iter)
 {
     if (stk_iter_target_modified(iter))
         return NULL;
@@ -935,7 +937,7 @@ stk_iter_peek_next(StackIterator_t *iter)
 ///
 /// \return
 void *
-stk_iter_peek(StackIterator_t *iter)
+stk_iter_peek(StackListIterator_t *iter)
 {
     if (stk_iter_target_modified(iter))
         return NULL;
@@ -946,7 +948,7 @@ stk_iter_peek(StackIterator_t *iter)
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 static bool
-stk_iter_target_modified(StackIterator_t *iter)
+stk_iter_target_modified(StackListIterator_t *iter)
 {
     return iter->target_id != iter->target->version_id;
 }
@@ -957,4 +959,4 @@ stk_iter_target_modified(StackIterator_t *iter)
 /////////////////////////////////////////////////////////////////// Wrapper ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \todo StackWrapper
+/// \todo StackListWrapper

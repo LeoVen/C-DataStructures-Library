@@ -94,7 +94,7 @@ dqa_locked(DequeArray_t *deque);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-/// \ref qua_set_growth
+/// \ref dqa_set_growth
 /// \brief Sets a new growth rate for the deque's buffer.
 bool
 dqa_set_growth(DequeArray_t *deque, integer_t growth_rate);
@@ -147,11 +147,11 @@ dqa_peek_rear(DequeArray_t *deque);
 /// \brief Returns true if the deque is empty, false otherwise.
 bool dqa_empty(DequeArray_t *deque);
 
-/// \ref qua_full
+/// \ref dqa_full
 /// \brief Returns true if the deque is full, false otherwise.
 bool dqa_full(DequeArray_t *deque);
 
-/// \ref qua_fits
+/// \ref dqa_fits
 /// \brief Returns true if a given size fits inside the deque without
 /// reallocating the buffer.
 bool dqa_fits(DequeArray_t *deque, unsigned_t size);

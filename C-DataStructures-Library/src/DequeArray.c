@@ -18,7 +18,7 @@
 /// portion; otherwise it will shift the right portion to the end of the
 /// buffer. This effectively decreases the amount of shifts needed.
 ///
-/// \par Advantages over Deque_s
+/// \par Advantages over DequeList_s
 /// - Fast insertion
 /// - No need of pointers, only the data is allocated in memory
 ///

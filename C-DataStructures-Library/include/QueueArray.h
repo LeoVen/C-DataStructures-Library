@@ -37,151 +37,151 @@ typedef struct QueueArray_s *QueueArray;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-/// \ref qua_new
+/// \ref qar_new
 /// \brief Initializes a new QueueArray_s.
 QueueArray_t *
-qua_new(Interface_t *interface);
+qar_new(Interface_t *interface);
 
-/// \ref qua_create
+/// \ref qar_create
 /// \brief Initializes a new QueueArray_s with custom parameters.
 QueueArray_t *
-qua_create(Interface_t *interface, integer_t initial_capacity,
+qar_create(Interface_t *interface, integer_t initial_capacity,
            integer_t growth_rate);
 
-/// \ref qua_free
+/// \ref qar_free
 /// \brief Frees from memory a QueueArray_s and its elements.
 void
-qua_free(QueueArray_t *queue);
+qar_free(QueueArray_t *queue);
 
-/// \ref qua_free_shallow
+/// \ref qar_free_shallow
 /// \brief Frees from memory a QueueArray_s leaving its elements intact.
 void
-qua_free_shallow(QueueArray_t *queue);
+qar_free_shallow(QueueArray_t *queue);
 
-/// \ref qua_erase
+/// \ref qar_erase
 /// \brief Frees from memory all elements of a QueueArray_s.
 void
-qua_erase(QueueArray_t *queue);
+qar_erase(QueueArray_t *queue);
 
-/// \ref qua_erase_shallow
+/// \ref qar_erase_shallow
 /// \brief Resets the QueueArray_s without freeing its elements.
 void
-qua_erase_shallow(QueueArray_t *queue);
+qar_erase_shallow(QueueArray_t *queue);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-/// \ref qua_config
+/// \ref qar_config
 /// \brief Sets a new interface for a target queue.
 void
-qua_config(QueueArray_t *queue, Interface_t *new_interface);
+qar_config(QueueArray_t *queue, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// \ref qua_size
+/// \ref qar_count
 /// \brief Returns the amount of elements in the specified queue.
 integer_t
-qua_size(QueueArray_t *queue);
+qar_count(QueueArray_t *queue);
 
-/// \ref qua_capacity
+/// \ref qar_capacity
 /// \brief Returns the total buffer capacity of the specified queue.
 integer_t
-qua_capacity(QueueArray_t *queue);
+qar_capacity(QueueArray_t *queue);
 
-/// \ref qua_growth
+/// \ref qar_growth
 /// \brief Returns the growth rate of the specified queue.
 integer_t
-qua_growth(QueueArray_t *queue);
+qar_growth(QueueArray_t *queue);
 
-/// \ref qua_locked
+/// \ref qar_locked
 /// \brief Returns true if the queue's buffer is locked, false otherwise.
 bool
-qua_locked(QueueArray_t *queue);
+qar_locked(QueueArray_t *queue);
 
 /////////////////////////////////////////////////////////////////// SETTERS ///
 
-/// \ref qua_set_growth
+/// \ref qar_set_growth
 /// \brief Sets a new growth rate for the queue's buffer.
 bool
-qua_set_growth(QueueArray_t *queue, integer_t growth_rate);
+qar_set_growth(QueueArray_t *queue, integer_t growth_rate);
 
-/// \ref qua_capacity_lock
+/// \ref qar_capacity_lock
 /// \brief Locks the buffer's growth for the specified queue.
 void
-qua_capacity_lock(QueueArray_t *queue);
+qar_capacity_lock(QueueArray_t *queue);
 
-/// \ref qua_capacity_unlock
+/// \ref qar_capacity_unlock
 /// \brief Unlocks the buffer's growth for the specified queue.
 void
-qua_capacity_unlock(QueueArray_t *queue);
+qar_capacity_unlock(QueueArray_t *queue);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-/// \ref qua_enqueue
+/// \ref qar_enqueue
 /// \brief Adds an element to the specified queue.
 bool
-qua_enqueue(QueueArray_t *queue, void *element);
+qar_enqueue(QueueArray_t *queue, void *element);
 
-/// \ref qua_dequeue
+/// \ref qar_dequeue
 /// \brief Removes and element from the specified queue.
 bool
-qua_dequeue(QueueArray_t *queue, void **result);
+qar_dequeue(QueueArray_t *queue, void **result);
 
-/// \ref qua_peek_front
+/// \ref qar_peek_front
 /// \brief Returns oldest element in the specified queue.
 void *
-qua_peek_front(QueueArray_t *queue);
+qar_peek_front(QueueArray_t *queue);
 
-/// \ref qua_peek_rear
+/// \ref qar_peek_rear
 /// \brief Returns the last item added in the queue.
 void *
-qua_peek_rear(QueueArray_t *queue);
+qar_peek_rear(QueueArray_t *queue);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-/// \ref qua_empty
+/// \ref qar_empty
 /// \brief Returns true if the queue is empty, false otherwise.
 bool
-qua_empty(QueueArray_t *queue);
+qar_empty(QueueArray_t *queue);
 
-/// \ref qua_full
+/// \ref qar_full
 /// \brief Returns true if the queue is full, false otherwise.
 bool
-qua_full(QueueArray_t *queue);
+qar_full(QueueArray_t *queue);
 
-/// \ref qua_fits
+/// \ref qar_fits
 /// \brief Returns true if a given size fits inside the queue without
 /// reallocating the buffer.
 bool
-qua_fits(QueueArray_t *queue, unsigned_t size);
+qar_fits(QueueArray_t *queue, unsigned_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-/// \ref qua_copy
+/// \ref qar_copy
 /// \brief Returns a copy of the specified queue.
 QueueArray_t *
-qua_copy(QueueArray_t *queue);
+qar_copy(QueueArray_t *queue);
 
-/// \ref qua_copy_shallow
+/// \ref qar_copy_shallow
 /// \brief Creates a shallow copy of the specified queue.
 QueueArray_t *
-qua_copy_shallow(QueueArray_t *queue);
+qar_copy_shallow(QueueArray_t *queue);
 
-/// \ref qua_compare
+/// \ref qar_compare
 /// \brief Compares two queues returning an int according to \ref compare_f.
 int
-qua_compare(QueueArray_t *queue1, QueueArray_t *queue2);
+qar_compare(QueueArray_t *queue1, QueueArray_t *queue2);
 
-/// \ref qua_to_array
+/// \ref qar_to_array
 /// \brief Makes a copy of the queue as a C array.
 void **
-qua_to_array(QueueArray_t *queue, integer_t *length);
+qar_to_array(QueueArray_t *queue, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-/// \ref qua_display
+/// \ref qar_display
 /// \brief Displays a QueueArray_s in the console.
 void
-qua_display(QueueArray_t *queue, int display_mode);
+qar_display(QueueArray_t *queue, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///

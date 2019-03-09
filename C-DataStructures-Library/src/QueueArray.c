@@ -19,7 +19,7 @@
 /// right portion to the end of the buffer. This effectively decreases the
 /// amount of shifts needed.
 ///
-/// \par Advantages over Queue_s
+/// \par Advantages over QueueList_s
 /// - No need of pointers, only the data is allocated in memory
 ///
 /// \par Drawbacks
@@ -37,7 +37,7 @@ struct QueueArray_s
 
     /// \brief Front of the queue.
     ///
-    /// An index that represents the front of the queue. The \c qua_dequeue
+    /// An index that represents the front of the queue. The \c qar_dequeue
     /// operates relative to this index. This is where the next element to be
     /// removed is located. This index represents the exact position of an the
     /// front element (unlike the \c rear index).
@@ -45,7 +45,7 @@ struct QueueArray_s
 
     /// \brief Back of the queue.
     ///
-    /// An index that represents the back of the queue. The \c qua_enqueue
+    /// An index that represents the back of the queue. The \c qar_enqueue
     /// operates relative to this index. This is where the last element was
     /// added. It does not represents the exact position of an element; it is
     /// always one position ahead (circularly) of the last inserted element.
@@ -56,12 +56,12 @@ struct QueueArray_s
     /// \brief Current amount of elements in the \c QueueArray.
     ///
     /// Current amount of elements in the \c QueueArray.
-    integer_t size;
+    integer_t count;
 
     /// \brief \c QueueArray buffer maximum capacity.
     ///
-    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
-    /// reallocated and increases according to \c growth_rate.
+    /// Buffer maximum capacity. When \c count reaches \c capacity the buffer
+    /// is reallocated and increases according to \c growth_rate.
     integer_t capacity;
 
     /// \brief Buffer growth rate.
@@ -95,7 +95,7 @@ struct QueueArray_s
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 bool
-static qua_grow(QueueArray_t *queue);
+static qar_grow(QueueArray_t *queue);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
@@ -109,7 +109,7 @@ static qua_grow(QueueArray_t *queue);
 ///
 /// \return A new QueueArray_s or NULL if allocation failed.
 QueueArray_t *
-qua_new(Interface_t *interface)
+qar_new(Interface_t *interface)
 {
     QueueArray_t *queue = malloc(sizeof(QueueArray_t));
 
@@ -130,7 +130,7 @@ qua_new(Interface_t *interface)
     queue->capacity = 32;
     queue->growth_rate = 200;
     queue->version_id = 0;
-    queue->size = 0;
+    queue->count = 0;
     queue->front = 0;
     queue->rear = 0;
     queue->locked = false;
@@ -158,7 +158,7 @@ qua_new(Interface_t *interface)
 /// is 0 or if allocation failed.
 /// \return A new QueueArray_s dynamically allocated.
 QueueArray_t *
-qua_create(Interface_t *interface, integer_t initial_capacity,
+qar_create(Interface_t *interface, integer_t initial_capacity,
            integer_t growth_rate)
 {
     if (growth_rate <= 100 || initial_capacity <= 0)
@@ -183,7 +183,7 @@ qua_create(Interface_t *interface, integer_t initial_capacity,
     queue->capacity = initial_capacity;
     queue->growth_rate = growth_rate;
     queue->version_id = 0;
-    queue->size = 0;
+    queue->count = 0;
     queue->front = 0;
     queue->rear = 0;
     queue->locked = false;
@@ -200,10 +200,10 @@ qua_create(Interface_t *interface, integer_t initial_capacity,
 ///
 /// \param[in] queue The queue to be freed from memory.
 void
-qua_free(QueueArray_t *queue)
+qar_free(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
-            j < queue->size;
+            j < queue->count;
             i = (i + 1) % queue->capacity, j++)
     {
         queue->interface->free(queue->buffer[i]);
@@ -222,7 +222,7 @@ qua_free(QueueArray_t *queue)
 ///
 /// \param[in] queue The queue to be freed from memory.
 void
-qua_free_shallow(QueueArray_t *queue)
+qar_free_shallow(QueueArray_t *queue)
 {
     free(queue->buffer);
 
@@ -236,10 +236,10 @@ qua_free_shallow(QueueArray_t *queue)
 ///
 /// \param[in] queue The queue to have its elements erased.
 void
-qua_erase(QueueArray_t *queue)
+qar_erase(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
-         j < queue->size;
+         j < queue->count;
          i = (i + 1) % queue->capacity, j++)
     {
         queue->interface->free(queue->buffer[i]);
@@ -247,7 +247,7 @@ qua_erase(QueueArray_t *queue)
         queue->buffer[i] = NULL;
     }
 
-    queue->size = 0;
+    queue->count = 0;
     queue->version_id++;
     queue->front = 0;
     queue->rear = 0;
@@ -258,16 +258,16 @@ qua_erase(QueueArray_t *queue)
 ///
 /// \param[in] queue The queue to be reset.
 void
-qua_erase_shallow(QueueArray_t *queue)
+qar_erase_shallow(QueueArray_t *queue)
 {
     for (integer_t i = queue->front, j = 0;
-         j < queue->size;
+         j < queue->count;
          i = (i + 1) % queue->capacity, j++)
     {
         queue->buffer[i] = NULL;
     }
 
-    queue->size = 0;
+    queue->count = 0;
     queue->version_id++;
     queue->front = 0;
     queue->rear = 0;
@@ -280,7 +280,7 @@ qua_erase_shallow(QueueArray_t *queue)
 /// \param[in] queue QueueArray_s to change the interface.
 /// \param[in] new_interface New interface for the specified structure.
 void
-qua_config(QueueArray_t *queue, Interface_t *new_interface)
+qar_config(QueueArray_t *queue, Interface_t *new_interface)
 {
     queue->interface = new_interface;
 }
@@ -293,9 +293,9 @@ qua_config(QueueArray_t *queue, Interface_t *new_interface)
 ///
 /// \return The amount of elements in the queue.
 integer_t
-qua_size(QueueArray_t *queue)
+qar_count(QueueArray_t *queue)
 {
-    return queue->size;
+    return queue->count;
 }
 
 /// Returns the current buffer's size of the specified queue.
@@ -306,7 +306,7 @@ qua_size(QueueArray_t *queue)
 ///
 /// \return The queue's buffer's size.
 integer_t
-qua_capacity(QueueArray_t *queue)
+qar_capacity(QueueArray_t *queue)
 {
     return queue->capacity;
 }
@@ -319,7 +319,7 @@ qua_capacity(QueueArray_t *queue)
 ///
 /// \return The buffer's growth rate.
 integer_t
-qua_growth(QueueArray_t *queue)
+qar_growth(QueueArray_t *queue)
 {
     return queue->growth_rate;
 }
@@ -332,7 +332,7 @@ qua_growth(QueueArray_t *queue)
 ///
 /// \return True if the buffer's growth is locked, false otherwise.
 bool
-qua_locked(QueueArray_t *queue)
+qar_locked(QueueArray_t *queue)
 {
     return queue->locked;
 }
@@ -347,7 +347,7 @@ qua_locked(QueueArray_t *queue)
 /// \return True if the growth rate was change or false if the parameter is
 /// less than 101.
 bool
-qua_set_growth(QueueArray_t *queue, integer_t growth_rate)
+qar_set_growth(QueueArray_t *queue, integer_t growth_rate)
 {
     if (growth_rate <= 100)
         return false;
@@ -363,7 +363,7 @@ qua_set_growth(QueueArray_t *queue, integer_t growth_rate)
 ///
 /// \param[in] queue The queue to have its buffer's growth locked.
 void
-qua_capacity_lock(QueueArray_t *queue)
+qar_capacity_lock(QueueArray_t *queue)
 {
     queue->locked = true;
 }
@@ -372,7 +372,7 @@ qua_capacity_lock(QueueArray_t *queue)
 ///
 /// \param[in] queue The queue to have its buffer's growth unlocked.
 void
-qua_capacity_unlock(QueueArray_t *queue)
+qar_capacity_unlock(QueueArray_t *queue)
 {
     queue->locked = false;
 }
@@ -388,11 +388,11 @@ qua_capacity_unlock(QueueArray_t *queue)
 /// \return True if the element was successfully added to the queue or false if
 /// the buffer reallocation failed or the queue buffer capacity is locked.
 bool
-qua_enqueue(QueueArray_t *queue, void *element)
+qar_enqueue(QueueArray_t *queue, void *element)
 {
-    if (qua_full(queue))
+    if (qar_full(queue))
     {
-        if (!qua_grow(queue))
+        if (!qar_grow(queue))
             return false;
     }
 
@@ -400,7 +400,7 @@ qua_enqueue(QueueArray_t *queue, void *element)
 
     queue->rear = (queue->rear == queue->capacity - 1) ? 0 : queue->rear + 1;
 
-    queue->size++;
+    queue->count++;
     queue->version_id++;
 
     return true;
@@ -417,11 +417,11 @@ qua_enqueue(QueueArray_t *queue, void *element)
 /// \return True if an element was removed from the queue or false if the queue
 /// is empty.
 bool
-qua_dequeue(QueueArray_t *queue, void **result)
+qar_dequeue(QueueArray_t *queue, void **result)
 {
     *result = NULL;
 
-    if (qua_empty(queue))
+    if (qar_empty(queue))
         return false;
 
     *result = queue->buffer[queue->front];
@@ -430,7 +430,7 @@ qua_dequeue(QueueArray_t *queue, void **result)
 
     queue->front = (queue->front == queue->capacity - 1) ? 0 : queue->front +1;
 
-    queue->size--;
+    queue->count--;
     queue->version_id++;
 
     return true;
@@ -444,9 +444,9 @@ qua_dequeue(QueueArray_t *queue, void **result)
 /// \return NULL if the queue is empty or the element at the front of the
 /// queue.
 void *
-qua_peek_front(QueueArray_t *queue)
+qar_peek_front(QueueArray_t *queue)
 {
-    if (qua_empty(queue))
+    if (qar_empty(queue))
         return NULL;
 
     return queue->buffer[queue->front];
@@ -459,9 +459,9 @@ qua_peek_front(QueueArray_t *queue)
 ///
 /// \return NULL if the queue is empty or the element at the rear of the queue.
 void *
-qua_peek_rear(QueueArray_t *queue)
+qar_peek_rear(QueueArray_t *queue)
 {
-    if (qua_empty(queue))
+    if (qar_empty(queue))
         return NULL;
 
     integer_t i = (queue->rear == 0) ? queue->capacity - 1 : queue->rear - 1;
@@ -476,9 +476,9 @@ qua_peek_rear(QueueArray_t *queue)
 ///
 /// \return True if the queue is empty, otherwise false.
 bool
-qua_empty(QueueArray_t *queue)
+qar_empty(QueueArray_t *queue)
 {
-    return queue->size == 0;
+    return queue->count == 0;
 }
 
 /// Returns true if the current amount of elements in the queue is the same as
@@ -490,9 +490,9 @@ qua_empty(QueueArray_t *queue)
 /// \return True if the amount of elements is the same as the buffer's
 /// capacity, otherwise false.
 bool
-qua_full(QueueArray_t *queue)
+qar_full(QueueArray_t *queue)
 {
-    return queue->size == queue->capacity;
+    return queue->count == queue->capacity;
 }
 
 /// Returns true if the specified size will fit in the queue's buffer without
@@ -504,9 +504,9 @@ qua_full(QueueArray_t *queue)
 /// \return True if a given size fits inside the queue without reallocating the
 /// buffer.
 bool
-qua_fits(QueueArray_t *queue, unsigned_t size)
+qar_fits(QueueArray_t *queue, unsigned_t size)
 {
-    return (queue->size + size) <= queue->capacity;
+    return (queue->count + size) <= queue->capacity;
 }
 
 /// Returns a copy of the specified QueueArray_s with the same interface. All
@@ -518,15 +518,15 @@ qua_fits(QueueArray_t *queue, unsigned_t size)
 ///
 /// \return NULL if allocation failed or a copy of the specified queue.
 QueueArray_t *
-qua_copy(QueueArray_t *queue)
+qar_copy(QueueArray_t *queue)
 {
-    QueueArray_t *new_queue = qua_create(queue->interface, queue->capacity,
+    QueueArray_t *new_queue = qar_create(queue->interface, queue->capacity,
                                          queue->growth_rate);
 
     if (!new_queue)
         return NULL;
 
-    for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+    for (integer_t i = queue->front, j = 0; j < queue->count - 1;
             i = (i + 1) % queue->capacity, j++)
     {
         new_queue->buffer[i] = queue->interface->copy(queue->buffer[i]);
@@ -534,7 +534,7 @@ qua_copy(QueueArray_t *queue)
 
     new_queue->front = queue->front;
     new_queue->rear = queue->rear;
-    new_queue->size = queue->size;
+    new_queue->count = queue->count;
     new_queue->locked = queue->locked;
 
     return new_queue;
@@ -549,15 +549,15 @@ qua_copy(QueueArray_t *queue)
 ///
 /// \return NULL if allocation failed or a shallow copy of the specified queue.
 QueueArray_t *
-qua_copy_shallow(QueueArray_t *queue)
+qar_copy_shallow(QueueArray_t *queue)
 {
-    QueueArray_t *new_queue = qua_create(queue->interface, queue->capacity,
+    QueueArray_t *new_queue = qar_create(queue->interface, queue->capacity,
                                          queue->growth_rate);
 
     if (!new_queue)
         return NULL;
 
-    for (integer_t i = queue->front, j = 0; j < queue->size - 1;
+    for (integer_t i = queue->front, j = 0; j < queue->count - 1;
          i = (i + 1) % queue->capacity, j++)
     {
         new_queue->buffer[i] = queue->buffer[i];
@@ -565,7 +565,7 @@ qua_copy_shallow(QueueArray_t *queue)
 
     new_queue->front = queue->front;
     new_queue->rear = queue->rear;
-    new_queue->size = queue->size;
+    new_queue->count = queue->count;
     new_queue->locked = queue->locked;
 
     return new_queue;
@@ -574,8 +574,8 @@ qua_copy_shallow(QueueArray_t *queue)
 /// Makes a comparison between two queues element by element. If one queue has
 /// less elements than the other the comparison of elements will go up until
 /// one queue reaches its limit. If all elements are the same until then, the
-/// tie breaker goes to their size. If it is also the same, then both queues
-/// are equal.
+/// tie breaker goes to their element count. If it is also the same, then both
+/// queues are equal.
 /// \par Interface Requirements
 /// - compare
 ///
@@ -584,14 +584,14 @@ qua_copy_shallow(QueueArray_t *queue)
 ///
 /// \return An int according to \ref compare_f.
 int
-qua_compare(QueueArray_t *queue1, QueueArray_t *queue2)
+qar_compare(QueueArray_t *queue1, QueueArray_t *queue2)
 {
-    integer_t max_size = queue1->size < queue2->size
-                         ? queue1->size
-                         : queue2->size;
+    integer_t max_count = queue1->count < queue2->count
+                         ? queue1->count
+                         : queue2->count;
 
     int comparison = 0;
-    for (integer_t i = 0; i < max_size; i++)
+    for (integer_t i = 0; i < max_count; i++)
     {
         // Since its a circular buffer we need to calculate where the ith
         // element of each queue is.
@@ -605,9 +605,9 @@ qua_compare(QueueArray_t *queue1, QueueArray_t *queue2)
     }
 
     // So far all elements were the same
-    if (queue1->size > queue2->size)
+    if (queue1->count > queue2->count)
         return 1;
-    else if (queue1->size < queue2->size)
+    else if (queue1->count < queue2->count)
         return -1;
 
     return 0;
@@ -624,24 +624,24 @@ qua_compare(QueueArray_t *queue1, QueueArray_t *queue2)
 /// \return The resulting array or NULL if the queue is empty or the array
 /// allocation failed.
 void **
-qua_to_array(QueueArray_t *queue, integer_t *length)
+qar_to_array(QueueArray_t *queue, integer_t *length)
 {
-    if (qua_empty(queue))
+    if (qar_empty(queue))
         return NULL;
 
-    void **array = malloc(sizeof(void*) * (size_t)queue->size);
+    void **array = malloc(sizeof(void*) * (size_t)queue->count);
 
     if (!array)
         return NULL;
 
     for (integer_t i = queue->front, j = 0;
-         j < queue->size;
+         j < queue->count;
          i = (i + 1) % queue->capacity, j++)
     {
         array[i] = queue->interface->copy(queue->buffer[i]);
     }
 
-    *length = queue->size;
+    *length = queue->count;
 
     return array;
 }
@@ -656,11 +656,11 @@ qua_to_array(QueueArray_t *queue, integer_t *length)
 /// - display
 ///
 /// \param[in] queue The queue to be displayed in the console.
-/// \param[in] display_mode The way the queue is to be displayed in the console.
+/// \param[in] display_mode How the queue is to be displayed in the console.
 void
-qua_display(QueueArray_t *queue, int display_mode)
+qar_display(QueueArray_t *queue, int display_mode)
 {
-    if (qua_empty(queue))
+    if (qar_empty(queue))
     {
         printf("\nQueueArray\n[ empty ]\n");
         return;
@@ -671,7 +671,7 @@ qua_display(QueueArray_t *queue, int display_mode)
         case -1:
             printf("\nQueueArray\n");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->size - 1;
+                 j < queue->count - 1;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);
@@ -681,7 +681,7 @@ qua_display(QueueArray_t *queue, int display_mode)
         case 0:
             printf("\nQueueArray\nFront -> ");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->size - 1;
+                 j < queue->count - 1;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);
@@ -695,7 +695,7 @@ qua_display(QueueArray_t *queue, int display_mode)
         case 1:
             printf("\nQueueArray\n");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->size - 1;
+                 j < queue->count - 1;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);
@@ -706,7 +706,7 @@ qua_display(QueueArray_t *queue, int display_mode)
         default:
             printf("\nQueueArray\n[ ");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->size - 1;
+                 j < queue->count - 1;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);
@@ -725,7 +725,7 @@ qua_display(QueueArray_t *queue, int display_mode)
 // This function reallocates the data buffer effectively increasing its
 // capacity
 bool
-static qua_grow(QueueArray_t *queue)
+static qar_grow(QueueArray_t *queue)
 {
     if (queue->locked)
         return false;
@@ -799,7 +799,7 @@ static qua_grow(QueueArray_t *queue)
         queue->rear = old_capacity;
     }
     // This should never happen. This function should never be called when the
-    // buffer is not full (front == rear and size == capacity).
+    // buffer is not full (front == rear and count == capacity).
     else
         return false;
 

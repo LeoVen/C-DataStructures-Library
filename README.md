@@ -32,8 +32,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [BTree][btr]               | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [CircularLinkedList][cll]  | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#####_____]` |
 | [CircularQueueList][cql]   | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [Deque][deq]               | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
 | [DequeArray][dqa]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
+| [DequeList][dql]           | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
 | [Dictionary][dic]          | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [DoublyLinkedList][dll]    | `[########__]` | `[__________]` | `[__________]` | `[##________]` | `[#####_____]` |
 | [DynamicArray][dar]        | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
@@ -45,8 +45,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [MultiTreeMap][mtm]        | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [PriorityList][pli]        | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [PriorityQueue][prq]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [Queue][que]               | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
-| [QueueArray][qua]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
+| [QueueArray][qar]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
+| [QueueList][qli]           | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
 | [RadixTree][rdt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [RedBlackTree][rbt]        | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [SinglyLinkedList][sll]    | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
@@ -56,8 +56,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [SortedHashMap][shm]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [SortedHashSet][shs]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [SplayTree][spt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-| [Stack][stk]               | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[########__]` |
 | [StackArray][sta]          | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
+| [StackList][stk]           | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[########__]` |
 | [TreeSet][trs]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [TreeMap][trm]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [Trie][tri]                | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
@@ -246,22 +246,6 @@ Being a doubly-linked list, all operations listed above take `O(1)`.
 
 Not implemented yet.
 
-### Deque
-
-A deque is a double-ended queue implemented as a doubly-linked list. Both operations `enqueue` and `dequeue` can be done to both ends of the queue.
-
-The disadvantage of a Deque implemented as a linked list compared to a DequeArray that is implemented as a circular buffer is that it is very space inefficient where every node needs to store two pointers to its adjacent nodes; but it comes with an advantage where the linked list grows indefinitely and there is no need to shift elements or resize a buffer.
-
-```
-         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
-NULL <-- │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
-         └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
-           │                                                                     │
-         front                                                                  rear
-```
-
-Its implementation is just like a doubly-linked list with limitations to input and output to both edges of the list.
-
 ### DequeArray
 
 A deque array is the implementation of a deque using a circular buffer. It is very space efficient but unlike a Deque implemented as a linked list, a DequeArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a deque array, both front and rear pointers can wrap around the buffer making its implementation a bit more complex than a doubly-linked list.
@@ -290,6 +274,22 @@ A deque array is the implementation of a deque using a circular buffer. It is ve
 ```
 
 Note that when the `rear` index or the `front` index wraps around the buffer the configuration is the same.
+
+### DequeList
+
+A deque is a double-ended queue implemented as a doubly-linked list. Both operations `enqueue` and `dequeue` can be done to both ends of the queue.
+
+The disadvantage of a Deque implemented as a linked list compared to a DequeArray that is implemented as a circular buffer is that it is very space inefficient where every node needs to store two pointers to its adjacent nodes; but it comes with an advantage where the linked list grows indefinitely and there is no need to shift elements or resize a buffer.
+
+```
+         ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+NULL <-- │ G │ <-> │ E │ <-> │ C │ <-> │ A │ <-> │ B │ <-> │ D │ <-> │ F │ <-> │ H │ --> NULL
+         └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+           │                                                                     │
+         front                                                                  rear
+```
+
+Its implementation is just like a doubly-linked list with limitations to input and output to both edges of the list.
 
 ### Dictionary
 
@@ -420,20 +420,6 @@ The priority list is a linked list implementation of a priority queue. It has a 
 
 Not implemented yet.
 
-### Queue
-
-A queue is a FIFO (First-in First-out) or LILO (Last-in Last-out) abstract data type where the first element inserted is the first to be removed. This is a singly-linked implementation where enqueueing is equivalent to inserting and element at the tail of the list and dequeuing is equivalent to removing an element from the head of the list. This is done so both operations take `O(1)`, since the worst possible operation in a singly-linked list is removing the tail element where we would have to iterate over the entire list until the penultimate element.
-
- ```
-    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
-    │ A │ --> │ B │ --> │ C │ --> │ D │ --> │ E │ --> │ F │ --> │ G │ --> │ H │ --> NULL
-    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
-      │                                                                     │
-    front                                                                  rear
- ```
-
- Elements are dequeued from the `front` pointer and enqueued from the `rear` pointer.
-
 ### QueueArray
 
 A queue array is the implementation of a queue using a circular buffer. It is very space efficient but unlike a queue implemented as a linked list, a QueueArray will have to reallocate its buffer and shift its elements (if needed) whenever it reaches its maximum capacity. In a queue both front and rear indexes only go forward, that is, incremented by one when an operation is successful. If we enqueue an element the rear index goes up by one. If we dequeue an element the front index goes up by one.
@@ -503,6 +489,20 @@ There is also a third option when there is no need to shift elements. This happe
       │                                   │
     front                                rear
 ```
+
+### QueueList
+
+A queue is a FIFO (First-in First-out) or LILO (Last-in Last-out) abstract data type where the first element inserted is the first to be removed. This is a singly-linked implementation where enqueueing is equivalent to inserting and element at the tail of the list and dequeuing is equivalent to removing an element from the head of the list. This is done so both operations take `O(1)`, since the worst possible operation in a singly-linked list is removing the tail element where we would have to iterate over the entire list until the penultimate element.
+
+ ```
+    ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐     ┌───┐
+    │ A │ --> │ B │ --> │ C │ --> │ D │ --> │ E │ --> │ F │ --> │ G │ --> │ H │ --> NULL
+    └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
+      │                                                                     │
+    front                                                                  rear
+ ```
+
+ Elements are dequeued from the `front` pointer and enqueued from the `rear` pointer.
 
 ### RadixTree
 
@@ -583,7 +583,31 @@ Not implemented yet.
 
 Not implemented yet.
 
-### Stack
+### StackArray
+
+A stack array is the implementation of a stack using an internal buffer. It is very space efficient and unlike a queue it does not need to be a circular buffer, making its implementation much simpler and the buffer reallocation. Since Push and Pop are only done at one end of the buffer, no elements will ever need to be shifted.
+
+```
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                      │
+                                     top
+    Push(J)
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                          │
+                                         top
+    Push(K)
+    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
+    │ A │ B │ C | D | E | F | G | H | I | J | K |   |   |   |   |   |   |   |   |   |   |
+    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
+                                              │
+                                             top
+```
+
+### StackList
 
 A stack is a FILO (First-in Last-out) or LIFO (Last-in First-out) abstract data type where the last element inserted is the first one to be removed. This is a singly-linked list implementation where all operations are done at the head of the list. Push and Pop are equivalent to inserting and removing an element at the head of the list respectively.
 
@@ -607,30 +631,6 @@ A stack is a FILO (First-in Last-out) or LIFO (Last-in First-out) abstract data 
     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘     └───┘
       │
      top
-```
-
-### StackArray
-
-A stack array is the implementation of a stack using an internal buffer. It is very space efficient and unlike a queue it does not need to be a circular buffer, making its implementation much simpler and the buffer reallocation. Since Push and Pop are only done at one end of the buffer, no elements will ever need to be shifted.
-
-```
-    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-    │ A │ B │ C | D | E | F | G | H | I |   |
-    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-                                      │
-                                     top
-    Push(J)
-    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-    │ A │ B │ C | D | E | F | G | H | I | J |
-    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-                                          │
-                                         top
-    Push(K)
-    ┌───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┬───┐
-    │ A │ B │ C | D | E | F | G | H | I | J | K |   |   |   |   |   |   |   |   |   |   |
-    └───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┴───┘
-                                              │
-                                             top
 ```
 
 ### TreeSet
@@ -683,8 +683,8 @@ arr_desc_free(array_w);
 [btr]: #btree
 [cll]: #circularlinkedlist
 [cql]: #circularqueuelist
-[deq]: #deque
 [dqa]: #dequearray
+[dql]: #dequelist
 [dic]: #dictionary
 [dll]: #doublylinkedlist
 [dar]: #dynamicarray
@@ -696,8 +696,8 @@ arr_desc_free(array_w);
 [mtm]: #multitreemap
 [pli]: #prioritylist
 [prq]: #priorityqueue
-[que]: #queue
-[qua]: #queuearray
+[qar]: #queuearray
+[qli]: #queuelist
 [rdt]: #radixtree
 [rbt]: #redblacktree
 [sll]: #singlylinkedlist
@@ -707,8 +707,8 @@ arr_desc_free(array_w);
 [shm]: #sortedhashmap
 [shs]: #sortedhashset
 [spt]: #splaytree
-[stk]: #stack
 [sta]: #stackarray
+[stk]: #stacklist
 [trs]: #treeset
 [trm]: #treemap
 [tri]: #trie

@@ -15,18 +15,18 @@ int main(void)
     BitArrayTests();
     CircularLinkedListTests();
     DequeArrayTests();
-    DequeTests();
+    DequeListTests();
     DoublyLinkedListTests();
     DynamicArrayTests();
     HeapTests();
     PriorityListTests();
     QueueArrayTests();
-    QueueTests();
+    QueueListTests();
     RedBlackTreeTests();
     SinglyLinkedListTests();
     SortedListTests();
     StackArrayTests();
-    StackTests();
+    StackListTests();
 
     FinalReport();
 }

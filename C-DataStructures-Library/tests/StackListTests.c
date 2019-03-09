@@ -1,12 +1,12 @@
 /**
- * @file StackTests.c
+ * @file StackListTests.c
  * 
  * @author Leonardo Vencovsky (https://github.com/LeoVen)
  *
  * @date 23/10/2018
  */
 
-#include "Stack.h"
+#include "StackList.h"
 #include "UnitTest.h"
 #include "Utility.h"
 
@@ -16,7 +16,7 @@ void stk_test_limit(UnitTest ut)
     Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
             display_int32_t, free, NULL, NULL);
 
-    Stack_t *stack = stk_new(int_interface);
+    StackList_t *stack = stk_new(int_interface);
 
     if (!stack || !int_interface)
         goto error;
@@ -67,7 +67,7 @@ void stk_test_foreach(UnitTest ut)
     Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
                                             display_int32_t, free, NULL, NULL);
 
-    Stack_t *stack = stk_new(int_interface);
+    StackList_t *stack = stk_new(int_interface);
 
     if (!stack || !int_interface)
         goto error;
@@ -112,8 +112,8 @@ void stk_test_foreach(UnitTest ut)
     interface_free(int_interface);
 }
 
-// Runs all Stack tests
-Status StackTests(void)
+// Runs all StackList tests
+Status StackListTests(void)
 {
     UnitTest ut;
 
@@ -125,7 +125,7 @@ Status StackTests(void)
     stk_test_limit(ut);
     stk_test_foreach(ut);
 
-    ut_report(ut, "Stack");
+    ut_report(ut, "StackList");
 
     ut_delete(&ut);
 
@@ -133,7 +133,7 @@ Status StackTests(void)
 
     error:
     printf("Error at %s\n", __func__);
-    ut_report(ut, "Stack");
+    ut_report(ut, "StackList");
     ut_delete(&ut);
     return st;
 }

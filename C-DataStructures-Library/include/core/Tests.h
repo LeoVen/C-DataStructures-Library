@@ -32,7 +32,7 @@ Status CircularLinkedListTests(void);
 
 Status DequeArrayTests(void);
 
-Status DequeTests(void);
+Status DequeListTests(void);
 
 Status DoublyLinkedListTests(void);
 
@@ -44,7 +44,7 @@ Status PriorityListTests(void);
 
 Status QueueArrayTests(void);
 
-Status QueueTests(void);
+Status QueueListTests(void);
 
 Status RedBlackTreeTests(void);
 
@@ -54,7 +54,7 @@ Status SortedListTests(void);
 
 Status StackArrayTests(void);
 
-Status StackTests(void);
+Status StackListTests(void);
 
 #ifdef __cplusplus
 }
