@@ -22,7 +22,7 @@
 /// \return A new interface or NULL if allocation failed.
 Interface_t *
 interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
-        hash_f hash, priority_f priority)
+              hash_f hash, priority_f priority)
 {
     Interface interface = malloc(sizeof(Interface_t));
 
@@ -39,6 +39,28 @@ interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
     return interface;
 }
 
+/// This function differs from interface_new() in that it initializes an
+/// interface allocated in the stack.
+///
+/// \param compare A compare function.
+/// \param copy A copy function.
+/// \param display A display function.
+/// \param free A free function.
+/// \param hash A hash function.
+/// \param priority A priority function.
+void
+interface_init(Interface_t *interface, compare_f compare, copy_f copy,
+               display_f display, free_f free, hash_f hash,
+               priority_f priority)
+{
+    interface->compare = compare;
+    interface->copy = copy;
+    interface->display = display;
+    interface->free = free;
+    interface->hash = hash;
+    interface->priority = priority;
+}
+
 /// Changes the configuration of an interface. Any NULL parameters are ignored
 /// and the previous configuration is kept.
 ///
@@ -51,8 +73,8 @@ interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
 /// \param priority A priority function.
 void
 interface_config(Interface_t *interface,
-        compare_f compare, copy_f copy, display_f display, free_f free,
-        hash_f hash, priority_f priority)
+                 compare_f compare, copy_f copy, display_f display,
+                 free_f free, hash_f hash, priority_f priority)
 {
     if (compare)
         interface->compare = compare;

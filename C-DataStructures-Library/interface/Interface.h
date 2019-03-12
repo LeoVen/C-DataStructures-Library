@@ -99,17 +99,24 @@ typedef struct Interface_s Interface_t;
 typedef struct Interface_s *Interface;
 
 /// \ref interface_new
-/// \brief Creates a new interface.
+/// \brief Creates a new interface on the heap.
 Interface_t *
 interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
               hash_f hash, priority_f priority);
+
+/// \ref interface_init
+/// \brief Initializes a new interface on the stack.
+void
+interface_init(Interface_t *interface,
+               compare_f compare, copy_f copy, display_f display,
+               free_f free, hash_f hash, priority_f priority);
 
 /// \ref interface_config
 /// \brief Changes the configuration of an interface.
 void
 interface_config(Interface_t *interface,
-        compare_f compare, copy_f copy, display_f display, free_f free,
-        hash_f hash, priority_f priority);
+                 compare_f compare, copy_f copy, display_f display,
+                 free_f free, hash_f hash, priority_f priority);
 
 /// \ref interface_free
 /// \brief Frees from memory an Interface_s.
