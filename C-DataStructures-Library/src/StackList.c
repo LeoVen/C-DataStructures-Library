@@ -93,6 +93,10 @@ struct StackList_s
     integer_t version_id;
 };
 
+/// This can be used together with VLAs to allocate the structure on the stack
+/// instead of a heap allocation.
+const unsigned_t stl_size = sizeof(StackList_t);
+
 /// \brief A StackList_s node.
 ///
 /// Implementation detail. This is a singly-linked node. It has one data member
@@ -127,15 +131,15 @@ static StackListNode_t *
 stl_new_node(void *element);
 
 static void
-stl_free_node(StackListNode_t *node, free_f free_f);
+stl_free_node(StackListNode_t *node, free_f function);
 
 static void
 stl_free_node_shallow(StackListNode_t *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// Initializes a new StackList_s with no default functions. Be sure to
-/// initialize them when needed or some functions might return with an error.
+/// Initializes a new StackList_s with a given interface that contains
+/// functions to handle any user-defined type.
 /// \par Interface Requirements
 /// - None
 ///
@@ -159,6 +163,24 @@ stl_new(Interface_t *interface)
     stack->interface = interface;
 
     return stack;
+}
+
+/// Initializes a new StackList_s allocated on the stack, given an interface
+/// that contains functions to handle any user-defined type.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in,out] stack The stack allocated on the stack to be initialized.
+/// \param[in] interface An interface defining all necessary functions for the
+/// stack to operate.
+void
+stl_init(StackList_t *stack, Interface_t *interface)
+{
+    stack->count = 0;
+    stack->limit = 0;
+    stack->version_id = 0;
+    stack->top = NULL;
+    stack->interface = interface;
 }
 
 /// Iterates through every node of the stack and frees them from memory along
@@ -270,6 +292,8 @@ stl_config(StackList_t *stack, Interface_t *new_interface)
 }
 
 /// Returns the current amount of elements in the specified stack.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack StackList_s reference.
 ///
@@ -293,9 +317,9 @@ stl_limit(StackList_t *stack)
     return stack->limit;
 }
 
-/// Limit's the StackList_s's length. You can only set a limit greater or
-/// equal to the stack's current length and greater than 0. To remove this
-/// limitation simply set the limit to 0 or less.
+/// Limit's the StackList_s's length. You can only set a limit greater or equal
+/// to the stack's current length and greater than 0. To remove this limitation
+/// simply set the limit to 0 or less.
 /// \par Interface Requirements
 /// - None
 ///
@@ -324,7 +348,7 @@ stl_set_limit(StackList_t *stack, integer_t limit)
 /// \param[in] element Element to be inserted onto the stack.
 ///
 /// \return True if the element was successfully added to the stack or false if
-/// the stack reached its limit size or memory allocation failed.
+/// the stack reached its limit size or node allocation failed.
 bool
 stl_push(StackList_t *stack, void *element)
 {
@@ -347,6 +371,8 @@ stl_push(StackList_t *stack, void *element)
 
 /// Removes and retrieves an element from the specified stack relative to the
 /// top pointer.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack The stack where the element is to be removed from.
 /// \param[out] result The resulting element removed from the stack.
@@ -375,6 +401,8 @@ stl_pop(StackList_t *stack, void **result)
 }
 
 /// Returns the element at the top of the stack or NULL if the stack is empty.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack StackList_s reference.
 ///
@@ -392,6 +420,8 @@ stl_peek(StackList_t *stack)
 /// when its length is 0. If every function works properly there is no need to
 /// check if the top pointer is \c NULL or not. The length variable already
 /// tracks it.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack StackList_s reference.
 ///
@@ -405,6 +435,8 @@ stl_empty(StackList_t *stack)
 /// Returns true if the stack is full or false otherwise. The stack can only be
 /// full if its limit is set to a value higher than 0 and respecting all rules
 /// from stl_set_limit().
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack StackList_s reference.
 ///
@@ -416,7 +448,27 @@ stl_full(StackList_t *stack)
     return stack->limit > 0 && stack->count >= stack->limit;
 }
 
+/// Returns true if the specified size will fit in the stack before it reaches
+/// its limit (if the limit is set).
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] stack The target stack.
+/// \param[in] size The specified size.
+///
+/// \return True if a given size fits inside the stack if it has a limit.
+bool
+stl_fits(StackList_t *stack, unsigned_t size)
+{
+    if (stack->limit <= 0)
+        return true;
+
+    return (stack->count + size) <= stack->limit;
+}
+
 /// Returns true if the element is present in the stack, otherwise false.
+/// \par Interface Requirements
+/// - compare
 ///
 /// \param[in] stack StackList_s reference.
 /// \param[in] key Key to be matched.
@@ -425,7 +477,7 @@ stl_full(StackList_t *stack)
 bool
 stl_contains(StackList_t *stack, void *key)
 {
-    StackListNode scan = stack->top;
+    StackListNode_t *scan = stack->top;
 
     while (scan != NULL)
     {
@@ -459,7 +511,7 @@ stl_copy(StackList_t *stack)
     // scan -> goes through the original stack
     // copy -> current element being copied
     // prev -> copy's previous node to make the link
-    StackListNode_t *prev = NULL, *copy, *scan = stack->top;
+    StackListNode_t *prev = NULL, *copy = NULL, *scan = stack->top;
 
     while (scan != NULL)
     {
@@ -586,6 +638,8 @@ stl_compare(StackList_t *stack1, StackList_t *stack2)
 /// receive all elements contained in the stack2, otherwise the bottommost
 /// node of stack2 will point to the top node of stack1. If both stacks are
 /// empty nothing will happen.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack1 Stack to receive elements.
 /// \param[in] stack2 Stack where the elements are going to be taken from.
@@ -749,9 +803,9 @@ stl_new_node(void *element)
 }
 
 static void
-stl_free_node(StackListNode_t *node, free_f free_f)
+stl_free_node(StackListNode_t *node, free_f function)
 {
-    free_f(node->data);
+    function(node->data);
     free(node);
 }
 

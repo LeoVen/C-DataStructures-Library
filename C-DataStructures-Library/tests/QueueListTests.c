@@ -11,54 +11,50 @@
 #include "Utility.h"
 
 // Tests limit functionality
-Status qli_test_limit(UnitTest ut)
+void qli_test_limit(UnitTest ut)
 {
-    QueueList queue;
+    Interface_t int_interface;
+    interface_init(&int_interface, compare_int32_t, copy_int32_t,
+                   display_int32_t, free, NULL, NULL);
 
-    Status st = qli_create(&queue, compare_int32_t, copy_int32_t,
-            display_int32_t, free);
+    uint8_t qli_storage[qli_size];
+    QueueList_t *queue = (QueueList_t*)&qli_storage[0];
+    qli_init(queue, &int_interface);
 
-    if (st != DS_OK)
-        return st;
-
-    st = qli_set_limit(queue, 10);
-
-    if (st != DS_OK)
+    if (!qli_set_limit(queue, 10))
         goto error;
 
-    void *elem;
+    void *elem = NULL;
     for (int i = 0; i < 20; i++)
     {
         elem = new_int32_t(i);
 
-        st = qli_enqueue(queue, elem);
-
-        if (st == DS_ERR_FULL)
+        if (!qli_enqueue(queue, elem))
         {
             free(elem);
         }
     }
 
-    ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, qli_length(queue), qli_limit(queue), __func__);
-    ut_equals_int(ut, qli_set_limit(queue, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_bool(ut, qli_enqueue(queue, elem), false, __func__);
+    ut_equals_integer_t(ut, qli_count(queue), qli_limit(queue), __func__);
+    ut_equals_bool(ut, qli_set_limit(queue, 9), false, __func__);
 
     int *t = new_int32_t(1);
-    ut_equals_int(ut, qli_enqueue(queue, t), DS_ERR_FULL, __func__);
+    ut_equals_int(ut, qli_enqueue(queue, t), false, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, qli_set_limit(queue, 0), DS_OK, __func__);
+    ut_equals_int(ut, qli_set_limit(queue, 0), true, __func__);
     ut_equals_integer_t(ut, qli_limit(queue), 0, __func__);
-    ut_equals_int(ut, qli_enqueue(queue, t), DS_OK, __func__);
+    ut_equals_int(ut, qli_enqueue(queue, t), true, __func__);
 
-    qli_free(&queue);
+    qli_erase(queue);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    qli_free(&queue);
-    return st;
+    ut_error();
+    qli_erase(queue);
 }
 
 // Runs all QueueList tests
@@ -71,10 +67,7 @@ Status QueueListTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += qli_test_limit(ut);
-
-    if (st != DS_OK)
-        goto error;
+    qli_test_limit(ut);
 
     ut_report(ut, "QueueList");
 

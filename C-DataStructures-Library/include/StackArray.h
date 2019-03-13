@@ -35,6 +35,10 @@ typedef struct StackArray_s StackArray_t;
 /// all must be dynamically allocated.
 typedef struct StackArray_s *StackArray;
 
+/// \ref sta_size
+/// \brief The size of a StackArray_s in bytes.
+extern const unsigned_t sta_size;
+
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 /// \ref sta_new

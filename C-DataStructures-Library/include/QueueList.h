@@ -10,6 +10,7 @@
 #define C_DATASTRUCTURES_LIBRARY_QUEUELIST_H
 
 #include "Core.h"
+#include "Interface.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,12 +20,14 @@ extern "C" {
 /// \brief A linked list implementation of a generic queue.
 struct QueueList_s;
 
+/// \ref QueueList_t
 /// \brief A type for a singly-linked list implementation of a queue.
 ///
 /// A type for a <code> struct QueueList_s </code> so you don't have to always
 /// write the full name of it.
 typedef struct QueueList_s QueueList_t;
 
+/// \ref QueueList
 /// \brief A pointer type for a singly-linked list implementation of a queue.
 ///
 /// A pointer type to <code> struct QueueList_s </code>. This typedef is used
@@ -32,102 +35,153 @@ typedef struct QueueList_s QueueList_t;
 /// must be dynamically allocated.
 typedef struct QueueList_s *QueueList;
 
-/// \brief Comparator function type.
-///
-/// A type for a function that compares two elements, returning:
-/// - [ > 0] when the first element is greater than the second;
-/// - [ < 0] when the first element is less than the second;
-/// - 0 when both elements are equal.
-typedef int(*qli_compare_f)(void *, void *);
-
-/// \brief A Copy function type.
-///
-/// A type for a function that takes an input (first parameter) and returns an
-/// exact copy of that element.
-typedef void *(*qli_copy_f)(void *);
-
-/// \brief Display function type.
-///
-/// A type for a function that displays an element in the console. Please do
-/// not print a newline character.
-typedef void(*qli_display_f)(void *);
-
-/// \brief A Free function type.
-///
-/// A type for a function responsible for completely freeing an element from
-/// memory.
-typedef void(*qli_free_f)(void *);
+/// \ref qli_size
+/// \brief The size of a QueueList_s in bytes.
+extern const unsigned_t qli_size;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status qli_init(QueueList *queue);
+/// \ref qli_new
+/// \brief Initializes a new QueueList_s on the heap.
+QueueList_t *
+qli_new(Interface_t *interface);
 
-Status qli_create(QueueList *queue, qli_compare_f compare_f, qli_copy_f copy_f,
-                  qli_display_f display_f, qli_free_f free_f);
+/// \ref qli_init
+/// \brief Initializes a new QueueList_s on the stack.
+void
+qli_init(QueueList_t *queue, Interface_t *interface);
 
-Status qli_free(QueueList *queue);
+/// \ref qli_free
+/// \brief Frees from memory a QueueList_s and its elements.
+void
+qli_free(QueueList_t *queue);
 
-Status qli_free_shallow(QueueList *queue);
+/// \ref qli_free_shallow
+/// \brief Frees from memory a QueueList_s leaving its elements intact.
+void
+qli_free_shallow(QueueList_t *queue);
 
-Status qli_erase(QueueList *queue);
+/// \ref qli_erase
+/// \brief Frees from memory all elements of a QueueList_s.
+void
+qli_erase(QueueList_t *queue);
 
-/////////////////////////////////////////////////////////////////// SETTERS ///
+/// \ref qli_erase_shallow
+/// \brief Resets the QueueList_s without freeing its elements.
+void
+qli_erase_shallow(QueueList_t *queue);
 
-Status qli_set_v_compare(QueueList queue, qli_compare_f function);
+//////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
-Status qli_set_v_copy(QueueList queue, qli_copy_f function);
-
-Status qli_set_v_display(QueueList queue, qli_display_f function);
-
-Status qli_set_v_free(QueueList queue, qli_free_f function);
-
-Status qli_set_limit(QueueList queue, integer_t limit);
+/// \ref qli_config
+/// \brief Sets a new interface for a target queue.
+void
+qli_config(QueueList_t *queue, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-integer_t qli_length(QueueList queue);
+/// \ref qli_count
+/// \brief Returns the amount of elements in the specified queue.
+integer_t
+qli_count(QueueList_t *queue);
 
-integer_t qli_limit(QueueList queue);
+/// \ref qli_limit
+/// \brief Returns the current queue limit.
+integer_t
+qli_limit(QueueList_t *queue);
+
+/////////////////////////////////////////////////////////////////// SETTERS ///
+
+/// \ref qli_set_limit
+/// \brief Sets a limit to the amount of elements to the specified queue.
+bool
+qli_set_limit(QueueList_t *queue, integer_t limit);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status qli_enqueue(QueueList queue, void *element);
+/// \ref qli_enqueue
+/// \brief Adds an element to the specified queue.
+bool
+qli_enqueue(QueueList_t *queue, void *element);
 
-Status qli_dequeue(QueueList queue, void **result);
+/// \ref qli_dequeue
+/// \brief Removes and element from the specified queue.
+bool
+qli_dequeue(QueueList_t *queue, void **result);
+
+/// \ref qli_peek_front
+/// \brief Returns the oldest element in the specified queue.
+void *
+qli_peek_front(QueueList_t *queue);
+
+/// \ref qli_peek_rear
+/// \brief Returns the last item added in the queue.
+void *
+qli_peek_rear(QueueList_t *queue);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool qli_full(QueueList queue);
+/// \ref qli_empty
+/// \brief Returns true if the queue is empty, false otherwise.
+bool
+qli_empty(QueueList_t *queue);
 
-bool qli_empty(QueueList queue);
+/// \ref qli_full
+/// \brief Returns true if the queue is full, false otherwise.
+bool
+qli_full(QueueList_t *queue);
+
+/// \ref qli_fits
+/// \brief Returns true if a given size will fit in the queue, assuming it has
+/// a limit set.
+bool
+qli_fits(QueueList_t *queue, unsigned_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *qli_peek_front(QueueList queue);
+/// \ref qli_contains
+/// \brief Returns true if an elements is present in the specified queue.
+bool
+qli_contains(QueueList_t *queue, void *key);
 
-void *qli_peek_rear(QueueList queue);
+/// \ref qli_copy
+/// \brief Returns a copy of the specified queue.
+QueueList_t *
+qli_copy(QueueList_t *queue);
 
-bool qli_contains(QueueList queue, void *key);
+/// \ref qli_copy_shallow
+/// \brief Creates a shallow copy of the specified queue.
+QueueList_t *
+qli_copy_shallow(QueueList_t *queue);
 
-Status qli_copy(QueueList queue, QueueList *result);
+/// \ref qli_compare
+/// \brief Compares two queues returning an int according to \ref compare_f.
+int
+qli_compare(QueueList_t *queue1, QueueList_t *queue2);
 
-Status qli_append(QueueList queue, QueueList queue2);
+/// \ref qli_append
+/// \brief Appends one queue at the back of the other.
+bool
+qli_append(QueueList_t *queue1, QueueList_t *queue2);
 
-Status qli_to_array(QueueList queue,  void ***result, integer_t *length);
+/// \ref qli_to_array
+/// \brief Makes a copy of the queue as a C array.
+void **
+qli_to_array(QueueList_t *queue, integer_t *length);
 
 /////////////////////////////////////////////////////////////////// DISPLAY ///
 
-Status qli_display(QueueList queue);
-
-Status qli_display_array(QueueList queue);
-
-Status qli_display_raw(QueueList queue);
+/// \ref qli_display
+/// \brief Displays a QueueList_s in the console.
+void
+qli_display(QueueList_t *queue, int display_mode);
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-// A queue iterator. See the source file for the full documentation.
+/// \struct QueueListIterator_s.
+/// \brief A QueueList_s iterator.
 struct QueueListIterator_s;
 
 /// \brief A type for a queue iterator.
@@ -142,41 +196,79 @@ typedef struct QueueListIterator_s *QueueListIterator;
 
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
-Status qli_iter_init(QueueListIterator *iter, QueueList target);
+/// \ref stl_iter_new
+/// \brief Creates a new queue iterator given a target queue.
+QueueListIterator_t *
+qli_iter_new(QueueList_t *target);
 
-Status qli_iter_retarget(QueueListIterator *iter, QueueList target);
+/// \ref qli_iter_init
+/// \brief Initializes a new iterator allocated on the stack.
+bool
+qli_iter_init(QueueListIterator_t *iter, QueueList_t *target);
 
-Status qli_iter_free(QueueListIterator *iter);
+/// \ref qli_iter_retarget
+/// \brief Retargets an existing iterator.
+void
+qli_iter_retarget(QueueListIterator_t *iter, QueueList_t *target);
+
+/// \ref qli_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+qli_iter_free(QueueListIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////// ITERATION ///
 
-Status qli_iter_next(QueueListIterator iter);
+/// \ref qli_iter_next
+/// \brief Iterates to the next element if available.
+bool
+qli_iter_next(QueueListIterator_t *iter);
 
-Status qli_iter_to_front(QueueListIterator iter);
+/// \ref qli_iter_to_front
+/// \brief Iterates to the front element in the queue.
+bool
+qli_iter_to_front(QueueListIterator_t *iter);
 
-Status qli_iter_to_rear(QueueListIterator iter);
+/// \ref qli_iter_to_rear
+/// \brief Iterates to the rear element in the queue.
+bool
+qli_iter_to_rear(QueueListIterator_t *iter);
 
 /////////////////////////////////////////////////////////// STRUCTURE STATE ///
 
-bool qli_iter_has_next(QueueListIterator iter);
-
-///////////////////////////////////////////////////////// SETTER AND GETTER ///
-
-Status qli_iter_get(QueueListIterator iter, void **result);
-
-Status qli_iter_set(QueueListIterator iter, void *element);
+/// \ref qli_iter_has_next
+/// \brief Returns true if there is another element next in the iteration.
+bool
+qli_iter_has_next(QueueListIterator_t *iter);
 
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
-Status qli_iter_insert(QueueListIterator iter, void *element);
+/// \ref qli_iter_get
+/// \brief Gets the element pointed by the iterator.
+bool
+qli_iter_get(QueueListIterator_t *iter, void **result);
 
-Status qli_iter_remove(QueueListIterator iter, void **result);
+/// \ref qli_iter_set
+/// \brief Sets the element pointed by the iterator to a new element.
+bool
+qli_iter_set(QueueListIterator_t *iter, void *element);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
-void *qli_iter_peek_next(QueueListIterator iter);
+/// \ref qli_iter_peek_next
+/// \brief Returns the next element in the iteration if available.
+void *
+qli_iter_peek_next(QueueListIterator_t *iter);
 
-void *qli_iter_peek(QueueListIterator iter);
+/// \ref qli_iter_peek
+/// \brief Returns the current element in the iteration if available.
+void *
+qli_iter_peek(QueueListIterator_t *iter);
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo QueueListWrapper
 
 #ifdef __cplusplus
 }

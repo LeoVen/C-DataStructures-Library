@@ -42,6 +42,7 @@ interface_new(compare_f compare, copy_f copy, display_f display, free_f free,
 /// This function differs from interface_new() in that it initializes an
 /// interface allocated in the stack.
 ///
+/// \param interface The interface to be initialized.
 /// \param compare A compare function.
 /// \param copy A copy function.
 /// \param display A display function.

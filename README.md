@@ -13,8 +13,8 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 ```
 
 ![total files](https://img.shields.io/badge/total%20files-77-%23607d8b.svg)
-![total](https://img.shields.io/badge/total%20lines-34866-%232196f3.svg)
-![average](https://img.shields.io/badge/average-452-%23ff9800.svg)
+![total](https://img.shields.io/badge/total%20lines-35048-%232196f3.svg)
+![average](https://img.shields.io/badge/average-455-%23ff9800.svg)
 ![maximum](https://img.shields.io/badge/maximum-3011-%234caf50.svg)
 ![minimum](https://img.shields.io/badge/minimum-13-%23f44336.svg)
 
@@ -46,7 +46,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [PriorityList][pli]        | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[##________]` |
 | [PriorityQueue][prq]       | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [QueueArray][qar]          | `[##########]` | `[__________]` | `[__________]` | `[##________]` | `[#######___]` |
-| [QueueList][qli]           | `[##########]` | `[__________]` | `[__________]` | `[#_________]` | `[#######___]` |
+| [QueueList][qli]           | `[##########]` | `[##########]` | `[__________]` | `[#_________]` | `[#######___]` |
 | [RadixTree][rdt]           | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [RedBlackTree][rbt]        | `[#########_]` | `[__________]` | `[__________]` | `[####______]` | `[########__]` |
 | [SinglyLinkedList][sll]    | `[#########_]` | `[__________]` | `[__________]` | `[#_________]` | `[######____]` |
@@ -62,7 +62,7 @@ Get-ChildItem . -Include @("*.c", "*.h") -Recurse | Where-Object {$_.PSParentPat
 | [TreeMap][trm]             | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [Trie][tri]                | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
 | [UnrolledLinkedList][ull]  | `[__________]` | `[__________]` | `[__________]` | `[__________]` | `[__________]` |
-|   __Completed__            |     __12__     |     __5__      |     __0__      |     __0__      |     __1__      |
+|   __Completed__            |     __12__     |     __6__      |     __0__      |     __0__      |     __1__      |
 
 ## Summary
 

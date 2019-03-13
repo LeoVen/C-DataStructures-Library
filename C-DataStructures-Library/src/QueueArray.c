@@ -92,6 +92,10 @@ struct QueueArray_s
     integer_t version_id;
 };
 
+/// This can be used together with VLAs to allocate the structure on the stack
+/// instead of a heap allocation.
+const unsigned_t qar_size = sizeof(QueueArray_t);
+
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 bool
@@ -229,8 +233,8 @@ qar_free_shallow(QueueArray_t *queue)
     free(queue);
 }
 
-/// This function will free all the elements of the specified QueueArray_s and
-/// will keep the structure intact.
+/// This function will reset the QueueArray_s, freeing all of its elements,
+/// keeping the structure intact including its original interface.
 /// \par Interface Requirements
 /// - free
 ///
@@ -438,6 +442,8 @@ qar_dequeue(QueueArray_t *queue, void **result)
 
 /// Returns the element at the front of the queue, that is, the oldest element
 /// and the next one to be removed, or NULL if the queue is empty.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The target queue.
 ///
@@ -454,6 +460,8 @@ qar_peek_front(QueueArray_t *queue)
 
 /// Returns the element at the rear of the queue, that is, the newest element
 /// and the last one to be removed, the or NULL if the queue is empty.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The target queue.
 ///
@@ -471,6 +479,8 @@ qar_peek_rear(QueueArray_t *queue)
 
 /// Returns true if the queue is empty, or false if there are elements in the
 /// queue.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The target queue.
 ///
@@ -484,6 +494,8 @@ qar_empty(QueueArray_t *queue)
 /// Returns true if the current amount of elements in the queue is the same as
 /// the buffer's capacity, that is, the next element to be added to the queue
 /// will cause the buffer to be reallocated.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The target queue.
 ///
@@ -509,6 +521,28 @@ qar_fits(QueueArray_t *queue, unsigned_t size)
     return (queue->count + size) <= queue->capacity;
 }
 
+/// Returns true if the element is present in the queue, otherwise false.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param[in] queue QueueArray_s reference.
+/// \param[in] key Key to be matched.
+///
+/// \return True if the element is present in the queue, otherwise false.
+bool
+qar_contains(QueueArray_t *queue, void *key)
+{
+    for (integer_t i = queue->front, j = 0;
+         j < queue->count;
+         i = (i + 1) % queue->capacity, j++)
+    {
+        if (queue->interface->compare(queue->buffer[i], key) == 0)
+            return true;
+    }
+
+    return false;
+}
+
 /// Returns a copy of the specified QueueArray_s with the same interface. All
 /// elements are copied using the queue's interface's copy function.
 /// \par Interface Requirements
@@ -526,8 +560,9 @@ qar_copy(QueueArray_t *queue)
     if (!new_queue)
         return NULL;
 
-    for (integer_t i = queue->front, j = 0; j < queue->count - 1;
-            i = (i + 1) % queue->capacity, j++)
+    for (integer_t i = queue->front, j = 0;
+         j < queue->count - 1;
+         i = (i + 1) % queue->capacity, j++)
     {
         new_queue->buffer[i] = queue->interface->copy(queue->buffer[i]);
     }
@@ -557,7 +592,8 @@ qar_copy_shallow(QueueArray_t *queue)
     if (!new_queue)
         return NULL;
 
-    for (integer_t i = queue->front, j = 0; j < queue->count - 1;
+    for (integer_t i = queue->front, j = 0;
+         j < queue->count - 1;
          i = (i + 1) % queue->capacity, j++)
     {
         new_queue->buffer[i] = queue->buffer[i];
@@ -611,6 +647,22 @@ qar_compare(QueueArray_t *queue1, QueueArray_t *queue2)
         return -1;
 
     return 0;
+}
+
+/// Appends \c queue2 at the rear of \c queue1, emptying queue2. Both queues
+/// need to have been initialized.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue1 Queue to receive elements.
+/// \param[in] queue2 Queue where the elements are going to be taken from.
+///
+/// \return True if all operations were successful, otherwise false.
+bool
+qar_append(QueueArray_t *queue1, QueueArray_t *queue2)
+{
+    /// \todo qar_append
+    return true;
 }
 
 /// Makes a copy of all the elements in the queue to a C array starting from

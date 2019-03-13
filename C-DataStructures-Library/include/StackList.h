@@ -35,12 +35,21 @@ typedef struct StackList_s StackList_t;
 /// must be dynamically allocated.
 typedef struct StackList_s *StackList;
 
+/// \ref stl_size
+/// \brief The size of a StackList_s in bytes.
+extern const unsigned_t stl_size;
+
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 /// \ref stl_new
-/// \brief Initializes a new StackList_s.
+/// \brief Initializes a new StackList_s allocated on the heap.
 StackList_t *
 stl_new(Interface_t *interface);
+
+/// \ref stl_init
+/// \brief Initializes a new StackList_s allocated on the stack.
+void
+stl_init(StackList_t *stack, Interface_t *interface);
 
 /// \ref stl_free
 /// \brief Frees from memory a StackList_s and all its elements.
@@ -116,6 +125,12 @@ stl_empty(StackList_t *stack);
 /// \brief Returns true if the stack is empty, false otherwise.
 bool
 stl_full(StackList_t *stack);
+
+/// \ref stl_fits
+/// \brief Returns true if a given size will fit in the stack, assuming it has
+/// a limit set.
+bool
+stl_fits(StackList_t *stack, unsigned_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
@@ -234,7 +249,7 @@ stl_iter_peek_next(StackListIterator_t *iter);
 void *
 stl_iter_peek(StackListIterator_t *iter);
 
-#define STK_FOR_EACH(target, body)                         \
+#define STL_FOR_EACH(target, body)                         \
     do {                                                   \
         StackListIterator_t *iter_ = stl_iter_new(target); \
         while (stl_iter_has_next(iter_)) {                 \

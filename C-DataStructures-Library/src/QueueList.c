@@ -57,19 +57,18 @@
 /// Located in the file QueueList.c
 struct QueueList_s
 {
-    /// \brief Current amount of elements in the \c QueueList.
+    /// \brief Current amount of elements in the QueueList_s.
     ///
-    /// QueueList current amount of elements linked between the \c front and
-    /// \c rear pointers.
-    integer_t length;
+    /// Current amount of elements in the QueueList_s.
+    integer_t count;
 
-    /// \brief QueueList length limit.
+    /// \brief QueueList count limit.
     ///
     /// If it is set to 0 or a negative value then the queue has no limit to
-    /// its length. Otherwise it won't be able to have more elements than the
+    /// its count. Otherwise it won't be able to have more elements than the
     /// specified value. The queue is always initialized with no restrictions
     /// to its length, that is, \c limit equals 0. The user won't be able to
-    /// limit the queue length if it already has more elements than the
+    /// limit the queue count if it already has more elements than the
     /// specified limit.
     integer_t limit;
 
@@ -85,31 +84,11 @@ struct QueueList_s
     /// relative to this pointer.
     struct QueueListNode_s *rear;
 
-    /// \brief Comparator function.
+    /// \brief QueueList_s interface.
     ///
-    /// A function that compares one element with another that returns an int
-    /// with the following rules:
-    ///
-    /// - <code>[ > 0 ]</code> if first element is greater than the second;
-    /// - <code>[ < 0 ]</code> if second element is greater than the first;
-    /// - <code>[ 0 ]</code> if elements are equal.
-    qli_compare_f v_compare;
-
-    /// \brief Copy function.
-    ///
-    /// A function that returns an exact copy of an element.
-    qli_copy_f v_copy;
-
-    /// \brief Display function.
-    ///
-    /// A function that displays an element in the console. Useful for
-    /// debugging.
-    qli_display_f v_display;
-
-    /// \brief Deallocator function.
-    ///
-    /// A function that completely frees an element from memory.
-    qli_free_f v_free;
+    /// An interface is like a table that has function pointers for functions
+    /// that will manipulate a desired data type.
+    struct Interface_s *interface;
 
     /// \brief A version id to keep track of modifications.
     ///
@@ -119,6 +98,10 @@ struct QueueList_s
     /// modifications (except for those done by the iterator itself).
     integer_t version_id;
 };
+
+/// This can be used together with VLAs to allocate the structure on the stack
+/// instead of a heap allocation.
+const unsigned_t qli_size = sizeof(QueueList_t);
 
 /// \brief A QueueList_s node.
 ///
@@ -151,354 +134,245 @@ typedef struct QueueListNode_s *QueueListNode;
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status qli_make_node(QueueListNode *node, void *element);
+static QueueListNode_t *
+qli_new_node(void *element);
 
-static Status qli_free_node(QueueListNode *node, qli_free_f free_f);
+static void
+qli_free_node(QueueListNode_t *node, free_f function);
 
-static Status qli_free_node_shallow(QueueListNode *node);
+static void
+qli_free_node_shallow(QueueListNode_t *node);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-/// \brief Initializes a QueueList_s structure.
+/// Initializes a new QueueList_s with a given interface that contains
+/// functions to handle any user-defined type.
+/// \par Interface Requirements
+/// - None
 ///
-/// Initializes a new QueueList_s structure with initial length and limit as 0.
-/// Note that it does not sets any default functions. If you don't set them
-/// later you won't be able to do certain operations that depend on a user-
-/// defined function.
+/// \param[in] interface An interface defining all necessary functions for the
+/// queue to operate.
 ///
-/// \param[in,out] queue The queue to be initialized.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_OK if all operations were successful.
-Status qli_init(QueueList *queue)
+/// \return A new QueueList_s or NULL if allocation failed.
+QueueList_t *
+qli_new(Interface_t *interface)
 {
-    *queue = malloc(sizeof(QueueList_t));
+    QueueList_t *queue = malloc(sizeof(QueueList_t));
 
-    if (!(*queue))
-        return DS_ERR_ALLOC;
+    if (!queue)
+        return NULL;
 
-    (*queue)->length = 0;
-    (*queue)->limit = 0;
-    (*queue)->version_id = 0;
+    queue->count = 0;
+    queue->limit = 0;
+    queue->version_id = 0;
+    queue->front = NULL;
+    queue->rear = NULL;
 
-    (*queue)->front = NULL;
-    (*queue)->rear = NULL;
+    queue->interface = interface;
 
-    (*queue)->v_compare = NULL;
-    (*queue)->v_copy = NULL;
-    (*queue)->v_display = NULL;
-    (*queue)->v_free = NULL;
-
-    return DS_OK;
+    return queue;
 }
 
-/// \brief Creates a QueueList_s.
+/// Initializes a new QueueList_s allocated on the stack, given an interface
+/// that contains functions to handle any user-defined type.
+/// \par Interface Requirements
+/// - None
 ///
-/// This function completely creates a QueueList_s, setting all of its default
-/// functions.
-///
-/// \param[in,out] queue QueueList_s to be allocated.
-/// \param[in] compare_f A function that compares two elements.
-/// \param[in] copy_f A function that makes an exact copy of an element.
-/// \param[in] display_f A function that displays in the console an element.
-/// \param[in] free_f A function that completely frees from memory an element.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_OK if all operations are successful.
-Status qli_create(QueueList *queue, qli_compare_f compare_f, qli_copy_f copy_f,
-        qli_display_f display_f, qli_free_f free_f)
+/// \param[in,out] queue The queue allocated on the stack to be initialized.
+/// \param[in] interface An interface defining all necessary functions for the
+/// queue to operate.
+void
+qli_init(QueueList_t *queue, Interface_t *interface)
 {
-    *queue = malloc(sizeof(QueueList_t));
-
-    if (!(*queue))
-        return DS_ERR_ALLOC;
-
-    (*queue)->length = 0;
-    (*queue)->limit = 0;
-    (*queue)->version_id = 0;
-
-    (*queue)->front = NULL;
-    (*queue)->rear = NULL;
-
-    (*queue)->v_compare = compare_f;
-    (*queue)->v_copy = copy_f;
-    (*queue)->v_display = display_f;
-    (*queue)->v_free = free_f;
-
-    return DS_OK;
+    queue->count = 0;
+    queue->limit = 0;
+    queue->version_id = 0;
+    queue->front = NULL;
+    queue->rear = NULL;
+    queue->interface = interface;
 }
 
-/// \brief Frees from memory a QueueList_s and all its elements.
+/// Frees each element at the queue using its interface's \c free and then
+/// frees the queue struct.
+/// \par Interface Requirements
+/// - free
 ///
-/// This function frees from memory all the queue's elements using its default
-/// free function and then frees the queue's structure. The variable is then
-/// set to \c NULL.
-///
-/// \param queue The QueueList_s to be freed from memory.
-///
-/// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_free(QueueList *queue)
+/// \param[in] queue The queue to be freed from memory.
+void
+qli_free(QueueList_t *queue)
 {
-    if ((*queue) == NULL)
-        return DS_ERR_NULL_POINTER;
+    QueueListNode_t *prev = queue->front;
 
-    if ((*queue)->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    QueueListNode prev = (*queue)->front;
-
-    Status st;
-
-    while ((*queue)->front != NULL)
+    while (queue->front != NULL)
     {
-        (*queue)->front = (*queue)->front->prev;
+        queue->front = queue->front->prev;
 
-        st = qli_free_node(&prev, (*queue)->v_free);
+        qli_free_node(prev, queue->interface->free);
 
-        if (st != DS_OK)
-            return st;
-
-        prev = (*queue)->front;
+        prev = queue->front;
     }
 
-    free((*queue));
-
-    (*queue) = NULL;
-
-    return DS_OK;
+    free(queue);
 }
 
-/// \brief Frees from memory a QueueList_s.
+/// Frees the QueueList_s structure and its nodes, leaves all the elements
+/// intact. Be careful as this might cause severe memory leaks. Only use this
+/// if your queue elements are also handled by another structure or algorithm.
+/// \par Interface Requirements
+/// - None
 ///
-/// This function frees from memory all the queue's nodes without freeing its
-/// data and then frees the queue structure. The variable is then set to
-/// \c NULL.
-///
-/// \param[in,out] queue QueueList_s to be freed from memory.
-///
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_free_shallow(QueueList *queue)
+/// \param[in] queue The queue to be freed from memory.
+void
+qli_free_shallow(QueueList_t *queue)
 {
-    if ((*queue) == NULL)
-        return DS_ERR_NULL_POINTER;
+    QueueListNode_t *prev = queue->front;
 
-    if ((*queue)->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    QueueListNode prev = (*queue)->front;
-
-    Status st;
-
-    while ((*queue)->front != NULL)
+    while (queue->front != NULL)
     {
-        (*queue)->front = (*queue)->front->prev;
+        queue->front = queue->front->prev;
 
-        st = qli_free_node_shallow(&prev);
+        qli_free_node_shallow(prev);
 
-        if (st != DS_OK)
-            return st;
-
-        prev = (*queue)->front;
+        prev = queue->front;
     }
 
-    free((*queue));
-
-    (*queue) = NULL;
-
-    return DS_OK;
+    free(queue);
 }
 
-/// \brief Erases a QueueList_s.
+/// This function will free all the elements of the specified QueueList_s and
+/// will keep the structure intact.
+/// \par Interface Requirements
+/// - free
 ///
-/// This function is equivalent to freeing a queue and the creating it again.
-/// This will reset the queue to its initial state with no elements, but will
-/// keep all of its default functions.
-///
-/// \param[in,out] queue QueueList_s to be erased.
-///
-/// \return DS_ERR_ALLOC if queue allocation failed.
-/// \return DS_ERR_INCOMPLETE_TYPE if a default free function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_erase(QueueList *queue)
+/// \param[in] queue The queue to have its elements erased.
+void
+qli_erase(QueueList_t *queue)
 {
-    if (*queue == NULL)
-        return DS_ERR_NULL_POINTER;
+    QueueListNode_t *prev = queue->front;
 
-    QueueList new_queue;
-
-    Status st = qli_create(&new_queue, (*queue)->v_compare, (*queue)->v_copy,
-            (*queue)->v_display, (*queue)->v_free);
-
-    if (st !=  DS_OK)
-        return st;
-
-    st = qli_free(queue);
-
-    // Probably didn't set the free function...
-    if (st !=  DS_OK)
+    while (queue->front != NULL)
     {
-        free(new_queue);
+        queue->front = queue->front->prev;
 
-        return st;
+        qli_free_node(prev, queue->interface->free);
+
+        prev = queue->front;
     }
 
-    *queue = new_queue;
+    queue->count = 0;
+    queue->version_id++;
 
-    return DS_OK;
+    queue->front = NULL;
+    queue->rear = NULL;
 }
 
-/// \brief Sets the default compare function.
+/// This function will reset the QueueList_s, freeing all of its nodes but not
+/// its elements, keeping the structure intact including its original
+/// interface.
+/// \par Interface Requirements
+/// - None
 ///
-/// Use this function to set a default compare function. It needs to comply
-/// with the qli_compare_f specifications.
-///
-/// \param[in] queue QueueList_s to set the default compare function.
-/// \param[in] function A qli_compare_f kind of function.
-///
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_set_v_compare(QueueList queue, qli_compare_f function)
+/// \param[in] queue The queue to have its nodes erased.
+void
+qli_erase_shallow(QueueList_t *queue)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
+    QueueListNode_t *prev = queue->front;
 
-    queue->v_compare = function;
+    while (queue->front != NULL)
+    {
+        queue->front = queue->front->prev;
 
-    return DS_OK;
+        qli_free_node_shallow(prev);
+
+        prev = queue->front;
+    }
+
+    queue->count = 0;
+    queue->version_id++;
+
+    queue->front = NULL;
+    queue->rear = NULL;
 }
 
-/// \brief Sets the default copy function.
+/// Sets a new interface for the specified QueueList_s.
+/// \par Interface Requirements
+/// - None
 ///
-/// Use this function to set a default compare function. It needs to comply
-/// with the qli_copy_f specifications.
-///
-/// \param[in] queue QueueList_s to set the default copy function.
-/// \param[in] function A qli_copy_f kind of function.
-///
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_set_v_copy(QueueList queue, qli_copy_f function)
+/// \param[in] queue QueueList_s to change the interface.
+/// \param[in] new_interface New interface for the specified structure.
+void
+qli_config(QueueList_t *queue, Interface_t *new_interface)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    queue->v_copy = function;
-
-    return DS_OK;
+    queue->interface = new_interface;
 }
 
-/// \brief Sets the default display function.
+/// Returns the current amount of elements in the specified queue.
+/// \par Interface Requirements
+/// - None
 ///
-/// Use this function to set a default display function. It needs to comply
-/// with the qli_display_f specifications. Useful for debugging.
+/// \param[in] queue QueueList_s reference.
 ///
-/// \param[in] queue QueueList_s to set the default display function.
-/// \param[in] function A qli_display_f kind of function.
-///
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_set_v_display(QueueList queue, qli_display_f function)
+/// \return The queue total amount of elements.
+integer_t
+qli_count(QueueList_t *queue)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    queue->v_display = function;
-
-    return DS_OK;
+    return queue->count;
 }
 
-/// \brief Sets the default free function.
+/// Returns the current queue limit.
+/// \par Interface Requirements
+/// - None
 ///
-/// Use this function to set a default free function. It needs to comply
-/// with the qli_free_f specifications.
+/// \param[in] queue QueueList_s reference.
 ///
-/// \param[in] queue QueueList_s to set the default free function.
-/// \param[in] function A qli_free_f kind of function.
-///
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_set_v_free(QueueList queue, qli_free_f function)
+/// \return The current queue limit.
+integer_t
+qli_limit(QueueList_t *queue)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    queue->v_free = function;
-
-    return DS_OK;
+    return queue->limit;
 }
 
-/// \brief Sets a limit to the specified QueueList_s's length.
-///
-/// Limit's the QueueList_s's length. You can only set a limit greater or equal to
-/// the queue's current length and greater than 0. To remove this limitation
+/// Limit's the QueueList_s's length. You can only set a limit greater or equal
+/// to the queue's current length and greater than 0. To remove this limitation
 /// simply set the limit to 0 or less.
 ///
 /// \param[in] queue QueueList_s reference.
-/// \param[in] limit Maximum queue length.
+/// \param[in] limit New queue limit.
 ///
-/// \return DS_ERR_INVALID_OPERATION if the limitation is less than the queue's
-/// current length.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations are successful.
-Status qli_set_limit(QueueList queue, integer_t limit)
+/// \return True if a new limit was set. False if the new limit is lower than
+/// the current amount of elements in the queue.
+bool
+qli_set_limit(QueueList_t *queue, integer_t limit)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
     // The new limit can't be lower than the queue's current length.
-    if (queue->length > limit && limit > 0)
-        return DS_ERR_INVALID_OPERATION;
+    if (queue->count > limit && limit > 0)
+        return false;
 
     queue->limit = limit;
 
-    return DS_OK;
-}
-
-integer_t qli_length(QueueList queue)
-{
-    if (queue == NULL)
-        return -1;
-
-    return queue->length;
-}
-
-integer_t qli_limit(QueueList queue)
-{
-    if (queue == NULL)
-        return -1;
-
-    return queue->limit;
+    return true;
 }
 
 /// Inserts an element into the specified queue. The element is added relative
 /// to the \c rear pointer.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The queue where the element is to be inserted.
 /// \param[in] element The element to be inserted in the queue.
 ///
-/// \return DS_ERR_ALLOC if node allocation failed.
-/// \return DS_ERR_FULL if \c limit is set (different than 0) and the queue
-/// length reached the specified limit.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_enqueue(QueueList queue, void *element)
+/// \return True if the element was successfully added to the queue or false if
+/// the queue reached its limit size or node allocation failed.
+bool
+qli_enqueue(QueueList_t *queue, void *element)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
     if (qli_full(queue))
-        return DS_ERR_FULL;
+        return false;
 
-    QueueListNode node;
+    QueueListNode_t *node = qli_new_node(element);
 
-    Status st = qli_make_node(&node, element);
-
-    if (st != DS_OK)
-        return st;
+    if (!node)
+        return false;
 
     if (qli_empty(queue))
     {
@@ -511,43 +385,39 @@ Status qli_enqueue(QueueList queue, void *element)
         queue->rear = node;
     }
 
-    queue->length++;
+    queue->count++;
     queue->version_id++;
 
-    return DS_OK;
+    return true;
 }
 
 /// Removes an element from the specified queue. The element is removed
 /// relative to the \c front pointer.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] queue The queue where the element is to be removed from.
 /// \param[out] result The resulting element removed from the queue.
 ///
-/// \return DS_ERR_INVALID_OPERATION if the queue is empty.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_dequeue(QueueList queue, void **result)
+/// \return True if an element was removed from the queue or false if the queue
+/// is empty.
+bool
+qli_dequeue(QueueList_t *queue, void **result)
 {
     *result = NULL;
 
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
     if (qli_empty(queue))
-        return DS_ERR_INVALID_OPERATION;
+        return false;
 
-    QueueListNode node = queue->front;
+    QueueListNode_t *node = queue->front;
 
     *result = node->data;
 
     queue->front = queue->front->prev;
 
-    Status st = qli_free_node_shallow(&node);
+    qli_free_node_shallow(node);
 
-    if (st != DS_OK)
-        return st;
-
-    queue->length--;
+    queue->count--;
     queue->version_id++;
 
     if (qli_empty(queue))
@@ -556,269 +426,410 @@ Status qli_dequeue(QueueList queue, void **result)
         queue->rear = NULL;
     }
 
-    return DS_OK;
+    return true;
 }
 
-bool qli_full(QueueList queue)
+/// Returns the element at the front of the queue, that is, the oldest element
+/// and the next one to be removed, or NULL if the queue is empty.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The target queue.
+///
+/// \return NULL if the queue is empty or the element at the front of the
+/// queue.
+void *
+qli_peek_front(QueueList_t *queue)
 {
-    return queue->limit > 0 && queue->length >= queue->limit;
-}
-
-bool qli_empty(QueueList queue)
-{
-    return queue->length == 0;
-}
-
-void *qli_peek_front(QueueList queue)
-{
-    if (queue == NULL)
-        return NULL;
-
     if (qli_empty(queue))
         return NULL;
 
     return queue->front->data;
 }
 
-void *qli_peek_rear(QueueList queue)
+/// Returns the element at the rear of the queue, that is, the newest element
+/// and the last one to be removed, the or NULL if the queue is empty.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The target queue.
+///
+/// \return NULL if the queue is empty or the element at the rear of the queue.
+void *
+qli_peek_rear(QueueList_t *queue)
 {
-    if (queue == NULL)
-        return NULL;
-
     if (qli_empty(queue))
         return NULL;
 
     return queue->rear->data;
 }
 
-bool qli_contains(QueueList queue, void *key)
+/// Returns true if the queue is empty, or false if there are elements in the
+/// queue.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The target queue.
+///
+/// \return True if the queue is empty, otherwise false.
+bool
+qli_empty(QueueList_t *queue)
 {
-    // TODO
-    return false;
+    return queue->count == 0;
 }
 
-Status qli_copy(QueueList queue, QueueList *result)
+/// Returns true if the queue is full or false otherwise. The queue can only be
+/// full if its limit is set to a value higher than 0 and respecting all the
+/// rules from qli_set_limit().
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The target queue.
+///
+/// \return True if the amount of elements is the same as the buffer's
+/// capacity, otherwise false.
+bool
+qli_full(QueueList_t *queue)
 {
-    *result = NULL;
+    return queue->limit > 0 && queue->count >= queue->limit;
+}
 
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
+/// Returns true if the specified size will fit in the queue before it reaches
+/// its limit (if the limit is set).
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The target queue.
+/// \param[in] size The specified size.
+///
+/// \return True if a given size fits inside the queue if it has a limit.
+bool
+qli_fits(QueueList_t *queue, unsigned_t size)
+{
+    if (queue->limit <= 0)
+        return true;
 
-    if (queue->v_copy == NULL || queue->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    return (queue->count + size) <= queue->limit;
+}
 
-    Status st = qli_create(result, queue->v_compare, queue->v_copy,
-                           queue->v_display, queue->v_free);
-
-    if (st != DS_OK)
-        return st;
-
-    (*result)->limit = queue->limit;
-
-    if (qli_empty(queue))
-        return DS_OK;
-
-    QueueListNode scan = queue->front;
-
-    void *elem;
+/// Returns true if the element is present in the queue, otherwise false.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param[in] queue QueueList_s reference.
+/// \param[in] key Key to be matched.
+///
+/// \return True if the element is present in the queue, otherwise false.
+bool
+qli_contains(QueueList_t *queue, void *key)
+{
+    QueueListNode_t *scan = queue->front;
 
     while (scan != NULL)
     {
-        elem = queue->v_copy(scan->data);
+        if (queue->interface->compare(scan->data, key) == 0)
+            return true;
 
-        st = qli_enqueue(*result, elem);
+        scan = scan->prev;
+    }
 
-        if (st != DS_OK)
+    return false;
+}
+
+/// Returns a copy of the specified QueueList_s with the same interface. All
+/// elements are copied using the queue interface's copy function.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param[in] queue The queue to be copied.
+///
+/// \return NULL if allocation failed or a copy of the specified queue.
+QueueList_t *
+qli_copy(QueueList_t *queue)
+{
+    QueueList_t *result = qli_new(queue->interface);
+
+    if (!result)
+        return NULL;
+
+    result->limit = queue->limit;
+
+    // scan -> goes through the original queue
+    // copy -> current element being copied
+    // prev -> copy's previous node to make the link
+    QueueListNode_t *prev = NULL, *copy = NULL, *scan = queue->front;
+
+    while (scan != NULL)
+    {
+        copy = qli_new_node(queue->interface->copy(scan->data));
+
+        if (!copy)
         {
-            queue->v_free(elem);
+            qli_free_node(copy, queue->interface->free);
+            return false;
+        }
 
-            return st;
+        if (prev == NULL)
+        {
+            prev = copy;
+            result->front = prev;
+        }
+        else
+        {
+            prev->prev = copy;
+            prev = prev->prev;
         }
 
         scan = scan->prev;
     }
 
-    return DS_OK;
+    result->rear = copy;
+
+    result->count = queue->count;
+
+    return result;
 }
 
-Status qli_append(QueueList queue, QueueList queue2)
+/// Creates a shallow copy of all elements in the queue, that is, only the
+/// pointers addresses are copied to the new queue.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] queue The queue to be copied.
+///
+/// \return NULL if allocation failed or a shallow copy of the specified queue.
+QueueList_t *
+qli_copy_shallow(QueueList_t *queue)
 {
-    // TODO
-    return DS_OK;
+    QueueList_t *result = qli_new(queue->interface);
+
+    if (!result)
+        return NULL;
+
+    result->limit = queue->limit;
+
+    // scan -> goes through the original queue
+    // copy -> current element being copied
+    // prev -> copy's previous node to make the link
+    QueueListNode_t *prev = NULL, *copy = NULL, *scan = queue->front;
+
+    while (scan != NULL)
+    {
+        copy = qli_new_node(scan->data);
+
+        if (!copy)
+        {
+            qli_free_node_shallow(copy);
+            return false;
+        }
+
+        if (prev == NULL)
+        {
+            prev = copy;
+            result->front = prev;
+        }
+        else
+        {
+            prev->prev = copy;
+            prev = prev->prev;
+        }
+
+        scan = scan->prev;
+    }
+
+    result->rear = copy;
+
+    result->count = queue->count;
+
+    return result;
 }
 
-Status qli_to_array(QueueList queue,  void ***result, integer_t *length)
+/// Makes a comparison between two queues element by element. If one queue has
+/// less elements than the other the comparison of elements will go up until
+/// one queue reaches its limit. If all elements are the same until then, the
+/// tie breaker goes to their element count. If it is also the same, then both
+/// queues are equal.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param[in] queue1 A target queue to be compared.
+/// \param[in] queue2 A target queue to be compared.
+///
+/// \return An int according to \ref compare_f.
+int
+qli_compare(QueueList_t *queue1, QueueList_t *queue2)
 {
-    // TODO
-    return DS_ERR_INVALID_OPERATION;
+    QueueListNode_t *scan1 = queue1->front, *scan2 = queue2->front;
+
+    int comparison = 0;
+    while (scan1 != NULL && scan2 != NULL)
+    {
+        comparison = queue1->interface->compare(scan1->data, scan2->data);
+        if (comparison > 0)
+            return 1;
+        else if (comparison < 0)
+            return -1;
+
+        scan1 = scan1->prev;
+        scan2 = scan2->prev;
+    }
+
+    // So far all elements were the same
+    if (queue1->count > queue2->count)
+        return 1;
+    else if (queue1->count < queue2->count)
+        return -1;
+
+    return 0;
 }
 
-/// \brief Displays a QueueList_s in the console.
+/// Appends \c queue2 at the rear of \c queue1, emptying queue2. Both queues
+/// need to have been initialized.
+/// \par Interface Requirements
+/// - None
 ///
-/// Displays a QueueList_s in the console starting from \c front to \c rear.
+/// \param[in] queue1 Queue to receive elements.
+/// \param[in] queue2 Queue where the elements are going to be taken from.
 ///
-/// \param[in] queue The QueueList_s to be displayed in the console.
-///
-/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_display(QueueList queue)
+/// \return True if all operations were successful, otherwise false.
+bool
+qli_append(QueueList_t *queue1, QueueList_t *queue2)
 {
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
+    /// \todo qli_append
+    return true;
+}
 
-    if (queue->v_display == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+/// Makes a copy of all the elements in the queue to a C array starting from
+/// the front element to the rear element.
+/// \par Interface Requirements
+/// - copy
+///
+/// \param[in] queue The queue to be copied to the array.
+/// \param[out] length The resulting array's length.
+///
+/// \return The resulting array or NULL if the queue is empty or the array
+/// allocation failed.
+void **
+qli_to_array(QueueList_t *queue, integer_t *length)
+{
+    *length = 0;
 
+    if (qli_empty(queue))
+        return NULL;
+
+    void **array = malloc(sizeof(void*) * (size_t)queue->count);
+
+    if (!array)
+        return NULL;
+
+    QueueListNode_t *scan = queue->front;
+
+    integer_t i = 0;
+    while (scan != NULL)
+    {
+        array[i++] = queue->interface->copy(scan->data);
+        scan = scan->prev;
+    }
+
+    *length = queue->count;
+
+    return array;
+}
+
+/// Displays a QueueList_s in the console starting from the front element to
+/// the rear element. There are currently four modes:
+/// - -1 Displays each element separated by newline;
+/// -  0 Displays each element like a linked list;
+/// -  1 Displays each element separated by a space;
+/// - Any other number defaults to the array representation.
+/// \par Interface Requirements
+/// - display
+///
+/// \param[in] queue The queue to be displayed in the console.
+/// \param[in] display_mode How the queue is to be displayed in the console.
+void
+qli_display(QueueList_t *queue, int display_mode)
+{
     if (qli_empty(queue))
     {
         printf("\nQueueList\n[ empty ]\n");
-
-        return DS_OK;
+        return;
     }
 
-    QueueListNode scan = queue->front;
+    QueueListNode_t *scan = queue->front;
 
-    printf("\nQueueList\nfront <-");
-
-    while (scan != NULL)
+    switch (display_mode)
     {
-        queue->v_display(scan->data);
-
-        printf(" <- ");
-
-        scan = scan->prev;
+        case -1:
+            printf("\nQueueList\n");
+            while (scan != NULL)
+            {
+                queue->interface->display(scan->data);
+                printf("\n");
+                scan = scan->prev;
+            }
+            break;
+        case 0:
+            printf("\nQueueList\nFront -> ");
+            while (scan->prev != NULL)
+            {
+                queue->interface->display(scan->data);
+                printf(" -> ");
+                scan = scan->prev;
+            }
+            queue->interface->display(scan->data);
+            printf(" Rear\n");
+            break;
+        case 1:
+            printf("\nQueueList\n");
+            while (scan != NULL)
+            {
+                queue->interface->display(scan->data);
+                printf(" ");
+                scan = scan->prev;
+            }
+            printf("\n");
+            break;
+        default:
+            printf("\nQueueList\n[ ");
+            while (scan->prev != NULL)
+            {
+                queue->interface->display(scan->data);
+                printf(", ");
+            }
+            queue->interface->display(scan->data);
+            printf(" ]\n");
+            break;
     }
-
-    printf(" rear\n");
-
-    return DS_OK;
-}
-
-/// \brief Displays a QueueList_s in the console like an array.
-///
-/// Displays a QueueList_s in the console starting from \c front to \c rear like an
-/// array with its elements separated by commas, delimited with brackets.
-///
-/// \param[in] queue The QueueList_s to be displayed in the console.
-///
-/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_display_array(QueueList queue)
-{
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (queue->v_display == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    if (qli_empty(queue))
-    {
-        printf("\n[ empty ]\n");
-
-        return DS_OK;
-    }
-
-    QueueListNode scan = queue->front;
-
-    printf("\n[ ");
-
-    while (scan->prev != NULL)
-    {
-        queue->v_display(scan->data);
-
-        printf(", ");
-
-        scan = scan->prev;
-    }
-
-    queue->v_display(scan->data);
-
-    printf(" ]\n");
-
-    return DS_OK;
-}
-
-/// \brief Displays a QueueList_s in the console.
-///
-/// Displays a QueueList_s in the console starting from \c front to \c rear with
-/// its elements separated by spaces.
-///
-/// \param[in] queue The QueueList_s to be displayed in the console.
-///
-/// \return DS_ERR_INCOMPLETE_TYPE if a default display function is not set.
-/// \return DS_ERR_NULL_POINTER if the queue references to \c NULL.
-/// \return DS_OK if all operations were successful.
-Status qli_display_raw(QueueList queue)
-{
-    if (queue == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (queue->v_display == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    printf("\n");
-
-    if (qli_empty(queue))
-        return DS_OK;
-
-    QueueListNode scan = queue->front;
-
-    while (scan != NULL)
-    {
-        queue->v_display(scan->data);
-
-        printf(" ");
-
-        scan = scan->prev;
-    }
-
-    printf("\n");
-
-    return DS_OK;
 }
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static Status qli_make_node(QueueListNode *node, void *element)
+static QueueListNode_t *
+qli_new_node(void *element)
 {
-    (*node) = malloc(sizeof(QueueListNode_t));
+    QueueListNode_t *node = malloc(sizeof(QueueListNode_t));
 
-    if (!(*node))
-        return DS_ERR_ALLOC;
+    if (!node)
+        return NULL;
 
-    (*node)->data = element;
+    node->data = element;
+    node->prev = NULL;
 
-    (*node)->prev = NULL;
-
-    return DS_OK;
+    return node;
 }
 
-static Status qli_free_node(QueueListNode *node, qli_free_f free_f)
+static void
+qli_free_node(QueueListNode_t *node, free_f function)
 {
-    if ((*node) == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free_f((*node)->data);
-
-    free(*node);
-
-    (*node) = NULL;
-
-    return DS_OK;
+    function(node->data);
+    free(node);
 }
 
-static Status qli_free_node_shallow(QueueListNode *node)
+static void
+qli_free_node_shallow(QueueListNode_t *node)
 {
-    if (*node == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free(*node);
-
-    *node = NULL;
-
-    return DS_OK;
+    free(node);
 }
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
@@ -827,9 +838,8 @@ static Status qli_free_node_shallow(QueueListNode *node)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \brief An iterator for a QueueList_s.
-///
-/// This iterator is a forward-only iterator.
+/// This iterator is a forward-only iterator. Its cursor is represented by a
+/// pointer to one of the queue's node.
 struct QueueListIterator_s
 {
     /// \brief Target QueueList_s.
@@ -855,255 +865,168 @@ struct QueueListIterator_s
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static bool qli_iter_target_modified(QueueListIterator iter);
-
-static bool qli_iter_invalid_state(QueueListIterator iter);
+static bool
+qli_iter_target_modified(QueueListIterator_t *iter);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
-Status qli_iter_init(QueueListIterator *iter, QueueList target)
+///
+/// \param[in] target
+///
+/// \return
+QueueListIterator_t *
+qli_iter_new(QueueList_t *target)
 {
-    *iter = malloc(sizeof(QueueListIterator_t));
+    if (qli_empty(target))
+        return NULL;
 
-    if (!(*iter))
-        return DS_ERR_ALLOC;
+    QueueListIterator_t *iter = malloc(sizeof(QueueListIterator_t));
 
-    (*iter)->target = target;
-    (*iter)->target_id = target->version_id;
-    (*iter)->cursor = target->front;
+    if (!iter)
+        return NULL;
 
-    return DS_OK;
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = target->front;
+
+    return iter;
 }
 
-Status qli_iter_retarget(QueueListIterator *iter, QueueList target)
+///
+/// \param[in,out] iter
+/// \param[in] target
+///
+/// \return
+bool
+qli_iter_init(QueueListIterator_t *iter, QueueList_t *target)
 {
-    Status st = qli_iter_free(iter);
+    if (qli_empty(target))
+        return false;
 
-    if (st != DS_OK)
-        return st;
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = target->front;
 
-    st = qli_iter_init(iter, target);
-
-    if (st != DS_OK)
-        return st;
-
-    return DS_OK;
+    return true;
 }
 
-Status qli_iter_free(QueueListIterator *iter)
+///
+/// \param[in] iter
+/// \param[in] target
+void
+qli_iter_retarget(QueueListIterator_t *iter, QueueList_t *target)
 {
-    if (*iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    free(*iter);
-
-    *iter = NULL;
-
-    return DS_OK;
+    iter->target = target;
+    iter->target_id = target->version_id;
 }
 
-Status qli_iter_next(QueueListIterator iter)
+///
+/// \param[in] iter
+void
+qli_iter_free(QueueListIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
+    free(iter);
+}
 
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
+///
+/// \param[in] iter
+///
+/// \return
+bool
+qli_iter_next(QueueListIterator_t *iter)
+{
     if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
     if (!qli_iter_has_next(iter))
-        return DS_ERR_ITER;
+        return false;
 
     iter->cursor = iter->cursor->prev;
 
-    return DS_OK;
+    return true;
 }
 
-Status qli_iter_to_front(QueueListIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+qli_iter_to_front(QueueListIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    if (!qli_iter_has_next(iter))
-        return DS_ERR_ITER;
+        return false;
 
     iter->cursor = iter->target->front;
 
-    return DS_OK;
+    return true;
 }
 
-Status qli_iter_to_rear(QueueListIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+qli_iter_to_rear(QueueListIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    if (!qli_iter_has_next(iter))
-        return DS_ERR_ITER;
+        return false;
 
     iter->cursor = iter->target->rear;
 
-    return DS_OK;
+    return true;
 }
 
-bool qli_iter_has_next(QueueListIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+bool
+qli_iter_has_next(QueueListIterator_t *iter)
 {
     return iter->cursor->prev != NULL;
 }
 
-Status qli_iter_get(QueueListIterator iter, void **result)
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
+bool
+qli_iter_get(QueueListIterator_t *iter, void **result)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
-    if (iter->target->v_copy == NULL || iter->target->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
+    *result = iter->cursor->data;
 
-    *result = iter->target->v_copy(iter->cursor->data);
-
-    return DS_OK;
+    return true;
 }
 
-Status qli_iter_set(QueueListIterator iter, void *element)
+///
+/// \param[in] iter
+/// \param[in] element
+///
+/// \return
+bool
+qli_iter_set(QueueListIterator_t *iter, void *element)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
     if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
+        return false;
 
-    if (iter->target->v_free == NULL)
-        return DS_ERR_INCOMPLETE_TYPE;
-
-    iter->target->v_free(iter->cursor->data);
+    iter->target->interface->free(iter->cursor->data);
 
     iter->cursor->data = element;
 
-    return DS_OK;
+    return true;
 }
 
-Status qli_iter_insert(QueueListIterator iter, void *element)
+///
+/// \param[in] iter
+///
+/// \return
+void *
+qli_iter_peek_next(QueueListIterator_t *iter)
 {
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
-    if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    QueueListNode node;
-
-    Status st = qli_make_node(&node, element);
-
-    if (st != DS_OK)
-        return st;
-
-    if (qli_empty(iter->target))
-    {
-        iter->target->front = node;
-        iter->target->rear = node;
-
-        iter->cursor = node;
-    }
-    else
-    {
-        node->prev = iter->cursor->prev;
-
-        iter->cursor->prev = node;
-    }
-
-    iter->target->length++;
-
-    iter->target->version_id++;
-    iter->target_id++;
-
-    return DS_OK;
-}
-
-Status qli_iter_remove(QueueListIterator iter, void **result)
-{
-    if (iter == NULL)
-        return DS_ERR_NULL_POINTER;
-
-    if (qli_iter_invalid_state(iter))
-        return DS_ERR_ITER_STATE;
-
-    if (qli_iter_target_modified(iter))
-        return DS_ERR_ITER_MODIFICATION;
-
-    if (!qli_iter_has_next(iter))
-        return DS_ERR_ITER;
-
-    Status st;
-
-    if (qli_length(iter->target) == 1)
-    {
-        *result = iter->cursor->data;
-
-        st = qli_free_node_shallow(&(iter->cursor));
-
-        if (st != DS_OK)
-            return st;
-
-        iter->cursor = NULL;
-
-        iter->target->front = NULL;
-        iter->target->rear = NULL;
-    }
-    else
-    {
-        QueueListNode node = iter->cursor->prev;
-
-        *result = node->data;
-
-        iter->cursor->prev = node->prev;
-
-        st = qli_free_node_shallow(&node);
-
-        if (st != DS_OK)
-            return st;
-    }
-
-    iter->target->length--;
-
-    iter->target->version_id++;
-    iter->target_id++;
-
-    return DS_OK;
-}
-
-void *qli_iter_peek_next(QueueListIterator iter)
-{
-    if (iter == NULL)
-        return NULL;
-
-    if (qli_iter_invalid_state(iter))
-        return NULL;
-
     if (qli_iter_target_modified(iter))
         return NULL;
 
@@ -1113,14 +1036,13 @@ void *qli_iter_peek_next(QueueListIterator iter)
     return iter->cursor->prev->data;
 }
 
-void *qli_iter_peek(QueueListIterator iter)
+///
+/// \param[in] iter
+///
+/// \return
+void *
+qli_iter_peek(QueueListIterator_t *iter)
 {
-    if (iter == NULL)
-        return NULL;
-
-    if (qli_iter_invalid_state(iter))
-        return NULL;
-
     if (qli_iter_target_modified(iter))
         return NULL;
 
@@ -1129,14 +1051,16 @@ void *qli_iter_peek(QueueListIterator iter)
 
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
-static bool qli_iter_target_modified(QueueListIterator iter)
+static bool
+qli_iter_target_modified(QueueListIterator_t *iter)
 {
     return iter->target_id != iter->target->version_id;
 }
 
-static bool qli_iter_invalid_state(QueueListIterator iter)
-{
-    return iter->cursor == NULL || iter->target == NULL;
-}
-
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////// Wrapper ///
+///////////////////////////////////////////////////////////////////////////////
+
+/// \todo QueueListWrapper

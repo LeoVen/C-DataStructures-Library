@@ -35,6 +35,10 @@ typedef struct QueueArray_s QueueArray_t;
 /// all must be dynamically allocated.
 typedef struct QueueArray_s *QueueArray;
 
+/// \ref qar_size
+/// \brief The size of a QueueArray_s in bytes.
+extern const unsigned_t qar_size;
+
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 /// \ref qar_new
@@ -127,7 +131,7 @@ bool
 qar_dequeue(QueueArray_t *queue, void **result);
 
 /// \ref qar_peek_front
-/// \brief Returns oldest element in the specified queue.
+/// \brief Returns the oldest element in the specified queue.
 void *
 qar_peek_front(QueueArray_t *queue);
 
@@ -156,6 +160,11 @@ qar_fits(QueueArray_t *queue, unsigned_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
+/// \ref qar_contains
+/// \brief Returns true if an elements is present in the specified queue.
+bool
+qar_contains(QueueArray_t *queue, void *key);
+
 /// \ref qar_copy
 /// \brief Returns a copy of the specified queue.
 QueueArray_t *
@@ -170,6 +179,11 @@ qar_copy_shallow(QueueArray_t *queue);
 /// \brief Compares two queues returning an int according to \ref compare_f.
 int
 qar_compare(QueueArray_t *queue1, QueueArray_t *queue2);
+
+/// \ref qar_append
+/// \brief Appends one queue at the back of the other.
+bool
+qar_append(QueueArray_t *queue1, QueueArray_t *queue2);
 
 /// \ref qar_to_array
 /// \brief Makes a copy of the queue as a C array.

@@ -70,6 +70,10 @@ struct StackArray_s
     integer_t version_id;
 };
 
+/// This can be used together with VLAs to allocate the structure on the stack
+/// instead of a heap allocation.
+const unsigned_t sta_size = sizeof(StackArray_t);
+
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 bool
@@ -468,6 +472,8 @@ sta_fits(StackArray_t *stack, integer_t size)
 }
 
 /// Returns true if the element is present in the stack, otherwise false.
+/// \par Interface Requirements
+/// - compare
 ///
 /// \param[in] stack StackArray_s reference.
 /// \param[in] key Key to be matched.
@@ -584,6 +590,8 @@ sta_compare(StackArray_t *stack1, StackArray_t *stack2)
 /// Stacks the \c stack2 on top of the \c stack1, emptying the \c stack2. Both
 /// stacks need to have been initialized. If both stacks are empty nothing will
 /// happen.
+/// \par Interface Requirements
+/// - None
 ///
 /// \param[in] stack1 Stack to receive elements.
 /// \param[in] stack2 Stack where the elements are going to be taken from.
