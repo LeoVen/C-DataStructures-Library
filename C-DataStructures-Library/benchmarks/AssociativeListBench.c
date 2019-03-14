@@ -6,6 +6,7 @@
  * @date 08/02/2018
  */
 
+#include <inttypes.h>
 #include "AssociativeList.h"
 #include "Clock.h"
 #include "Utility.h"
@@ -130,8 +131,8 @@ ali_bench_IO(unsigned_t elements, unsigned_t iterations, bool duplicate_keys)
     free(keys);
 
     printf("+--------------------------------------------------+\n");
-    printf("  Total elements added   : %llu\n", elements);
-    printf("  Total iterations       : %llu\n", iterations);
+    printf("  Total elements added   : %" PRIuMAX "\n", elements);
+    printf("  Total iterations       : %" PRIuMAX "\n", iterations);
     printf("  Duplicate Keys         : %s\n", duplicate_keys ? "YES" : "NO");
     printf("+--------------------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);

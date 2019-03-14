@@ -6,6 +6,7 @@
  * @date 20/12/2018
  */
 
+#include <inttypes.h>
 #include "AVLTree.h"
 #include "Clock.h"
 #include "Utility.h"
@@ -120,8 +121,8 @@ avl_bench_IO(unsigned_t elements, unsigned_t iterations)
     free(removal_timings);
 
     printf("+--------------------------------------------------+\n");
-    printf("  Total elements added   : %llu\n", elements);
-    printf("  Total iterations       : %llu\n", iterations);
+    printf("  Total elements added   : %" PRIuMAX "\n", elements);
+    printf("  Total iterations       : %" PRIuMAX "\n", iterations);
     printf("+--------------------------------------------------+\n");
     printf("  Average insertion time : %lf seconds\n", insertion_sum / (double)iterations);
     printf("  Average removal time   : %lf seconds\n", removal_sum / (double)iterations);
