@@ -22,7 +22,7 @@ void dqa_test_linear_insertion_rear(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    DequeArray deque = dqa_create(16, 200, int_interface);
+    DequeArray_t *deque = dqa_create(int_interface, 16, 200);
 
     if (!deque)
         goto error;
@@ -42,9 +42,6 @@ void dqa_test_linear_insertion_rear(UnitTest ut)
             goto error;
         }
     }
-
-    // size after all insertions
-    integer_t size = dqa_size(deque);
 
     int sum = 0;
     while (!dqa_empty(deque))
@@ -75,6 +72,7 @@ void dqa_test_linear_insertion_rear(UnitTest ut)
     dqa_free(deque);
     interface_free(int_interface);
 }
+
 // Tests dqa_grow() in linear insertions
 // Tests while (!empty) loop
 // Sum of dequeued contents should equal to the known result (500500)
@@ -87,7 +85,7 @@ void dqa_test_linear_insertion_front(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    DequeArray deque = dqa_create(16, 200, int_interface);
+    DequeArray_t *deque = dqa_create(int_interface, 16, 200);
 
     if (!deque)
         goto error;
@@ -107,9 +105,6 @@ void dqa_test_linear_insertion_front(UnitTest ut)
             goto error;
         }
     }
-
-    // size after all insertions
-    integer_t size = dqa_size(deque);
 
     int sum = 0;
     while (!dqa_empty(deque))
@@ -151,7 +146,7 @@ void dqa_test_locked(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    DequeArray deque = dqa_create(16, 200, int_interface);
+    DequeArray_t *deque = dqa_create(int_interface, 16, 200);
 
     if (!deque)
         goto error;
@@ -179,7 +174,7 @@ void dqa_test_locked(UnitTest ut)
             free(element);
     }
 
-    integer_t size = dqa_size(deque);
+    integer_t size = dqa_count(deque);
 
     ut_equals_bool(ut, success, false, __func__);
     ut_equals_integer_t(ut, size, 16, __func__);
@@ -195,7 +190,7 @@ void dqa_test_locked(UnitTest ut)
         goto error;
     }
 
-    ut_equals_integer_t(ut, dqa_size(deque), 17, __func__);
+    ut_equals_integer_t(ut, dqa_count(deque), 17, __func__);
 
     // 16 is removed
     success = dqa_dequeue_front(deque, &element);
@@ -240,7 +235,7 @@ void dqa_test_intensive(UnitTest ut)
         goto error;
 
     // in case I ever change the default initial capacity
-    DequeArray deque = dqa_create(16, 200, int_interface);
+    DequeArray_t *deque = dqa_create(int_interface, 16, 200);
 
     if (!deque)
         goto error;
@@ -327,7 +322,7 @@ void dqa_test_growth(UnitTest ut)
     if (!int_interface)
         goto error;
 
-    DequeArray deque = dqa_create(60, 250, int_interface);
+    DequeArray_t *deque = dqa_create(int_interface, 60, 250);
 
     if (!deque)
         goto error;

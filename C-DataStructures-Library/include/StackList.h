@@ -48,7 +48,7 @@ stl_new(Interface_t *interface);
 
 /// \ref stl_init
 /// \brief Initializes a new StackList_s allocated on the stack.
-void
+bool
 stl_init(StackList_t *stack, Interface_t *interface);
 
 /// \ref stl_free

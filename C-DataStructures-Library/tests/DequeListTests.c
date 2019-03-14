@@ -11,18 +11,17 @@
 #include "Utility.h"
 
 // Tests limit functionality
-Status dql_test_limit(UnitTest ut)
+void dql_test_limit(UnitTest ut)
 {
-    DequeList deque;
+    Interface_t int_interface;
+    interface_init(&int_interface, compare_int32_t, copy_int32_t,
+                   display_int32_t, free, NULL, NULL);
 
-    Status st = dql_create(&deque, compare_int32_t, copy_int32_t, display_int32_t, free);
+    uint8_t dql_storage[dql_size];
+    DequeList_t *deque = (DequeList_t*)&dql_storage[0];
+    dql_init(deque, &int_interface);
 
-    if (st != DS_OK)
-        return st;
-
-    st = dql_set_limit(deque, 10);
-
-    if (st != DS_OK)
+    if (!dql_set_limit(deque, 10))
         goto error;
 
     void *elem;
@@ -30,35 +29,31 @@ Status dql_test_limit(UnitTest ut)
     {
         elem = new_int32_t(i);
 
-        st = dql_enqueue_rear(deque, elem);
-
-        if (st == DS_ERR_FULL)
+        if (!dql_enqueue_rear(deque, elem))
         {
             free(elem);
         }
     }
 
-    ut_equals_int(ut, st, DS_ERR_FULL, __func__);
-    ut_equals_integer_t(ut, dql_length(deque), dql_limit(deque), __func__);
-    ut_equals_int(ut, dql_set_limit(deque, 9), DS_ERR_INVALID_OPERATION, __func__);
+    ut_equals_integer_t(ut, dql_count(deque), dql_limit(deque), __func__);
+    ut_equals_bool(ut, dql_set_limit(deque, 9), false, __func__);
 
     int *t = new_int32_t(1);
-    ut_equals_int(ut, dql_enqueue_front(deque, t), DS_ERR_FULL, __func__);
-    ut_equals_int(ut, dql_enqueue_rear(deque, t), DS_ERR_FULL, __func__);
+    ut_equals_bool(ut, dql_enqueue_front(deque, t), false, __func__);
+    ut_equals_bool(ut, dql_enqueue_rear(deque, t), false, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, dql_set_limit(deque, 0), DS_OK, __func__);
+    ut_equals_bool(ut, dql_set_limit(deque, 0), true, __func__);
     ut_equals_integer_t(ut, dql_limit(deque), 0, __func__);
-    ut_equals_int(ut, dql_enqueue_front(deque, t), DS_OK, __func__);
+    ut_equals_bool(ut, dql_enqueue_front(deque, t), true, __func__);
 
-    dql_free(&deque);
+    dql_erase(deque);
 
-    return DS_OK;
+    return;
 
     error:
     printf("Error at %s\n", __func__);
-    dql_free(&deque);
-    return st;
+    dql_erase(deque);
 }
 
 // Runs all DequeList tests
@@ -71,10 +66,7 @@ Status DequeListTests(void)
     if (st != DS_OK)
         goto error;
 
-    st += dql_test_limit(ut);
-
-    if (st != DS_OK)
-        goto error;
+    dql_test_limit(ut);
 
     ut_report(ut, "DequeList");
 

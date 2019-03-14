@@ -48,7 +48,7 @@ qli_new(Interface_t *interface);
 
 /// \ref qli_init
 /// \brief Initializes a new QueueList_s on the stack.
-void
+bool
 qli_init(QueueList_t *queue, Interface_t *interface);
 
 /// \ref qli_free

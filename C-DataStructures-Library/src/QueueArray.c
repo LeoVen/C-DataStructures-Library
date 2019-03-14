@@ -144,6 +144,46 @@ qar_new(Interface_t *interface)
     return queue;
 }
 
+/// Initializes a queue allocated on the stack with a given interface, initial
+/// capacity and growth rate.
+///
+/// \param[in] queue The queue to be initialized.
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
+/// \param[in] interface An interface defining all necessary functions for the
+/// deque to operate.
+///
+/// \return True if the queue was successfully initialized or false if the
+/// growth rate is less than 101, if the initial capacity is 0 or if allocation
+/// failed.
+bool
+qar_init(QueueArray_t *queue, Interface_t *interface,
+         integer_t initial_capacity, integer_t growth_rate)
+{
+    if (growth_rate <= 100 || initial_capacity <= 0)
+        return false;
+
+    queue->buffer = malloc(sizeof(void*) * 32);
+
+    if (!(queue->buffer))
+        return false;
+
+    for (integer_t i = 0; i < 32; i++)
+        queue->buffer[i] = NULL;
+
+    queue->capacity = initial_capacity;
+    queue->growth_rate = growth_rate;
+    queue->version_id = 0;
+    queue->count = 0;
+    queue->front = 0;
+    queue->rear = 0;
+    queue->locked = false;
+
+    queue->interface = interface;
+
+    return true;
+}
+
 /// Initializes a QueueArray_s with a user defined \c initial_capacity and \c
 /// growth_rate. This function only accepts an \c initial_capacity greater than
 /// 0 and a \c growth_rate greater than 100; but keep in mind that in some
@@ -723,7 +763,7 @@ qar_display(QueueArray_t *queue, int display_mode)
         case -1:
             printf("\nQueueArray\n");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->count - 1;
+                 j < queue->count;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);
@@ -747,7 +787,7 @@ qar_display(QueueArray_t *queue, int display_mode)
         case 1:
             printf("\nQueueArray\n");
             for (integer_t i = queue->front, j = 0;
-                 j < queue->count - 1;
+                 j < queue->count;
                  i = (i + 1) % queue->capacity, j++)
             {
                 queue->interface->display(queue->buffer[i]);

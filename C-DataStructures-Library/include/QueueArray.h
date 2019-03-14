@@ -46,6 +46,12 @@ extern const unsigned_t qar_size;
 QueueArray_t *
 qar_new(Interface_t *interface);
 
+/// \ref qar_init
+/// \brief Initializes a new QueueArray_s on the stack.
+bool
+qar_init(QueueArray_t *queue, Interface_t *interface,
+         integer_t initial_capacity, integer_t growth_rate);
+
 /// \ref qar_create
 /// \brief Initializes a new QueueArray_s with custom parameters.
 QueueArray_t *

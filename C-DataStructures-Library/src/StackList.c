@@ -173,7 +173,9 @@ stl_new(Interface_t *interface)
 /// \param[in,out] stack The stack allocated on the stack to be initialized.
 /// \param[in] interface An interface defining all necessary functions for the
 /// stack to operate.
-void
+///
+/// \return True if all operations were successful.
+bool
 stl_init(StackList_t *stack, Interface_t *interface)
 {
     stack->count = 0;
@@ -181,6 +183,8 @@ stl_init(StackList_t *stack, Interface_t *interface)
     stack->version_id = 0;
     stack->top = NULL;
     stack->interface = interface;
+
+    return true;
 }
 
 /// Iterates through every node of the stack and frees them from memory along

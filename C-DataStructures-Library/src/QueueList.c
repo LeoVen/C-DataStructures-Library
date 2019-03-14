@@ -181,7 +181,9 @@ qli_new(Interface_t *interface)
 /// \param[in,out] queue The queue allocated on the stack to be initialized.
 /// \param[in] interface An interface defining all necessary functions for the
 /// queue to operate.
-void
+///
+/// \return True if all operations were successful.
+bool
 qli_init(QueueList_t *queue, Interface_t *interface)
 {
     queue->count = 0;
@@ -190,6 +192,8 @@ qli_init(QueueList_t *queue, Interface_t *interface)
     queue->front = NULL;
     queue->rear = NULL;
     queue->interface = interface;
+
+    return true;
 }
 
 /// Frees each element at the queue using its interface's \c free and then

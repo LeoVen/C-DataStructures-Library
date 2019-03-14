@@ -46,6 +46,12 @@ extern const unsigned_t sta_size;
 StackArray_t *
 sta_new(Interface_t *interface);
 
+/// \ref sta_init
+/// \brief Initializes a new StackArray_s on the stack.
+bool
+sta_init(StackArray_t *stack, Interface_t *interface,
+         integer_t initial_capacity, integer_t growth_rate);
+
 /// \ref sta_create
 /// \brief Initializes a new StackArray_s with custom parameters.
 StackArray_t *

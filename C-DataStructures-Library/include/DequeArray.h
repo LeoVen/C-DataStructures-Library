@@ -35,6 +35,10 @@ typedef struct DequeArray_s DequeArray_t;
 /// all must be dynamically allocated.
 typedef struct DequeArray_s *DequeArray;
 
+/// \ref dqa_size
+/// \brief The size of a DequeArray_s in bytes.
+extern const unsigned_t dqa_size;
+
 ///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
 
 /// \ref dqa_new
@@ -42,11 +46,17 @@ typedef struct DequeArray_s *DequeArray;
 DequeArray_t *
 dqa_new(Interface_t *interface);
 
+/// \ref dqa_init
+/// \brief Initializes a new DequeArray_s on the stack.
+bool
+dqa_init(DequeArray_t *deque, Interface_t *interface,
+         integer_t initial_capacity, integer_t growth_rate);
+
 /// \ref dqa_create
 /// \brief Initializes a new DequeArray_s with custom parameters.
 DequeArray_t *
-dqa_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface);
+dqa_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate);
 
 /// \ref dqa_free
 /// \brief Frees from memory a DequeArray_s and its elements.
@@ -59,9 +69,14 @@ void
 dqa_free_shallow(DequeArray_t *deque);
 
 /// \ref dqa_erase
-/// \brief Frees from memory all elements of a DequeArray_s.
-bool
+/// \brief Resets the DequeArray_s freeing all its elements.
+void
 dqa_erase(DequeArray_t *deque);
+
+/// \ref dqa_erase_shallow
+/// \brief Resets the DequeArray_s without freeing its elements.
+void
+dqa_erase_shallow(DequeArray_t *deque);
 
 //////////////////////////////////////////////////////////// CONFIGURATIONS ///
 
@@ -72,10 +87,10 @@ dqa_config(DequeArray_t *deque, Interface_t *new_interface);
 
 /////////////////////////////////////////////////////////////////// GETTERS ///
 
-/// \ref dqa_size
+/// \ref dqa_count
 /// \brief Returns the amount of elements in the specified deque.
 integer_t
-dqa_size(DequeArray_t *deque);
+dqa_count(DequeArray_t *deque);
 
 /// \ref dqa_capacity
 /// \brief Returns the total buffer capacity of the specified deque.
@@ -112,32 +127,32 @@ dqa_capacity_unlock(DequeArray_t *deque);
 ////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
 
 /// \ref dqa_enqueue_front
-/// \brief Adds an element at the front of the specified deque.
+/// \brief Inserts an element at the front of the specified deque.
 bool
 dqa_enqueue_front(DequeArray_t *deque, void *element);
 
 /// \ref dqa_enqueue_rear
-/// \brief Adds an element at the rear of the specified deque.
+/// \brief Inserts an element at the rear of the specified deque.
 bool
 dqa_enqueue_rear(DequeArray_t *deque, void *element);
 
 /// \ref dqa_dequeue_front
-/// \brief Removes and element at the front of the specified deque.
+/// \brief Removes an element from the front of the specified deque.
 bool
 dqa_dequeue_front(DequeArray_t *deque, void **result);
 
 /// \ref dqa_dequeue_rear
-/// \brief Removes and element at the rear of the specified deque.
+/// \brief Removes an element from the rear of the specified deque.
 bool
 dqa_dequeue_rear(DequeArray_t *deque, void **result);
 
 /// \ref dqa_peek_front
-/// \brief Returns the element at the front of the deque.
+/// \brief Returns the front element in the specified deque.
 void *
 dqa_peek_front(DequeArray_t *deque);
 
 /// \ref dqa_peek_rear
-/// \brief Returns the element at the rear of the deque.
+/// \brief Returns the rear element in the specified deque.
 void *
 dqa_peek_rear(DequeArray_t *deque);
 
@@ -158,6 +173,11 @@ bool dqa_fits(DequeArray_t *deque, unsigned_t size);
 
 /////////////////////////////////////////////////////////////////// UTILITY ///
 
+/// \ref dqa_contains
+/// \brief Returns true if an elements is present in the specified deque.
+bool
+dqa_contains(DequeArray_t *deque, void *key);
+
 /// \ref dqa_copy
 /// \brief Returns a copy of the specified deque.
 DequeArray_t *
@@ -172,6 +192,16 @@ dqa_copy_shallow(DequeArray_t *deque);
 /// \brief Compares two deques returning an int according to \ref compare_f.
 int
 dqa_compare(DequeArray_t *deque1, DequeArray_t *deque2);
+
+/// \ref dqa_append
+/// \brief Appends deque2 at the rear of deque1.
+bool
+dqa_append(DequeArray_t *deque1, DequeArray_t *deque2);
+
+/// \ref dqa_prepend
+/// \brief Prepends deque2 at the front of deque1.
+bool
+dqa_prepend(DequeArray_t *deque1, DequeArray_t *deque2);
 
 /// \ref dqa_to_array
 /// \brief Makes a copy of the deque as a C array.

@@ -27,7 +27,6 @@
 /// - When the buffer is reallocated some items might need to be shifted
 ///
 /// \par Functions
-///
 /// Located in the file DequeArray.c
 struct DequeArray_s
 {
@@ -46,14 +45,14 @@ struct DequeArray_s
     /// An index that represents the back of the deque.
     integer_t rear;
 
-    /// \brief Current amount of elements in the \c QueueArray.
+    /// \brief Current amount of elements in the DequeArray_s.
     ///
-    /// Current amount of elements in the \c QueueArray.
-    integer_t size;
+    /// Current amount of elements in the DequeArray_s.
+    integer_t count;
 
     /// \brief \c QueueArray buffer maximum capacity.
     ///
-    /// Buffer maximum capacity. When \c size reaches \c capacity the buffer is
+    /// Buffer maximum capacity. When \c count reaches \c capacity the buffer is
     /// reallocated and increases according to \c growth_rate.
     integer_t capacity;
 
@@ -85,15 +84,19 @@ struct DequeArray_s
     integer_t version_id;
 };
 
+/// This can be used together with VLAs to allocate the structure on the stack
+/// instead of a heap allocation.
+const unsigned_t dqa_size = sizeof(DequeArray_t);
+
 ///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
 
 bool
-static dqa_grow(DequeArray dqa);
+static dqa_grow(DequeArray_t *deque);
 
 ////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 /// Initializes a DequeArray_s with an initial capacity of 32 and a growth rate
-/// of 200, that is, twice the size after each growth.
+/// of 200, that is, twice the count after each growth.
 /// \par Interface Requirements
 /// - None
 ///
@@ -123,7 +126,7 @@ dqa_new(Interface_t *interface)
     deque->capacity = 32;
     deque->growth_rate = 200;
     deque->version_id = 0;
-    deque->size = 0;
+    deque->count = 0;
     deque->front = 0;
     deque->rear = 0;
     deque->locked = false;
@@ -131,6 +134,42 @@ dqa_new(Interface_t *interface)
     deque->interface = interface;
 
     return deque;
+}
+
+/// Initializes a deque allocated on the stack with a given interface, initial
+/// capacity and growth rate.
+///
+/// \param[in] deque The deque to be initialized.
+/// \param[in] initial_capacity Buffer initial capacity.
+/// \param[in] growth_rate Buffer growth rate.
+/// \param[in] interface An interface defining all necessary functions for the
+/// deque to operate.
+///
+/// \return True if the deque was successfully initialized or false if the
+/// growth rate is less than 101, if the initial capacity is 0 or if allocation
+/// failed.
+bool
+dqa_init(DequeArray_t *deque, Interface_t *interface,
+         integer_t initial_capacity, integer_t growth_rate)
+{
+    if (growth_rate <= 100 || initial_capacity <= 0)
+        return false;
+
+    deque->buffer = malloc(sizeof(void*) * (size_t)initial_capacity);
+
+    if (!deque->buffer)
+        return false;
+
+    deque->capacity = initial_capacity;
+    deque->growth_rate = growth_rate;
+    deque->version_id = 0;
+    deque->count = 0;
+    deque->front = 0;
+    deque->rear = 0;
+    deque->locked = false;
+    deque->interface = interface;
+
+    return true;
 }
 
 /// Initializes a DequeArray_s with a user defined \c initial_capacity and \c
@@ -151,8 +190,8 @@ dqa_new(Interface_t *interface)
 /// is 0 or if allocation failed.
 /// \return A new DequeArray_s dynamically allocated.
 DequeArray_t *
-dqa_create(integer_t initial_capacity, integer_t growth_rate,
-           Interface_t *interface)
+dqa_create(Interface_t *interface, integer_t initial_capacity,
+           integer_t growth_rate)
 {
     if (growth_rate <= 100 || initial_capacity <= 0)
         return NULL;
@@ -176,7 +215,7 @@ dqa_create(integer_t initial_capacity, integer_t growth_rate,
     deque->capacity = initial_capacity;
     deque->growth_rate = growth_rate;
     deque->version_id = 0;
-    deque->size = 0;
+    deque->count = 0;
     deque->front = 0;
     deque->rear = 0;
     deque->locked = false;
@@ -196,7 +235,7 @@ void
 dqa_free(DequeArray_t *deque)
 {
     for (integer_t i = deque->front, j = 0;
-         j < deque->size;
+         j < deque->count;
          i = (i + 1) % deque->capacity, j++)
     {
         deque->interface->free(deque->buffer[i]);
@@ -222,19 +261,18 @@ dqa_free_shallow(DequeArray_t *deque)
     free(deque);
 }
 
-/// This function will free all the elements of the specified DequeArray_s and
-/// will keep the structure intact.
+/// This function will reset the DequeArray_s, freeing all of its nodes along
+/// with its elements, keeping the structure intact including its original
+/// interface.
 /// \par Interface Requirements
 /// - free
 ///
 /// \param[in] deque The deque to have its elements erased.
-///
-/// \return True if all operations were successful.
-bool
+void
 dqa_erase(DequeArray_t *deque)
 {
     for (integer_t i = deque->front, j = 0;
-         j < deque->size;
+         j < deque->count;
          i = (i + 1) % deque->capacity, j++)
     {
         deque->interface->free(deque->buffer[i]);
@@ -242,7 +280,33 @@ dqa_erase(DequeArray_t *deque)
         deque->buffer[i] = NULL;
     }
 
-    return true;
+    deque->count = 0;
+    deque->front = 0;
+    deque->rear = 0;
+    deque->version_id++;
+}
+
+/// This function will reset the DequeArray_s, freeing all of its nodes but not
+/// its elements, keeping the structure intact including its original
+/// interface.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque The deque to have its nodes erased.
+void
+dqa_erase_shallow(DequeArray_t *deque)
+{
+    for (integer_t i = deque->front, j = 0;
+         j < deque->count;
+         i = (i + 1) % deque->capacity, j++)
+    {
+        deque->buffer[i] = NULL;
+    }
+
+    deque->count = 0;
+    deque->front = 0;
+    deque->rear = 0;
+    deque->version_id++;
 }
 
 /// Sets a new interface for the specified DequeArray_s.
@@ -265,9 +329,9 @@ dqa_config(DequeArray_t *deque, Interface_t *new_interface)
 ///
 /// \return The amount of elements in the deque.
 integer_t
-dqa_size(DequeArray_t *deque)
+dqa_count(DequeArray_t *deque)
 {
-    return deque->size;
+    return deque->count;
 }
 
 /// Returns the current buffer's size of the specified deque.
@@ -371,7 +435,7 @@ dqa_enqueue_front(DequeArray_t *deque, void *element)
 
     deque->buffer[deque->front] = element;
 
-    deque->size++;
+    deque->count++;
     deque->version_id++;
 
     return true;
@@ -399,7 +463,7 @@ dqa_enqueue_rear(DequeArray_t *deque, void *element)
 
     deque->rear = (deque->rear == deque->capacity - 1) ? 0 : deque->rear + 1;
 
-    deque->size++;
+    deque->count++;
     deque->version_id++;
 
     return true;
@@ -428,7 +492,7 @@ dqa_dequeue_front(DequeArray_t *deque, void **result)
 
     deque->front = (deque->front == deque->capacity - 1) ? 0 : deque->front +1;
 
-    deque->size--;
+    deque->count--;
     deque->version_id++;
 
     return true;
@@ -457,7 +521,7 @@ dqa_dequeue_rear(DequeArray_t *deque, void **result)
 
     deque->buffer[deque->rear] = NULL;
 
-    deque->size--;
+    deque->count--;
     deque->version_id++;
 
     return true;
@@ -504,7 +568,7 @@ dqa_peek_rear(DequeArray_t *deque)
 bool
 dqa_empty(DequeArray_t *deque)
 {
-    return deque->size == 0;
+    return deque->count == 0;
 }
 
 /// Returns true if the current amount of elements in the deque is the same as
@@ -518,7 +582,7 @@ dqa_empty(DequeArray_t *deque)
 bool
 dqa_full(DequeArray_t *deque)
 {
-    return deque->size == deque->capacity;
+    return deque->count == deque->capacity;
 }
 
 /// Returns true if the specified size will fit in the deque's buffer without
@@ -532,7 +596,29 @@ dqa_full(DequeArray_t *deque)
 bool
 dqa_fits(DequeArray_t *deque, unsigned_t size)
 {
-    return (deque->size + size) <= deque->capacity;
+    return (deque->count + size) <= deque->capacity;
+}
+
+/// Returns true if the element is present in the deque, otherwise false.
+/// \par Interface Requirements
+/// - compare
+///
+/// \param[in] deque DequeArray_s reference.
+/// \param[in] key Key to be matched.
+///
+/// \return True if the element is present in the deque, otherwise false.
+bool
+dqa_contains(DequeArray_t *deque, void *key)
+{
+    for (integer_t i = deque->front, j = 0;
+         j < deque->count;
+         i = (i + 1) % deque->capacity, j++)
+    {
+        if (deque->interface->compare(deque->buffer[i], key) == 0)
+            return true;
+    }
+
+    return false;
 }
 
 /// Returns a copy of the specified DequeArray_s with the same interface. All
@@ -546,13 +632,14 @@ dqa_fits(DequeArray_t *deque, unsigned_t size)
 DequeArray_t *
 dqa_copy(DequeArray_t *deque)
 {
-    DequeArray_t *new_deque = dqa_create(deque->capacity, deque->growth_rate,
-                                         deque->interface);
+    DequeArray_t *new_deque = dqa_create(deque->interface, deque->capacity,
+                                         deque->growth_rate);
 
     if (!new_deque)
         return NULL;
 
-    for (integer_t i = deque->front, j = 0; j < deque->size - 1;
+    for (integer_t i = deque->front, j = 0;
+         j < deque->count;
          i = (i + 1) % deque->capacity, j++)
     {
         new_deque->buffer[i] = deque->interface->copy(deque->buffer[i]);
@@ -560,7 +647,7 @@ dqa_copy(DequeArray_t *deque)
 
     new_deque->front = deque->front;
     new_deque->rear = deque->rear;
-    new_deque->size = deque->size;
+    new_deque->count = deque->count;
     new_deque->locked = deque->locked;
 
     return new_deque;
@@ -577,13 +664,14 @@ dqa_copy(DequeArray_t *deque)
 DequeArray_t *
 dqa_copy_shallow(DequeArray_t *deque)
 {
-    DequeArray_t *new_deque = dqa_create(deque->capacity, deque->growth_rate,
-                                         deque->interface);
+    DequeArray_t *new_deque = dqa_create(deque->interface, deque->capacity,
+                                         deque->growth_rate);
 
     if (!new_deque)
         return NULL;
 
-    for (integer_t i = deque->front, j = 0; j < deque->size - 1;
+    for (integer_t i = deque->front, j = 0;
+         j < deque->count;
          i = (i + 1) % deque->capacity, j++)
     {
         new_deque->buffer[i] = deque->buffer[i];
@@ -591,7 +679,7 @@ dqa_copy_shallow(DequeArray_t *deque)
 
     new_deque->front = deque->front;
     new_deque->rear = deque->rear;
-    new_deque->size = deque->size;
+    new_deque->count = deque->count;
     new_deque->locked = deque->locked;
 
     return new_deque;
@@ -600,7 +688,7 @@ dqa_copy_shallow(DequeArray_t *deque)
 /// Makes a comparison between two deques element by element. If one deque has
 /// less elements than the other the comparison of elements will go up until
 /// one deque reaches its limit. If all elements are the same until then, the
-/// tie breaker goes to their size. If it is also the same, then both deques
+/// tie breaker goes to their count. If it is also the same, then both deques
 /// are equal.
 /// \par Interface Requirements
 /// - compare
@@ -612,12 +700,12 @@ dqa_copy_shallow(DequeArray_t *deque)
 int
 dqa_compare(DequeArray_t *deque1, DequeArray_t *deque2)
 {
-    integer_t max_size = deque1->size < deque2->size
-                         ? deque1->size
-                         : deque2->size;
+    integer_t max_count = deque1->count < deque2->count
+                         ? deque1->count
+                         : deque2->count;
 
     int comparison = 0;
-    for (integer_t i = 0; i < max_size; i++)
+    for (integer_t i = 0; i < max_count; i++)
     {
         // Since its a circular buffer we need to calculate where the ith
         // element of each queue is.
@@ -631,12 +719,44 @@ dqa_compare(DequeArray_t *deque1, DequeArray_t *deque2)
     }
 
     // So far all elements were the same
-    if (deque1->size > deque2->size)
+    if (deque1->count > deque2->count)
         return 1;
-    else if (deque1->size < deque2->size)
+    else if (deque1->count < deque2->count)
         return -1;
 
     return 0;
+}
+
+/// Appends \c deque2 at the rear of \c deque1, emptying deque2. Both deques
+/// need to have been initialized.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque1 Deque to receive elements.
+/// \param[in] deque2 Deque where the elements are going to be taken from.
+///
+/// \return True if all operations were successful, otherwise false.
+bool
+dqa_append(DequeArray_t *deque1, DequeArray_t *deque2)
+{
+    /// \todo dqa_append
+    return true;
+}
+
+/// Prepends \c deque2 at the front of \c deque1, emptying deque2. Both deques
+/// need to have been initialized.
+/// \par Interface Requirements
+/// - None
+///
+/// \param[in] deque1 Deque to receive elements.
+/// \param[in] deque2 Deque where the elements are going to be taken from.
+///
+/// \return True if all operations were successful, otherwise false.
+bool
+dqa_prepend(DequeArray_t *deque1, DequeArray_t *deque2)
+{
+    /// \todo dqa_prepend
+    return true;
 }
 
 /// Makes a copy of all the elements in the deque to a C array starting from
@@ -655,19 +775,19 @@ dqa_to_array(DequeArray_t *deque, integer_t *length)
     if (dqa_empty(deque))
         return NULL;
 
-    void **array = malloc(sizeof(void*) * (size_t)deque->size);
+    void **array = malloc(sizeof(void*) * (size_t)deque->count);
 
     if (!array)
         return NULL;
 
     for (integer_t i = deque->front, j = 0;
-         j < deque->size;
+         j < deque->count;
          i = (i + 1) % deque->capacity, j++)
     {
         array[i] = deque->interface->copy(deque->buffer[i]);
     }
 
-    *length = deque->size;
+    *length = deque->count;
 
     return array;
 }
@@ -697,7 +817,7 @@ dqa_display(DequeArray_t *deque, int display_mode)
         case -1:
             printf("\nDequeArray\n");
             for (integer_t i = deque->front, j = 0;
-                 j < deque->size - 1;
+                 j < deque->count;
                  i = (i + 1) % deque->capacity, j++)
             {
                 deque->interface->display(deque->buffer[i]);
@@ -707,7 +827,7 @@ dqa_display(DequeArray_t *deque, int display_mode)
         case 0:
             printf("\nDequeArray\nFront <-> ");
             for (integer_t i = deque->front, j = 0;
-                 j < deque->size - 1;
+                 j < deque->count - 1;
                  i = (i + 1) % deque->capacity, j++)
             {
                 deque->interface->display(deque->buffer[i]);
@@ -721,7 +841,7 @@ dqa_display(DequeArray_t *deque, int display_mode)
         case 1:
             printf("\nDequeArray\n");
             for (integer_t i = deque->front, j = 0;
-                 j < deque->size - 1;
+                 j < deque->count;
                  i = (i + 1) % deque->capacity, j++)
             {
                 deque->interface->display(deque->buffer[i]);
@@ -732,7 +852,7 @@ dqa_display(DequeArray_t *deque, int display_mode)
         default:
             printf("\nDequeArray\n[ ");
             for (integer_t i = deque->front, j = 0;
-                 j < deque->size - 1;
+                 j < deque->count - 1;
                  i = (i + 1) % deque->capacity, j++)
             {
                 deque->interface->display(deque->buffer[i]);
@@ -827,7 +947,7 @@ static dqa_grow(DequeArray_t *deque)
         deque->rear = old_capacity;
     }
     // This should never happen. This function should never be called when the
-    // buffer is not full (front == rear and size == capacity).
+    // buffer is not full (front == rear and count == capacity).
     else
         return false;
 
@@ -847,4 +967,3 @@ static dqa_grow(DequeArray_t *deque)
 ///////////////////////////////////////////////////////////////////////////////
 
 /// \todo DequeArrayWrapper
-
