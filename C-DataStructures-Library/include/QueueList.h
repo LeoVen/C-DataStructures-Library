@@ -62,7 +62,7 @@ void
 qli_free_shallow(QueueList_t *queue);
 
 /// \ref qli_erase
-/// \brief Frees from memory all elements of a QueueList_s.
+/// \brief Resets the QueueList_s freeing all its elements.
 void
 qli_erase(QueueList_t *queue);
 
@@ -160,7 +160,7 @@ int
 qli_compare(QueueList_t *queue1, QueueList_t *queue2);
 
 /// \ref qli_append
-/// \brief Appends one queue at the back of the other.
+/// \brief Appends queue2 at the back of queue1.
 bool
 qli_append(QueueList_t *queue1, QueueList_t *queue2);
 

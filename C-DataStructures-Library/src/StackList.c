@@ -440,8 +440,7 @@ stl_empty(StackList_t *stack)
 ///
 /// \param[in] stack StackList_s reference.
 ///
-/// \return True if the amount of elements in the stack have reached a limit
-/// (being greater than 0).
+/// \return True if the amount of elements in the stack have reached a limit.
 bool
 stl_full(StackList_t *stack)
 {
@@ -494,6 +493,7 @@ stl_contains(StackList_t *stack, void *key)
 /// elements are copied using the stack interface's copy function.
 /// \par Interface Requirements
 /// - copy
+/// - free
 ///
 /// \param[in] stack The stack to be copied.
 ///
@@ -515,11 +515,12 @@ stl_copy(StackList_t *stack)
 
     while (scan != NULL)
     {
-        copy = stl_new_node(stack->interface->copy(scan->data));
+        void *element = stack->interface->copy(scan->data);
+        copy = stl_new_node(element);
 
         if (!copy)
         {
-            stl_free_node(copy, stack->interface->free);
+            stack->interface->free(element);
             return false;
         }
 
@@ -779,6 +780,7 @@ stl_display(StackList_t *stack, int display_mode)
             {
                 stack->interface->display(scan->data);
                 printf(", ");
+                scan = scan->below;
             }
             stack->interface->display(scan->data);
             printf(" ]\n");

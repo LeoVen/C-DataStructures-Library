@@ -42,13 +42,13 @@ void stl_test_limit(UnitTest ut)
     // This gets freed later
     int *t = new_int32_t(1);
 
-    ut_equals_int(ut, stl_push(stack, t), false, __func__);
-    ut_equals_int(ut, stl_push(stack, t), false, __func__);
+    ut_equals_bool(ut, stl_push(stack, t), false, __func__);
+    ut_equals_bool(ut, stl_push(stack, t), false, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, stl_set_limit(stack, 0), true, __func__);
+    ut_equals_bool(ut, stl_set_limit(stack, 0), true, __func__);
     ut_equals_integer_t(ut, stl_limit(stack), 0, __func__);
-    ut_equals_int(ut, stl_push(stack, t), true, __func__);
+    ut_equals_bool(ut, stl_push(stack, t), true, __func__);
 
     stl_erase(stack);
     return;

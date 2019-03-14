@@ -40,12 +40,12 @@ void qli_test_limit(UnitTest ut)
     ut_equals_bool(ut, qli_set_limit(queue, 9), false, __func__);
 
     int *t = new_int32_t(1);
-    ut_equals_int(ut, qli_enqueue(queue, t), false, __func__);
+    ut_equals_bool(ut, qli_enqueue(queue, t), false, __func__);
 
     // Removes the limit
-    ut_equals_int(ut, qli_set_limit(queue, 0), true, __func__);
+    ut_equals_bool(ut, qli_set_limit(queue, 0), true, __func__);
     ut_equals_integer_t(ut, qli_limit(queue), 0, __func__);
-    ut_equals_int(ut, qli_enqueue(queue, t), true, __func__);
+    ut_equals_bool(ut, qli_enqueue(queue, t), true, __func__);
 
     qli_erase(queue);
 

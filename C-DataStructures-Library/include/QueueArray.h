@@ -63,7 +63,7 @@ void
 qar_free_shallow(QueueArray_t *queue);
 
 /// \ref qar_erase
-/// \brief Frees from memory all elements of a QueueArray_s.
+/// \brief Resets the QueueArray_s freeing all its elements.
 void
 qar_erase(QueueArray_t *queue);
 

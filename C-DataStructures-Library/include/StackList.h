@@ -155,7 +155,7 @@ int
 stl_compare(StackList_t *stack1, StackList_t *stack2);
 
 /// \ref stl_stack
-/// \brief StackLists one stack at the top of the other.
+/// \brief Stack stack2 on top of stack1.
 bool
 stl_stack(StackList_t *stack1, StackList_t *stack2);
 

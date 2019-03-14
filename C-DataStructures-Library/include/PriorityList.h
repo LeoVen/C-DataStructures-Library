@@ -53,12 +53,12 @@ void
 pli_free_shallow(PriorityList_t *plist);
 
 /// \ref pli_erase
-/// \brief Frees from memory all elements from a PriorityList_s.
+/// \brief Resets the PriorityList_t freeing all its elements.
 void
 pli_erase(PriorityList_t *plist);
 
 /// \ref pli_erase_shallow
-/// \brief Frees from memory all the nodes from a PriorityList_s.
+/// \brief Resets the PriorityList_t without freeing its elements.
 void
 pli_erase_shallow(PriorityList_t *plist);
 

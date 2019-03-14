@@ -57,12 +57,12 @@ void
 dar_free_shallow(DynamicArray_t *array);
 
 /// \ref dar_erase
-/// \brief Frees from memory all elements of the dynamic array.
+/// \brief Resets the DynamicArray_t freeing all its elements.
 void
 dar_erase(DynamicArray_t *array);
 
 /// \ref dar_erase_shallow
-/// \brief Resets the dynamic array without freeing its elements.
+/// \brief Resets the DynamicArray_t without freeing its elements.
 void
 dar_erase_shallow(DynamicArray_t *array);
 

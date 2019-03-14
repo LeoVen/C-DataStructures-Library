@@ -486,8 +486,7 @@ qli_empty(QueueList_t *queue)
 ///
 /// \param[in] queue The target queue.
 ///
-/// \return True if the amount of elements is the same as the buffer's
-/// capacity, otherwise false.
+/// \return True if the amount of elements in the queue have reached a limit.
 bool
 qli_full(QueueList_t *queue)
 {
@@ -540,6 +539,7 @@ qli_contains(QueueList_t *queue, void *key)
 /// elements are copied using the queue interface's copy function.
 /// \par Interface Requirements
 /// - copy
+/// - free
 ///
 /// \param[in] queue The queue to be copied.
 ///
@@ -561,11 +561,12 @@ qli_copy(QueueList_t *queue)
 
     while (scan != NULL)
     {
-        copy = qli_new_node(queue->interface->copy(scan->data));
+        void *element = queue->interface->copy(scan->data);
+        copy = qli_new_node(element);
 
         if (!copy)
         {
-            qli_free_node(copy, queue->interface->free);
+            queue->interface->free(element);
             return false;
         }
 
@@ -796,6 +797,7 @@ qli_display(QueueList_t *queue, int display_mode)
             {
                 queue->interface->display(scan->data);
                 printf(", ");
+                scan = scan->prev;
             }
             queue->interface->display(scan->data);
             printf(" ]\n");
