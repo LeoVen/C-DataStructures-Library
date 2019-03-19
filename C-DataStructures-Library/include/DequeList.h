@@ -195,7 +195,99 @@ dql_display(DequeList_t *deque, int display_mode);
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \todo DequeListIterator
+/// \struct DequeListIterator_s.
+/// \brief A DequeList_s iterator.
+struct DequeListIterator_s;
+
+/// \brief A type for a deque iterator.
+///
+/// A type for a <code> struct DequeListIterator_s </code>.
+typedef struct DequeListIterator_s DequeListIterator_t;
+
+/// \brief A pointer type for a deque iterator.
+///
+/// A pointer type for a <code> struct DequeListIterator_s </code>.
+typedef struct DequeListIterator_s *DequeListIterator;
+
+///////////////////////////////////// STRUCTURE INITIALIZATION AND DELETION ///
+
+/// \ref dql_iter_new
+/// \brief Creates a new deque iterator given a target deque.
+DequeListIterator_t *
+dql_iter_new(DequeList_t *target);
+
+/// \ref dql_iter_retarget
+/// \brief Retargets an existing iterator.
+void
+dql_iter_retarget(DequeListIterator_t *iter, DequeList_t *target);
+
+/// \ref dql_iter_free
+/// \brief Frees from memory an existing iterator.
+void
+dql_iter_free(DequeListIterator_t *iter);
+
+///////////////////////////////////////////////////////////////// ITERATION ///
+
+/// \ref dql_iter_next
+/// \brief Iterates to the next element if available.
+bool
+dql_iter_next(DequeListIterator_t *iter);
+
+/// \ref dql_iter_prev
+/// \brief Iterates to the previous element if available.
+bool
+dql_iter_prev(DequeListIterator_t *iter);
+
+/// \ref dql_iter_to_front
+/// \brief Iterates to the front element in the deque.
+bool
+dql_iter_to_front(DequeListIterator_t *iter);
+
+/// \ref dql_iter_to_rear
+/// \brief Iterates to the rear element in the deque.
+bool
+dql_iter_to_rear(DequeListIterator_t *iter);
+
+/////////////////////////////////////////////////////////// STRUCTURE STATE ///
+
+/// \ref dql_iter_has_next
+/// \brief Returns true if there is another element next in the iteration.
+bool
+dql_iter_has_next(DequeListIterator_t *iter);
+
+/// \ref dql_iter_has_prev
+/// \brief Returns true if there is another element previous in the iteration.
+bool
+dql_iter_has_prev(DequeListIterator_t *iter);
+
+////////////////////////////////////////////////////////// INPUT AND OUTPUT ///
+
+/// \ref dql_iter_get
+/// \brief Gets the element pointed by the iterator.
+bool
+dql_iter_get(DequeListIterator_t *iter, void **result);
+
+/// \ref dql_iter_set
+/// \brief Sets the element pointed by the iterator to a new element.
+bool
+dql_iter_set(DequeListIterator_t *iter, void *element);
+
+/////////////////////////////////////////////////////////////////// UTILITY ///
+
+/// \ref dql_iter_peek_next
+/// \brief Returns the next element in the iteration if available.
+void *
+dql_iter_peek_next(DequeListIterator_t *iter);
+
+/// \ref dql_iter_peek
+/// \brief Returns the current element in the iteration if available.
+void *
+dql_iter_peek(DequeListIterator_t *iter);
+
+/// \ref dql_iter_peek_prev
+/// \brief Returns the previous element in the iteration if available.
+void *
+dql_iter_peek_prev(DequeListIterator_t *iter);
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///

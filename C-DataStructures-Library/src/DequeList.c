@@ -888,7 +888,252 @@ dql_free_node_shallow(DequeListNode_t *node)
 ////////////////////////////////////////////////////////////////// Iterator ///
 ///////////////////////////////////////////////////////////////////////////////
 
-/// \todo DequeListIterator
+/// This is a DequeList_s iterator and its cursor is represented by pointing to
+/// the current node in the deque.
+struct DequeListIterator_s
+{
+    /// \brief Target DequeList_s.
+    ///
+    /// Target DequeList_s. The iterator might need to use some information
+    /// provided by the deque or change some of its data members.
+    struct DequeList_s *target;
+
+    /// \brief Current element.
+    ///
+    /// Points to the current node. The iterator is always initialized with the
+    /// cursor pointing to the start (front) pointer.
+    struct DequeListNode_s *cursor;
+
+    /// \brief Target version ID.
+    ///
+    /// When the iterator is initialized it stores the version_id of the target
+    /// structure. This is kept to prevent iteration on the target structure
+    /// that may have been modified and thus causing undefined behaviours or
+    /// run-time crashes.
+    integer_t target_id;
+};
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool
+dql_iter_target_modified(DequeListIterator_t *iter);
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
+
+///
+/// \param[in] target
+///
+/// \return
+DequeListIterator_t *
+dql_iter_new(DequeList_t *target)
+{
+    if (dql_empty(target))
+        return NULL;
+
+    DequeListIterator_t *iter = malloc(sizeof(DequeListIterator_t));
+
+    if (!iter)
+        return NULL;
+
+    iter->target = target;
+    iter->target_id = target->version_id;
+    iter->cursor = target->front;
+
+    return iter;
+}
+
+///
+/// \param[in] iter
+/// \param[in] target
+void
+dql_iter_retarget(DequeListIterator_t *iter, DequeList_t *target)
+{
+    iter->target = target;
+    iter->target_id = target->version_id;
+}
+
+///
+/// \param[in] iter
+void
+dql_iter_free(DequeListIterator_t *iter)
+{
+    free(iter);
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_next(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    if (!dql_iter_has_next(iter))
+        return false;
+
+    iter->cursor = iter->cursor->next;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_prev(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    if (!dql_iter_has_prev(iter))
+        return false;
+
+    iter->cursor = iter->cursor->prev;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_to_front(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    iter->cursor = iter->target->front;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_to_rear(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    iter->cursor = iter->target->rear;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_has_next(DequeListIterator_t *iter)
+{
+    return iter->cursor->next != NULL;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+bool
+dql_iter_has_prev(DequeListIterator_t *iter)
+{
+    return iter->cursor->prev != NULL;
+}
+
+///
+/// \param[in] iter
+/// \param[in] result
+///
+/// \return
+bool
+dql_iter_get(DequeListIterator_t *iter, void **result)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    *result = iter->cursor->data;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+/// \param[in] element
+///
+/// \return
+bool
+dql_iter_set(DequeListIterator_t *iter, void *element)
+{
+    if (dql_iter_target_modified(iter))
+        return false;
+
+    iter->target->interface->free(iter->cursor->data);
+
+    iter->cursor->data = element;
+
+    return true;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+dql_iter_peek_next(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return NULL;
+
+    if (!dql_iter_has_next(iter))
+        return NULL;
+
+    return iter->cursor->next->data;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+dql_iter_peek(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return NULL;
+
+    return iter->cursor->data;
+}
+
+///
+/// \param[in] iter
+///
+/// \return
+void *
+dql_iter_peek_prev(DequeListIterator_t *iter)
+{
+    if (dql_iter_target_modified(iter))
+        return NULL;
+
+    if (!dql_iter_has_prev(iter))
+        return NULL;
+
+    return iter->cursor->prev->data;
+}
+
+///////////////////////////////////////////////////// NOT EXPOSED FUNCTIONS ///
+
+static bool
+dql_iter_target_modified(DequeListIterator_t *iter)
+{
+    return iter->target_id != iter->target->version_id;
+}
+
+////////////////////////////////////////////// END OF NOT EXPOSED FUNCTIONS ///
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
