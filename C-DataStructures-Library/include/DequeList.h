@@ -289,6 +289,21 @@ dql_iter_peek(DequeListIterator_t *iter);
 void *
 dql_iter_peek_prev(DequeListIterator_t *iter);
 
+#define DQL_FOR_EACH(target, body)                         \
+    do {                                                   \
+        DequeListIterator_t *iter_ = dql_iter_new(target); \
+        while (dql_iter_has_next(iter_)) {                 \
+            void *var = dql_iter_peek(iter_);              \
+            body;                                          \
+            dql_iter_next(iter_);                          \
+        }                                                  \
+        dql_iter_free(iter_);                              \
+    } while (0);                                           \
+
+#define DQL_DECL(name)                                      \
+    char name##_storage__[dql_size];                        \
+    DequeList_t *name = (DequeList_t*)&name##_storage__[0]; \
+
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
 ///////////////////////////////////////////////////////////////////////////////

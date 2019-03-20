@@ -264,6 +264,21 @@ qli_iter_peek_next(QueueListIterator_t *iter);
 void *
 qli_iter_peek(QueueListIterator_t *iter);
 
+#define QLI_FOR_EACH(target, body)                         \
+    do {                                                   \
+        QueueListIterator_t *iter_ = qli_iter_new(target); \
+        while (qli_iter_has_next(iter_)) {                 \
+            void *var = qli_iter_peek(iter_);              \
+            body;                                          \
+            qli_iter_next(iter_);                          \
+        }                                                  \
+        qli_iter_free(iter_);                              \
+    } while (0);                                           \
+
+#define QLI_DECL(name)                                      \
+    char name##_storage__[qli_size];                        \
+    QueueList_t *name = (QueueList_t*)&name##_storage__[0]; \
+
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
 ///////////////////////////////////////////////////////////////////////////////

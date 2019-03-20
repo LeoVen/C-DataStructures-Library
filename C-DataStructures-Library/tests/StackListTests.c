@@ -17,8 +17,7 @@ void stl_test_limit(UnitTest ut)
     interface_init(&int_interface, compare_int32_t, copy_int32_t,
                    display_int32_t, free, NULL, NULL);
 
-    uint8_t stl_storage[stl_size];
-    StackList_t *stack = (StackList_t*)&stl_storage[0];
+    STL_DECL(stack);
     stl_init(stack, &int_interface);
 
     if (!stl_set_limit(stack, 10))
@@ -65,8 +64,7 @@ void stl_test_foreach(UnitTest ut)
     interface_init(&int_interface, compare_int32_t, copy_int32_t,
                    display_int32_t, free, NULL, NULL);
 
-    uint8_t stl_storage[stl_size];
-    StackList_t *stack = (StackList_t*)&stl_storage[0];
+    STL_DECL(stack);
     stl_init(stack, &int_interface);
 
     int *elem = NULL;

@@ -240,6 +240,11 @@ sta_iter_free(StackArrayIterator_t *iter);
 bool
 sta_iter_next(StackArrayIterator_t *iter);
 
+/// \ref sta_iter_prev
+/// \brief Iterates to the previous element if available.
+bool
+sta_iter_prev(StackArrayIterator_t *iter);
+
 /// \ref sta_iter_to_top
 /// \brief Moves the cursor to the top element in the stack.
 bool
@@ -301,6 +306,10 @@ sta_iter_peek_prev(StackArrayIterator_t *iter);
         }                                                   \
         sta_iter_free(iter_);                               \
     } while (0);                                            \
+
+#define STA_DECL(name)                                        \
+    char name##_storage__[sta_size];                          \
+    StackArray_t *name = (StackArray_t*)&name##_storage__[0]; \
 
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///

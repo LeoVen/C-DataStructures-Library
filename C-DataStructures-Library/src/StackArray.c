@@ -144,12 +144,12 @@ sta_init(StackArray_t *stack, Interface_t *interface,
     if (growth_rate <= 100 || initial_capacity <= 0)
         return false;
 
-    stack->buffer = malloc(sizeof(void*) * 32);
+    stack->buffer = malloc(sizeof(void*) * (size_t)initial_capacity);
 
     if (!(stack->buffer))
         return false;
 
-    for (integer_t i = 0; i < 32; i++)
+    for (integer_t i = 0; i < initial_capacity; i++)
         stack->buffer[i] = NULL;
 
     stack->capacity = initial_capacity;
@@ -784,7 +784,6 @@ static sta_grow(StackArray_t *stack, integer_t required_size)
     if (!new_buffer)
     {
         stack->capacity = old_capacity;
-
         return false;
     }
 

@@ -57,6 +57,46 @@ void qli_test_limit(UnitTest ut)
     qli_erase(queue);
 }
 
+void qli_test_foreach(UnitTest ut)
+{
+    Interface_t int_interface;
+    interface_init(&int_interface, compare_int32_t, copy_int32_t,
+                   display_int32_t, free, NULL, NULL);
+
+    QLI_DECL(queue)
+    qli_init(queue, &int_interface);
+
+    int *elem = NULL;
+    for (int i = 0; i < 1001; i++)
+    {
+        elem = new_int32_t(i);
+
+        if (!qli_enqueue(queue, elem))
+        {
+            free(elem);
+        }
+    }
+
+    int32_t sum = 0;
+
+    QLI_FOR_EACH(queue, {
+            sum += *(int*)var;
+    })
+
+    ut_equals_int(ut, 500500, sum, __func__);
+
+    sum = 0;
+
+    QLI_FOR_EACH(queue, {
+            int32_t i = *(int*)var;
+            sum += i % 2 == 0 ? i : 0;
+    })
+
+    ut_equals_int(ut, 250500, sum, __func__);
+
+    qli_erase(queue);
+}
+
 // Runs all QueueList tests
 Status QueueListTests(void)
 {
@@ -68,6 +108,7 @@ Status QueueListTests(void)
         goto error;
 
     qli_test_limit(ut);
+    qli_test_foreach(ut);
 
     ut_report(ut, "QueueList");
 

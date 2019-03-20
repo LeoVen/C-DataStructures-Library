@@ -87,12 +87,13 @@ void sta_test_locked(UnitTest ut)
 // Tests capacity multiplication
 void sta_test_growth(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
-            display_int32_t, free, NULL, NULL);
+    Interface_t int_interface;
+    interface_init(&int_interface, compare_int32_t, copy_int32_t,
+                   display_int32_t, free, NULL, NULL);
 
-    StackArray_t *stack = sta_create(int_interface, 60, 250);
+    StackArray_t *stack = sta_create(&int_interface, 60, 250);
 
-    if (!stack || !int_interface)
+    if (!stack)
         goto error;
 
     bool success = false;
@@ -115,7 +116,6 @@ void sta_test_growth(UnitTest ut)
     ut_equals_integer_t(ut, sta_capacity(stack), 150, __func__);
 
     sta_free(stack);
-    interface_free(int_interface);
 
     return;
 
@@ -123,17 +123,17 @@ void sta_test_growth(UnitTest ut)
     printf("Error at %s\n", __func__);
     ut_error();
     sta_free(stack);
-    interface_free(int_interface);
 }
 
 void sta_test_foreach(UnitTest ut)
 {
-    Interface int_interface = interface_new(compare_int32_t, copy_int32_t,
-                                            display_int32_t, free, NULL, NULL);
+    Interface_t int_interface;
+    interface_init(&int_interface, compare_int32_t, copy_int32_t,
+                   display_int32_t, free, NULL, NULL);
 
-    StackArray_t *stack = sta_new(int_interface);
+    StackArray_t *stack = sta_create(&int_interface, 32, 200);
 
-    if (!stack || !int_interface)
+    if (!stack)
         goto error;
 
     int *elem = NULL;
@@ -150,7 +150,7 @@ void sta_test_foreach(UnitTest ut)
     int32_t sum = 0;
 
     STA_FOR_EACH(stack, {
-            sum += *(int*)var;
+        sum += *(int*)var;
     })
 
     ut_equals_int(ut, 500500, sum, __func__);
@@ -158,14 +158,13 @@ void sta_test_foreach(UnitTest ut)
     sum = 0;
 
     STA_FOR_EACH(stack, {
-            int32_t i = *(int*)var;
-            sum += i % 2 == 0 ? i : 0;
+        int32_t i = *(int*)var;
+        sum += i % 2 == 0 ? i : 0;
     })
 
     ut_equals_int(ut, 250500, sum, __func__);
 
     sta_free(stack);
-    interface_free(int_interface);
 
     return;
 
@@ -173,7 +172,6 @@ void sta_test_foreach(UnitTest ut)
     printf("Error at %s\n", __func__);
     ut_error();
     sta_free(stack);
-    interface_free(int_interface);
 }
 
 // Runs all StackArray tests

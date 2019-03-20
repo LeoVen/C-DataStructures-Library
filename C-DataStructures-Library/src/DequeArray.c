@@ -160,6 +160,9 @@ dqa_init(DequeArray_t *deque, Interface_t *interface,
     if (!deque->buffer)
         return false;
 
+    for (integer_t i = 0; i < initial_capacity; i++)
+        deque->buffer[i] = NULL;
+
     deque->capacity = initial_capacity;
     deque->growth_rate = growth_rate;
     deque->version_id = 0;

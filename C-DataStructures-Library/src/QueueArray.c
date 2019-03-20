@@ -163,12 +163,12 @@ qar_init(QueueArray_t *queue, Interface_t *interface,
     if (growth_rate <= 100 || initial_capacity <= 0)
         return false;
 
-    queue->buffer = malloc(sizeof(void*) * 32);
+    queue->buffer = malloc(sizeof(void*) * (size_t)initial_capacity);
 
     if (!(queue->buffer))
         return false;
 
-    for (integer_t i = 0; i < 32; i++)
+    for (integer_t i = 0; i < initial_capacity; i++)
         queue->buffer[i] = NULL;
 
     queue->capacity = initial_capacity;

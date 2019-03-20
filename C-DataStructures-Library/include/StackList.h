@@ -260,6 +260,10 @@ stl_iter_peek(StackListIterator_t *iter);
         stl_iter_free(iter_);                              \
     } while (0);                                           \
 
+#define STL_DECL(name)                                      \
+    char name##_storage__[stl_size];                        \
+    StackList_t *name = (StackList_t*)&name##_storage__[0]; \
+
 ///////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////// Wrapper ///
 ///////////////////////////////////////////////////////////////////////////////
